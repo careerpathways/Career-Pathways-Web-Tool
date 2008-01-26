@@ -1,0 +1,30 @@
+Ways to view a drawing:
+
+
+Javascript document.write (pre-rendered html):
+	http://oregon.ctpathways.org/c/view.js?d=lcc_spanish
+	Use this for embedding in a document in a <script> tag
+
+		<div style="position:relative;">
+		<script type="text/javascript" src="http://oregon.ctpathways.org/c/view.js?d=lcc_spanish"></script>
+		</div>
+
+Straight HTML:
+	http://oregon.ctpathways.org/c/published/lcc_spanish
+	Link to this page directly, viewable in a browser.
+	Or, use curl to fetch the html and echo back to the user.
+
+Javascript DOM method:
+	http://oregon.ctpathways.org/c/view.php?id=19
+	Links to a particular version of a drawing, useful for reviewing drawings with a group.
+
+Static images:
+	By drawing name:
+		http://oregon.ctpathways.org/files/charts/svg/lcc_spanish.svg
+		http://oregon.ctpathways.org/files/charts/gif/lcc_spanish.gif
+		http://oregon.ctpathways.org/files/charts/gif_full/lcc_spanish.gif
+	By version id:
+		http://oregon.ctpathways.org/files/charts/svg/15.svg
+		http://oregon.ctpathways.org/files/charts/gif/15.gif
+		http://oregon.ctpathways.org/files/charts/gif_full/15.gif
+

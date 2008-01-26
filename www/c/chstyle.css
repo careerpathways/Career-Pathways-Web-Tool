@@ -1,0 +1,330 @@
+<?php
+header("Content-type: text/css");
+?>
+
+.box input, .box textarea {
+  border: none;
+}
+
+.line, .arrow, .box, .connection {
+  position: absolute;
+  font-family: verdana;
+}
+
+.line td, .arrow td, .box td.n, .box td.s, .box td.e, .box td.w, .box td.nw, .box td.ne, .box td.sw, .box td.se {
+  font-size: 0px;
+}
+
+.chSchoolLogo {
+  float:left;
+  margin-right: 20px;
+}
+
+.box li {
+  margin: 0px;
+}
+
+/**
+ * line
+ */
+.line.v td.c {
+  width: 5px;
+  height: auto;
+  !height: 100%;
+}
+
+.line.h td.c {
+  height: 5px;
+  width: auto;
+  !width: 100%;
+}
+
+.line.v {
+  width: 15px;
+}
+
+.line.h {
+  height: 15px;
+}
+
+.line.v td.n, .line.v td.s {
+  height: 3px;
+  width: 5px;
+}
+
+.line.h td.e, .line.h td.w, .line.h td.ne, .line.h td.nw, .line.h td.se, .line.h td.sw {
+  width: 3px;
+  height: 5px;
+}
+
+.line.v td.n {
+  height: 3px;
+  width: 5px;
+}
+
+.line.v td.s {
+  height: 3px;
+  width: 5px;
+}
+
+.line.h td.e {
+  height: 5px;
+  width: 3px;
+}
+
+.line.h td.w {
+  height: 5px;
+  width: 3px;
+}
+
+/**
+ * arrow
+ */
+.arrow td.c {
+  background-color: #333333;
+}
+
+.arrow.n, .arrow.s {
+  width: 15px;
+}
+
+.arrow.e, .arrow.w {
+  height: 15px;
+}
+
+.arrow.n td.c, .arrow.s td.c {
+  width: 5px;
+  height: auto;
+  !height: 100%;
+}
+
+.arrow.e td.c, .arrow.w td.c {
+  height: 4px;
+  width: auto;
+  !width: 100%;
+}
+
+.arrow.n td.s, .arrow.s td.n {
+  height: 3px;
+  width: 5px;
+}
+
+.arrow.w td.e, .arrow.e td.w {
+  height: 5px;
+  width: 3px;
+}
+
+.arrow.n .s {
+}
+
+.arrow.s .n {
+}
+
+.arrow.e .w {
+}
+
+.arrow.w .e {
+}
+
+/* north arrow */
+
+.arrow.n td.ne {
+  height: 8px;
+  width: 5px;
+}
+
+.arrow.n td.n {
+  height: 8px;
+  width: 5px;
+}
+
+.arrow.n td.nw {
+  height: 8px;
+  width: 5px;
+}
+
+/* south arrow */
+
+.arrow.s td.se {
+  height: 8px;
+  width: 5px;
+}
+
+.arrow.s td.s {
+  height: 8px;
+  width: 5px;
+}
+
+.arrow.s td.sw {
+  height: 8px;
+  width: 5px;
+}
+
+/* east arrow */
+
+.arrow.e td.ne {
+  width: 8px;
+  height: 5px;
+}
+
+.arrow.e td.e {
+  width: 8px;
+  height: 5px;
+}
+
+.arrow.e td.se {
+  width: 8px;
+  height: 5px;
+}
+
+/* why is this here?
+.arrow.e .e img {
+  width: 8px;
+  height: 5px;
+}
+*/
+
+/* west arrow */
+
+.arrow.w td.nw {
+  width: 8px;
+  height: 5px;
+}
+
+.arrow.w td.w {
+  width: 8px;
+  height: 5px;
+}
+
+.arrow.w td.sw {
+  width: 8px;
+  height: 5px;
+}
+
+/* why is this here?
+.arrow.w .w img {
+  width: 8px;
+  height: 5px;
+}
+*/
+
+/**
+ * box
+ */
+.box {
+  z-index: 100;
+}
+
+.box td.c {
+  height: auto;
+}
+
+.box td.n {
+  height: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.box td.w {
+  width: 10px;
+}
+
+.box td.c {
+  background-color: #ffffff;
+  vertical-align: top;
+  font-size: 11px;
+}
+
+.box td.e {
+  width: 10px;
+}
+
+.box td.s {
+  height: 10px;
+}
+
+.box input, .box textarea {
+  background-color: #ffc;
+}
+
+.box ul {
+	margin-left: 0px;
+	padding-left: 15px;
+}
+
+
+.brush {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+	z-index: 9;
+}
+
+.toolbar .button {
+  margin: 2px;
+  padding: 5px;
+  /*border: 1px solid #CF9D2B;*/
+  background-color: #E6D09E;
+  cursor: pointer;
+}
+
+.toolbar .button:hover {
+  background-color: #fff;
+}
+
+.toolbar .trash {
+  background-color: #e0e0e0;
+  cursor: default;
+}
+
+.toolbar .color {
+  padding: 0;
+  margin: 2px;
+  float: left;
+  width: 19px;
+  height: 19px;
+}
+
+/* styles to override browser defaults */
+.ctpathways ul, .ctpathways ol {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.ctpathways p {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	min-width: 100px;
+}
+
+.hash {
+	background: url(/images/hash.png);
+	height: auto;
+	width: auto;
+	!height: 100%;
+}
+.normal {
+
+}
+
+
+.overlay_outdated, .overlay_draft {
+	margin-left: 200px;
+	margin-top: 200px;
+	position: absolute;
+	z-index: 400;
+}
+
+.overlay_outdated {
+  background: url('/images/outdated-overlay.png');
+  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/images/outdated-overlay.png',sizingMethod='image');
+  !background: none;
+}
+.overlay_draft {
+  background: url('/images/draft-overlay.png');
+  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/images/draft-overlay.png',sizingMethod='image');
+  !background: none;
+}
+
+

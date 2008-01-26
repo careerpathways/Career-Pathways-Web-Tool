@@ -1,0 +1,1 @@
+<p>In order to edit this drawing, you must create a copy of this version and edit the copy.</p>

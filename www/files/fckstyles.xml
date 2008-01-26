@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Styles>
+	<Style name="Title H1" element="h1" />
+	<Style name="Title H2" element="h2" />
+	<Style name="Title H3" element="h3" />
+	<Style name="Title H4" element="h4" />
+</Styles>

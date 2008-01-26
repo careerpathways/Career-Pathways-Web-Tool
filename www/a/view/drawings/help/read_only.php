@@ -1,0 +1,1 @@
+<p>This drawing is read-only because it belongs to a different school.</p>
