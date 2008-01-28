@@ -259,13 +259,15 @@ function copyVersion($version_id) {
 
 	// first get the title information
 	$drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=" . $drawing['parent_id']);
-
+	
+	$create = Request('create') || 'new_version';
 	if( IsAdmin() ) {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
-			if( KeyInRequest('sameschool') ) {
+			if( Request('copy_to') == 'same_school') {
 				$different_school = false;
 			} else {
 				$different_school = true;
+				$create = 'new_drawing';
 			}
 		} else {
 			$different_school = false;
@@ -274,9 +276,15 @@ function copyVersion($version_id) {
 		$different_school = false;
 	}
 
-	if( $different_school ) {
-		$newdrawing['school_id'] = $_SESSION['school_id'];
-		$newdrawing['name'] = $drawing_main['name'];
+	if( $create == 'new_drawing' ) {
+		if ($different_school) {
+			$newdrawing['school_id'] = $_SESSION['school_id'];
+		}
+		else {
+			$newdrawing['school_id'] = $drawing['school_id'];
+		}
+			
+		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
 		$newdrawing['code'] = strtolower($DB->GetValue('school_abbr','schools',$newdrawing['school_id']).'_'.str_replace(' ','_',$newdrawing['name'])).rand(100,999);
 		$newdrawing['date_created'] = $drawing_main['date_created'];
@@ -335,8 +343,13 @@ function copyVersion($version_id) {
 		$connection['destination_object_id'] = $idMap[$connection['destination_object_id']];
 		$DB->Insert('connections', $connection);
 	}
-
-	header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$new_version_id);
+	
+	if (Request('from_popup') == 'true') {
+		header("Location: /a/copy_success_popup.php?version_id=".$new_version_id);
+	}
+	else {
+		header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$new_version_id);
+	}
 }
 
 function showNewDrawingForm() {
