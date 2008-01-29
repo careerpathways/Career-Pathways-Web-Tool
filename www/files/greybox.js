@@ -18,7 +18,7 @@ var chGreybox = {
 	
 		var contents = '' + 
 	'<div id="greybox_center" style="width:' + myInnerWidth + 'px">' +
-	'  <div id="greybox_inset" style="margin-top:' + (document.documentElement.scrollTop+40) + 'px;width:' + (content_width+30) + 'px">' +
+	'  <div id="greybox_inset" style="margin-top:' + (document.documentElement.scrollTop+40) + 'px; margin-left: ' + (document.documentElement.scrollLeft+40) + 'px; width:' + (content_width+30) + 'px">' +
 	' 	<div id="greybox_container">' + 
 	'		<div id="greybox_xbutton"><a href="javascript:chGreybox.close();">x</a></div>' +
 	'		<div id="greybox_content">' +
