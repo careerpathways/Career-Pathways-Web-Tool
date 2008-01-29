@@ -1,7 +1,7 @@
 <?php
 chdir("..");
 include("inc.php");
-$version = $drawing = GetDrawingInfo($_REQUEST['version_id']);
+$version = GetDrawingInfo($_REQUEST['version_id']);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -33,19 +33,23 @@ fieldset {
 <input type="hidden" name="action" value="copy_version"/>
 <input type="hidden" name="version_id" value="<?= $version['id'] ?>"/>
 
-<?php if (IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) : ?>
+<?php if (IsAdmin() && $_SESSION['school_id'] !== $version['school_id']) : ?>
 <fieldset id="copy_to">
 <legend>Copy To</legend>
 <input type="radio" name="copy_to" value="user_school" id="copy_to_user_school" checked="true"/> <label for="copy_to_user_school">Your School</label><br/>
 <input type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school">This School</label><br/>
 </fieldset>
-<?php endif; ?>
+<?php endif;
 
+if (IsAdmin() || $_SESSION['school_id'] === $version['school_id']) : ?>
 <fieldset id="create">
 <legend>Create</legend>
 <input type="radio" name="create" value="new_version" id="create_new_version" checked="true"/> <label for="create_new_version">New Version</label><br/>
 <input type="radio" name="create" value="new_drawing" id="create_new_drawing"/> <label for="create_new_drawing">New Drawing</label><br/>
 </fieldset>
+<?php else : ?>
+<p>A new drawing will be created in your school.</p>
+<?php endif; ?>
 
 <fieldset id="drawingName">
 <legend><label for="drawing_title">New Drawing Name</label></legend>
@@ -66,8 +70,10 @@ var updateState = function() {
 		create.hide();
 	}
 	else {
-		create.show();
-		if (createNewDrawing.checked) {
+		if (create) {
+			create.show();
+		}
+		if (!createNewDrawing || createNewDrawing.checked) {
 			drawingName.show();
 		}
 		else {

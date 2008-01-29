@@ -18,12 +18,6 @@ Charts.getID = function(config, object, oncomplete) {
               });
 }
 
-/* TODO enable
- * document.onselectstart = function() {
-	return false;
-};
-* */
-
 document.observe('chart:drawn', function(e) {
 	var toolbar = document.createElement('div');
 	Charts.toolbar = toolbar;
@@ -169,14 +163,17 @@ Charts.setColor = function(evt) {
   document.observe('mouseup', Charts.unSetColor);
   if (!evt) evt = window.event;
   Charts.color = evt.target ? evt.target.color : evt.srcElement.color;
+  
+  // NOTE: internet explorer needs the onselectstart observer configured below
   if (evt.preventDefault) evt.preventDefault();
-  if (Prototype.Browser.IE) {
-  	// TODO temporary fix util we use selectstart event
-  	null.error = true;
-  }
   
   return false;
 }
+
+// prevents internet explorer from selecting text
+document.onselectstart = function() {
+	return false;
+};
 
 Charts.unSetColor = function() {
   Event.stopObserving(document.body, 'mousedown', Charts.setColor);

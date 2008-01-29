@@ -260,24 +260,27 @@ function copyVersion($version_id) {
 	// first get the title information
 	$drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=" . $drawing['parent_id']);
 	
-	$create = Request('create') || 'new_version';
+	$create = Request('create') ? Request('create') : 'new_version';
+	$copy_to = Request('copy_to') ? Request('copy_to') :'same_school';
 	if( IsAdmin() ) {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
-			if( Request('copy_to') == 'same_school') {
+			if ($copy_to !== 'same_school') {
 				$different_school = false;
-			} else {
-				$different_school = true;
 				$create = 'new_drawing';
 			}
 		} else {
 			$different_school = false;
 		}
-	} else {
-		$different_school = false;
+	} else if ($_SESSION['school_id'] !== $drawing['school_id']) {
+		$create = 'new_drawing';
+		$copy_to = 'user_school';
+	}
+	else {
+		$copy_to = 'same_school';
 	}
 
 	if( $create == 'new_drawing' ) {
-		if ($different_school) {
+		if ($copy_to !== 'same_school') {
 			$newdrawing['school_id'] = $_SESSION['school_id'];
 		}
 		else {
@@ -327,7 +330,7 @@ function copyVersion($version_id) {
 
 		$obj = unserialize($obj['content']);
 		$obj['id'] = $new_id;
-		if( $different_school ) {
+		if( $copy_to !== 'same_school' ) {
 			$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		}
 		$newobj['content'] = serialize($obj);

@@ -7,11 +7,13 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 	<div id="toolbar_header"></div>
 	<div id="toolbar_content">
 		<?php if ($publishAllowed) : ?><a href="<?= $_SERVER['PHP_SELF'].'?action=version_info&amp;version_id='.$_REQUEST['drawing_id'] ?>" class="publish">publish this version</a><?php endif; ?>
-		<?php if( IsAdmin() && $_SESSION['school_id'] != $drawing_main['school_id'] ) { ?>
-			<a href="<?= $_SERVER['PHP_SELF'].'?action=copy_version&sameschool&version_id='.$_REQUEST['drawing_id'] ?>" class="publish">copy this version<br><div style="font-size:7pt">new version at this school</div></a>
-			<a href="<?= $_SERVER['PHP_SELF'].'?action=copy_version&copytomyschool&version_id='.$_REQUEST['drawing_id'] ?>" class="publish">copy this version<br><div style="font-size:7pt">new drawing at my school</div></a>
-		<?php } else { ?>
-			<a href="<?= $_SERVER['PHP_SELF'].'?action=copy_version&amp;version_id='.$_REQUEST['drawing_id'] ?>" class="publish">copy this version</a>
-		<?php } ?>
+		<a href="copy_popup.php?version_id=<?=  $_REQUEST['drawing_id'] ?>" class="publish" onclick="return showCopy(this);">copy this version</a>
 	</div>
 </div>
+<script type="text/javascript">
+var showCopy = function(anchor) {
+	window.open(anchor.href, 'Copy', 'menubar=no,scrollbars=yes,width=300,height=300,screenX=100,screenY=100');
+	return false;
+	
+};
+</script>
