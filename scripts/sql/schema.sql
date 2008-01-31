@@ -199,6 +199,8 @@ CREATE TABLE `users` (
   `first_name` varchar(50) default NULL,
   `last_name` varchar(50) default NULL,
   `email` varchar(255) default NULL,
+  `job_title` varchar(255) default NULL,     
+  `phone_number` varchar(50) default NULL,   
   `password` varchar(50) default NULL,
   `temp_password` varchar(50) default NULL,
   `last_logon` datetime default NULL,

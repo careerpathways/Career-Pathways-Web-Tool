@@ -94,6 +94,8 @@ if( KeyInRequest('id') ) {
 
 		$content = Array( 'first_name' => $_REQUEST['first_name'],
 						  'last_name' => $_REQUEST['last_name'],
+						  'job_title' => $_REQUEST['job_title'],
+						  'phone_number' => $_REQUEST['phone_number'],
 						  'email' => $_REQUEST['email'],
 						  'user_level' => intval($_REQUEST['user_level']) );
 
@@ -174,7 +176,7 @@ if( KeyInRequest('id') ) {
 		echo '</td></tr>';
 
 		$users = $DB->MultiQuery("
-			SELECT users.id, first_name, last_name, email, lev.name AS user_level_name, user_level, last_logon, last_logon_ip
+			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip
 			FROM users, admin_user_levels AS lev
 			WHERE school_id=".$s['id']."
 				AND lev.level = users.user_level
@@ -196,10 +198,10 @@ if( KeyInRequest('id') ) {
 				}
 				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
 				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
+				echo '<td width="140">'.$u['phone_number'].'</td>';
 				echo '<td width="180">'.$u['email'].'</td>';
 				echo '<td width="100">'.$u['user_level_name'].'</td>';
-				echo '<td width="140">'.($u['last_logon_ip']==''?'':$u['last_logon']).'</td>';
-				echo '<td>'.($u['last_logon_ip']==''?'':$u['last_logon_ip']).'</td>';
+				echo '<td width="140"><div title="'.($u['last_logon_ip']==''?'':$u['last_logon_ip']).'">'.($u['last_logon_ip']==''?'':$DB->Date("n/j/Y g:ia",$u['last_logon'])).'</div></td>';
 
 				echo '</tr>';
 			}
@@ -249,6 +251,14 @@ global $DB;
 	<tr>
 		<td height="22" class="noborder">Last Name:</td>
 		<td class="noborder"><input type="text" name="last_name" value="<?= $user['last_name'] ?>" size="20"></td>
+	</tr>
+	<tr>
+		<td class="noborder">Job Title:</td>
+		<td class="noborder"><input type="text" name="job_title" value="<?= $user['job_title'] ?>" size="40"></td>
+	</tr>
+	<tr>
+		<td class="noborder">Phone Number:</td>
+		<td class="noborder"><input type="text" name="phone_number" value="<?= $user['phone_number'] ?>" size="20"></td>
 	</tr>
 	<tr>
 		<td class="noborder">Email:</td>
@@ -393,6 +403,14 @@ if( $tried_to_add ) {
 	<tr>
 		<td class="noborder">Last Name:</td>
 		<td class="noborder"><?= $user['last_name'] ?></td>
+	</tr>
+	<tr>
+		<td class="noborder">Job Title:</td>
+		<td class="noborder"><?= $user['job_title'] ?></td>
+	</tr>
+	<tr>
+		<td class="noborder">Phone Number:</td>
+		<td class="noborder"><?= $user['phone_number'] ?></td>
 	</tr>
 	<tr>
 		<td class="noborder">Email:</td>
