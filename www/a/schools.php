@@ -20,6 +20,7 @@ if( KeyInRequest('id') ) {
 			$content = Array( 'school_name' => $_REQUEST['school_name'],
 							  'school_abbr' => $_REQUEST['school_abbr'],
 							  'school_website' => $_REQUEST['school_website'],
+							  'school_addr' => $_REQUEST['school_addr'],
 							);
 
 			$content['school_website'] = str_replace('http://','',$content['school_website']);
@@ -125,6 +126,10 @@ global $DB;
 	<tr>
 		<td width="100">Website:</td>
 		<td colspan="2"><input type="text" name="school_website" id="school_website" value="<?= $school['school_website'] ?>" size="50"></td>
+	</tr>
+	<tr>
+		<td width="100">Address:</td>
+		<td colspan="2"><input type="text" name="school_addr" id="school_addr" value="<?= $school['school_addr'] ?>" size="50"></td>
 	</tr>
 
 	<tr>

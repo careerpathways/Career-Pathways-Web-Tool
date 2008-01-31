@@ -173,6 +173,7 @@ if( KeyInRequest('id') ) {
 
 		echo '<tr><td colspan="6">';
 		echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">'.$s['school_name'].'</div>';
+		if( $s['school_addr'] ) { echo '<div style="margin-left:10px;">'.$s['school_addr'].'</div>'; }
 		echo '</td></tr>';
 
 		$users = $DB->MultiQuery("

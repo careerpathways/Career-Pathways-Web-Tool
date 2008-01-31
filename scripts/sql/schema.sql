@@ -173,7 +173,7 @@ CREATE TABLE `schools` (
   `school_name` varchar(100) default NULL,
   `school_abbr` varchar(50) default NULL,
   `school_website` varchar(255) default NULL,
-  `school_logo` varchar(20) default NULL,
+  `school_addr` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
