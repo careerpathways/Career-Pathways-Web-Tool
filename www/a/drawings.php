@@ -16,7 +16,6 @@ if ($version_id) {
 
 if (KeyInRequest('action')) {
 	$action = $_REQUEST['action'];
-
 	// actions which do not require a post
 	switch ($action) {
 		// TODO this should require a post
@@ -189,8 +188,6 @@ function showVersion() {
 
 	$TEMPLATE->AddCrumb('',$drawing_main['name']);
 
-	$_SESSION['drawing_id'] = $version_id;
-
 	// permissions check. freeze the drawing if from a different school
 	$drawing = GetDrawingInfo($version_id);
 	if( CanEditOtherSchools() || $_SESSION['school_id'] == $drawing_main['school_id'] ) {
@@ -259,7 +256,7 @@ function copyVersion($version_id) {
 
 	// first get the title information
 	$drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=" . $drawing['parent_id']);
-	
+
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') :'same_school';
 	if( IsAdmin() ) {
@@ -286,7 +283,7 @@ function copyVersion($version_id) {
 		else {
 			$newdrawing['school_id'] = $drawing['school_id'];
 		}
-			
+
 		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
 		$newdrawing['code'] = strtolower($DB->GetValue('school_abbr','schools',$newdrawing['school_id']).'_'.str_replace(' ','_',$newdrawing['name'])).rand(100,999);
@@ -346,7 +343,7 @@ function copyVersion($version_id) {
 		$connection['destination_object_id'] = $idMap[$connection['destination_object_id']];
 		$DB->Insert('connections', $connection);
 	}
-	
+
 	if (Request('from_popup') == 'true') {
 		header("Location: /a/copy_success_popup.php?version_id=".$new_version_id);
 	}

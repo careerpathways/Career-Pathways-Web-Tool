@@ -4,13 +4,30 @@ chdir("..");
 include("inc.php");
 
 ModuleInit('drawings');
+
+// defaults
+$school_id = $_SESSION['school_id'];
+$user_id = $_SESSION['user_id'];
+$categories = "-1";
+
+if( array_key_exists('drawing_list',$_SESSION) ) {
+	$dl = $_SESSION['drawing_list'];
+	if( array_key_exists('school_id',$dl) ) { $school_id = $dl['school_id']; }
+	if( array_key_exists('people_id',$dl) ) { $people_id = $dl['people_id']; }
+	if( array_key_exists('categories',$dl) ) { $categories = $dl['categories']; }
+}
+
 ?>
 
 var timeout;
 
 function load_data(selectbox, search) {
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search;
-	ajaxCallback(load_cb, url);
+	if( selectbox == 'list_categories' ) {
+		doNoOutput(url);
+	} else {
+		ajaxCallback(load_cb, url);
+	}
 }
 
 function load_cb(data) {
@@ -19,13 +36,15 @@ function load_cb(data) {
 	removeAllOptions(sel);
 	sel.options[0] = new Option("[Show All]", "-1", false);
 	sel.options[0].className = 'even';
-	var selected = -1;
+	var selected = "";
 	for( var i=0; i<obj[1].length; i++ ) {
-		if( obj[3][i] == 1 ) selected = i;
+//		if( obj[3][i] == 1 ) selected += ""+(i+1)+",";
 		sel.options[sel.options.length] = new Option(obj[2][i], obj[1][i], false, obj[3][i]);
 		sel.options[sel.options.length-1].className = (i%2==0?"odd":"even");
 	}
-	sel.selectedIndex = selected + 1;
+//	if( selected == "" ) selected = "-1,";
+	//alert(obj[0]+".."+selected.substring(0,selected.length-1));
+	//sel.selectedIndex = selected.substring(0,selected.length-1);
 }
 
 function removeAllOptions(from) {
@@ -49,13 +68,13 @@ function init() {
 
 function init2(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_people&school_id=<?= $_SESSION['school_id'] ?>&selectdefault";
+	var url = "/a/drawings_load.php?mode=list_people&school_id=<?= $school_id ?>&selectdefault";
 	ajaxCallback(init3, url);
 }
 
 function init3(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_categories&school_id=<?= $_SESSION['school_id'] ?>&people_id=<?= $_SESSION['user_id'] ?>";
+	var url = "/a/drawings_load.php?mode=list_categories&selectdefault&school_id=<?= $school_id ?>&people_id=<?= $people_id ?>";
 	ajaxCallback(init4, url);
 }
 
@@ -113,6 +132,8 @@ function do_change(whichbox) {
 			if( get_selected(getLayer('list_schools')).length == 0 ) {
 				load_data('list_schools','categories='+categories_list,false);
 			}
+
+			load_data('list_categories','categories='+categories_list,false);
 
 			break;
 	}

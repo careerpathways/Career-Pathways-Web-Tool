@@ -4,6 +4,22 @@ include("inc.php");
 
 ModuleInit('drawings');
 
+if( Request('mode') != 'drawing_list' ) {
+	// save state of selections
+	if( !array_key_exists('drawing_list',$_SESSION) ) {
+		$_SESSION['drawing_list'] = array();
+	}
+	if( Request('school_id') ) {
+		$_SESSION['drawing_list']['school_id'] = Request('school_id');
+	}
+	if( Request('people_id') ) {
+		$_SESSION['drawing_list']['people_id'] = Request('people_id');
+	}
+	if( Request('categories') ) {
+		$_SESSION['drawing_list']['categories'] = Request('categories');
+	}
+}
+
 
 switch( Request('mode') ) {
 
@@ -30,9 +46,9 @@ switch( Request('mode') ) {
 		$response[1] = array_keys($schools);
 		$response[2] = array_values($schools);
 
-		if( KeyInRequest('selectdefault') ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('school_id',$_SESSION['drawing_list']) ) {
 			foreach( array_keys($schools) as $k ) {
-				$response[3][] = ($_SESSION['school_id']==$k?1:0);
+				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['school_id']))?1:0);
 			}
 		} else {
 			if( count($schools) > 0 ) {
@@ -90,9 +106,9 @@ switch( Request('mode') ) {
 		$response[1] = array_keys($people);
 		$response[2] = array_values($people);
 
-		if( KeyInRequest('selectdefault') ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('people_id',$_SESSION['drawing_list']) ) {
 			foreach( array_keys($people) as $k ) {
-				$response[3][] = ($_SESSION['user_id']==$k?1:0);
+				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['people_id']))?1:0);
 			}
 		} else {
 			if( count($people) > 0 ) {
@@ -149,10 +165,16 @@ switch( Request('mode') ) {
 		$response[0] = Request('mode');
 		$response[1] = array_values($cats);
 		$response[2] = array_values($cats);
-		if( count($cats) > 0 ) {
-			$response[3] = array_fill(0,count($cats),0);
+		if( KeyInRequest('selectdefault') && array_key_exists('categories',$_SESSION['drawing_list']) ) {
+			foreach( array_keys($cats) as $k ) {
+				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['categories']))?1:0);
+			}
 		} else {
-			$response[3] = array();
+			if( count($cats) > 0 ) {
+				$response[3] = array_fill(0,count($cats),0);
+			} else {
+				$response[3] = array();
+			}
 		}
 		echo(json_encode_array($response));
 
