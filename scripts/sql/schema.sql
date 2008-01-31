@@ -233,3 +233,13 @@ CREATE TABLE `types` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
+
+CREATE TABLE `helprequests` (            
+	`id` int(11) NOT NULL auto_increment,  
+	`date` datetime default NULL,          
+	`user_id` int(11) default NULL,        
+	`subject` varchar(255) default NULL,   
+	`message` text,                        
+	PRIMARY KEY  (`id`)                    
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
