@@ -31,12 +31,12 @@ if( PostRequest() ) {
 	PrintHeader();
 
 	if( KeyInRequest('submitted') ) {
-		echo '<p>Your request was submitted. You can expect a response shortly.</p>';
+		echo '<p>Your request was submitted. We will get back to you within the next business day.</p>';
 	} else {
 		?>
 		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
 
-		<p>
+		<p>Please use this form to submit questions or problems with the Web Tool. We will get back to you within the next business day.</p>
 		<table>
 		<tr>
 			<th>From</th>
