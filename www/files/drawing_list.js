@@ -7,7 +7,7 @@ ModuleInit('drawings');
 
 // defaults
 $school_id = $_SESSION['school_id'];
-$user_id = $_SESSION['user_id'];
+$people_id = $_SESSION['user_id'];
 $categories = "-1";
 
 if( array_key_exists('drawing_list',$_SESSION) ) {
