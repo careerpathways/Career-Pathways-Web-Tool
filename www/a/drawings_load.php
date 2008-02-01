@@ -6,7 +6,7 @@ ModuleInit('drawings');
 
 if( Request('mode') != 'drawing_list' ) {
 	// save state of selections
-	if( !array_key_exists('drawing_list',$_SESSION) ) {
+	if( !array_key_exists('drawing_list',$_SESSION) || KeyInRequest('userdefaults') ) {
 		$_SESSION['drawing_list'] = array('school_id'=>$_SESSION['school_id'],
 			'people_id'=>$_SESSION['user_id'],
 			'categories'=>'');

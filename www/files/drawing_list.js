@@ -20,6 +20,9 @@ if( array_key_exists('drawing_list',$_SESSION) ) {
 ?>
 
 var timeout;
+var school_id = <?= $school_id ?>;
+var people_id = <?= $people_id ?>;
+var categories = "<?= $categories ?>";
 
 function load_data(selectbox, search) {
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search;
@@ -57,6 +60,17 @@ function removeAllOptions(from) {
 	from.selectedIndex = -1;
 }
 
+function selectDefaults() {
+	ajaxCallback(selectDefaults2, '/a/drawings_load.php?userdefaults');
+	school_id = <?= $_SESSION['school_id'] ?>;
+	people_id = <?= $_SESSION['user_id'] ?>;
+	categories = "";
+}
+function selectDefaults2() {
+	getLayer('search_box').value = "";
+	init();
+}
+
 function init() {
 	var url = "/a/drawings_load.php?mode=list_schools&selectdefault";
 	ajaxCallback(init2, url);
@@ -68,13 +82,13 @@ function init() {
 
 function init2(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_people&school_id=<?= $school_id ?>&selectdefault";
+	var url = "/a/drawings_load.php?mode=list_people&school_id="+school_id+"&selectdefault";
 	ajaxCallback(init3, url);
 }
 
 function init3(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_categories&selectdefault&school_id=<?= $school_id ?>&people_id=<?= $people_id ?>";
+	var url = "/a/drawings_load.php?mode=list_categories&selectdefault&school_id="+school_id+"&people_id="+people_id;
 	ajaxCallback(init4, url);
 }
 

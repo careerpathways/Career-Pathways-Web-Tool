@@ -775,3 +775,16 @@ a.chart_header {
 	font-size:9px;
 }
 
+
+#my_drawings_link {
+	text-align:right;
+}
+#my_drawings_link a {
+	border: 1px #<?= $GOLD ?> solid;
+	padding: 2px;
+	background-color: #<?= $D_GOLD ?>;
+	color: #FFFFFF;
+}
+#my_drawings_link a:hover {
+	color: #<?= $GOLD ?>;
+}

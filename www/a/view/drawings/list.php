@@ -11,7 +11,7 @@ PrintHeader();
 <td>
 	<a href="<?= $_SERVER['PHP_SELF'] ?>?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
 </td>
-<td>
+<td width="290">
 	<div id="search_form" align="right">
 		Keyword Search
 		<input type="text" size="20" name="search_box" id="search_box" value="<?= Request('search') ?>">
@@ -21,7 +21,6 @@ PrintHeader();
 </tr></table>
 
 <table id="live_lists"><tr>
-
 <td width="33%">
 	<div class="live_list">
 		<div class="title">Schools</div>
@@ -43,8 +42,9 @@ PrintHeader();
 		</select>
 	</div>
 </td>
-
 </tr></table>
+
+<div id="my_drawings_link"><a href="javascript:selectDefaults()" class="edit">My Drawings</a></div>
 
 <div id="drawing_list"></div>
 
