@@ -1,1 +1,1 @@
-<p>Use the ctrl key to select or deselect multiple items in the lists.</p>
+<p>Use the <kbd>CTRL</kbd> key to select or deselect multiple items in the lists.</p>
