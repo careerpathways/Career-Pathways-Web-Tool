@@ -1079,7 +1079,7 @@ var onDeleteWidgetSelect = function() {
 // TODO there should be a better way to do this.
 YAHOO.widget.MenuItem.prototype.init_old = YAHOO.widget.MenuItem.prototype.init;
 YAHOO.widget.MenuItem.prototype.init = function(p_oObject, p_oConfig) {
-	p_oConfig.url = 'javascript:';
+	p_oConfig.url = 'javascript:Prototype.emptyFunction()';
 	YAHOO.widget.MenuItem.prototype.init_old.apply(this, arguments);
 }
 
