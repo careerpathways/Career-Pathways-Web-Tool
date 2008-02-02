@@ -198,3 +198,6 @@ function csl(arr, sep) {
 	return str;
 }
 
+function preview_drawing(id) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/view.php?id='+id+'"></iframe></div>',800,600);
+}

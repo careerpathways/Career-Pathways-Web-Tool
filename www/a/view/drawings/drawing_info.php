@@ -27,6 +27,8 @@ if( $id != "" ) {
 
 ?>
 <script type="text/javascript" src="/files/greybox.js"></script>
+<script type="text/javascript" src="/files/drawing_list.js"></script>
+<script type="text/javascript" src="/c/drawings.js"></script>
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
@@ -105,67 +107,8 @@ if( $id != "" ) {
 		?></div><br>
 	</td>
 </tr>
-<tr>
-	<th valign="top">Versions</th>
-	<td>
-	<table>
-	<?php
-
-		$versions = $DB->MultiQuery("
-			SELECT *
-			FROM drawings
-			WHERE drawings.parent_id=".$drawing['id']."
-				AND deleted=0
-			ORDER BY version_num");
-		foreach( $versions as $v ) {
-			$created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
-			$modified = ($v['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
-
-			echo '<tr'.($v['published']?' class="version_list_published"':'').'>';
-			/*
-			echo '<td class="border" width="145" height="105">';
-				echo '<a href="javascript:preview_drawing('.$v['id'].');">';
-				echo '<img src="/files/charts/gif/'.$v['id'].'.gif" height="100" width="140" class="border">';
-				echo '</a>';
-			echo '</td>';
-			*/
-
-			echo '<td class="border" width="400" valign="top"><table height="80">';
-				echo '<tr>';
-					echo '<td width="60"><b>Version</b></td>';
-					echo '<td>'.$v['version_num'].($v['published']?' (Published)':'').'</td>';
-				echo '</tr>';
-				echo '<tr>';
-					echo '<td><b>Created</b></td>';
-					echo '<td>'.($v['date_created']==''?'':$DB->Date("m/d/Y g:ia",$v['date_created'])).' by '.$created['name'].'</td>';
-				echo '</tr>';
-				echo '<tr>';
-					echo '<td><b>Modified</b></td>';
-					echo '<td>'.($v['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$v['last_modified'])).' by '.$modified['name'].'</td>';
-				echo '</tr>';
-				echo '<tr>';
-					echo '<td><b>Note</b></td>';
-					echo '<td>'.$v['note'].'</td>';
-				echo '</tr>';
-				echo '<tr>';
-					echo '<td><b>Actions</b></td>';
-					echo '<td>';
-						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=draw&amp;version_id='.$v['id'].'">'.($v['published']?'view':'draw').'</a>';
-						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:preview_drawing('.$v['id'].')">preview</a>';
-						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=copy_version&amp;version_id='.$v['id'].'">copy this version</a>';
-					echo '</td>';
-				echo '</tr>';
-			echo '</table></td>';
-			echo '</tr>';
-		}
-
-	?>
-	</table>
-	</td>
-</tr>
 <?php
+	require('version_list.php');
 	/*
 	who can delete drawings?
 		1. admins
@@ -256,10 +199,6 @@ function cbNameChanged(drawingCode) {
 function showTitleChange() {
 	getLayer('title_edit').style.display = 'block';
 	getLayer('title_fixed').style.display = 'none';
-}
-
-function preview_drawing(id) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/view.php?id='+id+'"></iframe></div>',800,600);
 }
 
 <?php if( IsSchoolAdmin() ) { ?>
