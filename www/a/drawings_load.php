@@ -11,13 +11,13 @@ if( Request('mode') != 'drawing_list' ) {
 			'people_id'=>$_SESSION['user_id'],
 			'categories'=>'');
 	}
-	if( Request('school_id') ) {
+	if( KeyInRequest('school_id') ) {
 		$_SESSION['drawing_list']['school_id'] = Request('school_id');
 	}
-	if( Request('people_id') ) {
+	if( KeyInRequest('people_id') ) {
 		$_SESSION['drawing_list']['people_id'] = Request('people_id');
 	}
-	if( Request('categories') ) {
+	if( KeyInRequest('categories') ) {
 		$_SESSION['drawing_list']['categories'] = Request('categories');
 	}
 }
@@ -53,6 +53,7 @@ switch( Request('mode') ) {
 				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['school_id']))?1:0);
 			}
 		} else {
+			$_SESSION['drawing_list']['school_id'] = "";
 			if( count($schools) > 0 ) {
 				$response[3] = array_fill(0,count($schools),0);
 			} else {
@@ -113,6 +114,7 @@ switch( Request('mode') ) {
 				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['people_id']))?1:0);
 			}
 		} else {
+			$_SESSION['drawing_list']['people_id'] = "";
 			if( count($people) > 0 ) {
 				$response[3] = array_fill(0,count($people),0);
 			} else {
@@ -172,6 +174,7 @@ switch( Request('mode') ) {
 				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['categories']))?1:0);
 			}
 		} else {
+			$_SESSION['drawing_list']['categories'] = "";
 			if( count($cats) > 0 ) {
 				$response[3] = array_fill(0,count($cats),0);
 			} else {
