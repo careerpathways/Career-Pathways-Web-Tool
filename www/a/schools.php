@@ -1,6 +1,7 @@
 <?php
 chdir("..");
 include("inc.php");
+include("states.inc.php");
 
 ModuleInit('schools');
 
@@ -21,6 +22,9 @@ if( KeyInRequest('id') ) {
 							  'school_abbr' => $_REQUEST['school_abbr'],
 							  'school_website' => $_REQUEST['school_website'],
 							  'school_addr' => $_REQUEST['school_addr'],
+							  'school_city' => $_REQUEST['school_city'],
+							  'school_state' => $_REQUEST['school_state'],
+							  'school_zip' => $_REQUEST['school_zip'],
 							);
 
 			$content['school_website'] = str_replace('http://','',$content['school_website']);
@@ -101,7 +105,7 @@ if( KeyInRequest('id') ) {
 
 
 function ShowSchoolForm($id="") {
-global $DB;
+global $DB, $STATES;
 
 	$school = $DB->LoadRecord('schools',$id);
 
@@ -130,6 +134,20 @@ global $DB;
 	<tr>
 		<td width="100">Address:</td>
 		<td colspan="2"><input type="text" name="school_addr" id="school_addr" value="<?= $school['school_addr'] ?>" size="50"></td>
+	</tr>
+	<tr>
+		<td width="100">City:</td>
+		<td colspan="2"><input type="text" name="school_city" id="school_city" value="<?= $school['school_city'] ?>" size="20"></td>
+	</tr>
+	<tr>
+		<td width="100">State:</td>
+		<td colspan="2"><?php
+			echo GenerateSelectBox($STATES,'school_state','OR');
+		?></td>
+	</tr>
+	<tr>
+		<td width="100">Zip Code:</td>
+		<td colspan="2"><input type="text" name="school_zip" id="school_zip" value="<?= $school['school_zip'] ?>" size="10"></td>
 	</tr>
 
 	<tr>
