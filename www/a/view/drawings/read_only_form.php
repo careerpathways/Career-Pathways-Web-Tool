@@ -25,7 +25,7 @@ $published = $DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND pare
 	<td>
 	<?php
 		if( is_array($published) ) {
-			echo '<img src="/files/charts/gif/'.$published['id'].'.gif" height="100" width="140" class="border">';
+			echo '<a href="javascript:preview_drawing('.$published['id'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
