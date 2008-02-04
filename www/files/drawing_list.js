@@ -20,17 +20,13 @@ if( array_key_exists('drawing_list',$_SESSION) ) {
 ?>
 
 var timeout;
-var school_id = <?= $school_id ?>;
-var people_id = <?= $people_id ?>;
+var school_id = "<?= $school_id ?>";
+var people_id = "<?= $people_id ?>";
 var categories = "<?= $categories ?>";
 
 function load_data(selectbox, search) {
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search;
-	if( selectbox == 'list_categories' ) {
-		doNoOutput(url);
-	} else {
-		ajaxCallback(load_cb, url);
-	}
+	ajaxCallback(load_cb, url);
 }
 
 function load_cb(data) {
@@ -39,15 +35,10 @@ function load_cb(data) {
 	removeAllOptions(sel);
 	sel.options[0] = new Option("[Show All]", "-1", false);
 	sel.options[0].className = 'even';
-	var selected = "";
 	for( var i=0; i<obj[1].length; i++ ) {
-//		if( obj[3][i] == 1 ) selected += ""+(i+1)+",";
 		sel.options[sel.options.length] = new Option(obj[2][i], obj[1][i], false, obj[3][i]);
 		sel.options[sel.options.length-1].className = (i%2==0?"odd":"even");
 	}
-//	if( selected == "" ) selected = "-1,";
-	//alert(obj[0]+".."+selected.substring(0,selected.length-1));
-	//sel.selectedIndex = selected.substring(0,selected.length-1);
 }
 
 function removeAllOptions(from) {
@@ -110,10 +101,10 @@ function do_change(whichbox) {
 			var search = get_selected(getLayer('list_schools'));
 			var schools_list = csl(search,',');
 
-			load_data('list_people','school_id='+schools_list,false);
+			load_data('list_people','school_id='+schools_list);
 
 			if( get_selected(getLayer('list_categories')).length == 0 ) {
-				load_data('list_categories','school_id='+schools_list,false);
+				load_data('list_categories','school_id='+schools_list);
 			}
 
 			// whenever you change schools, the "show all" on the people list should be selected.
@@ -129,7 +120,7 @@ function do_change(whichbox) {
 				var search_s = get_selected(getLayer('list_schools'));
 				var people_list = csl(search_p,',');
 				var schools_list = csl(search_s,',');
-				load_data('list_categories','people_id='+people_list+'&school_id='+schools_list,false);
+				load_data('list_categories','people_id='+people_list+'&school_id='+schools_list);
 			}
 			break;
 		case 'list_categories':
@@ -140,14 +131,14 @@ function do_change(whichbox) {
 			var schools_list = csl(schools,',');
 
 			if( get_selected(getLayer('list_people')).length == 0 ) {
-				load_data('list_people','schools='+schools+'&categories='+categories_list,false);
+				load_data('list_people','schools='+schools+'&categories='+categories_list);
 			}
 
 			if( get_selected(getLayer('list_schools')).length == 0 ) {
-				load_data('list_schools','categories='+categories_list,false);
+				load_data('list_schools','categories='+categories_list);
 			}
 
-			load_data('list_categories','categories='+categories_list,false);
+			doNoOutput("/a/drawings_load.php?mode=list_categories&categories="+categories_list);
 
 			break;
 	}
