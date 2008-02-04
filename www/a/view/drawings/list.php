@@ -10,6 +10,8 @@ PrintHeader();
 <table width="100%"><tr>
 <td>
 	<a href="<?= $_SERVER['PHP_SELF'] ?>?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="javascript:selectDefaults()" class="edit"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
 </td>
 <td width="290">
 	<div id="search_form" align="right">
@@ -43,8 +45,6 @@ PrintHeader();
 	</div>
 </td>
 </tr></table>
-
-<div id="my_drawings_link"><a href="javascript:selectDefaults()" class="edit">My Drawings</a></div>
 
 <div id="drawing_list"></div>
 
