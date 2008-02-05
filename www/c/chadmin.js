@@ -154,7 +154,9 @@ Charts.addToolbarButton = function(name, data) {
   	button.className = 'button';
 	button.innerHTML = name;
   	Event.observe(button, 'click', function() {
-  		Charts.createWidget(data);
+  		objectdata = Object.clone(data);
+  		objectdata.config = Object.clone(objectdata.config);
+  		Charts.createWidget(objectdata);
   	});
   	Charts.toolbar.appendChild(button);
 };
