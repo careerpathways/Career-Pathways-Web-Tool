@@ -52,9 +52,9 @@ switch( $_REQUEST['a'] ) {
 
 		if($debug) echo "Full Request:\n";
 		if($debug) PA($_REQUEST);
-		
-		$type = $_REQUEST['type'];
-		
+
+		$type = Request('type');
+
 		if ($type === 'connection') {
 			$properties = array();
 			if (isset($_REQUEST['num_segments'])) {
@@ -84,21 +84,21 @@ switch( $_REQUEST['a'] ) {
 				}
 				$properties['source_axis'] = $sourceAxis;
 			}
-			
+
 			if (count($properties) > 0) {
 				$DB->Update('connections', $properties, intval($_REQUEST['id']));
 			}
 		}
 		else {
 			$json_obj = $DB->GetValue('content','objects',intval($_REQUEST['id']));
-	
+
 			if($debug) echo "Existing object:\n";
 			$obj = unserialize($json_obj);
 			if($debug) PA($obj);
-	
+
 			if($debug) echo "New values to be merged:\n";
 			if($debug) PA($_REQUEST['content']);
-	
+
 			foreach( $_REQUEST['content'] as $key=>$val ) {
 				if( is_array($val) ) {
 					foreach( $val as $key2=>$val2 ) {
@@ -108,31 +108,31 @@ switch( $_REQUEST['a'] ) {
 					$obj[$key] = $val;
 				}
 			}
-	
+
 			$obj['id'] = intval($_REQUEST['id']);
-	
+
 			/*
 			if( array_key_exists('config',$_REQUEST['content']) ) {
 				if( array_key_exists('content',$_REQUEST['content']['config']) ) {
-	
+
 					// echo the rendered html to the browser
 					$wiki =& new Text_Wiki();
 					$xhtml = $wiki->transform($obj['config']['content'], 'Xhtml');
 					//echo trim($xhtml);
-	
+
 				}
 			}
 			*/
-	
+
 			if($debug) echo "Resulting object:\n";
 			if($debug) PA($obj);
-	
+
 			$objstr = serialize($obj);
-	
+
 			chlog("updated object: ".$obj['id']);
-	
+
 			$DB->Update('objects', array('content'=>$objstr,'date'=>$DB->SQLDate()), intval($_REQUEST['id']));
-	
+
 		}
 		if($debug) {
 			$v = ob_get_contents();
@@ -153,10 +153,10 @@ switch( $_REQUEST['a'] ) {
 	case 'connect': //Connect two boxes. IE, Link them.
 		$sourceId = intval($_REQUEST['source_id']);
 		$destinationId = intval($_REQUEST['destination_id']);
-		
+
 		//check if this connection already exists.
 		$count = $DB->SingleQuery("SELECT count(*) as count FROM connections WHERE source_object_id = $sourceId AND destination_object_id = $destinationId");
-		
+
 		if	($count['count'] < 1) {
 			$parameters = array(
 				'source_object_id' => $sourceId,
@@ -177,14 +177,14 @@ switch( $_REQUEST['a'] ) {
 			chlog("new connection not created for source: $sourceId, destination: $destinationId. It already exists.");
 			echo "0";
 		}
-		
+
 	break;
 	case 'disconnect': //Disconnect two boxes. IE, unlink them.
 		$sourceId = intval($_REQUEST['source_id']);
 		$destinationId = intval($_REQUEST['destination_id']);
 		chlog("disconnected connection for source: $sourceId, destination: $destinationId.");
 		$DB->Query("DELETE FROM connections WHERE source_object_id = $sourceId AND destination_object_id = $destinationId");
-		break;	
+		break;
 	break;
 	case 'setProgram':
 	    $objectId = intval($_REQUEST['object_id']);
@@ -196,7 +196,7 @@ switch( $_REQUEST['a'] ) {
 	    else{
 	        $DB->Update('object_type', array('type_id' => $programId), $oldProgram['id']);
 	    }
-	    	      	       
+
 	break;
 
 }

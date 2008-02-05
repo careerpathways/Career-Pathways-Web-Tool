@@ -188,6 +188,8 @@ function showVersion() {
 
 	$TEMPLATE->AddCrumb('',$drawing_main['name']);
 
+	$_SESSION['drawing_id'] = $version_id;
+
 	// permissions check. freeze the drawing if from a different school
 	$drawing = GetDrawingInfo($version_id);
 	if( CanEditOtherSchools() || $_SESSION['school_id'] == $drawing_main['school_id'] ) {
