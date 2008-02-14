@@ -158,8 +158,8 @@ document.observe('chart:drawn', function(e) {
 				menu.show();
 			}
 		}
+		
 		e.stop();
-			
 	});
 	
 	Charts.element.observe('mousedown', function(e) {
@@ -206,8 +206,9 @@ document.observe('chart:drawn', function(e) {
 	Charts.element.observe('mousemove', function(e) {
 		// if there is an active control and the control can be moved
 		if (Charts.activeControl && Charts.activeControl.applyPosition) {
-			var pointer = e.pointer();
-			var position = Charts.positionWithin(pointer);
+			Charts.controlReshaped = true;
+			
+			var position = Charts.positionWithin(e.pointer());
 			var offsetPosition = Geometry.translatedPoint(position, Charts.positionDeltas);
 			Charts.activeControl.applyPosition(offsetPosition);
 			Charts.activeControl.x = offsetPosition.x;
@@ -225,15 +226,18 @@ document.observe('chart:drawn', function(e) {
 	
 	Charts.element.observe('mouseup', function(e) {
 		if (Charts.activeControl) {
+			if (Charts.controlReshaped) {
+				Charts.selectedComponent.onReshape();
+			}
 			Charts.activeControl = null;
 			
 			// the selected component could have moved, so update the control points
-			if (Charts.selectedComponent) {
-					Charts.controlPoints = Charts.selectedComponent.getControlPoints();
-			}
+			Charts._select(Charts.selectedComponent);
 			
 			Charts.redraw();
 		}
+		
+		Charts.controlReshaped = false;
 	});
 });
 
@@ -475,15 +479,19 @@ ChartLine.addMethods({
 		});      
     },
     
-	endReshape: function() {
+	onReshape: function() {
 		chUtil.ajax({
 			id: this.id,
 			a: 'update',
 			content: {
-				x: this.x,
-				y: this.y,
-				h: this.h,
-				w: this.w
+				startPoint: {
+					x: this.startPoint.x,
+					y: this.startPoint.y
+				},
+				endPoint: {
+					x: this.endPoint.x,
+					y: this.endPoint.y
+				}
 			}
 		});      
     },
@@ -553,14 +561,6 @@ ChartBox.addMethods({
 			}
 		});
 	},
-    onMouseUp: function() {
-      chUtil.ajax({id: this.id,
-                   a: 'update',
-				   content: {x: this.x,
-					   y: this.y,
-					   h: this.h,
-					   w: this.w}});
-    },
   
     /** Handles a connection action (click, etc.) for a box */
     connect: function(){
@@ -649,7 +649,20 @@ ChartBox.addMethods({
     
     _onSetColor: function() {
     	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
-    }
+    },
+    
+    onReshape: function() {
+		chUtil.ajax({
+			id: this.id,
+			a: 'update',
+			content: {
+				x: this.x,
+				y: this.y,
+				h: this.h,
+				w: this.w
+			}
+		});
+	}
 });
 
 var chUtil = {};
@@ -836,6 +849,15 @@ Connection.addMethods({
 			position.x = point.x;
 		}
 		this.reposition();
+	},
+	
+	onReshape: function() {
+		this.onPropertyChange({
+			'source_side': this.sourceAnchorPoint.side,
+			'source_position': this.sourceAnchorPoint.position,
+			'destination_side': this.destinationAnchorPoint.side,
+			'destination_position': this.destinationAnchorPoint.position
+		});
 	}
 });
 

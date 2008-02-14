@@ -225,11 +225,8 @@ Charts = {
 				var rect;
 				if (!Charts.activeControl || Charts.activeControl == p) {
 					context.fillStyle = p.color ? p.color : SELECTED_COLOR;
-					context.strokeStyle = '#ffffff';
-					context.lineWidth = 1;
 					rect = [p.x - CONTROL_POINT_RADIUS, p.y - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
 					context.fillRect.apply(context, rect);
-					context.strokeRect.apply(context, rect);
 				}
 			});
 		}
@@ -706,7 +703,11 @@ var Geometry = {
 		return new Geometry.Bounds(points);
 	},
 	
+	/** A rectangle that surrounds a set of points. */
 	Bounds: Class.create({
+		/** Creates a boundary object for a set of points, with an optional 
+		 *  fudge factor for containment checking.
+		 */
 		initialize: function(points, fudge) {
 			this.fudge = fudge || 0; 
 			var xCoords = points.pluck('x');
@@ -732,6 +733,7 @@ var Geometry = {
      		this.height = this.bottom - this.top;
 		},
 		
+		/** Returns whether the point is within the fudge factor of the bounds. */
 		contains: function(point) {
 			if (this.fudge <= 0) {
 				return Geometry.gte(point, this.topLeft) && Geometry.lte(point, this.bottomRight);
@@ -741,7 +743,7 @@ var Geometry = {
 			}
 		},
 		
-		/* Returns a new bounds the includes the current bounds and the parameter. */
+		/** Returns a new bounds the includes the current bounds and the parameter. */
 		compound: function(that) {
 			return new Geometry.Bounds([
 				this.topLeft,
@@ -751,16 +753,18 @@ var Geometry = {
 			]);
 		},
 		
-		/* Returns a new bounds that include the current points and the new points. */
+		/** Returns a new bounds that include the current points and the new points. */
 		expanded: function(points) {
 			return new Geometry.Bounds(points).compound(this);
 		},
 		
+		/** Returns the top left and bottom right points of the boundary. */
 		getPoints: function() {
 			return [this.topLeft, this.bottomRight];
 		}
 	}),
 	
+	/** Returns the difference between the start and and end points, as an x,y tuple. */
 	deltas: function(start, end) {
 		return {
 			x: end.x - start.x,
@@ -768,14 +772,17 @@ var Geometry = {
 		};
 	},
 	
+	/** Returns the distance from the point to the origin. */
 	length: function(delta) {
 		return Math.sqrt(delta.x * delta.x + delta.y * delta.y);
 	},
 	
+	/** Returns the distance between two points. */
 	abs: function(a, b) {
-		return Math.abs(Geometry.length(Geometry.deltas(a, b)));
+		return Geometry.length(Geometry.deltas(a, b));
 	},
 	
+	/** Returns a point translated by another point or x and y amounts. */
 	translatedPoint: function(point) {
 		if (arguments.length == 3) {
 			return {
@@ -791,6 +798,7 @@ var Geometry = {
 		}
 	},
 	
+	/** Returns a point scaled by a factor. */
 	scaledPoint: function(point, factor) {
 		return {
 			x: point.x * factor,
@@ -819,10 +827,12 @@ var ARROW_THICKNESS_MULTIPLIER = 3.5;
 /* ABSTRACT SHAPE
 ******************************************************************************/
 var AbstractShape = Class.create({
+	/** Returns the shape's boundary rectangle. */
 	getBounds: function() {
 		return this.bounds;
 	},
 	
+	/** Resets all styles or a sets single style property of the shape. */
 	setStyle: function(style) {
 		if (arguments.length == 2) {
 			var previousValue = this.style[arguments[0]];
@@ -836,6 +846,7 @@ var AbstractShape = Class.create({
 		this.onStyleChange(this.style);
 	},
 	
+	/** Sets a set of styles on the shape. */
 	setStyles: function(styles) {
 		$H(styles).each(function(entry) {
 			this.style[entry.key] = entry.value;
@@ -844,6 +855,7 @@ var AbstractShape = Class.create({
 		this.onStyleChange(this.style);
 	},
 	
+	/** Called when the style of the shape changes. */
 	onStyleChange: function() {}
 });
 
@@ -855,12 +867,14 @@ var Path = Class.create(AbstractShape, {
 		this.style = style;
 	},
 	
+	/** Sets the points that comprise the path. */
 	setPoints: function(points) {
 		this.points = points;
 		
 		this.refreshPoints();
 	},
 	
+	/** Refreshes the points if they have changed outside of the path. */
 	refreshPoints: function() {
 		var points = this.points;
 		if (points.length > 0) {
@@ -881,6 +895,7 @@ var Path = Class.create(AbstractShape, {
 		this.bounds = new Geometry.Bounds(points, 6);
 	},
 	
+	/** Returns the path's points. */
 	getPoints: function() {
 		return this.points;
 	},
@@ -891,13 +906,9 @@ var Path = Class.create(AbstractShape, {
 		
 		context.lineWidth = this.style.lineWidth || 1;
 		context.lineCap = 'round';
-		
-		
 		context.strokeStyle = context.fillStyle = this.style.color;
 		
 		context.beginPath();
-		
-		
 		
 		var previousPoint = this.points[0];
 		var point;
@@ -917,7 +928,7 @@ var Path = Class.create(AbstractShape, {
 			context.rotate(point.theta);
 			context.translate(-previousPoint.x, -previousPoint.y);
 			
-			// an arrowhead will be draw if defined and this is the last segment
+			// an arrowhead will be drawn if defined and this is the last segment
 			arrowheadThisSegment = (k == len - 1 && arrowheadAtEnd);
 			
 			if (this.style.dashed) {
@@ -960,10 +971,11 @@ var Path = Class.create(AbstractShape, {
 	
 	contains: function(point) {
 		if (this.bounds.contains(point)) {
-			
+			// FIXME implement
 		}
 	},
 	
+	// TODO test
 	intersects: function(line) {
 		if (this.start.x == line.start.x && this.start.y == line.start.y ||
 		    this.start.x == line.end.y && this.start.y == line.end.y ||
@@ -1010,10 +1022,14 @@ var CompoundShape = Class.create(AbstractShape, {
 		this.resetShapes(components);
 	},
 	
+	/** Returns the points that make up all of the components. */
 	getPoints: function() {
 		return this.components.invoke('getPoints').flatten();
 	},
 	
+	/** Adds a component to the compound shape, expanding the bounding
+	 *  rectangle to include the new shape.
+	 */
 	addShape: function(component) {
 		this.components.push(component);
 		if (this.bounds == null) {
@@ -1024,12 +1040,16 @@ var CompoundShape = Class.create(AbstractShape, {
 		}
 	},
 	
+	/** Replaces all current shapes in the compound shape. */
 	resetShapes: function(components) {
 		this.components = components || [];
 		
 		this.recalculateBounds();
 	},
 	
+	/** Recalculates the boundary rectangle. Used if the shapes that comprise
+	 *  the compound shape are repositioned.
+	 */
 	recalculateBounds: function() {
 		this.bounds = new Geometry.Bounds(this.components.invoke('getBounds').invoke('getPoints').flatten());
 	},
@@ -1038,6 +1058,9 @@ var CompoundShape = Class.create(AbstractShape, {
 		this.components.invoke('draw', context);
 	},
 	
+	/** Returns true if any of the shapes that comprise the compound shape
+	 *  contain the point.
+	 */
 	contains: function(point) {
 		return
 			this.bounds.contains(point) &&
