@@ -474,7 +474,7 @@ ChartLine.addMethods({
 			endPoint: Geomentry.translatedPoint(this.endPoint, 10, 10),
 			arrowheadAtEnd: this.arrowheadAtEnd,
 			config: {
-				color: this.config.color,
+				color: this.config.color
           	}
 		});      
     },

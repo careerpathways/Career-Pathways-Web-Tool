@@ -32,6 +32,10 @@ Charts = {
 	Charts.canvas.setAttribute('width', Charts.element.offsetWidth);
 	Charts.canvas.setAttribute('height', Charts.element.offsetHeight);
 	
+	// this makes firefox happy (for printing)
+	Charts.canvas.style.width = (Charts.element.offsetWidth) + 'px';
+	Charts.canvas.style.height = (Charts.element.offsetHeight) + 'px';
+	
 	if (!Charts.canvas.getContext) {
 		Charts.canvas.id = Charts.element.id + '_canvas';
 		Charts.element.appendChild(Charts.canvas);
