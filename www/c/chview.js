@@ -229,7 +229,7 @@ Charts = {
 				var rect;
 				if (!Charts.activeControl || Charts.activeControl == p) {
 					context.fillStyle = p.color ? p.color : SELECTED_COLOR;
-					rect = [p.x - CONTROL_POINT_RADIUS, p.y - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
+					rect = [Math.floor(p.x) - CONTROL_POINT_RADIUS, Math.floor(p.y) - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
 					context.fillRect.apply(context, rect);
 				}
 			});
@@ -642,8 +642,6 @@ var Connection = Class.create(Component, {
     			var midPoint = {x: startPoint.x, y: endPoint.y};
     		}
     	}
-    	
-		this.color = '#' + this.source.config.color;
 		
 		var points;
 		
@@ -671,6 +669,7 @@ var Connection = Class.create(Component, {
     	}
     	
     	this.shape.setPoints(points);
+    	
     	this.shape.setStyle('lineWidth', 5 * Charts.textSizeMultiplier);
     	
 		var previousBounds = this.bounds;

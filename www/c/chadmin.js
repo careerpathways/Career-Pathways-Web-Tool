@@ -242,7 +242,7 @@ document.observe('chart:drawn', function(e) {
 });
 
 Object.extend(Charts, {
-	getID: function(config, object, oncomplete) {
+	getID: function(object, config, oncomplete) {
 		chUtil.ajax({
 			id: this.id,
 			a: 'new',
@@ -284,8 +284,11 @@ Object.extend(Charts, {
 			objectdata = Object.clone(data);
 			objectdata.config = Object.clone(objectdata.config);
 			var widget = new widgetClass(objectdata);
-			Charts.registerComponent(widget);
-			Charts.redraw();
+			objectdata.type = widget.getType();
+			Charts.getID(widget, objectdata, function() {
+				Charts.registerComponent(widget);
+				Charts.redraw();
+			});
 		});
 		Charts.toolbar.appendChild(button);
 	},
@@ -586,9 +589,6 @@ ChartBox.addMethods({
     	
         //second click means we are setting the connection destination               
         var connection = this.connectFrom(Charts.waitingConnectionSource);
-        connection.reposition();
-        
-        Charts.redraw();
         
         //remove half-link-waiting indicators regardless of what connection attempt has been made
         Charts.waitingConnectionSource = null;
@@ -609,6 +609,9 @@ ChartBox.addMethods({
 			connection.id = ajax.responseText;
 			
 			Charts.registerComponent(connection);
+			
+			// TODO does this really belong here? should be in event-handling code
+			Charts.redraw();
 		}.bind(this));
 		
 		return connection;
