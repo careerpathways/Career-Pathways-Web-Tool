@@ -6,43 +6,24 @@ header("Content-type: text/javascript");
 Charts -- the full canvas for a particular drawing, on which chart items can 
 be placed
  ****************************************************************/
-Charts.getID = function(config, object, oncomplete) {
-  chUtil.ajax({id: this.id,
-                   a: 'new',
-                   content: config},
-              function(ajax) {
-                object.id = ajax.responseText;
-                if (oncomplete) {
-                	oncomplete();
-                }
-              });
-}
 
 document.observe('chart:drawn', function(e) {
 	var toolbar = document.createElement('div');
 	Charts.toolbar = toolbar;
 	toolbar.className = 'toolbar';
   
-	Charts.addToolbarButton('line', {
-		type: 'line',
-		x: 0,
-		y: 100,
-		h: 104,
-		w: 0,
-		localZindex: 10000
+	Charts.addToolbarButton('line', ChartLine, {
+		startPoint: {x: 100, y: 100},
+		endPoint: {x: 200, y: 200}
 	 });
 
-	Charts.addToolbarButton('arrow', {
-    	type: 'arrow',
-        x: 0,
-        y: 100,
-        h: 104,
-        w: 0,
-        config: {direction: 'n'}
+	Charts.addToolbarButton('arrow', ChartLine, {
+		startPoint: {x: 100, y: 100},
+		endPoint: {x: 200, y: 200},
+        arrowheadAtEnd: true
 	});
 
-	Charts.addToolbarButton('box', {
-		type: 'box',
+	Charts.addToolbarButton('box', ChartBox, {
 		x: 0,
 		y: 100,
 		h: 100,
@@ -69,15 +50,15 @@ document.observe('chart:drawn', function(e) {
 	document.observe('keydown', function(evt) {
 		var captured = true;
 		//deletion request
-		if(evt.keyCode == Event.KEY_DELETE && document.chDragging && !document.editingBox && !document.editingTitle ) {
-			document.chDragging.remove();
-			document.chDragging = null;
+		if(evt.keyCode == Event.KEY_DELETE && Charts.selectedComponent && !document.editingBox && !document.editingTitle ) {
+			Charts.selectedComponent.remove();
+			Charts.selectedComponent = null;
 		}
 		//clipboard request (cut, copy, paste, etc.) 
-		else if((evt.ctrlKey || evt.metaKey) && document.chDragging && !document.editingBox && !document.editingTitle ) {
+		else if((evt.ctrlKey || evt.metaKey) && Charts.selectedComponent && !document.editingBox && !document.editingTitle ) {
 			switch(evt.keyCode) {
 			case 67: // ctrl+c
-					document.chClipboard = document.chDragging;
+					document.chClipboard = Charts.selectedComponent;
 					break;
 				case 86: // ctrl+v
 					if( document.chClipboard ) {
@@ -85,14 +66,14 @@ document.observe('chart:drawn', function(e) {
 					}
 					break;
 				case 88: // ctrl+x
-					document.chClipboard = document.chDragging;
+					document.chClipboard = Charts.selectedComponent;
 					document.chClipboard.remove();
 					break;
 				default:
 					captured = false;										        
 			}
-		} else if( evt.keyCode == 27 && document.chDragging ) {
-			document.chDragging.mUp();
+		} else if( evt.keyCode == 27 && Charts.selectedComponent ) {
+			Charts.selectedComponent.mUp();
 		} else {
 			captured = false;
 		}
@@ -144,176 +125,290 @@ document.observe('chart:drawn', function(e) {
   Charts.fck.Height = 400;
   Charts.fck.Config["CustomConfigurationsPath"] = "/files/myfckconfig.js";
   Charts.fck.ToolbarSet = "PathwaysEditor";
+  
+	Charts.element.observe('contextmenu', function(e) {
+		var pointer = e.pointer();
+		var position = Charts.positionWithin(pointer);
+
+		var shape = Charts.getShapeContaining(position);
+		if (shape && shape.widget) {
+			Charts.contextMenuTarget = shape.widget;
+		}
+		else {
+			Charts.contextMenuTarget = null;
+		}
+		
+		if (Charts.contextMenuTarget) {
+			var menu;
+			switch (Charts.contextMenuTarget.type) {
+				case 'box':
+					menu = ChartBox.contextMenu;
+					break;
+				case 'line':
+					menu = widgetContextMenu;
+					break;
+				case 'connection':
+					menu = Connection.contextMenu;
+					break;
+			}
+			
+			if (menu) {
+				menu.cfg.setProperty('x', pointer.x);
+				menu.cfg.setProperty('y', pointer.y);
+				menu.show();
+			}
+		}
+		e.stop();
+			
+	});
+	
+	Charts.element.observe('mousedown', function(e) {
+		if (document.editingTitle || !e.isLeftClick()) {
+			return;	
+		}
+		
+		var pointer = e.pointer();
+		var position = Charts.positionWithin(pointer);
+		
+		Charts.activeControl = Charts.getControlPointContaining(position);
+		Charts.mouseDownPosition = position;
+		
+		if (Charts.activeControl) {
+			Charts.positionDeltas = Geometry.deltas(position, Charts.activeControl);
+			e.stop();
+			return;
+		}
+  		var shape = Charts.getShapeContaining(position);
+  		
+		if (!shape || (shape.widget && shape.widget != Charts.selectedComponent)) {
+			if (shape) {
+				Charts._select(shape.widget);
+				
+			}
+			else {
+				Charts._deselect();
+			}
+			
+			Charts.redraw();
+		}
+		
+		if (Charts.selectedComponent) {
+			Charts.activeControl = Charts.selectedComponent;
+			Charts.positionDeltas = Geometry.deltas(position, Charts.activeControl);
+		}
+		
+  		if (shape){
+  			e.stop();
+  		}
+	});
+
+	// TODO should only be registered when selected
+	Charts.element.observe('mousemove', function(e) {
+		// if there is an active control and the control can be moved
+		if (Charts.activeControl && Charts.activeControl.applyPosition) {
+			var pointer = e.pointer();
+			var position = Charts.positionWithin(pointer);
+			var offsetPosition = Geometry.translatedPoint(position, Charts.positionDeltas);
+			Charts.activeControl.applyPosition(offsetPosition);
+			Charts.activeControl.x = offsetPosition.x;
+			Charts.activeControl.y = offsetPosition.y;
+			Charts.redraw();
+		}
+		/*else {
+			var oldHoveredControlPoint = Charts.hoveredControlPoint;
+			Charts.hoveredControlPoint = Charts.getControlPointContaining(position);
+			if (Charts.hoveredControlPoint != oldHoveredControlPoint) {
+				Charts.redraw();
+			}
+		}*/
+	});
+	
+	Charts.element.observe('mouseup', function(e) {
+		if (Charts.activeControl) {
+			Charts.activeControl = null;
+			
+			// the selected component could have moved, so update the control points
+			if (Charts.selectedComponent) {
+					Charts.controlPoints = Charts.selectedComponent.getControlPoints();
+			}
+			
+			Charts.redraw();
+		}
+	});
 });
 
-/** Adds a button to the toolbar. The button will display the name,
- * and invoke the onclick when clicked.
- */
-Charts.addToolbarButton = function(name, data) {
-	var button = document.createElement('div');
-  	button.className = 'button';
-	button.innerHTML = name;
-  	Event.observe(button, 'click', function() {
-  		objectdata = Object.clone(data);
-  		objectdata.config = Object.clone(objectdata.config);
-  		Charts.createWidget(objectdata);
-  	});
-  	Charts.toolbar.appendChild(button);
-};
+Object.extend(Charts, {
+	getID: function(config, object, oncomplete) {
+		chUtil.ajax({
+			id: this.id,
+			a: 'new',
+			content: config
+		},
+		function(ajax) {
+			object.id = ajax.responseText;
+			if (oncomplete) {
+			oncomplete();
+		}});
+	},
+  
+	getShapeContaining: function(position) {
+		if (Charts.selectedComponent && Charts.selectedComponent.getShape().getBounds().contains(position)) {
+			return Charts.selectedComponent.getShape();
+		}
+		
+		for (var i = Charts.layers.length - 1; i >= 0; --i) {
+			var layer = Charts.layers[i];
+			if (layer) {
+				// loop over the shapes backwards to find the shape on top
+				for (var j = layer.length - 1; j >= 0; --j) {
+					if (layer[j].getBounds().contains(position)) {
+						return layer[j];
+					}
+				}
+			}
+		}
+	},
+	
+	/** Adds a button to the toolbar. The button will display the name,
+	 * and invoke the onclick when clicked.
+	 */
+	addToolbarButton: function(name, widgetClass, data) {
+		var button = document.createElement('div');
+		button.className = 'button';
+		button.innerHTML = name;
+		Event.observe(button, 'click', function() {
+			objectdata = Object.clone(data);
+			objectdata.config = Object.clone(objectdata.config);
+			var widget = new widgetClass(objectdata);
+			Charts.registerComponent(widget);
+			Charts.redraw();
+		});
+		Charts.toolbar.appendChild(button);
+	},
 
-Charts.setColor = function(evt) {
-  document.observe('mouseup', Charts.unSetColor);
-  if (!evt) evt = window.event;
-  Charts.color = evt.target ? evt.target.color : evt.srcElement.color;
-  
-  // NOTE: internet explorer needs the onselectstart observer configured below
-  if (evt.preventDefault) evt.preventDefault();
-  
-  return false;
-}
+	setColor: function(evt) {
+		document.observe('mouseup', Charts.unSetColor);
+		if (!evt) evt = window.event;
+		Charts.color = evt.target ? evt.target.color : evt.srcElement.color;
+		
+		// NOTE: internet explorer needs the onselectstart observer configured below
+		if (evt.preventDefault) evt.preventDefault();
+		return false;
+	},
+	
+	unSetColor: function() {
+		Event.stopObserving(document.body, 'mousedown', Charts.setColor);
+		Event.stopObserving(document.body, 'mouseup', Charts.unSetColor);
+		Charts.color = null;
+	},
+	
+	debug: function(txt) {
+		$('debugDiv').innerHTML = txt;
+	},
+	
+	// TODO document this
+	whichi: function() {
+		return 'edit';
+	},
+	
+	confirmDelete: function(type) {
+		return confirm('Are you sure you want to delete this ' + type + '?\n\nYou cannot undo this action.');
+	},
+
+	positionWithin: function(pointer) {
+		return Geometry.translatedPoint(pointer, -Charts.elementOffset.left, -Charts.elementOffset.top)
+	},
+	
+	getControlPointContaining: function(point) {
+		if (Charts.controlPoints) {
+			return Charts.controlPoints.find(function(controlPoint) {
+				return Geometry.abs(point, controlPoint) < CONTROL_POINT_RADIUS;
+			});
+		}
+		else {
+			return null;
+		}
+	},
+	
+	unregisterComponent: function(component) {
+		Charts.components = Charts._removeArrayElement(Charts.components, component);
+		var shape = component.getShape();
+		Charts.layers[shape.layerIndex] = Charts._removeArrayElement(Charts.layers[shape.layerIndex], shape);
+		
+		if (component.type != 'connection') {
+			Charts.widgets.set(component.id, component);
+		}
+		
+		if (Charts.selectedComponent == component) {
+			Charts._deselect();
+		}
+	},
+	
+	_deselect: function() {
+		Charts.selectedComponent = null;
+		Charts.controlPoints = null;
+	},
+	
+	_select: function(component) {
+		Charts.selectedComponent = component;
+		if (component) {
+			Charts.controlPoints = Charts.selectedComponent.getControlPoints();
+		}
+		else {
+			Charts.controlPoints = null;
+		}
+	},
+	
+	_removeArrayElement: function(array, element) {
+		var index = element.index;
+
+		var newArray = [];
+
+		for (var i = 0; i < index; ++i) {
+			newArray[i] = array[i];
+		}
+		for (var i = index, len = array.length - 1; i < len; ++i) {
+			newArray[i] = array[i + 1];
+			newArray[i].index = i;
+		}
+		
+		return newArray;
+	}
+});
 
 // prevents internet explorer from selecting text
 document.onselectstart = function() {
 	return false;
 };
 
-Charts.unSetColor = function() {
-  Event.stopObserving(document.body, 'mousedown', Charts.setColor);
-  Event.stopObserving(document.body, 'mouseup', Charts.unSetColor);
-  Charts.color = null;
-}
-
-Charts.debug = function(txt) {
-	document.getElementById('debugDiv').innerHTML = txt;
-}
-
-// TODO document this
-Charts.whichi = function() {
-	return 'edit';
-}
-
-Charts.confirmDelete = function(type) {
-	return confirm('Are you sure you want to delete this ' + type + '?\n\nYou cannot undo this action.');
-}
-
 
 
 /**************************************************************
 Chart Utilities/Items -- the actual widgets that live on the chart
 ***************************************************************/
-chLine.prototype.moveCursor = ['c'];
-chArrow.prototype.moveCursor = ['c'];
-chBox.prototype.moveCursor = ['c', 's', 'ne', 'se', 'sw', 'nw', 'n'];
-
-chLine.prototype.noCursor = ['ne', 'se', 'sw', 'nw'];
-chArrow.prototype.noCursor = ['ne', 'se', 'sw', 'nw'];
-chBox.prototype.noCursor = [];
+var SELECTED_COLOR = 'rgb(0, 0, 255)';
+var HOVERED_COLOR = 'rgb(0, 255, 0)';
+var CONTROL_POINT_RADIUS = 5;
 
 var WidgetAdmin = {
-    getElem: function() {
-      this.createElement();
-      this.elem.style.zIndex = this.getNewZindex();
-      
-      var self = this;
-      this.setupHandles();
-      Event.observe(this.elem, 'mouseup', function(evt) {self.localMouseUp(evt);});
-      this.elem.widget = this;
-      return this.setupElem(this.elem);
-    },
-    
-    setupHandle: function(handle) {
-    	if (this.entity) {
-			if(!this.noCursor.member(handle.className)) {
-				var cursor = handle.className + '-resize';
-				if (this.moveCursor.member(handle.className)) {
-					cursor = 'move';
-				}
-				handle.style.cursor = cursor;
-			}
-    	}
-    	
-    	Event.observe(handle, 'mousedown',
-			function(evt) {
-				if (evt.isLeftClick()) {
-					 evt.stop();
-					 this.mDown(evt, evt.findElement('td').className);
-				}
-		}.bindAsEventListener(this));
-    },
-    
-    localMouseUp: function(evt) {
-      if (Charts.color) this.setColor(Charts.color);
-    },
-    mDown: function(evt, handle) {
-      document.chDragging = this;
-      //this.elem.addClassName('selected');
-      if (this.entity) {
-	      var self = this;
-	      this.mMoveHandler = function(evt) {
-	                            evt.stop();
-	                            this.mMove(evt);
-	                          }.bindAsEventListener(this);
-	      this.mUpHandler = function(evt) {
-	                          evt.stop();
-	                          this.mUp(evt);
-	                        }.bindAsEventListener(this);
-	      
-	      Event.observe(document.documentElement, 'mousemove', this.mMoveHandler);
-	      Event.observe(document.documentElement, 'mouseup', this.mUpHandler);
-	      
-	      Charts.canvasOffset = Charts.canvas.cumulativeOffset();
-	      
-	      var pointer = evt.pointer();
-	
-	      this.mStart = {x: Math.floor((pointer.x - Charts.canvasOffset.left) / 10) * 10,
-	                     y: Math.floor((pointer.y - Charts.canvasOffset.top) / 10) * 10};
-	
-	      this.elemStart = {x: Math.floor(this.x / 10) * 10,
-	                        y: Math.floor((this.y) / 10) * 10,
-	                        h: Math.floor(this.h / 10) * 10,
-	                        w: Math.floor(this.w / 10) * 10};
-	
-	      this.mHandle = handle;
-	      if (this.onMouseDown) this.onMouseDown(evt);
-      }
-    },
-    mUp: function(evt) {
-      //this.elem.removeClassName('selected');
-      Event.stopObserving(document.documentElement, 'mousemove', this.mMoveHandler);
-      Event.stopObserving(document.documentElement, 'mouseup', this.mUpHandler);
-      
-      for (var m in this.mParams) 
-          if (this.mParams[m] > 0) 
-              this[m] = this.mParams[m];
-      
-      if(this.mMoveHandler && document.chDragging.id == this.id){
-           //if we were in the process of moving something, update associated links
-            this.redrawConnections();
-      }
-      this.mMoveHandler = null;
-      this.mUpHandler = null;
-      
-      if (this.onMouseUp) 
-          this.onMouseUp(evt);
-                
-    },
-    remove: function() {
+	remove: function() {
     	if (!Charts.confirmDelete(this.type)) {
     		return;
     	}
       if (this.mMoveHandler) document.stopObserving('mousemove', this.mMoveHandler);
       if (this.mUpHandler) document.stopObserving('mouseup', this.mUpHandler);
-      Charts.canvas.removeChild(this.elem);
+      
+      if (this.elem) {
+      	Charts.element.removeChild(this.elem);
+      }
       chUtil.ajax({id: this.id,
                    a: 'remove'});
-      //also remove any links associated with this widget
+                   
+      // remove all connections to and from this widget
       this.getConnections().invoke('disconnect', true);
       
-      if (this.onRemove) {
-      	this.onRemove();
-      }
-	    
-      Charts.canvas.fire('widget:removed', {widget: this});
+      Charts.unregisterComponent(this);
+      Charts.redraw();
     },
     setColor: function(color) {
       /*if(this.config.program > 0){
@@ -322,58 +417,88 @@ var WidgetAdmin = {
       if(!color){
           color = '333333';
       }
-      this.elem.className = this.elem.className.replace(this.config.color || '333333', color);
       this.config.color = color;
       chUtil.ajax({id: this.id,
                    a: 'update',
                    content: { config: {color: color}}});
                    
       //any connections should inherit the same color
-      this.getOutgoingConnections().invoke('colorElements', color);
+      this.getOutgoingConnections().invoke('setColor', color);
+      
+      this._onSetColor();
+    },
+    
+    _onSetColor: function() {
+    	this.shape.setStyle('color', '#' + this.config.color);
     }
 }
 
-chLine.addMethods(WidgetAdmin);
-chArrow.addMethods(WidgetAdmin);
-chBox.addMethods(WidgetAdmin);
+var START_COLOR = '#0f0';
+var END_COLOR = '#f00';
 
-chBox.addMethods({
-    localZindex: 1,
-    getNewZindex: function() {
-       return this.localZindex++;
+ChartLine.addMethods(WidgetAdmin);
+ChartBox.addMethods(WidgetAdmin);
+
+ChartLine.addMethods({
+  getControlPoints: function() {
+  	var startControlPoint = Object.clone(this.getStartPoint());
+  	startControlPoint.applyPosition = this.setStartPoint.bind(this);
+  	startControlPoint.color = START_COLOR;
+  	
+  	var encControlPoint = Object.clone(this.getEndPoint());
+  	encControlPoint.applyPosition = this.setEndPoint.bind(this);
+  	encControlPoint.color = END_COLOR;
+  	return [
+  		startControlPoint,
+  		encControlPoint
+	];
+  },
+  
+  setStartPoint: function(point) {
+  	this.startPoint = point;
+  	this.reposition();
+  },
+  
+  setEndPoint: function(point) {
+  	this.endPoint = point;
+  	this.reposition();
+  },
+  
+	duplicate: function() {
+		return new ChartLine({
+			startPoint: Geomentry.translatedPoint(this.startPoint, 10, 10),
+			endPoint: Geomentry.translatedPoint(this.endPoint, 10, 10),
+			arrowheadAtEnd: this.arrowheadAtEnd,
+			config: {
+				color: this.config.color,
+          	}
+		});      
     },
-    assignHeight: function() {
-       // don't set the height of text boxes
+    
+	endReshape: function() {
+		chUtil.ajax({
+			id: this.id,
+			a: 'update',
+			content: {
+				x: this.x,
+				y: this.y,
+				h: this.h,
+				w: this.w
+			}
+		});      
     },
-    setupElem: function(elem) {
-    	elem.box = this;
-      var self = this;
-      /*if(this.config.program > 0){
-          this.config.color = chColor[this.config.program % chColor.length];
-      }*/
-      if(!this.config.color){
-         this.config.color = '333333';
-      } 
-      this.elem.className = 'box' + ' box_' + this.config.color;
-      
-      this.titleElem = document.createElement('span');
-      this.titleElem.innerHTML = this.config.title;
-      this.titleElem.className = 'title';
-      this.handles['n'].innerHTML = '';
-      this.handles['n'].appendChild(this.titleElem);
-      
-      this.contentElem = document.createElement('span');
-      this.contentElem.innerHTML = this.config.content;
-      this.contentElem.className = 'content';
-      if( this.contentElem.innerHTML == "" ) 
-          this.contentElem.innerHTML = '<div style="color:#999999">[[empty]]</div>';
-      this.handles['c'].innerHTML = '';                  
-      this.handles['c'].appendChild(this.contentElem);
-           
-      return elem;
-    },    
+	
+	applyPosition: function(position) {
+		var deltas = Geometry.deltas(this, position);
+		this.startPoint = Geometry.translatedPoint(this.startPoint, deltas);;
+		this.endPoint = Geometry.translatedPoint(this.endPoint, deltas);
+		
+		this.reposition();
+	}
+});
+
+ChartBox.addMethods({  
     setProgram: function(program){
-      this.handles['s'].innerHTML = 'test';
       this.config.program = program;
       chUtil.ajax({a: 'setProgram',
                    object_id: this.id,
@@ -388,78 +513,46 @@ chBox.addMethods({
       input.value = this.config.title;
       input.style.width = (this.w - 20) + 'px';
       Event.observe(input, 'blur', function() {self.saveTitle(input);}, false);
-      this.titleElem.innerHTML = '';
-      this.titleElem.appendChild(input);
+      this.titleElement.innerHTML = '';
+      this.titleElement.appendChild(input);
       input.focus();
 	  document.editingTitle = true;
     },
     saveTitle: function(input) {
-      this.titleElem.innerHTML = input.value;
+      this.titleElement.innerHTML = input.value;
       this.config.title = input.value;
       chUtil.ajax({id: this.id,
                    a: 'update',
                    content: { config: {title: input.value}}});
       document.editingTitle = false;
+      this.reposition();
+      Charts.redraw();
     },
     changeContent: function() {
 	  if( document.editingBox ) return;
 	  Charts.showEditor(this);
 	  document.editingBox = true;
     },
-    saveContent: function(input) {
-      var self = this;
-      this.config.content = input.value;
-      chUtil.ajax({id: this.id,
-                   a: 'update',
-                   content: { config: {content: input.value}}}, 
-                  function(ajax) {
-                    self.setContent(ajax);
-                  });
-      document.editingBox = false;
-      this.contentElem.innerHTML = '<img src="' + base_url + '/images/spin-loader.gif" width="32" height="32" style="margin-left:30px;margin-top:20px;">';
-    },
+
     setContent: function(ajax) {
-      this.contentElem.innerHTML = ajax.responseText.replace(/[\r\n]+$/, '');
-      this.config.content_html = this.contentElem.innerHTML;
-      if( this.contentElem.innerHTML == "" ) this.contentElem.innerHTML = '<div style="color:#999999">[[empty]]</div>'; 
+      this.contentElement.innerHTML = ajax.responseText.replace(/[\r\n]+$/, '');
+      this.config.content_html = this.contentElement.innerHTML;
     },
-    mMove: function(evt) {
-      var params = {};
-
-      m = {x: 5 + Math.floor((Event.pointerX(evt) - Charts.canvasOffset.left) / 10) * 10,
-           y: 5 + Math.floor((Event.pointerY(evt) - Charts.canvasOffset.top) / 10) * 10};
-
-      if (this.mHandle == 'e') {
-        params.w = m.x - this.elemStart.x;
-      }
-
-      if (this.mHandle == 'w') {
-        params.x = (this.elemStart.x - this.mStart.x) + m.x;
-        params.w = (this.elemStart.x - m.x) + this.elemStart.w;
-      }
-      if (this.mHandle == 'c' || this.mHandle == 'n' || this.mHandle == 's' || this.mHandle == 'ne' || this.mHandle == 'se' || this.mHandle == 'se' || this.mHandle == 'sw') {
-        params.y = m.y - (this.mStart.y - this.elemStart.y);
-        params.x = m.x - (this.mStart.x - this.elemStart.x);
-      }
-      this.mParams = params;
-      if (this.onMouseMove) this.onMouseMove(params);
-      else {
-        if (params.x > 0) this.elem.style.left = params.x + 'px';
-        if (params.y > 0) this.elem.style.top = params.y + 'px';
-        if (params.w > 0) this.elem.style.width = params.w + 'px';
-      }
-    },
+    
     duplicate: function() {
-		 Charts.createWidget({type: this.type,
-                                                     x: parseInt(this.x)+10,
-                                                     y: parseInt(this.y)+10,
-                                                     h: this.h,
-                                                     w: this.w,
-                                                     config: {color: this.config.color,
-                                                              title: this.config.title,
-                                                              content: this.config.content,
-                                                              content_html: this.config.content_html}});
-    },
+		return new ChartBox({
+			x: parseInt(this.x)+10,
+			y: parseInt(this.y)+10,
+			h: this.h,
+			w: this.w,
+			config: {
+				color: this.config.color,
+				title: this.config.title,
+				content: this.config.content,
+				content_html: this.config.content_html
+			}
+		});
+	},
     onMouseUp: function() {
       chUtil.ajax({id: this.id,
                    a: 'update',
@@ -467,10 +560,6 @@ chBox.addMethods({
 					   y: this.y,
 					   h: this.h,
 					   w: this.w}});
-    },
-    
-    onRemove: function() {
-		Charts.removeBox(this);
     },
   
     /** Handles a connection action (click, etc.) for a box */
@@ -496,7 +585,10 @@ chBox.addMethods({
         }
     	
         //second click means we are setting the connection destination               
-        this.connectFrom(Charts.waitingConnectionSource);
+        var connection = this.connectFrom(Charts.waitingConnectionSource);
+        connection.reposition();
+        
+        Charts.redraw();
         
         //remove half-link-waiting indicators regardless of what connection attempt has been made
         Charts.waitingConnectionSource = null;
@@ -510,173 +602,55 @@ chBox.addMethods({
 			destination_id: this.id,
 			a: 'connect'
 		});
+		
+		var connection = new Connection(beginning, this, data);
+		
 		chUtil.ajax(params, function(ajax) {
-			data.id = ajax.responseText;
-			var connection = new Connection(beginning, this, data);
-			Charts.canvas.appendChild(connection.getElem());
+			connection.id = ajax.responseText;
+			
+			Charts.registerComponent(connection);
 		}.bind(this));
+		
+		return connection;
+    },
+    
+    getControlPoints: function() {
+    	var left = this.getAnchorPointPosition({side: Side.LEFT, position: 50});
+    	left.applyPosition = this.applyLeftPosition.bind(this);
+    	
+    	var right = this.getAnchorPointPosition({side: Side.RIGHT, position: 50});
+    	right.applyPosition = this.applyRightPosition.bind(this);
+    	return [
+    		left,
+    		right
+    	];
+    },
+    
+    applyRightPosition: function(position) {
+    	this.w = position.x - this.getLeft();
+    	this.reposition();
+    	
+    	position.y = this.getAnchorPointPosition({side: Side.RIGHT, position: 50}).y;
+    },
+    
+    applyLeftPosition: function(position) {
+    	this.w = this.getRight() - position.x;
+    	this.x = position.x;
+    	this.reposition();
+    	
+    	position.y = this.getAnchorPointPosition({side: Side.LEFT, position: 50}).y;
+    },
+    
+    applyPosition: function(position) {
+    	this.x = position.x;
+    	this.y = position.y;
+    	this.reposition();
+    },
+    
+    _onSetColor: function() {
+    	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
     }
 });
-
-var simpleWidgetAdminMethods = {
-    localZindex: 0,
-    getNewZindex: function() {
-       return this.localZindex;
-    },
-    mAnchor: null,
-    mNudge: {n: {x: 2,
-                 y: -2,
-                 h: 4,
-                 w: 0},
-             e: {x: -2,
-                 y: 2,
-                 h: 0,
-                 w: 4},
-             s: {x: 2,
-                 y: -2,
-                 h: 3,
-                 w: 0},
-             w: {x: -2,
-                 y: 2,
-                 h: 0,
-                 w: 4},
-             v: {x: 2,
-                 y: -2,
-                 h: 4,
-                 w: 0},
-             h: {x: -2,
-                 y: 2,
-                 h: 0,
-                 w: 4}},
-    onMouseDown: function(evt) {
-      this.elem.style.zIndex = 10000;
-      if (this.direction == 'n' || this.direction == 's' || this.direction == 'v') {
-        if (this.mHandle == 'ne' || this.mHandle == 'nw') {
-          this.mAnchor = {x: this.elemStart.x + this.elemStart.w,
-                          y: this.elemStart.y + this.elemStart.h};
-        }
-        else if (this.mHandle == 'se' || this.mHandle == 'sw') {
-          this.mAnchor = {x: this.elemStart.x,
-                          y: this.elemStart.y};
-        }
-        else this.mAnchor = null;
-      }
-      else {
-        if (this.mHandle == 'ne' || this.mHandle == 'se') {
-          this.mAnchor = {x: this.elemStart.x,
-                          y: this.elemStart.y};
-        }
-        else if (this.mHandle == 'nw' || this.mHandle == 'sw') {
-          this.mAnchor = {x: this.elemStart.x + this.elemStart.w,
-                          y: this.elemStart.y};
-        }
-        else this.mAnchor = null;
-      }
-    },
-    mMove: function(evt) {
-      var params = {};
-      m = {x: (Math.floor((Event.pointerX(evt) - Charts.canvasOffset.left) / 10) * 10) - 5,
-           y: (Math.floor((Event.pointerY(evt) - Charts.canvasOffset.top) / 10) * 10) - 5 };
-      
-      if (this.mHandle == 'c') {
-        params.y = m.y - (this.mStart.y - this.elemStart.y);
-        params.x = m.x - (this.mStart.x - this.elemStart.x);
-      }
-      else if (this.mHandle == 'n') {
-        this.setDirection('n');
-        params.y = (this.elemStart.y - this.mStart.y) + m.y + 10;
-        params.h = (this.elemStart.y - m.y) + this.elemStart.h;
-        params.w = 15;
-      }
-      else if (this.mHandle == 'w') {
-        this.setDirection('w');
-        params.x = (this.elemStart.x - this.mStart.x) + m.x + 10;
-        params.w = (this.elemStart.x - m.x) + this.elemStart.w;
-        params.h = 15;
-      }
-      else if (this.mHandle == 's') {
-        this.setDirection('s');
-        params.h = m.y - this.elemStart.y;
-        params.w = 15;
-      }
-      else if (this.mHandle == 'e') {
-        this.setDirection('e');
-        params.w = m.x - this.elemStart.x;
-        params.h = 15;
-      }
-      else if (this.mAnchor) {
-        var a = Math.atan((m.y - this.mAnchor.y) / (m.x - this.mAnchor.x));
-        if (m.x < this.mAnchor.x) a += Math.PI;
-        if (a < 0) a += Math.PI * 2;
-        params.y = this.mAnchor.y;
-        params.x = this.mAnchor.x;
-        ////console.debug(a);
-        if (a > Math.PI * 1.75 || a < Math.PI * .25) {
-          this.setDirection('e');
-          params.w = m.x - this.mAnchor.x;
-          params.h = 15;
-        }
-        else if (a > Math.PI * 1.25) {
-          this.setDirection('n');
-          params.y = m.y;
-          params.h = this.mAnchor.y - m.y;
-          params.w = 15;
-        }
-        else if (a > Math.PI * .75) {
-          this.setDirection('w');
-          params.x = m.x;
-          params.w = this.mAnchor.x - m.x;
-          params.h = 15;
-        }
-        else if (a > Math.PI * .25) {
-          this.setDirection('s');
-          params.h = m.y - this.mAnchor.y;
-          params.w = 15;
-        }
-      }
-      //console.debug('nudge:'+params.x);
-      if (params.x > 0) params.x += this.mNudge[this.direction].x;
-	  if (params.y > 0) params.y += this.mNudge[this.direction].y;
-	  if (params.h > 0) params.h += this.mNudge[this.direction].h;
-      if (params.w > 0) params.w += this.mNudge[this.direction].w;
-      
-      this.mParams = params;
-      if (this.onMouseMove) {
-        this.onMouseMove(params);
-      } else {
-        //console.debug('drag:'+params.x);
-        if (params.x > 0) this.elem.style.left = params.x + 'px';
-		if (params.y > 0) this.elem.style.top = params.y + 'px';
-		if (params.h > 0) this.elem.style.height = params.h + 'px';
-        if (params.w > 0) this.elem.style.width = params.w + 'px';
-      }
-    },
-    duplicate: function() {
-		 Charts.createWidget({type: this.type,
-                                                     x: parseInt(this.x)+10,
-                                                     y: parseInt(this.y)+10,
-                                                     h: this.h,
-                                                     w: this.w,
-                                                     config: {color: this.config.color,
-                                                              direction: this.direction}});      
-    },
-    onMouseUp: function() {
-      this.elem.style.zIndex = 0;
-      chUtil.ajax({id: this.id,
-                   a: 'update',
-                   content: {x: this.x,
-					   y: this.y,
-					   h: this.h,
-					   w: this.w,
-					   config: {direction: this.direction}}});      
-    },
-    assignHeight: function() {
-    	if (this.h > 0) this.elem.style.height = this.h + 'px';
-    }
-}
-
-chLine.addMethods(simpleWidgetAdminMethods);
-chArrow.addMethods(simpleWidgetAdminMethods);
 
 var chUtil = {};
 chUtil.ajax = function(post, callback) {
@@ -735,7 +709,7 @@ Charts.insertFCKcontent = function() {
 
 	var oe = FCKeditorAPI.GetInstance("PathwaysEditor");
 	var thexhtml = oe.GetXHTML();
-	this.mychUtil.contentElem.innerHTML = thexhtml;
+	this.mychUtil.contentElement.innerHTML = thexhtml;
 	this.mychUtil.config.content_html = thexhtml;
 	this.mychUtil.config.content = thexhtml;
 
@@ -744,30 +718,38 @@ Charts.insertFCKcontent = function() {
 			   content: {config: {content_html: thexhtml, content: thexhtml}}}
 			 );
 
+	this.mychUtil.reposition();
 	this.mychUtil = null;
 	chGreybox.close();
 	document.editingBox = false;
+	Charts.redraw();
 }
 
 Charts.waitingConnectionSource = null;
 
 Connection.addMethods({
-	/** permanently remove/disconnect this connection**/
-	disconnect: function(confirmed){
-		if (!(confirmed || Charts.confirmDelete('connection'))) {
+	remove: function() {
+		if (!Charts.confirmDelete('connection')) {
 			return;
-		}     
+		} 
+		
+		this.disconnect();
+		
+		Charts.redraw();
+	},
+	
+	/** Disconnect this connection. */
+	disconnect: function(){
 	    //remove from database
 	    chUtil.ajax({source_id: this.source.id,
 	                 destination_id: this.destination.id,
 	                 a: 'disconnect'});
-	    //remove from view
-	    this.removeElement();       
+      
 	    //remove from source and destination widgets 
 	    this.source.unregisterOutgoingConnection(this);
 	    this.destination.unregisterIncomingConnection(this);
 	    
-	    Charts.canvas.fire('connection:removed', {connection: this});
+	    Charts.unregisterComponent(this);
 	},
 	
 	/** Sets the anchor point on the source widget. */
@@ -800,7 +782,7 @@ Connection.addMethods({
 	
 	setColor: function(color) {
 		this.color = color;
-		this.redraw();
+		this.shape.setStyle('color', '#' + color);
 		this.onPropertyChange({'color': color});
 	},
 	
@@ -823,9 +805,43 @@ Connection.addMethods({
 			data[key] = properties[key];
 		}
 		chUtil.ajax(data);
-        this.redraw();
+        
+		this.reposition();
+	},
+	
+	getControlPoints: function() {
+		var startControlPoint = Object.clone(this.startPoint);
+		startControlPoint.applyPosition = this.applyAnchorPointPosition.bind(this, this.source, this.sourceAnchorPoint, this.startPoint);
+		startControlPoint.color = START_COLOR;
+		
+		if (this.numSegments != 1) {
+			var endControlPoint = Object.clone(this.endPoint);
+			endControlPoint.applyPosition = this.applyAnchorPointPosition.bind(this, this.destination, this.destinationAnchorPoint, this.endPoint);
+			endControlPoint.color = END_COLOR;
+			return [startControlPoint, endControlPoint];
+		}
+		else {
+			return [startControlPoint];
+		}
+	},
+	
+	applyAnchorPointPosition: function(control, anchorPoint, point, position) {
+		var translated = Geometry.translatedPoint(position, -control.getLeft(), -control.getTop());
+		if (Side.isHorizontal(anchorPoint.side)) {
+			anchorPoint.position = Math.max(0, Math.min(100, translated.x * 100 / control.getWidth()));
+			position.y = point.y;
+		}
+		else {
+			this.sourceAnchorPoint.position = Math.max(0, Math.min(100, translated.y * 100 / control.getHeight()));
+			position.x = point.x;
+		}
+		this.reposition();
 	}
 });
+
+Side.isHorizontal = function(side) {
+	return side == Side.TOP || side == Side.BOTTOM;
+};
 
 Connection.determineDefaultConnectionData = function(source, destination) {
 	var up = source.getTop() - destination.getBottom();
@@ -836,29 +852,29 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	switch (Math.max(up, down, left, right)) {
 		case up:
 			data = {
-				source_side: Side.NORTH,
-				destination_side: Side.SOUTH,
+				source_side: Side.TOP,
+				destination_side: Side.BOTTOM,
 				source_axis: 'y'
 			};
 			break;
 		case down:
 			data = {
-				source_side: Side.SOUTH,
-				destination_side: Side.NORTH,
+				source_side: Side.BOTTOM,
+				destination_side: Side.TOP,
 				source_axis: 'y'
 			};
 			break;
 		case right:
 			data = {
-				source_side: Side.EAST,
-				destination_side: Side.WEST,
+				source_side: Side.RIGHT,
+				destination_side: Side.LEFT,
 				source_axis: 'x'
 			};
 			break;
 		case left:
 			data = {
-				source_side: Side.WEST,
-				destination_side: Side.EAST,
+				source_side: Side.LEFT,
+				destination_side: Side.RIGHT,
 				source_axis: 'x'
 			};
 			break;
@@ -870,60 +886,13 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	data.color = source.config.color;
 	
 	return data;
-}
+};
 
-// CONTEXT MENUS
+/* CONTEXT MENUS
+******************************************************************************/
 
 var LINK_TO_LABEL ='Start Connection Here';
 var LINK_TO_HERE_LABEL = 'End Connection Here';
-
-/** Returns the box that is the target of the box context menu,
- *  or null if none.
- */
-chBox.getContextMenuTarget = function() {
-	var element = chBox.contextMenu.contextEventTarget;
-	
-	while (element && !element.box) {
-		element = element.parentNode;
-	}
-	
-	if (element.box) {
-		return element.box;
-	}
-	
-	return null;
-};
-
-/** Returns the connection that is the target of the contect menu,
- *  or null if none.
- */
-Connection.getContextMenuTarget = function() {
-	var element = Connection.contextMenu.contextEventTarget;
-	
-	while (element && !element.connection) {
-		element = element.parentNode;
-	}
-	
-	if (element.connection) {
-		return element.connection;
-	}
-	
-	return null;
-};
-
-getWidgetContextMenuTarget = function() {
-	var element = widgetContextMenu.contextEventTarget;
-	
-	while (element && !element.widget) {
-		element = element.parentNode;
-	}
-	
-	if (element.widget) {
-		return element.widget;
-	}
-	
-	return null;
-};
 
 var selectMenuItemWithOnclickObj = function(menu, value) {
 	menu.getItems().each(function(item) {
@@ -935,24 +904,22 @@ var selectMenuItemWithOnclickObj = function(menu, value) {
  *  from the box context menu.
  */
 var onEditTitleSelect = function() {
-	var box = chBox.getContextMenuTarget();
-	box.changeTitle();
+	Charts.contextMenuTarget.changeTitle();
 };
 
 /** Called when the Edit Content menu item is chosen
  *  from the box context menu.
  */
 var onEditContentSelect = function() {
-	var box = chBox.getContextMenuTarget();
-	box.changeContent();
+	Charts.contextMenuTarget.changeContent();
 };
 
 /** Called when the Link To menu item is chosen
  *  from the box context menu.
  */
 var onLinkToSelect = function() {
-	var box = chBox.getContextMenuTarget();
-	box.connect();
+	Charts.contextMenuTarget.connect();
+	Charts.redraw();
 };
 
 /** Called when a program menu item is chosen
@@ -960,121 +927,64 @@ var onLinkToSelect = function() {
  *  @param value the id of the selected program
  */
 var onProgramSelect = function(type, args, value) {
-	var box = chBox.getContextMenuTarget();
-	box.setProgram(value);
+	Charts.contextMenuTarget.setProgram(value);
+	Charts.redraw();
 };
 
 /** Called then the delete menu item is chosen
- *  from the box context menu.
+ *  from the component context menu.
  */
-var onDeleteBoxSelect = function() {
-	var box = chBox.getContextMenuTarget();
-	box.remove();
-};
-
-/** Called when the duplicate menu item is chosen
- *  from the box context menu.
- */
-var onDuplicateBoxSelect = function() {
-	var box = chBox.getContextMenuTarget();
-	box.duplicate();
+var onDeleteSelect = function() {
+	Charts.contextMenuTarget.remove();
 };
 
 /** Called when an anchor point is chosen from
  *  the connection context menu.
  */
 var onAnchorPointSelect = function(type, args, value) {
-	var connection = Connection.getContextMenuTarget();
-	
 	if (this === anchorSourceMenu) {
-		connection.anchorSource(value);
+		Charts.contextMenuTarget.anchorSource(value);
 	}
 	else {
-		connection.anchorDestination(value);
+		Charts.contextMenuTarget.anchorDestination(value);
 	}
+	Charts.redraw();
 };
 
 /** Called when a source axis is chosen from
  *  the connection context menu.
  */
 var onSourceAxisSelect = function(type, args, value) {
-	var connection = Connection.getContextMenuTarget();
-	connection.setSourceAxis(value);
+	Charts.contextMenuTarget.setSourceAxis(value);
+	Charts.redraw();
 };
 
 /** Called when a number of segments is chosen from
  *  the connection context menu.
  */
 var onNumSegmentsSelect = function(type, args, value) {
-	var connection = Connection.getContextMenuTarget();
-	
-	if (value == 0) {
-		connection.fancy = true;
-	}
-	connection.setNumSegments(value);
+	Charts.contextMenuTarget.setNumSegments(value);
+	Charts.redraw();
 };
 
 var onAutopositionSelect = function() {
-	var connection = Connection.getContextMenuTarget();
-	connection.autoposition();
+	Charts.contextMenuTarget.autoposition();
+	Charts.redraw();
 };
-
-var onFancySelect = function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	connection.fancy = connection.fancy ? false : true;
-	
-	connection.redraw();
-}
-
-var onGradientSelect = function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	connection.gradient = connection.gradient ? false : true;
-	
-	connection.redraw();
-}
 
 var onDashedSelect = function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	connection.dashed = connection.dashed ? false : true;
-	
-	connection.redraw();
+	Charts.contextMenuTarget.dashed = Charts.contextMenuTarget.dashed ? false : true;
+	Charts.redraw();
 }
-
-/** Called when delete is chosen from the connection
- *  context menu.
- */
-var onDisconnectSelect = function() {
-	var connection = Connection.getContextMenuTarget();
-	connection.disconnect();
-};
 
 var onColorSelect = function(type, args, value) {
-	if (this == boxColorMenu) {
-		var target = chBox.getContextMenuTarget();
-	}
-	if (this == connectionColorMenu) {
-		var target = Connection.getContextMenuTarget();
-	}
-	else if (this == widgetColorMenu) {
-		var target = getWidgetContextMenuTarget();
-	}
-	
-	target.setColor(value);
+	Charts.contextMenuTarget.setColor(value);
+	Charts.redraw();
 }
 
-var onDuplicateWidgetSelect = function() {
-	var widget = getWidgetContextMenuTarget();
-	
-	widget.duplicate();
-}
-
-var onDeleteWidgetSelect = function() {
-	var widget = getWidgetContextMenuTarget();
-	
-	widget.remove();
+var onDuplicateSelect = function() {
+	Charts.contextMenuTarget.duplicate();
+	Charts.redraw();
 }
 
 /* every menu item created should do nothing when clicked */
@@ -1098,7 +1008,7 @@ types.each(function(type) {
 	typeMenu.addItem({text: type.description, onclick: {fn: onProgramSelect, obj: type.id}});
 });
 typeMenu.subscribe('show', function() {
-	var box = chBox.getContextMenuTarget();
+	var box = Charts.contextMenuTarget;
 	
 	selectMenuItemWithOnclickObj(typeMenu, box.config.program);
 });
@@ -1115,16 +1025,16 @@ chColor.each(function(color) {
 var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
 
 // create the box context menu
-chBox.contextMenu = new YAHOO.widget.ContextMenu('chBox.contextMenu', {zindex: 10});
-chBox.contextMenu.addItems([[
+ChartBox.contextMenu = new YAHOO.widget.ContextMenu('ChartBox.contextMenu', {zindex: 10});
+ChartBox.contextMenu.addItems([[
 	{text: 'Edit', submenu: editBoxMenu},
 	{text: 'Color', submenu: boxColorMenu},
-	/*{text: 'Box Type', submenu: typeMenu},*/
+	{text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
-	{text: 'Duplicate', onclick: {fn: onDuplicateBoxSelect}}
+	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
 [
-	{text: 'Delete', onclick: {fn: onDeleteBoxSelect}}
+	{text: 'Delete', onclick: {fn: onDeleteSelect}}
 ]]);
 
 /** Convenience function to add menu items for both ends of connection. */
@@ -1141,7 +1051,7 @@ var addAnchorPointMenuItems = function(menu) {
 	]);
 	
 	menu.subscribe('show', function() {
-		var connection = Connection.getContextMenuTarget();
+		var connection = Charts.contextMenuTarget;
 		
 		var anchorPoint = menu == anchorSourceMenu ? connection.sourceAnchorPoint : connection.destinationAnchorPoint;
 		
@@ -1167,16 +1077,14 @@ sourceAxisMenu.addItems([
 ]);
 
 sourceAxisMenu.subscribe('show', function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	selectMenuItemWithOnclickObj(sourceAxisMenu, connection.sourceAxis);
+	selectMenuItemWithOnclickObj(sourceAxisMenu, Charts.contextMenuTarget.sourceAxis);
 });
 
 // create number of connection segments menu
 var numSegmentsMenu = new YAHOO.widget.Menu('numSegmentsMenu');
-numSegmentsMenu.addItems([/*[
-	{text: '1 (Direct Line) (requires fancy lines)', onclick: {fn: onNumSegmentsSelect, obj: 0}}
-],*/
+numSegmentsMenu.addItems([[
+	{text: '1 (Direct Line)', onclick: {fn: onNumSegmentsSelect, obj: 0}}
+],
 [
 	{text: '1 (Straight Line)', onclick: {fn: onNumSegmentsSelect, obj: 1}},
 	{text: '2', onclick: {fn: onNumSegmentsSelect, obj: 2}},
@@ -1184,9 +1092,7 @@ numSegmentsMenu.addItems([/*[
 ]]);
 
 numSegmentsMenu.subscribe('show', function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	selectMenuItemWithOnclickObj(numSegmentsMenu, connection.numSegments);
+	selectMenuItemWithOnclickObj(numSegmentsMenu, Charts.contextMenuTarget.numSegments);
 });
 
 var connectionColorMenu = new YAHOO.widget.Menu('connectionColorMenu');
@@ -1197,29 +1103,16 @@ chColor.each(function(color) {
 	});
 });
 
-var fancyMenuItem = new YAHOO.widget.MenuItem('Use Fancy Lines (experimental)', {onclick: {fn: onFancySelect}});
-var gradientMenuItem = new YAHOO.widget.MenuItem('Gradient', {onclick: {fn: onGradientSelect}});
 var dashedMenuItem = new YAHOO.widget.MenuItem('Dashed', {onclick: {fn: onDashedSelect}});
 
 var styleMenu = new YAHOO.widget.Menu('styleMenu');
-styleMenu.addItems([[
-	fancyMenuItem,
-],
+styleMenu.addItems(
 [
-	gradientMenuItem,
 	dashedMenuItem
-]]);
+]);
 
 styleMenu.subscribe('show', function() {
-	var connection = Connection.getContextMenuTarget();
-	
-	var fancy = connection.fancy ? true : false;
-	fancyMenuItem.cfg.setProperty('checked', fancy);
-	gradientMenuItem.cfg.setProperty('checked', connection.gradient ? true : false);
-	dashedMenuItem.cfg.setProperty('checked', connection.dashed ? true : false);
-	
-	gradientMenuItem.cfg.setProperty('disabled', !fancy);
-	dashedMenuItem.cfg.setProperty('disabled', !fancy);
+	dashedMenuItem.cfg.setProperty('checked', Charts.contextMenuTarget.dashed ? true : false);
 });
 
 var sourceAxisMenuItem = new YAHOO.widget.MenuItem('Orientation', {submenu: sourceAxisMenu});
@@ -1231,22 +1124,18 @@ Connection.contextMenu.addItems([[
 	{text: 'End Point', submenu: anchorDestinationMenu},
 	sourceAxisMenuItem,
 	{text: 'Segments', submenu: numSegmentsMenu},
-	{text: 'Color', submenu: connectionColorMenu}/*,
+	{text: 'Color', submenu: connectionColorMenu},
 	{text: 'Style', submenu: styleMenu},
-	{text: 'Auto Position', onclick: {fn: onAutopositionSelect}}*/
+	{text: 'Auto Position', onclick: {fn: onAutopositionSelect}}
 ],
 [
-	{text: 'Delete', onclick: {fn: onDisconnectSelect}}
+	{text: 'Delete', onclick: {fn: onDeleteSelect}}
 ]]);
 
-/*
 Connection.contextMenu.subscribe('show', function() {
-	var connection = Connection.getContextMenuTarget();
-	
 	// disable the source axis menu if using direct line
-	sourceAxisMenuItem.cfg.setProperty('disabled', connection.fancy && connection.numSegments == 0);
+	sourceAxisMenuItem.cfg.setProperty('disabled', Charts.contextMenuTarget.numSegments == 0);
 });
-*/
 
 var widgetColorMenu = new YAHOO.widget.Menu('widgetColorMenu');
 chColor.each(function(color) {
@@ -1259,77 +1148,14 @@ chColor.each(function(color) {
 var widgetContextMenu = new YAHOO.widget.ContextMenu('widgetContextMenu', {zindex: 10});
 widgetContextMenu.addItems([[
 	{text: 'Color', submenu: widgetColorMenu},
-	{text: 'Duplicate', onclick: {fn: onDuplicateWidgetSelect}}
+	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
 [
-	{text: 'Delete', onclick: {fn: onDeleteWidgetSelect}}
+	{text: 'Delete', onclick: {fn: onDeleteSelect}}
 ]]);
 
 document.observe('chart:drawn', function() {
-	chBox.contextMenu.render(Charts.canvas);
-	Connection.contextMenu.render(Charts.canvas);
-	widgetContextMenu.render(Charts.canvas);
-});
-
-// keep track of box elements to attach context menu triggers
-var boxTriggers = new Hash();
-
-var widgetTriggers = new Hash();
-
-/** Updates the box context menu to use all of the
- *  current box elements as triggers.
- */
-var updateBoxContextMenuTriggers = function() {
-	chBox.contextMenu.cfg.setProperty('trigger', boxTriggers.values());
-}
-
-var updateWidgetContextMenuTriggers = function() {
-	widgetContextMenu.cfg.setProperty('trigger', widgetTriggers.values());
-};
-
-document.observe('widget:created', function(event) {
-	var widget = event.memo.widget;
-	if (widget.type == 'box') {
-		boxTriggers.set(widget.id, widget.elem);
-		
-		updateBoxContextMenuTriggers();
-	}
-	else if (widget.entity) {
-		widgetTriggers.set(widget.id, widget.elem);
-		
-		updateWidgetContextMenuTriggers();
-	}
-});
-
-document.observe("widget:removed", function(event) {
-	var widget = event.memo.widget;
-	if (widget.type == 'box') {
-		boxTriggers.unset(widget.id);
-		
-		updateBoxContextMenuTriggers();
-	}
-});
-
-// keep track of connection elements to attach context menu triggers
-var connectionContextMenuTriggers = new Hash();
-
-/** Updates the connection context menu to use all of the
- *  current connection elements as triggers.
- */
-var updateConnectionContextMenuTriggers = function() {
-	Connection.contextMenu.cfg.setProperty('trigger', connectionContextMenuTriggers.values().flatten());
-};
-
-document.observe('connection:created', function(event) {
-	var connection = event.memo.connection;
-	connectionContextMenuTriggers.set(connection.id, connection.getElements());
-	
-	updateConnectionContextMenuTriggers();
-});
-
-document.observe('connection:removed', function(event) {
-	var connection = event.memo.connection;
-	connectionContextMenuTriggers.unset(connection.id);
-	
-	updateConnectionContextMenuTriggers();
+	ChartBox.contextMenu.render(Charts.element);
+	Connection.contextMenu.render(Charts.element);
+	widgetContextMenu.render(Charts.element);
 });

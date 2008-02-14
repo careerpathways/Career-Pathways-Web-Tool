@@ -2,340 +2,292 @@
 header("Content-type: text/javascript");
 ?>
 
-    var cssstr = "<?
-$css = <<<EOT
-.brush_%c {
-  background: url('"+base_url+"/i/%c/brush.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/brush.png',sizingMethod='image');
-  !background: none;
-}
-.line_%c td.c, .arrow_%c td.c {
-  background-color: #%c;
-}
-.line_%c.v td.n, .arrow_%c.s td.n {
-  background: url('"+base_url+"/i/%c/cap_n.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/cap_n.png',sizingMethod='image');
-  !background: none;
-}
-.line_%c.v td.s, .arrow_%c.n td.s {
-  background: url('"+base_url+"/i/%c/cap_s.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/cap_s.png',sizingMethod='image');
-  !background: none;
-}
-.line_%c.h td.e, .arrow_%c.w td.e {
-  background: url('"+base_url+"/i/%c/cap_e.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/cap_e.png',sizingMethod='image');
-  !background: none;
-}
-.line_%c.h td.w, .arrow_%c.e td.w {
-  background: url('"+base_url+"/i/%c/cap_w.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/cap_w.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.n td.ne {
-  background: url('"+base_url+"/i/%c/arrn_ne.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrn_ne.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.n td.n {
-  background: url('"+base_url+"/i/%c/arrn_n.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrn_n.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.n td.nw {
-  background: url('"+base_url+"/i/%c/arrn_nw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrn_nw.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.s td.se {
-  background: url('"+base_url+"/i/%c/arrs_se.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrs_se.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.s td.s {
-  background: url('"+base_url+"/i/%c/arrs_s.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrs_s.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.s td.sw {
-  background: url('"+base_url+"/i/%c/arrs_sw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrs_sw.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.e td.ne {
-  background: url('"+base_url+"/i/%c/arre_ne.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arre_ne.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.e td.e {
-  background: url('"+base_url+"/i/%c/arre_e.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arre_e.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.e td.se {
-  background: url('"+base_url+"/i/%c/arre_se.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arre_se.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.w td.nw {
-  background: url('"+base_url+"/i/%c/arrw_nw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrw_nw.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.w td.w {
-  background: url('"+base_url+"/i/%c/arrw_w.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrw_w.png',sizingMethod='image');
-  !background: none;
-}
-.arrow_%c.w td.sw {
-  background: url('"+base_url+"/i/%c/arrw_sw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/arrw_sw.png',sizingMethod='image');
-  !background: none;
-}
-.box_%c td.nw {
-  background: url('"+base_url+"/i/%c/tbox_nw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_nw.png',sizingMethod='crop');
-  !background: none;
-}
-.box_%c td.n {
-  background-color: #%c;
-}
-.box_%c td.ne {
-  background: url('"+base_url+"/i/%c/tbox_ne.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_ne.png',sizingMethod='crop');
-  !background: none;
-}
-.box_%c td.c {
-  background: #fff;
-}
-.box_%c td.w {
-  background: url('"+base_url+"/i/%c/tbox_w.png') repeat-y;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_w.png',sizingMethod='scale');
-  !background: none;
-}
-.box_%c td.e {
-  background: url('"+base_url+"/i/%c/tbox_e.png') right repeat-y;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_e.png',sizingMethod='scale');
-  !background: none;
-}
-.box_%c td.sw {
-  background: url('"+base_url+"/i/%c/tbox_sw.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_sw.png',sizingMethod='image');
-  !background: none;
-}
-.box_%c td.s {
-  background: url('"+base_url+"/i/%c/tbox_s.png') bottom repeat-x;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_s.png',sizingMethod='scale');
-  !background: none;
-}
-.box_%c td.se {
-  background: url('"+base_url+"/i/%c/tbox_se.png') no-repeat;
-  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/i/%c/tbox_se.png',sizingMethod='image');
-  !background: none;
-}
-EOT;
-echo preg_replace('/\n\s*/', '', $css);
-?>";
-
-    var css = '';
-    chColor.push('333333');
-    chColor.each(function(color) {
-    	css += cssstr.replace(/%c/g, color);
-    });
-    document.write('<style type="text/css">' + css + '</style>');
-
-function inspect(e) {
-  var ret = '';
-  for (var n in e) ret += n + ': ' + e[n] + "\n";
-  return ret;
-}
 Charts = {
-  boxes: new Hash(),
-  widgets: new Hash(),
-  connections: new Hash(),
   drawing_status: drawing_status,
   whichi: function() { return 'view'; },
   draw: function(canvas_container, toolbar_container) {
-    this.css = css;  
-  
     if (canvas_container) {
-    	Charts.canvas = $(canvas_container);
+    	Charts.element = $(canvas_container);
     }
     else {
-    	Charts.canvas = $(document.body);
+    	Charts.element = $(document.body);
     }
+    Charts.elementOffset = Charts.element.cumulativeOffset();
+    
     if (toolbar_container) {
     	Charts.toolbarContainer = $(toolbar_container);
     }
     
-    Charts.canvas.addClassName('yui-skin-sam');
+    Charts.textSizeMonitor = new TextSizeMonitor(Charts.element);
+    Charts.textSizeMonitor.start();
+    Charts.textSizeMultiplier = Charts.textSizeMonitor.getSize() / Charts.textSizeMonitor.getBaseSize();
+    Charts.element.observe('text:resized', function(e) {
+    	Charts.textSizeMultiplier = e.memo.currentSize / Charts.textSizeMonitor.getBaseSize()
+    	Charts.reposition();
+    	Charts.redraw();
+    });
+    
+    Charts.canvas = document.createElement('canvas');
+
+	Charts.canvas.setAttribute('width', Charts.element.offsetWidth);
+	Charts.canvas.setAttribute('height', Charts.element.offsetHeight);
+	
+	if (!Charts.canvas.getContext) {
+		Charts.canvas.id = Charts.element.id + '_canvas';
+		Charts.element.appendChild(Charts.canvas);
+		Charts.canvas = G_vmlCanvasManager.initElement(Charts.canvas);
+	}
+	else {
+		Charts.element.appendChild(Charts.canvas);
+	}
+	Charts.canvas = $(Charts.canvas);
+	
+	Charts.canvas.style.position = "absolute";
+	Charts.canvas.style.top = "0";
+	Charts.canvas.style.left = "0";
+	Charts.canvas.style.zIndex = "0";
+    
+    Charts.ctx = Charts.canvas.getContext('2d');
+    
+    Charts.element.addClassName('yui-skin-sam');
 
 	if( Charts.drawing_status == "outdated" || Charts.drawing_status == "draft" ) {
 		// the whichi method appears to be inherited differently on ie7/firefox 
 		//if( this.whichi() == 'view' ) {
-			Charts.canvas.style.backgroundImage = "url(/images/" + Charts.drawing_status + "-overlay.png)";
+			Charts.element.style.backgroundImage = "url(/images/" + Charts.drawing_status + "-overlay.png)";
 		//}
 	}
+	
+	Charts.setData({
+		titleImg: chTitleImg,
+		widgets: chData,
+		connections: connections
+	});
+  },
 
-	// add the title image
-    var title = document.createElement('div');
-	title.className = 'chTitle';
-	title.innerHTML = chTitleImg;
-    Charts.canvas.appendChild(title);
-
-	// add all the drawing elements
-    chData.each(function(elemObjData) {   
-      var elemObj = Charts.createWidget(elemObjData);      
-      if(elemObj){
-        //register component by ID within this chart
-        Charts.widgets.set(elemObj.id, elemObj);
-        
-        if (elemObj.type == 'box') {
-        	Charts.boxes.set(elemObj.id, elemObj);
-        } 
-      }              
-    });
+	setData: function(data) {
+		Charts.layers = [];
+		Charts.components = [];
+		Charts.widgets = new Hash(),
+		Charts.connections = new Hash();
+		// add the title image
+		var title = document.createElement('div');
+		title.className = 'chTitle';
+		title.innerHTML = data.titleImg;
+		Charts.element.appendChild(title);
+	
+		// add all the widgets
+		data.widgets.each(function(properties) {   
+			var component = null;
+			switch (properties['type']) {
+				case 'line':
+				component = new ChartLine(properties);
+				break;
+			case 'arrow':
+				properties.arrowheadAtEnd = true;
+				component = new ChartLine(properties);
+				break;
+			case 'box':
+				component = new ChartBox(properties);
+				break;    
+			}
+			Charts.registerComponent(component);             
+		});
+	
     //once all widgets are translated and drawn we can draw links between them (currently only boxes support this feature)
-    connections.each(function(data) {         
-   		var source = Charts.widgets.get(data.source_object_id);
-   		var destination = Charts.widgets.get(data.destination_object_id);
+    data.connections.each(function(data) {         
+   		var source = Charts.getWidget(data.source_object_id);
+   		var destination = Charts.getWidget(data.destination_object_id);
          var connection = new Connection(source, destination, data);
-         Charts.canvas.appendChild( connection.getElem() );
+         Charts.registerComponent(connection);
     });
     
-    Charts.canvas.fire('chart:drawn', {chart: Charts});
+    //Charts.reposition();
+    Charts.redraw();
+    
+    Charts.element.fire('chart:drawn', {chart: Charts});
   },
-  
-  createWidget: function(config) {
-    var object = null;
-    switch (config['type']) {
-    case 'line':
-      object = new chLine(config);
-      break;
-    case 'arrow':
-      object = new chArrow(config);
-      break;
-    case 'box':
-      object = new chBox(config);
-      break;    
+	
+	/** Registers a component with the chart.
+	 *  A registered component has it's shapes added to the chart. */
+	registerComponent: function(component) {
+		component.chart = Charts;
+
+		// TODO belongs in component
+		component.shape = component.createShape();
+		component.shape.widget = component;
+		
+		Charts.addShape(component.getShape(), component.getLayer());
+		
+		Charts.components.push(component);
+		
+		if (component.type != 'connection') {
+			Charts.widgets.set(component.id, component);
+		}
+    
+		component.reposition();
+	},
+	
+	/** Returns the widget with the specified id. */
+	getWidget: function(id) {
+		return Charts.widgets.get(id);
+	},
+	
+	/** Adds a shape to the chart. */
+	addShape: function(shape, layerIndex) {
+		layerIndex = layerIndex || 0;
+		var layer = Charts.layers[layerIndex];
+		if (!layer) {
+			layer = [];
+			Charts.layers[layerIndex] = layer;
+		}
+		shape.index = layer.length;
+		shape.layerIndex = layerIndex;
+		layer[shape.index] = shape;
+	},
+	
+	/** Moves a shape forward in the stacking order. */
+	moveShapeForward: function(shape) {
+		if (shape.index < Charts.layers[shape.layerIndex].length - 1) {
+			Charts._swapShapeOrder(shape.layerIndex, shape.index, shape.index + 1);
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	
+	/** Moves a shape backwards in the stacking order. */
+	moveShapeBackward: function(shape) {
+		if (shape.index > 0) {
+			Charts._swapShapeOrder(shape.layerIndex, shape.index, shape.index - 1);
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	
+	/* Reverses the order of two shapes. */
+	_swapShapeOrder: function(l, i, j) {
+		var shapeI = Charts.layers[l][i];
+		var shapeJ = Charts.layers[l][j];
+		
+		shapeI.index = j;
+		shapeJ.index = i;
+		
+		Charts.layers[l][i] = shapeJ;
+		Charts.layers[l][j] = shapeI;
+	},
+	
+	/* Repositions all shapes in the chart. */
+	reposition: function() {
+		Charts.components.invoke('reposition');
+		if (Charts.selectedComponent) {
+			Charts.controlPoints = Charts.selectedComponent.getControlPoints();
+		}
+	},
+	
+	/** Redraws all shapes in the chart. */
+	redraw: function() {
+		var context = Charts.ctx;
+		
+		context.clearRect(0, 0, Charts.canvas.offsetWidth, Charts.canvas.offsetHeight);
+		
+		var layer;
+		for (var i = 0, layerLen = Charts.layers.length; i < layerLen; ++i) {
+			layer = Charts.layers[i];
+			
+			if (layer) {
+				// draw the shapes
+				for (var j = 0, len = layer.length; j < len; ++j) {
+					layer[j].draw(context);
+				}
+			}
+		}
+		
+		// draw the highlight box
+		if (Charts.selectedComponent && ! Charts.activeControl) {
+			var bounds = Charts.selectedComponent.getShape().getBounds();
+			
+			context.lineWidth = 3;
+			context.strokeStyle = '#ffffff';
+			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			context.lineWidth = 2;
+			context.strokeStyle = SELECTED_COLOR;
+			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			
+		}
+		
+		// draw control points
+		if (Charts.controlPoints) {
+			Charts.controlPoints.each(function(p) {
+				var rect;
+				if (!Charts.activeControl || Charts.activeControl == p) {
+					context.fillStyle = p.color ? p.color : SELECTED_COLOR;
+					context.strokeStyle = '#ffffff';
+					context.lineWidth = 1;
+					rect = [p.x - CONTROL_POINT_RADIUS, p.y - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
+					context.fillRect.apply(context, rect);
+					context.strokeRect.apply(context, rect);
+				}
+			});
+		}
+	},
+	
+	redrawNeeded: function(bounds) {
+		this.needsRedraw = true;
+	}
+};
+
+var Component = Class.create({
+    getShape: function() {
+    	return this.shape;
+    }, 
+    
+    getLayer: function() {
+    	return 0;
     }
-    
-    Charts.canvas.appendChild(object.getElem());
-    
-    if (!config['id'] && this.getID) this.getID(config, object, function() {
-    	document.fire('widget:created', {widget: object});
-    });
-    else {
-    	document.fire('widget:created', {widget: object});
-    }
-    
-    if (object.type == 'box') {
-    	this.addBox(object);
-    }
-    
-    return object
-  },
-  
-  addBox: function(box) {
-  	this.boxes.set(box.id, box);
-  },
-  
-  removeBox: function(box) {
-  	this.boxes.unset(box.id);
-  }
-}
+});
 
 var VERTICAL = 'v';
 var HORIZONTAL = 'h';
 var DEFAULT_COLOR = '333333';
 
-var Widget = Class.create({
+var Widget = Class.create(Component, {
     type: '',
     id: 0,
     x: 0,
     y: 0,
     h: 0,
     w: 0,
-    elem: null,
-    html: '<table cellspacing="0" cellpadding="0">' + 
-            '<tr>' + 
-              '<td class="nw"></td>' + 
-              '<td class="n"></td>' + 
-              '<td class="ne"></td>' +
-            '</tr>' + 
-            '<tr>' + 
-              '<td class="w"></td>' + 
-              '<td class="c"></td>' + 
-              '<td class="e"></td>' + 
-            '</tr>' + 
-            '<tr>' + 
-              '<td class="sw"></td>' + 
-              '<td class="s"></td>' + 
-              '<td class="se"></td>' + 
-            '</tr>' + 
-          '</table>',
           
-    initialize: function(config) {
-      this.config = {color: '333333'};
-      this.entity = true;
-      for (var c in config) {
-           if( c == 'config' ) {
-			   if( !in_array(config[c].color, chColor) ) {
-				   config[c].color = '333333';
-			   }
-           }
-           this[c] = config[c];
-      }
-      this.handles = {};
-	  this.connectionIDs = [];
-	  this.connections = new Hash();
-	  this.outgoingConnections = new Hash();
-	  this.incomingConnections = new Hash();
-    },
-    
-    getElem: function() {
-      this.createElement();
-      
-      this.setupHandles();
-      
-      return this.setupElem(this.elem);
-    },
-    
-    setupHandles: function() {
-      var handles = this.elem.getElementsByTagName('td');
-      for (var h = 0; h < handles.length; h++) {
-      	var handle = handles[h];
-        this.handles[handle.className] = handle;
-        handle.innerHTML = '<img src="' + base_url + '/images/blank.gif" height="1" width="1" class="' + handle.className + '"/>';
-        
-        this.setupHandle(handle);
-      }
-    },
-    
-    setupHandle: function(handle) {
-    	
-    },
-    
-    createElement: function() {
-      var div = document.createElement('div');
-      div.innerHTML = this.html;
-      this.elem = $(div.firstChild);
-      
-      this.elem.className = this.type;
-      this.elem.style.top = this.y + 'px';
-      this.elem.style.left = this.x + 'px';
-      this.assignHeight();
-      if (this.w > 0) this.elem.style.width = this.w + 'px';
-    },
+	initialize: function(options) {
+		this.config = {color: '333333'};
+		this.entity = true;
+		Object.extend(this, options || {});
+		
+		this.type = this.getType();
+		
+		if (!chColor.include(this.config.color)) {
+			this.config.color = '333333';
+		}
+		
+		this.connectionIDs = [];
+		this.outgoingConnections = new Hash();
+		this.incomingConnections = new Hash();
+		
+		if (this.getElem) {
+			Charts.element.appendChild(this.getElem());
+		}
+		
+		if (this.setup) {
+			this.setup();
+		}
+	},
     
     setColor: function(color) {
-      if (this.elem.className.indexOf(this.color) != -1) {
-      	this.elem.className = this.elem.className.replace(this.color, color);
-      }
-      else {
-      	this.elem.addClassName('c_' + color);
-      }
-      this.color = color;                 
+      this.color = color;       
     },
 	
 	/** Returns all connections (both incoming and outgoing). */
@@ -379,14 +331,14 @@ var Widget = Class.create({
 		return this.outgoingConnections.get(destination.id) != null;
 	},
 	
-    redrawConnections: function(){ }, //do nothing by default to update one's connections
+    reposition: function() {},
     
     getWidth: function() {
     	return parseInt(this.w);
     },
     
     getHeight: function() {
-    	return this.elem.offsetHeight;
+    	return parseInt(this.h);
     },
     
     getTop: function() {
@@ -406,83 +358,160 @@ var Widget = Class.create({
     }
 });
 
-/** Mixin to allow the height of an object to be resized. */
-var HeightResizable = {
-    assignHeight: function() {
-    	if (this.h > 0) this.elem.style.height = this.h + 'px';
-    }
+Widget.toIntegerPoint = function(point) {
+	return {
+		x: parseInt(point.x),
+		y: parseInt(point.y)
+	};
 };
 
-chLine = Class.create(Widget, HeightResizable, {
-  direction: null,
-  setupElem: function(elem) {
-    if (this.h > this.w) this.setDirection(VERTICAL);
-    else this.setDirection(HORIZONTAL);
-    return elem;
-  },
+ChartLine = Class.create(Widget, {
+	getType: function() {
+		return 'line';
+	},
+	
+	setup: function() {
+		var isVertical = this.config.direction && (this.config.direction == 'v' || this.config.direction == 'n' || this.config.direction == 's');
+		if (!this.startPoint) {
+			this.startPoint = {x: this.getLeft() + (isVertical ? 7 : 0), y: this.getTop() + (isVertical ? 0 : 7)};
+		}
+		else {
+			this.startPoint = Widget.toIntegerPoint(this.startPoint);
+		}
+		if (!this.endPoint) {
+			this.endPoint = Geometry.translatedPoint(this.startPoint, isVertical ? 0 : this.getWidth(), isVertical ? this.getHeight() : 0);
+		}
+		else {
+			this.endPoint = Widget.toIntegerPoint(this.endPoint);
+		}
+	},
   
-  setDirection: function(direction) {
-    if (direction == 'n' || direction == 's' || direction == VERTICAL) direction = VERTICAL;
-    else direction = HORIZONTAL;
-    this.direction = direction;
-    this.elem.className = 'line ' + direction + ' line_' + (this.config.color ? this.config.color : DEFAULT_COLOR);
-    if (direction == VERTICAL) this.elem.style.width = '15px';
-    else this.elem.style.height = '15px';
-  }
+	getStartPoint: function() {
+		return this.startPoint;
+	},
+  
+	getEndPoint: function() {
+		return this.endPoint;
+	},
+	
+	createShape: function() {
+		return new Path(
+			[Geometry.ORIGIN, Geometry.ORIGIN],
+			{
+				color: '#' + this.config.color,
+				lineWidth: 5,
+				arrowheadAtEnd: this.arrowheadAtEnd
+			}
+		);
+	},
+  
+	reposition: function() {
+		this.shape.setPoints([
+			this.getStartPoint(),
+			this.getEndPoint()
+		]);
+		
+		var bounds = this.shape.getBounds();
+		this.x = bounds.x;
+		this.y = bounds.y;
+	}
 });
 
-chLine.THICKNESS = 3;
-
-/***
-  basic arrow functions
-**/
-chArrow = Class.create(Widget, HeightResizable, {
-  direction: null,
-  setupElem: function(elem) {
-    this.setDirection(this.config.direction);
-    return elem;
-  },
-  
-  setDirection: function(direction) {
-    this.direction = direction;
-    this.elem.className = 'arrow ' + direction + ' arrow_' + (this.config.color ? this.config.color : DEFAULT_COLOR);
-    if (direction == 'n' || direction == 's') this.elem.style.width = '15px';
-    else this.elem.style.height = '15px';
-  }
-});
+ChartLine.THICKNESS = 3;
 
 var Side = {
-	NORTH: 'n',
-	SOUTH: 's',
-	EAST: 'e',
-	WEST: 'w'
+	TOP: 'n',
+	BOTTOM: 's',
+	RIGHT: 'e',
+	LEFT: 'w'
 };
 
 var AnchorPoint = {
-	TOP_LEFT: {side: Side.NORTH, position: 0},
-	TOP_CENTER: {side: Side.NORTH, position: 50},
-	TOP_RIGHT: {side: Side.NORTH, position: 100},
-	MIDDLE_LEFT: {side: Side.WEST, position: 50},
-	MIDDLE_RIGHT: {side: Side.EAST, position: 50},
-	BOTTOM_LEFT: {side: Side.SOUTH, position: 0},
-	BOTTOM_CENTER: {side: Side.SOUTH, position: 50},
-	BOTTOM_RIGHT: {side: Side.SOUTH, position: 100}
+	TOP_LEFT: {side: Side.TOP, position: 0},
+	TOP_CENTER: {side: Side.TOP, position: 50},
+	TOP_RIGHT: {side: Side.TOP, position: 100},
+	MIDDLE_LEFT: {side: Side.LEFT, position: 50},
+	MIDDLE_RIGHT: {side: Side.RIGHT, position: 50},
+	BOTTOM_LEFT: {side: Side.BOTTOM, position: 0},
+	BOTTOM_CENTER: {side: Side.BOTTOM, position: 50},
+	BOTTOM_RIGHT: {side: Side.BOTTOM, position: 100}
 };
 
 /***
  basic box functions
 ***/
-chBox = Class.create(Widget, {
-  setupElem: function(elem) {
-    this.elem.className = 'box ' + (this.config.color ? ' box_' + this.config.color : ' box_333333');    
-    this.handles['n'].innerHTML = this.config.title;
-    this.handles['c'].innerHTML = this.config.content_html;
-    return elem;
-  },
+ChartBox = Class.create(Widget, {
+	getType: function() {
+		return 'box';
+	},
+	
+    elem: null,
+    html: '<table cellspacing="0" cellpadding="0">' + 
+            '<tr>' + 
+              '<td class="nw"></td>' + 
+              '<td class="n"></td>' + 
+              '<td class="ne"></td>' +
+            '</tr>' + 
+            '<tr>' + 
+              '<td class="w"></td>' + 
+              '<td class="c"></td>' + 
+              '<td class="e"></td>' + 
+            '</tr>' + 
+            '<tr>' + 
+              '<td class="sw"></td>' + 
+              '<td class="s"></td>' + 
+              '<td class="se"></td>' + 
+            '</tr>' + 
+          '</table>',
     
-    /** Removes all connections and adds them again. */
-    redrawConnections: function() {
-        this.getConnections().invoke('redraw');
+	getElem: function() {
+		var div = document.createElement('div');
+		div.innerHTML = this.html;
+		this.elem = $(div.firstChild);
+		
+		this.elem.className = this.type;
+		if (this.w > 0) this.elem.style.width = this.w + 'px';
+
+		this.titleElement = this.elem.getElementsByClassName('n')[0];
+	    this.contentElement = this.elem.getElementsByClassName('c')[0];
+	    
+	    this.titleElement.innerHTML = this.config.title;
+	    this.contentElement.innerHTML = this.config.content_html;
+		
+		return this.elem;
+    },
+  
+  createShape: function() {
+  	this.borderThickness = 5;
+  	this.innerRectangle = new Rectangle(
+  		{x: 0, y: 0}, 0, 0,
+  		{
+  			fillColor: '#ffffff',
+  			fill: true,
+  			bottomLeftRadius: this.borderThickness,
+  			bottomRightRadius: this.borderThickness
+  		}
+  	);
+  	this.outerRectangle =  new Rectangle(
+  		{x: 0, y: 0}, 0, 0,
+  		{
+  			fillColor: '#' + this.config.color,
+  			strokeColor: '#F00000',
+  			fill: true,
+  			strokeWidth: 2,
+  			radius: this.borderThickness * 2
+  		}
+  	);
+  	
+  	return new CompoundShape([this.outerRectangle, this.innerRectangle]);
+  },
+	
+	getLayer: function() {
+		return 1;
+	},
+	
+    getHeight: function() {
+    	return this.elem.offsetHeight;
     },
     
     /** Returns the position of the anchor point. */
@@ -490,27 +519,27 @@ chBox = Class.create(Widget, {
     	var result;
     	
     	switch (anchorPoint.side) {
-    		case Side.NORTH:
+    		case Side.TOP:
     			result = {y: this.getTop()};
     			break;
-			case Side.SOUTH:
+			case Side.BOTTOM:
 				result = {y: this.getBottom()};
 				break;
-			case Side.WEST:
+			case Side.LEFT:
 				result = {x: this.getLeft()};
 				break;
-			case Side.EAST:
+			case Side.RIGHT:
 				result = {x: this.getRight()};
 				break;
     	}
     	
     	switch (anchorPoint.side) {
-    		case Side.NORTH:
-    		case Side.SOUTH:
+    		case Side.TOP:
+    		case Side.BOTTOM:
     			result.x = this.getLeft() + this.getWidth() * anchorPoint.position / 100;
     			break;
-			case Side.WEST:
-			case Side.EAST:
+			case Side.LEFT:
+			case Side.RIGHT:
 				result.y = this.getTop() + this.getHeight() * anchorPoint.position / 100;
 				break;
     	}
@@ -518,26 +547,217 @@ chBox = Class.create(Widget, {
     	return result;
     },
     
-    assignHeight: function() {
-          // don't set the height of boxes!
+    reposition: function() {
+    	var pos = {
+    		x: this.getLeft() * this.chart.textSizeMultiplier,
+    		y: this.getTop() * this.chart.textSizeMultiplier
+    	};
+    	
+    	this.elem.style.top = pos.y + 'px';
+    	this.elem.style.left = pos.x + 'px';
+    	this.elem.style.width = this.w + 'px';
+    	
+    	var thickness = this.borderThickness * this.chart.textSizeMultiplier;
+    	this.outerRectangle.reposition(pos, this.getWidth() * this.chart.textSizeMultiplier, this.getHeight());
+    	var titleHeight = this.titleElement.offsetHeight;
+    	this.innerRectangle.reposition(
+    		Geometry.translatedPoint(pos, thickness, titleHeight),
+    		this.getWidth() * this.chart.textSizeMultiplier - thickness * 2,
+    		this.getHeight() - thickness - titleHeight
+    	);
+    	
+    	this.innerRectangle.setStyles({
+    		bottomLeftRadius: this.borderThickness * this.chart.textSizeMultiplier,
+  			bottomRightRadius: this.borderThickness * this.chart.textSizeMultiplier
+    	});
+    	
+    	this.outerRectangle.setStyle('radius', thickness * 2);
+    	
+    	this.shape.recalculateBounds();
+    	
+    	this.getConnections().invoke('reposition');
     }
 });
 
+/**
+  Connection -- a linking between two chart widgets, which can be a 
+  composite of different view components
+  {generic chUtil} source
+  {generic chUtil} destination  
+*/
+var Connection = Class.create(Component, {
+	sourceAnchorPoint: AnchorPoint.TOP_LEFT,
+	destinationAnchorPoint: AnchorPoint.TOP_LEFT,
+	numSegments: 3,
+	sourceAxis: 'x',
+	
+	getType: function() {
+		return 'connection';
+	},
+	
+	initialize: function(source, destination, data) {
+		this.data = data;
+		this.source = source;
+		this.destination = destination;
+		this.color = this.source.config.color;
+		
+		this.chart = Charts;
+		
+		if (data) {
+			this.id = data.id;
+			this.sourceAnchorPoint = {side: data.source_side, position: data.source_position};
+			this.destinationAnchorPoint = {side: data.destination_side, position: data.destination_position};
+			this.numSegments = parseInt(data.num_segments);
+			this.sourceAxis = data.source_axis;
+			this.color = data.color;
+		}
+		
+		//connections must be registered with thier respective boxes
+		this.source.registerOutgoingConnection(this);
+		this.destination.registerIncomingConnection(this);
+		
+		this.type = 'connection';
+	},
+	
+	createShape: function() {
+		return new Path([Geometry.ORIGIN, Geometry.ORIGIN], {arrowheadAtEnd: true, dashed: this.dashed, color: '#' + this.color});
+	},
+	
+	/** set the visual represenation of this element to a specific color **/
+	colorElements: function(color){
+	   this.subWidgets.invoke('setColor', color);
+	},
+	
+	reposition: function() {
+		var startPoint = Geometry.scaledPoint(this.source.getAnchorPointPosition(this.sourceAnchorPoint), Charts.textSizeMultiplier);
+    	var endPoint = Geometry.scaledPoint(this.destination.getAnchorPointPosition(this.destinationAnchorPoint), Charts.textSizeMultiplier);
+    	var midPoint;
+    	
+    	if (this.numSegments < 3 && this.numSegments > 0) {
+    		if (this.sourceAxis == 'x') {
+    			midPoint = {x: endPoint.x, y: startPoint.y};
+    		}
+    		else {
+    			var midPoint = {x: startPoint.x, y: endPoint.y};
+    		}
+    	}
+    	
+		this.color = '#' + this.source.config.color;
+		
+		var points;
+		
+		if (this.numSegments == 0) {
+			points = [startPoint, endPoint];
+		}
+    	else if (this.numSegments == 1) {
+    		points = [startPoint, midPoint];
+    	}
+    	else {
+		    if (this.numSegments == 2) {
+		    	points = [startPoint, midPoint, endPoint];
+		    }
+		    else if (this.numSegments == 3) {
+			    if (this.sourceAxis == 'x') {
+				    var jointPoint1 = {x: (startPoint.x + endPoint.x) / 2, y: startPoint.y};
+				    var jointPoint2 = {x: jointPoint1.x, y: endPoint.y};
+			    }
+			    else {
+			    	var jointPoint1 = {x: startPoint.x, y: (startPoint.y + endPoint.y) / 2};
+			    	var jointPoint2 = {x: endPoint.x, y: jointPoint1.y};
+			    }
+				points = [startPoint, jointPoint1, jointPoint2, endPoint];
+		    }
+    	}
+    	
+    	this.shape.setPoints(points);
+    	this.shape.setStyle('lineWidth', 5 * Charts.textSizeMultiplier);
+    	
+		var previousBounds = this.bounds;
+		
+		this.bounds = this.shape.getBounds();
+		
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
+		
+		this.chart.redrawNeeded(previousBounds);
+	}
+});
+
+/* MATH
+******************************************************************************/
+Object.extend(Math, {
+	minArray: function(array) {
+		return Math.min.apply(Math, array);
+	},
+	
+	maxArray: function(array) {
+		return Math.max.apply(Math, array);
+	}
+});
+
+
+/* GEOMETRY
+******************************************************************************/
 var Geometry = {
+	ORIGIN: {x: 0, y: 0},
+	
 	bounds: function(a, b) {
-		return new Geometry.Bounds(a, b);
+		var points = $A(arguments);
+		return new Geometry.Bounds(points);
 	},
 	
 	Bounds: Class.create({
-		initialize: function(a, b) {
-			this.left = Math.min(a.x, b.x);
-     		this.top = Math.min(a.y, b.y);
-     		this.right = Math.max(a.x, b.x);
-     		this.bottom = Math.max(a.y, b.y);
+		initialize: function(points, fudge) {
+			this.fudge = fudge || 0; 
+			var xCoords = points.pluck('x');
+			var yCoords = points.pluck('y');
+			
+			this.left = this.x = Math.minArray(xCoords);
+     		this.top = this.y = Math.minArray(yCoords);
+     		
+     		this.topLeft = {
+     			x: this.x,
+     			y: this.y
+     		}
+     		
+     		this.right = Math.maxArray(xCoords);
+     		this.bottom = Math.maxArray(yCoords);
+     		
+     		this.bottomRight = {
+     			x: this.right,
+     			y: this.bottom
+     		}
+     		
+     		this.width = this.right - this.left;
+     		this.height = this.bottom - this.top;
 		},
 		
 		contains: function(point) {
-			return point.x >= this.left && point.x <= this.right && point.y >= this.top && point.y <= this.bottom;
+			if (this.fudge <= 0) {
+				return Geometry.gte(point, this.topLeft) && Geometry.lte(point, this.bottomRight);
+			}
+			else {
+				return Geometry.gte(point, Geometry.translatedPoint(this.topLeft, -this.fudge, -this.fudge)) && Geometry.lte(point, Geometry.translatedPoint(this.bottomRight, this.fudge, this.fudge));
+			}
+		},
+		
+		/* Returns a new bounds the includes the current bounds and the parameter. */
+		compound: function(that) {
+			return new Geometry.Bounds([
+				this.topLeft,
+				that.topLeft,
+				this.bottomRight,
+				that.bottomRight
+			]);
+		},
+		
+		/* Returns a new bounds that include the current points and the new points. */
+		expanded: function(points) {
+			return new Geometry.Bounds(points).compound(this);
+		},
+		
+		getPoints: function() {
+			return [this.topLeft, this.bottomRight];
 		}
 	}),
 	
@@ -552,81 +772,191 @@ var Geometry = {
 		return Math.sqrt(delta.x * delta.x + delta.y * delta.y);
 	},
 	
-	translatedPoint: function(point, x, y) {
-		return {
-			x: point.x + x,
-			y: point.y + y
-		}
-	}
-};
-
-var ARROW_LENGTH = 8;
-var ARROW_THICKNESS = 18;
-
-var Line = Class.create({
-	initialize: function(start, end, style) {
-		this.start = start;
-		this.end = end;
-		this.style = style;
-		
-		this.delta = Geometry.deltas(start, end);
-		
-		this.bounds = Geometry.bounds(start, end);
-		
-		this.length = Geometry.length(this.delta);
-		
-		this.theta = Math.atan2(this.delta.y, this.delta.x);
+	abs: function(a, b) {
+		return Math.abs(Geometry.length(Geometry.deltas(a, b)));
 	},
 	
-	draw: function(context) {
-		var start = this.start;
-		var end = this.end;
-		var isArrow = this.style.drawArrow;
-		
-		var length = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-		
-		context.save();
-		context.translate(start.x, start.y);
-		context.rotate(this.theta);
-		context.translate(-start.x, -start.y);
-		
-		context.strokeStyle = this.ctx.fillStyle = this.style.color;
-		
-		context.beginPath();
-		context.moveTo(start.x, start.y);
-		
-		if (this.style.dashed) {
-			var penDown = true;
-			for (var i = 0; i < length - (isArrow ? ARROW_LENGTH : 10); i += 10) {
-				if (penDown) {
-					context.lineTo(start.x + i + 10, start.y);
-				}
-				else {
-					context.moveTo(start.x + i + 10, start.y);
-				}
-				
-				penDown = !penDown;
-			}
-			if (penDown) {
-				context.lineTo(start.x + length - (isArrow ? ARROW_LENGTH : 10), start.y);
+	translatedPoint: function(point) {
+		if (arguments.length == 3) {
+			return {
+				x: point.x + arguments[1],
+				y: point.y + arguments[2]
 			}
 		}
 		else {
-			context.lineTo(start.x + length - (isArrow ? ARROW_LENGTH : 0), start.y);
+			return {
+				x: point.x + arguments[1].x,
+				y: point.y + arguments[1].y
+			}
+		}
+	},
+	
+	scaledPoint: function(point, factor) {
+		return {
+			x: point.x * factor,
+			y: point.y * factor
+		};
+	},
+	
+	/** Returns whether the first argument is positioned the same or to the
+	 *  bottom right of the second argument.
+	 */
+	gte: function(lhs, rhs) {
+		return lhs.x >= rhs.x && lhs.y >= rhs.y;
+	},
+	
+	/** Returns whether the first argument is positioned the same or to the
+	 *  top left of the second argument.
+	 */
+	lte: function(lhs, rhs) {
+		return lhs.x <= rhs.x && lhs.y <= rhs.y;
+	}
+};
+
+var ARROW_LENGTH_MULTIPLIER = 1.5;
+var ARROW_THICKNESS_MULTIPLIER = 3.5;
+
+/* ABSTRACT SHAPE
+******************************************************************************/
+var AbstractShape = Class.create({
+	getBounds: function() {
+		return this.bounds;
+	},
+	
+	setStyle: function(style) {
+		if (arguments.length == 2) {
+			var previousValue = this.style[arguments[0]];
+			this.style[arguments[0]] = arguments[1];
+			return previousValue;
+		}
+		else {
+			this.style = style;
 		}
 		
-		context.stroke();
+		this.onStyleChange(this.style);
+	},
+	
+	setStyles: function(styles) {
+		$H(styles).each(function(entry) {
+			this.style[entry.key] = entry.value;
+		}.bind(this));
 		
-		if (isArrow) {
-			context.beginPath();
-			context.moveTo(start.x + length - ARROW_LENGTH, start.y - ARROW_THICKNESS / 2);
-			context.lineTo(start.x + length, start.y);
-    		context.lineTo(start.x + length - ARROW_LENGTH, start.y + ARROW_THICKNESS / 2);
-    		context.fill();
+		this.onStyleChange(this.style);
+	},
+	
+	onStyleChange: function() {}
+});
+
+/* PATH
+******************************************************************************/
+var Path = Class.create(AbstractShape, {
+	initialize: function(points, style) {
+		this.setPoints(points);
+		this.style = style;
+	},
+	
+	setPoints: function(points) {
+		this.points = points;
+		
+		this.refreshPoints();
+	},
+	
+	refreshPoints: function() {
+		var points = this.points;
+		if (points.length > 0) {
+			var previousPoint = points[0];
+			
+			var point;
+			
+			for (var i = 1, len = points.length; i < len; ++i) {
+				point = points[i];
+				point.delta = Geometry.deltas(previousPoint, point);
+				point.length = Geometry.length(point.delta);
+				point.theta = Math.atan2(point.delta.y, point.delta.x);
+				
+				previousPoint = point;
+			}
 		}
 		
-		context.restore();
-	}/* UNTESTED,
+		this.bounds = new Geometry.Bounds(points, 6);
+	},
+	
+	getPoints: function() {
+		return this.points;
+	},
+	
+	draw: function(context) {
+		var arrowheadAtEnd = this.style.arrowheadAtEnd;
+		var arrowheadAtStart = this.style.arrowheadAtStart;
+		
+		context.lineWidth = this.style.lineWidth || 1;
+		context.lineCap = 'round';
+		
+		
+		context.strokeStyle = context.fillStyle = this.style.color;
+		
+		context.beginPath();
+		
+		
+		
+		var previousPoint = this.points[0];
+		var point;
+		context.moveTo(previousPoint.x, previousPoint.y);
+		
+		if (arrowheadAtEnd) {
+			var arrowLength = context.lineWidth * ARROW_LENGTH_MULTIPLIER;
+			var arrowThickness = context.lineWidth * ARROW_THICKNESS_MULTIPLIER;
+		}
+		
+		var arrowheadThisSegment;
+		
+		for (var k = 1, len = this.points.length; k < len; ++k) {
+			point = this.points[k];
+			context.save();
+			context.translate(previousPoint.x, previousPoint.y);
+			context.rotate(point.theta);
+			context.translate(-previousPoint.x, -previousPoint.y);
+			
+			// an arrowhead will be draw if defined and this is the last segment
+			arrowheadThisSegment = (k == len - 1 && arrowheadAtEnd);
+			
+			if (this.style.dashed) {
+				var penDown = true;
+				for (var i = 0; i < point.length - (arrowheadThisSegment ? arrowLength : 10); i += 10) {
+					if (penDown) {
+						context.lineTo(previousPoint.x + i + 10, previousPoint.y);
+					}
+					else {
+						context.moveTo(previousPoint.x + i + 10, previousPoint.y);
+					}
+					
+					penDown = !penDown;
+				}
+				if (penDown) {
+					context.lineTo(previousPoint.x + point.length - (arrowheadThisSegment ? arrowLength : 10), previousPoint.y);
+				}
+			}
+			else {
+				context.lineTo(previousPoint.x + point.length - (arrowheadThisSegment ? arrowLength : 0), previousPoint.y);
+			}
+			
+			if (arrowheadThisSegment) {
+				context.stroke();
+				
+				context.beginPath();
+				context.moveTo(previousPoint.x + point.length - arrowLength, previousPoint.y - arrowThickness / 2);
+				context.lineTo(previousPoint.x + point.length, previousPoint.y);
+	    		context.lineTo(previousPoint.x + point.length - arrowLength, previousPoint.y + arrowThickness / 2);
+	    		context.fill();
+			}
+			
+			previousPoint = point;
+			context.restore();
+		}
+		if (!arrowheadAtEnd) {
+			context.stroke();
+		}
+	},
 	
 	contains: function(point) {
 		if (this.bounds.contains(point)) {
@@ -669,282 +999,173 @@ var Line = Class.create({
 		if (position < 0 || position > this.length) {
 			return false;
 		}
-	}*/
+	}
 });
 
-/*
-var Path = Class.create({
-	initialize: function() {
-		this.segments = new Array();
+/* COMPOUND SHAPE
+******************************************************************************/
+var CompoundShape = Class.create(AbstractShape, {
+	initialize: function(components) {
+		this.bounds = null;
+		this.resetShapes(components);
 	},
 	
-	addSegment: function(segment) {
-		this.segments.push(segment);
+	getPoints: function() {
+		return this.components.invoke('getPoints').flatten();
+	},
+	
+	addShape: function(component) {
+		this.components.push(component);
+		if (this.bounds == null) {
+			this.bounds = component.getBounds();
+		}
+		else {
+			this.bounds = this.bounds.compound(component.getBounds());
+		}
+	},
+	
+	resetShapes: function(components) {
+		this.components = components || [];
+		
+		this.recalculateBounds();
+	},
+	
+	recalculateBounds: function() {
+		this.bounds = new Geometry.Bounds(this.components.invoke('getBounds').invoke('getPoints').flatten());
 	},
 	
 	draw: function(context) {
-		this.segments.invoke('draw', context);
+		this.components.invoke('draw', context);
 	},
 	
 	contains: function(point) {
-		return this.segments.any(function(segment) {return segment.contains(point);});
-	}
-});*/
-
-/**
-  Connection -- a linking between two chart widgets, which can be a 
-  composite of different view components
-  {generic chUtil} source
-  {generic chUtil} destination  
-****/
-var Connection = Class.create({
-	sourceAnchorPoint: AnchorPoint.TOP_LEFT,
-	destinationAnchorPoint: AnchorPoint.TOP_LEFT,
-	numSegments: 3,
-	sourceAxis: 'x',
-	
-	initialize: function(source, destination, data) {
-	   this.data = data;
-	   this.source = source;
-       this.destination = destination;
-       this.color = this.source.config.color;
-       if (data) {
-       		this.id = data.id;
-       		this.sourceAnchorPoint = {side: data.source_side, position: data.source_position};
-       		this.destinationAnchorPoint = {side: data.destination_side, position: data.destination_position};
-       		this.numSegments = parseInt(data.num_segments);
-       		this.sourceAxis = data.source_axis;
-       		this.color = data.color;
-       }
-	   this.subWidgets = [];
-	   //connections must be registered with thier respective boxes
-	   this.source.registerOutgoingConnection(this);
-	   this.destination.registerIncomingConnection(this);
-	   Charts.connections.set(this.id, this);
-	},
-	
-	/** Returns the connection's widgets' elements. */
-	getElements: function() {
-		if (this.canvas) {
-			return [this.canvas];
-		}
-		else {
-			return this.subWidgets.pluck('elem');
-		}
-	},
-	
-	/** remove the visual represenation of this element if it is currently being displayed **/
-	removeElement: function(){   
-	    if(this.elem) {       
-	       if(this.elem.parentNode)
-	          this.elem.parentNode.removeChild(this.elem);
-	       this.elem = null;
-	    }
-	    
-	    // TODO actually remove widgets
-	    this.subWidgets = [];
-	},
-	
-	/** set the visual representation of this element to a specific color **/
-	colorElements: function(color){
-	   this.subWidgets.invoke('setColor', color);
-	},
-	
-	/** generate a chart item (lines or arrows) that will be a sub-component of the representation of a connection**/
-	addConnectionComponent: function(startPoint, endPoint, isArrow){
-		if (!this.fancy) { 
-		     var xOffset = 0;
-		     var xExtend = 0;
-		     var yOffset = 0;
-		     var yExtend = 0;
-		     if(startPoint.x == endPoint.x){ //strait up and down line
-		         xOffset = -5;
-		     }
-		     else if(startPoint.y == endPoint.y){  //strait side to side line
-		         yOffset = -5;
-		         if(!isArrow)
-		           xExtend = 5;
-		     }
-		     var lineDimensions = calculateDimensionsFromEndPoints(Math.add(startPoint.x, xOffset) - xExtend/2, 
-		                                                           Math.add(startPoint.y, yOffset) - yExtend/2, 
-		                                                           Math.add(Math.add(endPoint.x, xOffset), xExtend/2), 
-		                                                           Math.add(Math.add(endPoint.y, yOffset), yExtend/2) );   
-		     var options = {x: lineDimensions['x'], 
-		                    y: lineDimensions['y'],  
-		                    h: lineDimensions['h'], 
-		                    w: lineDimensions['w'],
-		                    config: {color: this.color},
-		                    entity: false};
-		     var component = null;
-		     if(isArrow){
-		         options['type'] = 'arrow';
-		         options['config']['direction'] = lineDimensions['direction'];
-		         component = new chArrow(options);
-		     }
-		     else{
-		         options['type'] = 'line';
-		         component = new chLine(options);
-		     }
-		     
-		     //remove of one component must disconnect and remove fellow components
-		     component.remove = function() { this.disconnect() }.bind(this);
-		     component.setColor = function(color) {this.setColor(color)}.bind(this);
-		     
-		     
-		     this.elem.appendChild( component.getElem() ); 
-		     component.elem.connection = this;
-		     this.subWidgets.push( component ); 
-		     return component;
-		}
-		else {
-			var line = new Line(startPoint, endPoint, {drawArrow: isArrow, dashed: this.dashed, color: this.color});
-			line.draw(this.ctx);
-		}
-	},
-	
-	/** generate the HTML reprsentation of a link **/
-	getElem: function(){        
-	    this.elem = document.createElement('div');
-	    
-    	var startPoint = this.source.getAnchorPointPosition(this.sourceAnchorPoint);
-    	var endPoint = this.destination.getAnchorPointPosition(this.destinationAnchorPoint);
-    	var midPoint;
-    	
-    	if (this.numSegments < 3) {
-    		if (this.sourceAxis == 'x') {
-    			midPoint = {x: endPoint.x, y: startPoint.y};
-    		}
-    		else {
-    			var midPoint = {x: startPoint.x, y: endPoint.y};
-    		}
-    	}
-    	
-    	if (this.fancy) {
-    		var padding = 10;
-    		
-    		var deltaX = endPoint.x - startPoint.x;
-    		var width = Math.abs(deltaX);
-    		
-    		var deltaY = endPoint.y - startPoint.y;
-    		var height = Math.abs(deltaY);
-    		
-    		var length = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    		
-    		var left = Math.min(startPoint.x, endPoint.x);
-    		var top = Math.min(startPoint.y, endPoint.y);
-    		
-    		var startX = startPoint.x - left;
-    		var startY = startPoint.y - top;
-    		var endX = startX + length;
-    		var endY = startY;
-    		
-    		this.canvas = document.createElement('canvas');
-    		
-    		this.canvas.setAttribute('width', width + padding * 2);
-    		this.canvas.setAttribute('height', height + padding * 2);
-    		
-    		if (!this.canvas.getContext) {
-    			this.canvas.id = 'canvas' + this.id;
-    			this.elem.appendChild(this.canvas);
-    			this.canvas = G_vmlCanvasManager.initElement(this.canvas);
-    		}
-    		else {
-    			this.elem.appendChild(this.canvas);
-    		}
-    		
-    		this.canvas.className = 'connection';
-    		this.canvas.connection = this;
-    		
-    		this.canvas.style.left = (left - padding) + 'px';
-    		this.canvas.style.top = (top - padding) + 'px';
-    		
-    		this.ctx = this.canvas.getContext('2d');
-    		
-    		if (this.gradient) {
-    			this.color = this.ctx.createLinearGradient(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-	    		this.color.addColorStop(0, '#' + this.source.config.color);
-	    		this.color.addColorStop(1, '#' + this.destination.config.color);
-    		}
-    		else {
-    			this.color = '#' + this.source.config.color;
-    		}
-    		
-    		this.ctx.lineWidth = 5;
-    		this.ctx.lineCap = 'round';
-    		
-    		this.ctx.translate(padding - left, padding - top);
-    	}
-    	else {
-			this.canvas = null;
-			if (this.numSegments == 0) {
-				this.numSegments = 1;
-			}
-    	}
-		
-		if (this.numSegments == 0) {
-			this.addConnectionComponent(startPoint, endPoint, true);
-		}
-    	else if (this.numSegments == 1) {
-    		this.addConnectionComponent(startPoint, midPoint, true);
-    	}
-    	else {
-		    if (this.numSegments == 2) {
-		    	this.addConnectionComponent(startPoint, midPoint, false);
-		    	this.addConnectionComponent(midPoint, endPoint, true);
-		    }
-		    else if (this.numSegments == 3) {
-			    if (this.sourceAxis == 'x') {
-				    var jointPoint1 = {x: (startPoint.x + endPoint.x) / 2, y: startPoint.y};
-				    var jointPoint2 = {x: jointPoint1.x, y: endPoint.y};
-			    }
-			    else {
-			    	var jointPoint1 = {x: startPoint.x, y: (startPoint.y + endPoint.y) / 2};
-			    	var jointPoint2 = {x: endPoint.x, y: jointPoint1.y};
-			    }
-				
-			    this.addConnectionComponent(startPoint, jointPoint1, false);
-			    this.addConnectionComponent(jointPoint1, jointPoint2, false);
-			    this.addConnectionComponent(jointPoint2, endPoint, true);
-		    }
-    	}
-    	
-		Charts.canvas.fire('connection:created', {connection: this});
-	    return this.elem;
-	},
-	
-	redraw: function() {
-		this.removeElement();
-	    Charts.canvas.appendChild(this.getElem());
+		return
+			this.bounds.contains(point) &&
+			this.components.any(function(component) {return component.contains(point);});
 	}
 });
 
-Math.add = function(a, b){
-   return parseInt(a) + parseInt(b);
-}
+/* RECTANGLE
+******************************************************************************/
+var Rectangle = Class.create(AbstractShape, {
+	initialize: function(position, width, height, style) {
+		this.reposition(position, width, height);
+		this.setStyle(style);
+	},
+	
+	reposition: function(position, width, height) {
+		this.position = position;
+		this.width = width;
+		this.height = height;
+		
+		this.bounds = Geometry.bounds(position, Geometry.translatedPoint(position, width, height));
+	},
+	
+	onStyleChange: function(style) {
+		if (style.radius) {
+			style.topLeftRadius = style.topRightRadius = style.bottomLeftRadius = style.bottomRightRadius = style.radius;
+		}
+		else {
+			style.topLeftRadius = style.topLeftRadius || 0;
+			style.topRightRadius = style.topRightRadius || 0;
+			style.bottomLeftRadius = style.bottomLeftRadius || 0;
+			style.bottomRightRadius = style.bottomRightRadius || 0;
+		}
+	},
+	
+	draw: function(context) {
+		if (this.style.strokeWidth){
+			context.lineWidth = this.style.strokeWidth;
+		}
 
-function calculateDimensionsFromEndPoints(startX, startY, endX, endY){
-     var dimensions = {
-     	x: Math.min(startX, endX),
-     	y: Math.min(startY, endY),
-     	w: Math.abs(endX - startX),
-     	h: Math.abs(endY - startY)
-     };
+		if (this.style.fillColor) {
+			context.fillStyle = this.style.fillColor;
+		}
+		if (this.style.strokeColor) {
+			context.strokeStyle = this.style.strokeColor;
+		}
+		
+		var x = this.position.x;
+		var y = this.position.y;
+		var width = this.width;
+		var height = this.height;
+		var topLeftRadius = this.style.topLeftRadius;
+		var topRightRadius = this.style.topRightRadius;
+		var bottomLeftRadius = this.style.bottomLeftRadius;
+		var bottomRightRadius = this.style.bottomRightRadius;
+		context.beginPath();
+		context.moveTo(x, y + topLeftRadius);
+		context.lineTo(x, y + height - bottomLeftRadius);
+		context.quadraticCurveTo(x, y + height, x + bottomLeftRadius, y + height);
+		context.lineTo(x + width - bottomRightRadius, y + height);
+		context.quadraticCurveTo(x + width, y + height, x + width, y + height - bottomRightRadius);
+		context.lineTo(x + width, y + topRightRadius);
+		context.quadraticCurveTo(x + width, y, x + width - topRightRadius, y);
+		context.lineTo(x + topLeftRadius, y);
+		context.quadraticCurveTo(x, y, x, y + topLeftRadius);
+		if (this.style.fill) {
+			context.fill();
+		}
+		if (this.style.stroke) {
+			context.stroke();
+		}
+		context.lineWidth = 1;
+	}
+});
 
-     if(startY == endY){
-          dimensions['direction'] = startX < endX ? 'e' : 'w'; 
-     }
-     if(startX == endX){
-          dimensions['direction'] = startY < endY ? 's' : 'n';          
-     }
-     return dimensions;
-}
+/* TEXT SIZE MONITOR
+******************************************************************************/
 
-function in_array(needle, haystack) {
-	for (var i=0; i<haystack.length; i++) {
-		if (haystack[i] == needle) {
-			return true;
+var TextSizeMonitor = Class.create({
+	initialize: function(parentElement) {
+		this.parentElement = $(parentElement);
+		
+		this.element = document.createElement('span');
+		this.element.id = 'textSizeMonitor' + TextSizeMonitor.index++;
+		this.element.innerHTML = '&nbsp;';
+		this.element.style.position = 'absolute';
+		this.element.style.left = '-10000px';
+		
+		this.parentElement.insertBefore(this.element, this.parentElement.firstChild);
+		this.currentSize = this.getSize();
+		this.baseSize = this.currentSize;
+	},
+	
+	start: function() {
+		if (!this.interval) {
+			this.interval = window.setInterval(this._check.bind(this), TextSizeMonitor.DELAY);
+		}
+	},
+	
+	stop: function() {
+		if (this.interval) {
+			window.clearInterval(this.interval);
+			this.interval = null;
+		}
+	},
+	
+	getBaseSize: function() {
+		return this.baseSize;
+	},
+	
+	getSize: function() {
+		return this.element.offsetHeight;
+	},
+	
+	_check: function() {
+		var newSize = this.getSize();
+		if (newSize !== this.currentSize) {
+			var previousSize = this.currentSize;
+			this.currentSize = newSize;
+			this.parentElement.fire('text:resized', {
+				previousSize: previousSize,
+				currentSize: newSize,
+				baseSize: this.baseSize,
+				monitor: this
+			});
 		}
 	}
-	return false;
-};
+});
 
+TextSizeMonitor.index = 1;
+TextSizeMonitor.DELAY = 500;
