@@ -8,16 +8,8 @@
   <body>
 
 	<?php
-	if( KeyInRequest('d') ) {
-	?>
-		<script type="text/javascript" src="view.js?d=<?= Request('d') ?>"></script>
-	<?php
-	} else {
 		require('chart_include.php');
 	?>
 		<script type="text/javascript">Charts.draw();</script>
-	<?php
-	}
-	?>
   </body>
 </html>

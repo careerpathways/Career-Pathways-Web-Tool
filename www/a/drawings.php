@@ -71,10 +71,6 @@ if( KeyInRequest('drawing_id') ) {
 			if( is_array($drawing) ) {
 				$DB->Query("UPDATE drawings SET published=0 WHERE parent_id=".$drawing['parent_id']);
 				$DB->Query("UPDATE drawings SET published=1, frozen=1 WHERE id=$drawing_id");
-
-				$content = array();
-				$content['rendered_html'] = $_REQUEST['rendered_html'];
-				$DB->Update('drawing_main',$content,$drawing['parent_id']);
 			}
 		}
 

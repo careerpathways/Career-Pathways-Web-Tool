@@ -37,7 +37,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th>Preview</th>
 	<td>
-		<a href="javascript:preview_drawing(<?= $drawing['id'] ?>)">Preview Published Drawing</a>
+		<a href="javascript:preview_drawing(<?= $drawing['id'] ?>)">Preview Drawing</a>
 	</td>
 </tr>
 <tr>
@@ -60,14 +60,14 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <?php } ?>
 <tr>
 	<th valign="top">Link</th>
-	<td><?php $url = "http://".$_SERVER['SERVER_NAME']."/c/view.php?id=".$drawing['id']; ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+	<td><?php $url = "http://".$_SERVER['SERVER_NAME']."/c/version/".$drawing['id']; ?>
+		<a href="<?= $url.'.html' ?>"><?= $url.'.html' ?></a>
 	</td>
 </tr>
 <tr>
 	<th valign="top">XML</th>
-	<td><?php $url .= '&format=xml' ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+	<td>
+		<a href="<?= $url.'.xml' ?>"><?= $url.'.xml' ?></a>
 		<br>
 		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
 		<br>
@@ -110,16 +110,10 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 </table>
 
 <?php
-if( $version_id != "" && $drawing['published'] == 0 && $_SESSION['school_id'] == $drawing_main['school_id'] ) {
-?>
-	<p><input type="button" name="publish" class="publish_link" onclick="getRenderedHTML()" value="Publish this version"></p>
-
-	<div id="hiddenContainer" style="display: none"></div>
-	<?php require('c/view/chart_include.php'); ?>
-	<script type="text/javascript">Charts.draw('hiddenContainer');</script>
-
-	<input type="hidden" name="rendered_html" id="rendered_html" value="">
-<?php
+if( $version_id != "" && $drawing['published'] == 0 && (IsAdmin() || $_SESSION['school_id'] == $drawing_main['school_id']) ) {
+	?>
+	<p><input type="button" name="publish" class="publish_link" onclick="publishVersion()" value="Publish this version"></p>
+	<?php
 }
 if( $drawing['published'] ) {
 	echo '<div class="publish_link_inactive" style="width:100px;text-align:center">Published</div>';
@@ -133,8 +127,7 @@ if( $drawing['published'] ) {
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript">
 
-function getRenderedHTML() {
-	getLayer('rendered_html').value = '<style type="text/css">' + Charts.css + '</style>' + getLayer('hiddenContainer').innerHTML;
+function publishVersion() {
 	getLayer('action_field').value = "publish";
 	getLayer('version_form').submit();
 }

@@ -81,7 +81,6 @@ CREATE TABLE `drawing_main` (
   `tagline` varchar(100) default NULL,
   `tagline_color_id` varchar(6) default NULL,
   `code` varchar(30) default NULL,
-  `rendered_html` text,
   `date_created` datetime default NULL,
   `last_modified` datetime default NULL,
   `created_by` int(11) default NULL,

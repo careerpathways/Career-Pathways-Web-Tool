@@ -1,0 +1,1 @@
+ALTER TABLE drawing_main DROP COLUMN rendered_html;

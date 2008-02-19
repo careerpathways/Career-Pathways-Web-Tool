@@ -20,7 +20,7 @@
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
-					echo '<td>'.$v['version_num'].($v['published']?' (Published)':'').'</td>';
+					echo '<td><a href="/a/drawings.php?action=version_info&version_id='.$v['id'].'">'.$v['version_num'].'</a>'.($v['published']?' (Published)':'').'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';

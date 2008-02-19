@@ -1,5 +1,4 @@
 <?php
-require_once "Text/Wiki.php";
 $objects = $DB->MultiQuery("SELECT * FROM objects WHERE drawing_id=".$drawing['id']);
 
 $data = array();
@@ -9,15 +8,6 @@ $connections = array();
 foreach( $objects as $obj ) {
 	$thisobj = unserialize($obj['content']);
 
-	if( array_key_exists('config',$thisobj) ) {
-		if( array_key_exists('content',$thisobj['config']) ) {
-			// add the rendered html to the object as a new array element
-
-			//$wiki =& new Text_Wiki();
-			//$xhtml = $wiki->transform($thisobj['config']['content'], 'Xhtml');
-			//$thisobj['config']['content_html'] = $xhtml;
-		}
-	}
    //get the connection list for this object
    $objConnections = $DB->MultiQuery("SELECT * FROM connections WHERE source_object_id=".$thisobj['id']);
 

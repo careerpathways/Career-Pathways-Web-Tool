@@ -2,11 +2,10 @@
 chdir("..");
 include("inc.php");
 
-$drawing_id = intval($_REQUEST['id']);
-
 if( KeyInRequest('d') ) {
 
-	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, drawing_main.name
+	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
+			drawing_main.name, school_id, published, frozen
 		FROM drawing_main, drawings
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
 		AND published=1
@@ -22,7 +21,7 @@ if( KeyInRequest('d') ) {
 
 	$drawing = $DB->SingleQuery("SELECT * FROM drawing_main,drawings
 		WHERE drawings.parent_id=drawing_main.id
-			AND drawings.id=$drawing_id");
+			AND drawings.id=".intval($_REQUEST['id']));
 
 	if( !is_array($drawing) ) {
 		header("HTTP/1.0 404 Not Found");
