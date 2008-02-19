@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.*)$ handle.php?$1 [nc]

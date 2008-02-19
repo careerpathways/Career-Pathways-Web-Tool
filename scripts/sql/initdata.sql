@@ -30,6 +30,7 @@ insert into `admin_level_module` (`module_id`,`level`) values (9,16);
 
 insert into `email_text` (`id`,`description`,`sender`,`recipient`,`subject`,`emailbody`) values ('forgot_password','This email gets sent to people when they fill out the \"Forgot Password\" link on the admin site.','##WEBSITE_EMAIL##','##EMAIL##','[Oregon CTE Pathways] Forgot Password','Click on the link below to log into your account temporarily. You will need to change your password as soon as you log in, as this link will only work once.\r\n\r\nThis email was sent because you or someone else filled out the Forgot Password form on the Oregon CT Pathways website. If you have received this email in error, please ignore it. Your current password will still be valid.\r\n\r\n##LOGIN_LINK##\r\n\r\nIf you cannot click the link above for any reason, you can also log into the site using the temporary password below.\r\n\r\nhttp://oregon.ctepathways.org\r\n##EMAIL##\r\n##PASSWORD##\r\n\r\nSincerely,\r\n\r\nAaron Parecki\r\n');
 insert into `email_text` (`id`,`description`,`sender`,`recipient`,`subject`,`emailbody`) values ('help_request','This email is sent to help@ctepathways.org when a user fills out the help form on the website.','##EMAIL##','help@ctepathways.org','[Oregon CT Pathways] ##SUBJECT##','##BODY##');
+insert into `email_text` (`id`,`description`,`sender`,`recipient`,`subject`,`emailbody`) values ( 'svn_update','This email is sent to the developers list when the dev server is updated.','svn@ctepathways.org','developers@ctepathways.org','dev server updated','##BODY##');
 
 /*Data for the table `email_variables` */
 
@@ -39,6 +40,7 @@ insert into `email_variables` (`email_id`,`variable`,`description`) values ('for
 insert into `email_variables` (`email_id`,`variable`,`description`) values ('help_request','BODY','The body of the message the user entered into the form.');
 insert into `email_variables` (`email_id`,`variable`,`description`) values ('help_request','EMAIL','The user\'s email address.');
 insert into `email_variables` (`email_id`,`variable`,`description`) values ('help_request','SUBJECT','The user-provided subject line.');
+insert into `email_variables` (`email_id`,`variable`,`description`) values ('svn_update','BODY','The body of the message');
 
 /*Data for the table `types` */
 
