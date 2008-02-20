@@ -89,7 +89,14 @@ document.observe('chart:drawn', function(e) {
     cButton.color = color;
     cButton.style.backgroundColor = '#' + color;
     cButton.title = '#' + color;
-    Event.observe(cButton, 'mousedown', Charts.setColor);
+    Event.observe(cButton, 'click', function(e) {
+		if (Charts.selectedComponent && Charts.selectedComponent.setColor) {
+			Charts.selectedComponent.setColor(color);
+			Charts.redraw();
+		}
+		e.stop();
+		return false;
+	});
     toolbar.appendChild(cButton);
   });
   
@@ -254,6 +261,35 @@ Object.extend(Charts, {
 			oncomplete();
 		}});
 	},
+	
+	//_beginRedraw: function(canvas) {},
+	
+	_finishRedraw: function(context) {
+		// draw the highlight box
+		if (Charts.selectedComponent && ! Charts.activeControl) {
+			var bounds = Charts.selectedComponent.getShape().getBounds();
+			
+			context.lineWidth = 3;
+			context.strokeStyle = '#ffffff';
+			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			context.lineWidth = 2;
+			context.strokeStyle = SELECTED_COLOR;
+			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			
+		}
+		
+		// draw control points
+		if (Charts.controlPoints) {
+			Charts.controlPoints.each(function(p) {
+				var rect;
+				if (!Charts.activeControl || Charts.activeControl == p) {
+					context.fillStyle = p.color ? p.color : SELECTED_COLOR;
+					rect = [Math.floor(p.x) - CONTROL_POINT_RADIUS, Math.floor(p.y) - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
+					context.fillRect.apply(context, rect);
+				}
+			});
+		}
+	},
   
 	getShapeContaining: function(position) {
 		if (Charts.selectedComponent && Charts.selectedComponent.getShape().getBounds().contains(position)) {
@@ -292,22 +328,6 @@ Object.extend(Charts, {
 		});
 		Charts.toolbar.appendChild(button);
 	},
-
-	setColor: function(evt) {
-		document.observe('mouseup', Charts.unSetColor);
-		if (!evt) evt = window.event;
-		Charts.color = evt.target ? evt.target.color : evt.srcElement.color;
-		
-		// NOTE: internet explorer needs the onselectstart observer configured below
-		if (evt.preventDefault) evt.preventDefault();
-		return false;
-	},
-	
-	unSetColor: function() {
-		Event.stopObserving(document.body, 'mousedown', Charts.setColor);
-		Event.stopObserving(document.body, 'mouseup', Charts.unSetColor);
-		Charts.color = null;
-	},
 	
 	debug: function(txt) {
 		$('debugDiv').innerHTML = txt;
@@ -343,7 +363,7 @@ Object.extend(Charts, {
 		Charts.layers[shape.layerIndex] = Charts._removeArrayElement(Charts.layers[shape.layerIndex], shape);
 		
 		if (component.type != 'connection') {
-			Charts.widgets.set(component.id, component);
+			Charts.widgets.unset(component.id);
 		}
 		
 		if (Charts.selectedComponent == component) {
@@ -508,6 +528,8 @@ ChartLine.addMethods({
 	}
 });
 
+ChartBox.ABSOLUTE_MINIMUM_WIDTH = 20;
+
 ChartBox.addMethods({  
     setProgram: function(program){
       this.config.program = program;
@@ -536,6 +558,7 @@ ChartBox.addMethods({
                    a: 'update',
                    content: { config: {title: input.value}}});
       document.editingTitle = false;
+      this._onContentChange();
       this.reposition();
       Charts.redraw();
     },
@@ -543,11 +566,6 @@ ChartBox.addMethods({
 	  if( document.editingBox ) return;
 	  Charts.showEditor(this);
 	  document.editingBox = true;
-    },
-
-    setContent: function(ajax) {
-      this.contentElement.innerHTML = ajax.responseText.replace(/[\r\n]+$/, '');
-      this.config.content_html = this.contentElement.innerHTML;
     },
     
     duplicate: function() {
@@ -623,30 +641,53 @@ ChartBox.addMethods({
     	
     	var right = this.getAnchorPointPosition({side: Side.RIGHT, position: 50});
     	right.applyPosition = this.applyRightPosition.bind(this);
+    	
+    	if (this.w < this.getMinimumContentWidth()) {
+    		left.color = '#ff0000';
+    		right.color = '#ff0000';
+    	}
     	return [
     		left,
     		right
     	];
     },
     
+    getMinimumContentWidth: function() {
+		this.contentElement.style.overflow = 'visible';
+		this.titleElement.style.overflow = 'visible';
+		var result = Math.max(this.titleElement.offsetWidth, this.contentElement.offsetWidth) / Charts.textSizeMultiplier + 20;
+		
+		this.contentElement.style.overflow = 'hidden';
+		this.titleElement.style.overflow = 'hidden';
+		
+		return result;
+    },
+    
     applyRightPosition: function(position) {
-    	this.w = position.x - this.getLeft();
-    	this.reposition();
-    	
-    	position.y = this.getAnchorPointPosition({side: Side.RIGHT, position: 50}).y;
+    	this.w = Math.max(position.x - this.getLeft(), ChartBox.ABSOLUTE_MINIMUM_WIDTH);
+    	this._onWidthChange(position, Side.RIGHT);
     },
     
     applyLeftPosition: function(position) {
-    	this.w = this.getRight() - position.x;
+    	this.w = Math.max(this.getRight() - position.x, ChartBox.ABSOLUTE_MINIMUM_WIDTH);
     	this.x = position.x;
+    	this._onWidthChange(position, Side.LEFT);
+    },
+    
+    _onWidthChange: function(position, side) {
+    	this.repositionElement();
+    	this._onContentChange();
     	this.reposition();
     	
-    	position.y = this.getAnchorPointPosition({side: Side.LEFT, position: 50}).y;
+    	var newPosition = this.getAnchorPointPosition({side: side, position: 50});
+    	position.x = newPosition.x;
+    	position.y = newPosition.y;
     },
     
     applyPosition: function(position) {
     	this.x = position.x;
     	this.y = position.y;
+    	this.repositionElement();
     	this.reposition();
     },
     
@@ -733,7 +774,8 @@ Charts.insertFCKcontent = function() {
 			   a: 'update',
 			   content: {config: {content_html: thexhtml, content: thexhtml}}}
 			 );
-
+	
+	this.mychUtil._onContentChange();
 	this.mychUtil.reposition();
 	this.mychUtil = null;
 	chGreybox.close();
@@ -848,7 +890,7 @@ Connection.addMethods({
 			position.y = point.y;
 		}
 		else {
-			this.sourceAnchorPoint.position = Math.max(0, Math.min(100, translated.y * 100 / control.getHeight()));
+			anchorPoint.position = Math.max(0, Math.min(100, translated.y * 100 / control.getHeight()));
 			position.x = point.x;
 		}
 		this.reposition();
@@ -997,10 +1039,10 @@ var onAutopositionSelect = function() {
 	Charts.redraw();
 };
 
-var onDashedSelect = function() {
+/*var onDashedSelect = function() {
 	Charts.contextMenuTarget.dashed = Charts.contextMenuTarget.dashed ? false : true;
 	Charts.redraw();
-}
+}*/
 
 var onColorSelect = function(type, args, value) {
 	Charts.contextMenuTarget.setColor(value);
@@ -1064,16 +1106,13 @@ ChartBox.contextMenu.addItems([[
 
 /** Convenience function to add menu items for both ends of connection. */
 var addAnchorPointMenuItems = function(menu) {
-	menu.addItems([
-		{text: 'Top left', onclick: {fn: onAnchorPointSelect, scope: menu, scope: menu, obj: AnchorPoint.TOP_LEFT}},
-		{text: 'Top center', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.TOP_CENTER}},
-		{text: 'Top right', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.TOP_RIGHT}},
-		{text: 'Middle left', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_LEFT}},
-		{text: 'Middle right', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_RIGHT}},
-		{text: 'Bottom left', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.BOTTOM_LEFT}},
-		{text: 'Bottom center', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.BOTTOM_CENTER}},
-		{text: 'Bottom right', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.BOTTOM_RIGHT}}
-	]);
+	menu.addItems([[
+		{text: 'Top', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.TOP_CENTER}},
+		{text: 'Bottom', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.BOTTOM_CENTER}}
+		],[
+		{text: 'Left', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_LEFT}},
+		{text: 'Right', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_RIGHT}},
+	]]);
 	
 	menu.subscribe('show', function() {
 		var connection = Charts.contextMenuTarget;
@@ -1128,7 +1167,7 @@ chColor.each(function(color) {
 	});
 });
 
-var dashedMenuItem = new YAHOO.widget.MenuItem('Dashed', {onclick: {fn: onDashedSelect}});
+/*var dashedMenuItem = new YAHOO.widget.MenuItem('Dashed', {onclick: {fn: onDashedSelect}});
 
 var styleMenu = new YAHOO.widget.Menu('styleMenu');
 styleMenu.addItems(
@@ -1138,7 +1177,7 @@ styleMenu.addItems(
 
 styleMenu.subscribe('show', function() {
 	dashedMenuItem.cfg.setProperty('checked', Charts.contextMenuTarget.dashed ? true : false);
-});
+});*/
 
 var sourceAxisMenuItem = new YAHOO.widget.MenuItem('Orientation', {submenu: sourceAxisMenu});
 
@@ -1150,7 +1189,7 @@ Connection.contextMenu.addItems([[
 	sourceAxisMenuItem,
 	{text: 'Segments', submenu: numSegmentsMenu},
 	{text: 'Color', submenu: connectionColorMenu},
-	{text: 'Style', submenu: styleMenu},
+	/*{text: 'Style', submenu: styleMenu},*/
 	{text: 'Auto Position', onclick: {fn: onAutopositionSelect}}
 ],
 [

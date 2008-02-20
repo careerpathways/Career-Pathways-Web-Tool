@@ -42,7 +42,7 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing('.$v['id'].')">preview</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="copy_popup.php?version_id=' . $v['id'] . '" class="publish" onclick="return showCopy(this);">copy this version</a>';
+						echo '<a href="copy_popup.php?version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

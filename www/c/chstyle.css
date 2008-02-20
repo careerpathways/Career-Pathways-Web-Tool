@@ -5,35 +5,23 @@ header("Content-type: text/css");
 .yuimenu {
 	z-index: 10; 
 }
-.box input, .box textarea {
+.ctepathwaysBox input, .ctepathwaysBox textarea {
   border: none;
 }
 
-.box {
+.ctepathwaysBox {
   position: absolute;
   font-family: verdana;
 }
 
-.box td.n, .box td.s, .box td.e, .box td.w, .box td.nw, .box td.ne, .box td.sw, .box td.se {
-  font-size: 0px;
-}
 
 .chSchoolLogo {
   float:left;
   margin-right: 20px;
 }
 
-.box li {
+.ctepathwaysBox li {
   margin: 0px;
-}
-
-/**
- * line
- */
-.line.v td.c {
-  width: 5px;
-  height: auto;
-  !height: 100%;
 }
 
 
@@ -41,40 +29,30 @@ header("Content-type: text/css");
  * box
  */
 
-.box td.c {
-  height: auto;
-}
-
-.box td.n {
-  height: 20px;
+.ctepathwaysBoxTitle {
   font-size: 10px;
   font-weight: bold;
   color: #fff;
   text-transform: uppercase;
 }
 
-.box td.w {
-  width: 10px;
-}
-
-.box td.c {
+.ctepathwaysBoxContent {
+  position: absolute;
   vertical-align: top;
+  height: auto;
   font-size: 11px;
 }
 
-.box td.e {
-  width: 10px;
+.ctepathwaysBoxTitle, .ctepathwaysBoxContent {
+	overflow: hidden;
+	cursor: default;
 }
 
-.box td.s {
-  height: 10px;
-}
-
-.box input, .box textarea {
+.ctepathwaysBox input, .ctepathwaysBox textarea {
   background-color: #ffc;
 }
 
-.box ul {
+.ctepathwaysBox ul {
 	margin-left: 0px;
 	padding-left: 15px;
 }

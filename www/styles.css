@@ -501,7 +501,7 @@ a.chart_header {
 	padding-bottom: 10px;
 }
 
-#toolbar a.publish {
+#toolbar a.toolbarButton {
 	text-decoration: none;	
 	display: block;
 	padding: 5px;

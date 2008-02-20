@@ -10,6 +10,14 @@
 	<?php
 		require('chart_include.php');
 	?>
-		<script type="text/javascript">Charts.draw();</script>
+		<script type="text/javascript">
+			<?php if (Request('action') === 'print') : ?>
+			document.observe('chart:drawn', function() {
+				window.print();
+				history.back();
+			});
+			<?php endif; ?>
+			Charts.draw();
+		</script>
   </body>
 </html>

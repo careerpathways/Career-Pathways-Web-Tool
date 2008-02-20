@@ -11,6 +11,11 @@ Charts = {
     }
     else {
     	Charts.element = $(document.body);
+    	Charts._afterOpen = function() {
+    		var points = Charts.components.invoke('getShape').invoke('getBounds').pluck('bottomRight');
+    		var bottomRight = new Geometry.Bounds(points).bottomRight;
+    		Charts.createCanvas(bottomRight.x, bottomRight.y);
+		};
     }
     Charts.elementOffset = Charts.element.cumulativeOffset();
     
@@ -22,36 +27,17 @@ Charts = {
     Charts.textSizeMonitor.start();
     Charts.textSizeMultiplier = Charts.textSizeMonitor.getSize() / Charts.textSizeMonitor.getBaseSize();
     Charts.element.observe('text:resized', function(e) {
-    	Charts.textSizeMultiplier = e.memo.currentSize / Charts.textSizeMonitor.getBaseSize()
-    	Charts.reposition();
+    	Charts.textSizeMultiplier = e.memo.currentSize / Charts.textSizeMonitor.getBaseSize();
+    	// TODO only reposition text elements
+    	Charts.components.each(function(component) {
+    		if (component.repositionElement) {
+    			component.repositionElement();
+    		}
+    	})
     	Charts.redraw();
     });
     
-    Charts.canvas = document.createElement('canvas');
-
-	Charts.canvas.setAttribute('width', Charts.element.offsetWidth);
-	Charts.canvas.setAttribute('height', Charts.element.offsetHeight);
-	
-	// this makes firefox happy (for printing)
-	Charts.canvas.style.width = (Charts.element.offsetWidth) + 'px';
-	Charts.canvas.style.height = (Charts.element.offsetHeight) + 'px';
-	
-	if (!Charts.canvas.getContext) {
-		Charts.canvas.id = Charts.element.id + '_canvas';
-		Charts.element.appendChild(Charts.canvas);
-		Charts.canvas = G_vmlCanvasManager.initElement(Charts.canvas);
-	}
-	else {
-		Charts.element.appendChild(Charts.canvas);
-	}
-	Charts.canvas = $(Charts.canvas);
-	
-	Charts.canvas.style.position = "absolute";
-	Charts.canvas.style.top = "0";
-	Charts.canvas.style.left = "0";
-	Charts.canvas.style.zIndex = "0";
-    
-    Charts.ctx = Charts.canvas.getContext('2d');
+    Charts.createCanvas(Charts.element.offsetWidth, Charts.element.offsetHeight);
     
     Charts.element.addClassName('yui-skin-sam');
 
@@ -68,6 +54,38 @@ Charts = {
 		connections: connections
 	});
   },
+  
+	createCanvas: function(width, height) {
+		if (Charts.canvas) {
+			Charts.element.removeChild(Charts.canvas);
+		}
+		
+		Charts.canvas = document.createElement('canvas');
+
+		Charts.canvas.setAttribute('width', width);
+		Charts.canvas.setAttribute('height', height);
+		
+		// this makes firefox happy (for printing)
+		Charts.canvas.style.width = (width) + 'px';
+		Charts.canvas.style.height = (height) + 'px';
+		
+		if (!Charts.canvas.getContext) {
+			Charts.canvas.id = Charts.element.id + '_canvas';
+			Charts.element.appendChild(Charts.canvas);
+			Charts.canvas = G_vmlCanvasManager.initElement(Charts.canvas);
+		}
+		else {
+			Charts.element.appendChild(Charts.canvas);
+		}
+		Charts.canvas = $(Charts.canvas);
+		
+		Charts.canvas.style.position = "absolute";
+		Charts.canvas.style.top = "0";
+		Charts.canvas.style.left = "0";
+		Charts.canvas.style.zIndex = "0";
+	    
+	    Charts.ctx = Charts.canvas.getContext('2d');
+	},
 
 	setData: function(data) {
 		Charts.layers = [];
@@ -78,6 +96,8 @@ Charts = {
 		var title = document.createElement('div');
 		title.className = 'chTitle';
 		title.innerHTML = data.titleImg;
+		title.style.zIndex = 100;
+		title.style.position = 'absolute';
 		Charts.element.appendChild(title);
 	
 		// add all the widgets
@@ -106,6 +126,10 @@ Charts = {
          Charts.registerComponent(connection);
     });
     
+    
+    if (Charts._afterOpen) {
+    	Charts._afterOpen();
+	}
     //Charts.reposition();
     Charts.redraw();
     
@@ -198,6 +222,11 @@ Charts = {
 		
 		context.clearRect(0, 0, Charts.canvas.offsetWidth, Charts.canvas.offsetHeight);
 		
+		Charts._beginRedraw(context);
+		
+		context.save();
+		context.scale(Charts.textSizeMultiplier, Charts.textSizeMultiplier);
+		
 		var layer;
 		for (var i = 0, layerLen = Charts.layers.length; i < layerLen; ++i) {
 			layer = Charts.layers[i];
@@ -210,31 +239,17 @@ Charts = {
 			}
 		}
 		
-		// draw the highlight box
-		if (Charts.selectedComponent && ! Charts.activeControl) {
-			var bounds = Charts.selectedComponent.getShape().getBounds();
-			
-			context.lineWidth = 3;
-			context.strokeStyle = '#ffffff';
-			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
-			context.lineWidth = 2;
-			context.strokeStyle = SELECTED_COLOR;
-			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
-			
-		}
+		Charts._finishRedraw(context);
 		
-		// draw control points
-		if (Charts.controlPoints) {
-			Charts.controlPoints.each(function(p) {
-				var rect;
-				if (!Charts.activeControl || Charts.activeControl == p) {
-					context.fillStyle = p.color ? p.color : SELECTED_COLOR;
-					rect = [Math.floor(p.x) - CONTROL_POINT_RADIUS, Math.floor(p.y) - CONTROL_POINT_RADIUS, CONTROL_POINT_RADIUS * 2, CONTROL_POINT_RADIUS * 2];
-					context.fillRect.apply(context, rect);
-				}
-			});
-		}
+		context.restore();
 	},
+	
+	_beginRedraw: function(context) {
+		context.fillStyle = '#ffffff';
+		context.fillRect(0, 0, Charts.canvas.offsetWidth, Charts.canvas.offsetHeight);
+	},
+	
+	_finishRedraw: function(context) {},
 	
 	redrawNeeded: function(bounds) {
 		this.needsRedraw = true;
@@ -280,6 +295,8 @@ var Widget = Class.create(Component, {
 		
 		if (this.getElem) {
 			Charts.element.appendChild(this.getElem());
+			this.repositionElement();
+			this._onContentChange();
 		}
 		
 		if (this.setup) {
@@ -373,16 +390,22 @@ ChartLine = Class.create(Widget, {
 	
 	setup: function() {
 		var isVertical = this.config.direction && (this.config.direction == 'v' || this.config.direction == 'n' || this.config.direction == 's');
+		var isOldVersion = false;
 		if (!this.startPoint) {
-			this.startPoint = {x: this.getLeft() + (isVertical ? 7 : 0), y: this.getTop() + (isVertical ? 0 : 7)};
+			var a = {x: this.getLeft() + (isVertical ? 7 : 0), y: this.getTop() + (isVertical ? 0 : 7)};
+			var b = Geometry.translatedPoint(a, isVertical ? 0 : this.getWidth(), isVertical ? this.getHeight() : 0);
+			
+			if (this.config.direction == 'n' || this.config.direction == 'w') {
+				this.startPoint = b;
+				this.endPoint = a;
+			}
+			else {
+				this.startPoint = a;
+				this.endPoint = b;
+			}
 		}
 		else {
 			this.startPoint = Widget.toIntegerPoint(this.startPoint);
-		}
-		if (!this.endPoint) {
-			this.endPoint = Geometry.translatedPoint(this.startPoint, isVertical ? 0 : this.getWidth(), isVertical ? this.getHeight() : 0);
-		}
-		else {
 			this.endPoint = Widget.toIntegerPoint(this.endPoint);
 		}
 	},
@@ -447,38 +470,23 @@ ChartBox = Class.create(Widget, {
 	},
 	
     elem: null,
-    html: '<table cellspacing="0" cellpadding="0">' + 
-            '<tr>' + 
-              '<td class="nw"></td>' + 
-              '<td class="n"></td>' + 
-              '<td class="ne"></td>' +
-            '</tr>' + 
-            '<tr>' + 
-              '<td class="w"></td>' + 
-              '<td class="c"></td>' + 
-              '<td class="e"></td>' + 
-            '</tr>' + 
-            '<tr>' + 
-              '<td class="sw"></td>' + 
-              '<td class="s"></td>' + 
-              '<td class="se"></td>' + 
-            '</tr>' + 
-          '</table>',
     
 	getElem: function() {
-		var div = document.createElement('div');
-		div.innerHTML = this.html;
-		this.elem = $(div.firstChild);
+		this.elem = new Element('div', {'class': 'ctepathwaysBox'});
 		
-		this.elem.className = this.type;
-		if (this.w > 0) this.elem.style.width = this.w + 'px';
+		if (this.w > 0) this.elem.style.width = (this.getWidth() - 20) + 'px';
 
-		this.titleElement = this.elem.getElementsByClassName('n')[0];
-	    this.contentElement = this.elem.getElementsByClassName('c')[0];
+		this.titleElement = new Element('div', {'class': 'ctepathwaysBoxTitle'});
+	    this.contentElement = new Element('div', {'class': 'ctepathwaysBoxContent'});
 	    
-	    this.titleElement.innerHTML = this.config.title;
-	    this.contentElement.innerHTML = this.config.content_html;
+	    this.elem.appendChild(this.titleElement);
+	    this.elem.appendChild(this.contentElement);
+	    
+	    this.titleElement.update(this.config.title);
+	    this.contentElement.update(this.config.content_html);
 		
+		
+		this.elem.style.zIndex = "1";
 		return this.elem;
     },
   
@@ -512,7 +520,7 @@ ChartBox = Class.create(Widget, {
 	},
 	
     getHeight: function() {
-    	return this.elem.offsetHeight;
+    	return this.height;
     },
     
     /** Returns the position of the anchor point. */
@@ -548,28 +556,39 @@ ChartBox = Class.create(Widget, {
     	return result;
     },
     
+	repositionElement: function() {
+		this.elem.style.top = (this.getTop()) * Charts.textSizeMultiplier + 'px';
+		this.elem.style.left = (this.getLeft() + 10) * Charts.textSizeMultiplier + 'px';
+		this.elem.style.width = (this.getWidth() - 20) * Charts.textSizeMultiplier + 'px';
+		var titlePadding = 4 * Charts.textSizeMultiplier + 'px';
+		this.titleElement.style.paddingTop = titlePadding;
+		this.titleElement.style.paddingBottom = titlePadding;
+	},
+	
+	_onContentChange: function() {
+		this.titleHeight = this.titleElement.offsetHeight / Charts.textSizeMultiplier;
+		this.contentHeight = this.contentElement.offsetHeight / Charts.textSizeMultiplier;
+		this.height = this.titleHeight + this.contentHeight + 10;
+	},
+    
     reposition: function() {
     	var pos = {
-    		x: this.getLeft() * this.chart.textSizeMultiplier,
-    		y: this.getTop() * this.chart.textSizeMultiplier
+    		x: this.getLeft(),
+    		y: this.getTop()
     	};
     	
-    	this.elem.style.top = pos.y + 'px';
-    	this.elem.style.left = pos.x + 'px';
-    	this.elem.style.width = this.w + 'px';
+    	var thickness = this.borderThickness;
+    	this.outerRectangle.reposition(pos, this.getWidth(), this.getHeight());
     	
-    	var thickness = this.borderThickness * this.chart.textSizeMultiplier;
-    	this.outerRectangle.reposition(pos, this.getWidth() * this.chart.textSizeMultiplier, this.getHeight());
-    	var titleHeight = this.titleElement.offsetHeight;
     	this.innerRectangle.reposition(
-    		Geometry.translatedPoint(pos, thickness, titleHeight),
-    		this.getWidth() * this.chart.textSizeMultiplier - thickness * 2,
-    		this.getHeight() - thickness - titleHeight
+    		Geometry.translatedPoint(pos, thickness, this.titleHeight),
+    		this.getWidth() - thickness * 2,
+    		this.getHeight() - thickness - this.titleHeight
     	);
     	
     	this.innerRectangle.setStyles({
-    		bottomLeftRadius: this.borderThickness * this.chart.textSizeMultiplier,
-  			bottomRightRadius: this.borderThickness * this.chart.textSizeMultiplier
+    		bottomLeftRadius: this.borderThickness,
+  			bottomRightRadius: this.borderThickness
     	});
     	
     	this.outerRectangle.setStyle('radius', thickness * 2);
@@ -621,17 +640,19 @@ var Connection = Class.create(Component, {
 	},
 	
 	createShape: function() {
-		return new Path([Geometry.ORIGIN, Geometry.ORIGIN], {arrowheadAtEnd: true, dashed: this.dashed, color: '#' + this.color});
-	},
-	
-	/** set the visual represenation of this element to a specific color **/
-	colorElements: function(color){
-	   this.subWidgets.invoke('setColor', color);
+		return new Path(
+			[Geometry.ORIGIN, Geometry.ORIGIN],
+			{
+				arrowheadAtEnd: true,
+				lineWidth: 5,
+				color: '#' + this.color
+			}
+		);
 	},
 	
 	reposition: function() {
-		var startPoint = Geometry.scaledPoint(this.source.getAnchorPointPosition(this.sourceAnchorPoint), Charts.textSizeMultiplier);
-    	var endPoint = Geometry.scaledPoint(this.destination.getAnchorPointPosition(this.destinationAnchorPoint), Charts.textSizeMultiplier);
+		var startPoint = this.source.getAnchorPointPosition(this.sourceAnchorPoint);
+    	var endPoint = this.destination.getAnchorPointPosition(this.destinationAnchorPoint);
     	var midPoint;
     	
     	if (this.numSegments < 3 && this.numSegments > 0) {
@@ -669,17 +690,11 @@ var Connection = Class.create(Component, {
     	}
     	
     	this.shape.setPoints(points);
-    	
-    	this.shape.setStyle('lineWidth', 5 * Charts.textSizeMultiplier);
-    	
-		var previousBounds = this.bounds;
 		
 		this.bounds = this.shape.getBounds();
 		
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
-		
-		this.chart.redrawNeeded(previousBounds);
 	}
 });
 
@@ -926,49 +941,38 @@ var Path = Class.create(AbstractShape, {
 		
 		for (var k = 1, len = this.points.length; k < len; ++k) {
 			point = this.points[k];
+			arrowheadThisSegment = (k == len - 1 && arrowheadAtEnd);
+			
+			var endPoint;
+			if (arrowheadThisSegment) {
+				endPoint = {
+					x: previousPoint.x + Math.cos(point.theta) * (point.length - arrowLength),
+					y: previousPoint.y + Math.sin(point.theta) * (point.length - arrowLength)
+				}
+			}
+			else {
+				endPoint = point;
+			}
+			context.lineTo(endPoint.x, endPoint.y);
+			
+			previousPoint = point;
+		}
+		
+		context.stroke();
+		
+		if (arrowheadAtEnd) {
 			context.save();
 			context.translate(previousPoint.x, previousPoint.y);
 			context.rotate(point.theta);
 			context.translate(-previousPoint.x, -previousPoint.y);
 			
-			// an arrowhead will be drawn if defined and this is the last segment
-			arrowheadThisSegment = (k == len - 1 && arrowheadAtEnd);
-			
-			if (this.style.dashed) {
-				var penDown = true;
-				for (var i = 0; i < point.length - (arrowheadThisSegment ? arrowLength : 10); i += 10) {
-					if (penDown) {
-						context.lineTo(previousPoint.x + i + 10, previousPoint.y);
-					}
-					else {
-						context.moveTo(previousPoint.x + i + 10, previousPoint.y);
-					}
-					
-					penDown = !penDown;
-				}
-				if (penDown) {
-					context.lineTo(previousPoint.x + point.length - (arrowheadThisSegment ? arrowLength : 10), previousPoint.y);
-				}
-			}
-			else {
-				context.lineTo(previousPoint.x + point.length - (arrowheadThisSegment ? arrowLength : 0), previousPoint.y);
-			}
-			
-			if (arrowheadThisSegment) {
-				context.stroke();
-				
-				context.beginPath();
-				context.moveTo(previousPoint.x + point.length - arrowLength, previousPoint.y - arrowThickness / 2);
-				context.lineTo(previousPoint.x + point.length, previousPoint.y);
-	    		context.lineTo(previousPoint.x + point.length - arrowLength, previousPoint.y + arrowThickness / 2);
-	    		context.fill();
-			}
-			
-			previousPoint = point;
-			context.restore();
-		}
-		if (!arrowheadAtEnd) {
-			context.stroke();
+			context.beginPath();
+			context.moveTo(point.x - arrowLength, point.y - arrowThickness / 2);
+			context.lineTo(point.x, point.y);
+    		context.lineTo(point.x - arrowLength, point.y + arrowThickness / 2);
+    		context.fill();
+    		
+    		context.restore();
 		}
 	},
 	
