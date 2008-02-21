@@ -909,13 +909,13 @@ Connection.addMethods({
 		var translated = Geometry.translatedPoint(position, -control.getLeft(), -control.getTop());
 		if (Side.isHorizontal(anchorPoint.side)) {
 			anchorPoint.position = Math.max(0, Math.min(100, translated.x * 100 / control.getWidth()));
-			position.y = point.y;
 		}
 		else {
 			anchorPoint.position = Math.max(0, Math.min(100, translated.y * 100 / control.getHeight()));
-			position.x = point.x;
 		}
 		this.reposition();
+		position.x = point.x;
+		position.y = point.y;
 	},
 	
 	onReshape: function() {

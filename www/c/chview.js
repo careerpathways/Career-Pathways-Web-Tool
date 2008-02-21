@@ -3,7 +3,6 @@ header("Content-type: text/javascript");
 ?>
 
 Charts = {
-  drawing_status: drawing_status,
   whichi: function() { return 'view'; },
   draw: function(canvas_container, toolbar_container) {
     if (canvas_container) {
@@ -40,15 +39,12 @@ Charts = {
     Charts.createCanvas(Charts.element.offsetWidth, Charts.element.offsetHeight);
     
     Charts.element.addClassName('yui-skin-sam');
-
-	if( Charts.drawing_status == "outdated" || Charts.drawing_status == "draft" ) {
-		Charts.element.style.background = 'url(/images/' + Charts.drawing_status + '-overlay.png)';
-	}
 	
 	Charts.setData({
 		titleImg: chTitleImg,
 		widgets: chData,
-		connections: connections
+		connections: connections,
+		drawing_status: drawing_status
 	});
   },
   
@@ -94,6 +90,12 @@ Charts = {
 		Charts.components = [];
 		Charts.widgets = new Hash(),
 		Charts.connections = new Hash();
+		Charts.drawingStatus = data.drawing_status;
+
+		if(Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft') {
+			Charts.element.style.background = 'url(/images/' + Charts.drawingStatus + '-overlay.png)';
+		}
+		
 		// add the title image
 		var title = document.createElement('div');
 		title.className = 'chTitle';
@@ -484,7 +486,7 @@ ChartBox = Class.create(Widget, {
 	    this.elem.appendChild(this.titleElement);
 	    this.elem.appendChild(this.contentElement);
 	    
-	    this.titleElement.update(this.config.title);
+	    this.titleElement.update(this.config.title || '&nbsp;');
 	    this.contentElement.update(this.config.content_html);
 		
 		
@@ -623,6 +625,9 @@ var Connection = Class.create(Component, {
 		this.destination = destination;
 		this.color = this.source.config.color;
 		
+		this.startPoint = {};
+		this.endPoint = {};
+		
 		this.chart = Charts;
 		
 		if (data) {
@@ -695,8 +700,11 @@ var Connection = Class.create(Component, {
 		
 		this.bounds = this.shape.getBounds();
 		
-		this.startPoint = startPoint;
-		this.endPoint = endPoint;
+		this.startPoint.x = startPoint.x;
+		this.startPoint.y = startPoint.y;
+		
+		this.endPoint.x = endPoint.x;
+		this.endPoint.y = endPoint.y;
 	}
 });
 
