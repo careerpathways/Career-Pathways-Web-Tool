@@ -215,7 +215,34 @@ function showVersion() {
 	?>
 
 	<script type="text/javascript" src="/files/greybox.js"></script>
-
+	
+	<style type="text/css" media="print">
+		#drawing_canvas, #header, #topbar {
+			display: none;
+		}
+		
+		#printHelp {
+			width: 5in;
+			margin: auto;
+			margin-top: 2in;
+			padding: 2em;
+			border: 1em dashed black;
+			font-size: 2em;
+			text-align: center;
+			font-weight: bold;
+		}
+	</style>
+	
+	<style type="text/css" media="screen">
+		#printHelp {
+			display: none;	
+		}
+	</style>
+	
+	<div id="printHelp">
+		<p>To print, please click the <var>print this version</var> button in the toolbar.</p>
+	</div>
+	
 	<div id="drawing_canvas" class="ctpathways">
 		<?php require('c/view/chart_include.php'); ?>
 		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>

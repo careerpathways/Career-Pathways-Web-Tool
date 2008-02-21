@@ -42,10 +42,7 @@ Charts = {
     Charts.element.addClassName('yui-skin-sam');
 
 	if( Charts.drawing_status == "outdated" || Charts.drawing_status == "draft" ) {
-		// the whichi method appears to be inherited differently on ie7/firefox 
-		//if( this.whichi() == 'view' ) {
-			Charts.element.style.backgroundImage = "url(/images/" + Charts.drawing_status + "-overlay.png)";
-		//}
+		Charts.element.style.background = 'url(/images/' + Charts.drawing_status + '-overlay.png)';
 	}
 	
 	Charts.setData({
@@ -61,9 +58,14 @@ Charts = {
 		}
 		
 		Charts.canvas = document.createElement('canvas');
-
-		Charts.canvas.setAttribute('width', width);
-		Charts.canvas.setAttribute('height', height);
+		if (Charts.canvas.getContext && Charts.printing) {
+			Charts.canvasScale = 4;
+		}
+		else {
+			Charts.canvasScale = 1;
+		}
+		Charts.canvas.setAttribute('width', width * Charts.canvasScale);
+		Charts.canvas.setAttribute('height', height * Charts.canvasScale);
 		
 		// this makes firefox happy (for printing)
 		Charts.canvas.style.width = (width) + 'px';
@@ -220,12 +222,17 @@ Charts = {
 	redraw: function() {
 		var context = Charts.ctx;
 		
-		context.clearRect(0, 0, Charts.canvas.offsetWidth, Charts.canvas.offsetHeight);
-		
-		Charts._beginRedraw(context);
+		if (Charts.printing) {
+			context.fillStyle = '#ffffff';
+			context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
+		}
+		else {
+			context.clearRect(0, 0, Charts.canvas.width, Charts.canvas.height);
+		}
 		
 		context.save();
-		context.scale(Charts.textSizeMultiplier, Charts.textSizeMultiplier);
+		var scale = Charts.textSizeMultiplier * Charts.canvasScale;
+		context.scale(scale, scale);
 		
 		var layer;
 		for (var i = 0, layerLen = Charts.layers.length; i < layerLen; ++i) {
@@ -242,11 +249,6 @@ Charts = {
 		Charts._finishRedraw(context);
 		
 		context.restore();
-	},
-	
-	_beginRedraw: function(context) {
-		context.fillStyle = '#ffffff';
-		context.fillRect(0, 0, Charts.canvas.offsetWidth, Charts.canvas.offsetHeight);
 	},
 	
 	_finishRedraw: function(context) {},

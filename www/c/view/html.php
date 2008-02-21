@@ -14,8 +14,9 @@
 			<?php if (Request('action') === 'print') : ?>
 			document.observe('chart:drawn', function() {
 				window.print();
-				history.back();
 			});
+			
+			Charts.printing = true;
 			<?php endif; ?>
 			Charts.draw();
 		</script>
