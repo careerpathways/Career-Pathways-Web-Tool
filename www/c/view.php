@@ -43,6 +43,10 @@ else {
 if ($format === 'xml') {
 	require('view/xml.php');
 }
+else if ($format === 'js') {
+	header("Content-type: text/javascript");
+	require('view/chart_data_js.php');
+}
 else {
 	require('view/html.php');
 }
