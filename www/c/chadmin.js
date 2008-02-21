@@ -106,7 +106,7 @@ document.observe('chart:drawn', function(e) {
 
   var ddhelp = document.createElement('div');
   ddhelp.className = "tiny";
-  ddhelp.innerHTML = "Drag and drop colors onto boxes, arrows or lines";
+  ddhelp.innerHTML = "Select a box, line, or connection and click a color";
   toolbar.appendChild(ddhelp);
   
   Charts.toolbarContainer.appendChild(toolbar);
@@ -217,7 +217,20 @@ document.observe('chart:drawn', function(e) {
 			
 			var position = Charts.positionWithin(e.pointer());
 			var offsetPosition = Geometry.translatedPoint(position, Charts.positionDeltas);
-			Charts.activeControl.applyPosition(offsetPosition);
+			offsetPosition.x = Math.max(Charts.bounds.x, offsetPosition.x);
+			offsetPosition.y = Math.max(Charts.bounds.y, offsetPosition.y);
+			
+			var maxX = Charts.bounds.bottomRight.x;
+			var maxY = Charts.bounds.bottomRight.y;
+			if (Charts.activeControl.getShape) {
+				maxX -= Charts.activeControl.getShape().getBounds().width;
+				maxY -= Charts.activeControl.getShape().getBounds().height;
+			}
+			
+			offsetPosition.x = Math.min(maxX, offsetPosition.x);
+			offsetPosition.y = Math.min(maxY, offsetPosition.y);
+			
+			Charts.activeControl.applyPosition(offsetPosition, e.shiftKey);
 			Charts.activeControl.x = offsetPosition.x;
 			Charts.activeControl.y = offsetPosition.y;
 			Charts.redraw();
@@ -246,6 +259,8 @@ document.observe('chart:drawn', function(e) {
 		
 		Charts.controlReshaped = false;
 	});
+	
+	Charts.bounds = new Geometry.Bounds([Geometry.ORIGIN, Geometry.translatedPoint(Geometry.ORIGIN, Charts.element.offsetWidth, Charts.element.offsetHeight)]);
 });
 
 Object.extend(Charts, {
@@ -469,25 +484,32 @@ ChartBox.addMethods(WidgetAdmin);
 ChartLine.addMethods({
   getControlPoints: function() {
   	var startControlPoint = Object.clone(this.getStartPoint());
-  	startControlPoint.applyPosition = this.setStartPoint.bind(this);
+  	startControlPoint.applyPosition = this.applyPointPosition.bind(this, this.startPoint, this.endPoint);
   	startControlPoint.color = START_COLOR;
   	
-  	var encControlPoint = Object.clone(this.getEndPoint());
-  	encControlPoint.applyPosition = this.setEndPoint.bind(this);
-  	encControlPoint.color = END_COLOR;
+  	var endControlPoint = Object.clone(this.getEndPoint());
+  	endControlPoint.applyPosition = this.applyPointPosition.bind(this, this.endPoint, this.startPoint);
+  	endControlPoint.color = END_COLOR;
   	return [
   		startControlPoint,
-  		encControlPoint
+  		endControlPoint
 	];
   },
   
-  setStartPoint: function(point) {
-  	this.startPoint = point;
-  	this.reposition();
-  },
-  
-  setEndPoint: function(point) {
-  	this.endPoint = point;
+  applyPointPosition: function(point, otherPoint, position, constrain) {
+  	if (constrain) {
+  		var deltas = Geometry.deltas(position, otherPoint);
+  		if (Math.abs(deltas.x) < Math.abs(deltas.y)) {
+  			position.x = otherPoint.x;
+  		}
+  		else {
+  			position.y = otherPoint.y;
+  		}
+  	}
+  	
+  	point.x = position.x;
+  	point.y = position.y;
+  	
   	this.reposition();
   },
   
@@ -552,7 +574,7 @@ ChartBox.addMethods({
 	  document.editingTitle = true;
     },
     saveTitle: function(input) {
-      this.titleElement.innerHTML = input.value;
+      this.titleElement.innerHTML = input.value || '&nbsp;';
       this.config.title = input.value;
       chUtil.ajax({id: this.id,
                    a: 'update',
@@ -1047,12 +1069,12 @@ var onAutopositionSelect = function() {
 var onColorSelect = function(type, args, value) {
 	Charts.contextMenuTarget.setColor(value);
 	Charts.redraw();
-}
+};
 
 var onDuplicateSelect = function() {
 	Charts.contextMenuTarget.duplicate();
 	Charts.redraw();
-}
+};
 
 /* every menu item created should do nothing when clicked */
 // TODO there should be a better way to do this.
