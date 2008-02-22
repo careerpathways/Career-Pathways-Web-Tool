@@ -38,12 +38,12 @@ header("Content-type: text/css");
 
 .ctepathwaysBoxContent {
   position: absolute;
-  vertical-align: top;
   height: auto;
   font-size: 11px;
 }
 
 .ctepathwaysBoxTitle, .ctepathwaysBoxContent {
+	width: 100%;
 	overflow: hidden;
 	cursor: default;
 }
