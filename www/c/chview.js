@@ -236,6 +236,24 @@ Charts = {
 		var scale = Charts.textSizeMultiplier * Charts.canvasScale;
 		context.scale(scale, scale);
 		
+		if (Charts.drawGrid) {
+			context.strokeStyle = Charts.gridColor;
+			context.lineWidth = 1;
+			for (var x = .5; x < Charts.bounds.bottomRight.x; x += Charts.gridSize) {
+				context.beginPath();
+				context.moveTo(x, 0);
+				context.lineTo(x, Charts.bounds.height);
+				context.stroke();
+				
+			}
+			for (var y = .5; y < Charts.bounds.bottomRight.y; y += Charts.gridSize) {
+				context.beginPath();
+				context.moveTo(0, y);
+				context.lineTo(Charts.bounds.width, y);
+				context.stroke();
+			}
+		}
+		
 		var layer;
 		for (var i = 0, layerLen = Charts.layers.length; i < layerLen; ++i) {
 			layer = Charts.layers[i];
@@ -269,6 +287,9 @@ var Component = Class.create({
     	return 0;
     }
 });
+Charts.gridSize = 10;
+Charts.drawGrid = false;
+Charts.gridColor = 'rgba(20, 20, 20, .2)';
 
 var VERTICAL = 'v';
 var HORIZONTAL = 'h';
@@ -283,14 +304,14 @@ var Widget = Class.create(Component, {
     w: 0,
           
 	initialize: function(options) {
-		this.config = {color: '333333'};
+		this.config = {color: DEFAULT_COLOR};
 		this.entity = true;
 		Object.extend(this, options || {});
 		
 		this.type = this.getType();
 		
 		if (!chColor.include(this.config.color)) {
-			this.config.color = '333333';
+			this.config.color = DEFAULT_COLOR;
 		}
 		
 		this.connectionIDs = [];
@@ -393,7 +414,7 @@ ChartLine = Class.create(Widget, {
 	},
 	
 	setup: function() {
-		var isVertical = this.config.direction && (this.config.direction == 'v' || this.config.direction == 'n' || this.config.direction == 's');
+		var isVertical = this.config.direction && (this.config.direction == VERTICAL || this.config.direction == 'n' || this.config.direction == 's');
 		var isOldVersion = false;
 		if (!this.startPoint) {
 			var a = {x: this.getLeft() + (isVertical ? 7 : 0), y: this.getTop() + (isVertical ? 0 : 7)};

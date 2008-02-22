@@ -12,28 +12,11 @@ document.observe('chart:drawn', function(e) {
 	Charts.toolbar = toolbar;
 	toolbar.className = 'toolbar';
   
-	Charts.addToolbarButton('line', ChartLine, {
-		startPoint: {x: 100, y: 100},
-		endPoint: {x: 200, y: 200}
-	 });
+	Charts.addToolbarButton('line', ChartLine);
 
-	Charts.addToolbarButton('arrow', ChartLine, {
-		startPoint: {x: 100, y: 100},
-		endPoint: {x: 200, y: 200},
-        arrowheadAtEnd: true
-	});
+	Charts.addToolbarButton('arrow', ChartLine, {arrowheadAtEnd: true});
 
-	Charts.addToolbarButton('box', ChartBox, {
-		x: 0,
-		y: 100,
-		h: 100,
-		w: 150,
-		config: {
-			title: 'title',
-			content: 'content',
-			content_html: 'content'
-		}
-	});
+	Charts.addToolbarButton('box', ChartBox);
 	
 	// firefox needs the 'return false' to cancel the delete
 	document.onkeydown = function(e) {
@@ -145,8 +128,9 @@ document.observe('chart:drawn', function(e) {
 			Charts.contextMenuTarget = null;
 		}
 		
+		var menu;
+		
 		if (Charts.contextMenuTarget) {
-			var menu;
 			switch (Charts.contextMenuTarget.type) {
 				case 'box':
 					menu = ChartBox.contextMenu;
@@ -158,13 +142,19 @@ document.observe('chart:drawn', function(e) {
 					menu = Connection.contextMenu;
 					break;
 			}
-			
-			if (menu) {
-				menu.cfg.setProperty('x', pointer.x);
-				menu.cfg.setProperty('y', pointer.y);
-				menu.show();
-			}
 		}
+		else {
+			menu = Charts.contextMenu;
+		}
+		
+		Charts.contextMenuPosition = {
+			x: pointer.x,
+			y: pointer.y
+		};
+		
+		menu.cfg.setProperty('x', Charts.contextMenuPosition.x);
+		menu.cfg.setProperty('y', Charts.contextMenuPosition.y);
+		menu.show();
 		
 		e.stop();
 	});
@@ -217,6 +207,12 @@ document.observe('chart:drawn', function(e) {
 			
 			var position = Charts.positionWithin(e.pointer());
 			var offsetPosition = Geometry.translatedPoint(position, Charts.positionDeltas);
+			
+			if (Charts.snapToGrid && !e.altKey) {
+				offsetPosition.x = Charts.gridSize * Math.round(offsetPosition.x / Charts.gridSize);
+				offsetPosition.y = Charts.gridSize * Math.round(offsetPosition.y / Charts.gridSize);
+			}
+			
 			offsetPosition.x = Math.max(Charts.bounds.x, offsetPosition.x);
 			offsetPosition.y = Math.max(Charts.bounds.y, offsetPosition.y);
 			
@@ -261,6 +257,8 @@ document.observe('chart:drawn', function(e) {
 	});
 	
 	Charts.bounds = new Geometry.Bounds([Geometry.ORIGIN, Geometry.translatedPoint(Geometry.ORIGIN, Charts.element.offsetWidth, Charts.element.offsetHeight)]);
+	
+	Charts.snapToGrid = true;
 });
 
 Object.extend(Charts, {
@@ -332,14 +330,7 @@ Object.extend(Charts, {
 		button.className = 'button';
 		button.innerHTML = name;
 		Event.observe(button, 'click', function() {
-			objectdata = Object.clone(data);
-			objectdata.config = Object.clone(objectdata.config);
-			var widget = new widgetClass(objectdata);
-			objectdata.type = widget.getType();
-			Charts.getID(widget, objectdata, function() {
-				Charts.registerComponent(widget);
-				Charts.redraw();
-			});
+			Charts.createComponent(widgetClass, data, Charts.redraw.bind(Charts));
 		});
 		Charts.toolbar.appendChild(button);
 	},
@@ -370,6 +361,22 @@ Object.extend(Charts, {
 		else {
 			return null;
 		}
+	},
+	
+	createComponent: function(type, options, callback) {
+		var newOptions = Object.clone(type.DEFAULT_OPTIONS);
+		newOptions.config = Object.clone(type.DEFAULT_OPTIONS.config);
+		
+		Object.extend(newOptions, options || {});
+		
+		var widget = new type(newOptions);
+		newOptions.type = widget.getType();
+		Charts.getID(widget, newOptions, function() {
+			Charts.registerComponent(widget);
+			if (callback) {
+				callback();
+			}
+		});
 	},
 	
 	unregisterComponent: function(component) {
@@ -481,6 +488,10 @@ var END_COLOR = '#f00';
 ChartLine.addMethods(WidgetAdmin);
 ChartBox.addMethods(WidgetAdmin);
 
+ChartLine.DEFAULT_OPTIONS = {
+	startPoint: {x: 100, y: 100},
+	endPoint: {x: 200, y: 200}
+ };
 ChartLine.addMethods({
   getControlPoints: function() {
   	var startControlPoint = Object.clone(this.getStartPoint());
@@ -551,6 +562,17 @@ ChartLine.addMethods({
 });
 
 ChartBox.ABSOLUTE_MINIMUM_WIDTH = 20;
+ChartBox.DEFAULT_OPTIONS = {
+	x: 0,
+	y: 100,
+	h: 100,
+	w: 150,
+	config: {
+		title: 'title',
+		content: 'content',
+		content_html: 'content'
+	}
+};
 
 ChartBox.addMethods({  
     setProgram: function(program){
@@ -1076,6 +1098,49 @@ var onDuplicateSelect = function() {
 	Charts.redraw();
 };
 
+var onSnapToGridSelect = function() {
+	Charts.snapToGrid = !Charts.snapToGrid;
+};
+
+var onDrawGridSelect = function() {
+	Charts.drawGrid = !Charts.drawGrid;
+	Charts.redraw();
+};
+
+var onNewLineSelect = function(type, args, value) {
+	var options = value || {};
+	var position = Charts.positionWithin(Charts.contextMenuPosition);
+	
+	Object.extend(options, {
+		startPoint: {
+			x: position.x,
+			y: position.y
+		}, 
+		endPoint: {
+			x: position.x + 100,
+			y: position.y + 100
+		}
+	});
+	 
+	Charts.createComponent(ChartLine, options, Charts.redraw.bind(Charts));
+};
+
+var onNewBoxSelect = function() {
+	var position = Charts.positionWithin(Charts.contextMenuPosition);
+	Charts.createComponent(ChartBox, {x: position.x, y: position.y}, Charts.redraw.bind(Charts));
+}
+
+var onGridSizeSelect = function() {
+	var gridSize = prompt('Edit grid size', Charts.gridSize);
+	if (gridSize != null) {
+		Charts.gridSize = Math.max(2, parseInt(gridSize));
+		
+		if (Charts.drawGrid) {
+			Charts.redraw();
+		}
+	}
+};
+
 /* every menu item created should do nothing when clicked */
 // TODO there should be a better way to do this.
 YAHOO.widget.MenuItem.prototype.init_old = YAHOO.widget.MenuItem.prototype.init;
@@ -1114,7 +1179,7 @@ chColor.each(function(color) {
 var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
 
 // create the box context menu
-ChartBox.contextMenu = new YAHOO.widget.ContextMenu('ChartBox.contextMenu', {zindex: 10});
+ChartBox.contextMenu = new YAHOO.widget.ContextMenu('ChartBox.contextMenu');
 ChartBox.contextMenu.addItems([[
 	{text: 'Edit', submenu: editBoxMenu},
 	{text: 'Color', submenu: boxColorMenu},
@@ -1204,7 +1269,7 @@ styleMenu.subscribe('show', function() {
 var sourceAxisMenuItem = new YAHOO.widget.MenuItem('Orientation', {submenu: sourceAxisMenu});
 
 // create the connection context menu
-Connection.contextMenu = new YAHOO.widget.ContextMenu('connectionContextMenu', {zindex: 10});
+Connection.contextMenu = new YAHOO.widget.ContextMenu('connectionContextMenu');
 Connection.contextMenu.addItems([[
 	{text: 'Start Point', submenu: anchorSourceMenu},
 	{text: 'End Point', submenu: anchorDestinationMenu},
@@ -1231,7 +1296,7 @@ chColor.each(function(color) {
 	});
 });
 
-var widgetContextMenu = new YAHOO.widget.ContextMenu('widgetContextMenu', {zindex: 10});
+var widgetContextMenu = new YAHOO.widget.ContextMenu('widgetContextMenu');
 widgetContextMenu.addItems([[
 	{text: 'Color', submenu: widgetColorMenu},
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
@@ -1240,7 +1305,39 @@ widgetContextMenu.addItems([[
 	{text: 'Delete', onclick: {fn: onDeleteSelect}}
 ]]);
 
+var newComponentMenu = new YAHOO.widget.Menu('Charts.newComponentMenu');
+newComponentMenu.addItems([
+	{text: 'Box', onclick: {fn: onNewBoxSelect}},
+	{text: 'Line', onclick: {fn: onNewLineSelect, obj: null}},
+	{text: 'Arrow', onclick: {fn: onNewLineSelect, obj: {arrowheadAtEnd: true}}}
+]);
+
+var gridMenu = new YAHOO.widget.Menu('Charts.gridMenu');
+var snapToGridMenuItem = new YAHOO.widget.MenuItem('Snap to Grid', {onclick: {fn: onSnapToGridSelect}});
+var showGridMenuItem = new YAHOO.widget.MenuItem('Show Grid', {onclick: {fn: onDrawGridSelect}});
+var gridSizeMenuItem = new YAHOO.widget.MenuItem('Edit Grid Size', {onclick: {fn: onGridSizeSelect}});
+
+gridMenu.addItems([
+	showGridMenuItem,
+	snapToGridMenuItem,
+	gridSizeMenuItem
+]);
+
+Charts.contextMenu = new YAHOO.widget.ContextMenu('Charts.contextMenu');
+Charts.contextMenu.addItems([[
+	{text: 'New', submenu: newComponentMenu},
+],[
+	{text: 'Grid', submenu: gridMenu}
+]]);
+
+Charts.contextMenu.subscribe('show', function() {
+	showGridMenuItem.cfg.setProperty('checked', Charts.drawGrid);
+	snapToGridMenuItem.cfg.setProperty('checked', Charts.snapToGrid);
+});
+
+
 document.observe('chart:drawn', function() {
+	Charts.contextMenu.render(Charts.element);
 	ChartBox.contextMenu.render(Charts.element);
 	Connection.contextMenu.render(Charts.element);
 	widgetContextMenu.render(Charts.element);
