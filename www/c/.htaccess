@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^version/(.+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3 [nc,qsa]
