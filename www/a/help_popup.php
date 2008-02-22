@@ -3,7 +3,9 @@ $topics = array(
 	'general',
 	'box_menu',
 	'connection_menu',
-	'simple_widget_menu'
+	'simple_widget_menu',
+	'chart_menu',
+	'grid'
 );
 
 if ($topic === 'all' || in_array($_REQUEST['topic'], $topics)) {

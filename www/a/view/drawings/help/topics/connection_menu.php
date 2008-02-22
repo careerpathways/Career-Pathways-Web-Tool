@@ -11,7 +11,7 @@
 <dd>Sets the orientation (horizontal or vertical) of the line from the start point.</dd>
 
 <dt><var>Segments</var> menu</dt>
-<dd>Sets the number of segments in the connecting line. The default, one segment line, may not be connected to the end point&#8212;fix by increasing the number of segments.</dd>
+<dd>Sets the number of segments in the connecting line. The default, one segment line, may not be connected to the end point&#8212;fix by selecting a different option.</dd>
 
 <dt><var>Color</var> menu</dt>
 <dd>Sets the color of the connection.</dd>
