@@ -171,7 +171,7 @@ switch( $_REQUEST['a'] ) {
 				'destination_position' => $_REQUEST['destination_position']
 			);
 			$id = $DB->Insert('connections', $parameters);
-			chlog("created new connection: id=$id:".$updobj['content']);
+			chlog("created new connection: id=$id:");
 			echo $id;
 		} else {
 			chlog("new connection not created for source: $sourceId, destination: $destinationId. It already exists.");

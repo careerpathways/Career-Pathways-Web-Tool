@@ -2,7 +2,22 @@
 chdir("..");
 include("inc.php");
 
-if( KeyInRequest('d') ) {
+if( KeyInRequest('v') ) {
+
+	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
+			drawing_main.name, school_id, published, frozen
+		FROM drawing_main,drawings
+		WHERE drawings.parent_id=drawing_main.id
+			AND code='".$DB->Safe($_REQUEST['d'])."'
+			AND drawings.version_num=".intval($_REQUEST['v']));
+
+	if( !is_array($drawing) ) {
+		header("HTTP/1.0 404 Not Found");
+		echo "Not found";
+		die();
+	}
+
+} else {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
 			drawing_main.name, school_id, published, frozen
@@ -17,17 +32,6 @@ if( KeyInRequest('d') ) {
 		die();
 	}
 
-} else {
-
-	$drawing = $DB->SingleQuery("SELECT * FROM drawing_main,drawings
-		WHERE drawings.parent_id=drawing_main.id
-			AND drawings.id=".intval($_REQUEST['id']));
-
-	if( !is_array($drawing) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo "Not found";
-		die();
-	}
 }
 
 $drawing_name = $drawing['name'];
@@ -41,6 +45,7 @@ else {
 }
 
 if ($format === 'xml') {
+	$_REQUEST['id'] = $drawing['id'];
 	require('view/xml.php');
 }
 else if ($format === 'js') {

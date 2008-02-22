@@ -60,7 +60,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <?php } ?>
 <tr>
 	<th valign="top">Link</th>
-	<td><?php $url = "http://".$_SERVER['SERVER_NAME']."/c/version/".$drawing['id']; ?>
+	<td><?php $url = "http://".$_SERVER['SERVER_NAME']."/c/version/".$drawing_main['code']."/".$drawing['version_num']; ?>
 		<a href="<?= $url.'.html' ?>"><?= $url.'.html' ?></a>
 	</td>
 </tr>

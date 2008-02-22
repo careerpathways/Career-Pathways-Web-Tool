@@ -1,12 +1,11 @@
 <?php
 header("Content-type: text/xml");
 $drawing = $DB->SingleQuery("
-			SELECT * 
+			SELECT *, drawings.id AS id
 			FROM drawings, drawing_main
 			WHERE drawing_main.id=drawings.parent_id
 				AND drawings.id=".intval($_REQUEST['id']));
-
-		$objects = $DB->MultiQuery("SELECT * FROM objects WHERE drawing_id=".$drawing['id']);
+$objects = $DB->MultiQuery("SELECT * FROM objects WHERE drawing_id=".$drawing['id']);
 ?>
 <drawing id="<?= $drawing['parent_id'] ?>">
 	<name><?= htmlspecialchars($drawing['name']) ?></name>
