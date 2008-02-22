@@ -963,7 +963,13 @@ var Path = Class.create(AbstractShape, {
 		
 		var previousPoint = this.points[0];
 		var point;
-		context.moveTo(previousPoint.x, previousPoint.y);
+		
+		context.save();
+		if (context.lineWidth % 2 == 1) {
+			context.translate(-.5, -.5);
+		}
+		
+		context.moveTo(Math.round(previousPoint.x), Math.round(previousPoint.y));
 		
 		if (arrowheadAtEnd) {
 			var arrowLength = context.lineWidth * ARROW_LENGTH_MULTIPLIER;
@@ -986,7 +992,7 @@ var Path = Class.create(AbstractShape, {
 			else {
 				endPoint = point;
 			}
-			context.lineTo(endPoint.x, endPoint.y);
+			context.lineTo(Math.round(endPoint.x), Math.round(endPoint.y));
 			
 			previousPoint = point;
 		}
@@ -994,7 +1000,6 @@ var Path = Class.create(AbstractShape, {
 		context.stroke();
 		
 		if (arrowheadAtEnd) {
-			context.save();
 			context.translate(previousPoint.x, previousPoint.y);
 			context.rotate(point.theta);
 			context.translate(-previousPoint.x, -previousPoint.y);
@@ -1004,9 +1009,9 @@ var Path = Class.create(AbstractShape, {
 			context.lineTo(point.x, point.y);
     		context.lineTo(point.x - arrowLength, point.y + arrowThickness / 2);
     		context.fill();
-    		
-    		context.restore();
 		}
+		
+		context.restore();
 	},
 	
 	contains: function(point) {
