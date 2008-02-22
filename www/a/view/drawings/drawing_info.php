@@ -85,7 +85,7 @@ if( $id != "" ) {
 	<?php
 		if( is_array($published) ) {
 			//echo '<a href="javascript:preview_drawing('.$published['id'].')"><img src="/files/charts/gif/'.$published['id'].'.gif" height="100" width="140" class="border"></a>';
-			echo '<a href="javascript:preview_drawing('.$published['id'].')">Preview Published Drawing</a>';
+			echo '<a href="javascript:preview_drawing(\''.$drawing['code'].'\','.$published['version_num'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
@@ -112,11 +112,13 @@ if( $id != "" ) {
 	/*
 	who can delete drawings?
 		1. admins
-		2. school admins at the same school
+		2. school admins & webmasters at the same school
+		3. the owner of the drawing
 	*/
 	if(
-		IsAdmin() ||
-		(IsSchoolAdmin() && $_SESSION['school_id'] == $drawing_main['school_id'])
+		IsAdmin()
+		|| (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
+		|| $drawing['created_by'] == $_SESSION['user_id']
 	) { ?>
 <tr>
 	<th>Delete</th>

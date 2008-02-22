@@ -76,7 +76,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <?php
 	/* who can delete versions?
 		1. admins
-		2. school admins at the same school
+		2. school admins & webmasters at the same school
 		3. the owner of the version
 		4. the owner of the drawing
 	   no version may be deleted if it's "published"
@@ -148,8 +148,8 @@ function showNoteChange() {
 	getLayer('note_fixed').style.display = 'none';
 }
 
-function preview_drawing(id) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/view.php?id='+id+'"></iframe></div>',800,600);
+function preview_drawing(code,version) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600);
 }
 
 <?php if( $can_delete ) { ?>

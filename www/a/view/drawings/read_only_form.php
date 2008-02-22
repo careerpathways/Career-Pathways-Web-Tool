@@ -25,7 +25,7 @@ $published = $DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND pare
 	<td>
 	<?php
 		if( is_array($published) ) {
-			echo '<a href="javascript:preview_drawing('.$published['id'].')">Preview Published Drawing</a>';
+			echo '<a href="javascript:preview_drawing(\''.$drawing['code'].'\','.$published['version_num'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
