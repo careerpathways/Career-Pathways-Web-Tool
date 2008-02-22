@@ -13,7 +13,7 @@ ModuleInit('drawings');
 $drawing = $DB->SingleQuery("SELECT *
 	FROM drawings, drawing_main
 	WHERE drawings.parent_id=drawing_main.id
-	AND drawings.id=".$_SESSION['drawing_id']);
+	AND drawings.id=".Request('version_id'));
 if( !is_array($drawing) || (!IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) ) {
 	chlog("permissions error");
 	die();
@@ -29,7 +29,7 @@ switch( $_REQUEST['a'] ) {
 	case 'new':
 
 		$obj = array();
-		$obj['drawing_id'] = $_SESSION['drawing_id'];
+		$obj['drawing_id'] = Request('version_id');
 
 		// insert the new object, and get the auto_increment value
 		$obj['content'] = serialize($_REQUEST['content']);
@@ -205,13 +205,13 @@ switch( $_REQUEST['a'] ) {
 $update = array();
 $update['last_modified'] = $DB->SQLDate();
 $update['last_modified_by'] = $_SESSION['user_id'];
-$DB->Update('drawings',$update,$_SESSION['drawing_id']);
-$drawing=$DB->SingleQuery("SELECT * FROM drawings WHERE id=".$_SESSION['drawing_id']);
+$DB->Update('drawings',$update,Request('version_id'));
+$drawing=$DB->SingleQuery("SELECT * FROM drawings WHERE id=".Request('version_id'));
 $DB->Update('drawing_main',$update,$drawing['parent_id']);
 
 function chlog($msg) {
 	$fp = fopen('c/log.txt','a');
-	fwrite($fp,date("Y-m-d H:i:s").' u:'.$_SESSION['user_id'].':'.$_SESSION['full_name'].' d:'.$_SESSION['drawing_id'].' '.$msg."\n");
+	fwrite($fp,date("Y-m-d H:i:s").' u:'.$_SESSION['user_id'].':'.$_SESSION['full_name'].' d:'.Request('version_id').' '.$msg."\n");
 	fclose($fp);
 }
 

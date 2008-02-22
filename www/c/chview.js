@@ -41,6 +41,7 @@ Charts = {
     Charts.element.addClassName('yui-skin-sam');
 	
 	Charts.setData({
+		versionId: versionId,
 		titleImg: chTitleImg,
 		widgets: chData,
 		connections: connections,
@@ -86,6 +87,7 @@ Charts = {
 	},
 
 	setData: function(data) {
+		Charts.versionId = data.versionId;
 		Charts.layers = [];
 		Charts.components = [];
 		Charts.widgets = new Hash(),

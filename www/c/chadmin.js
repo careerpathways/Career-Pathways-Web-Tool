@@ -755,6 +755,7 @@ ChartBox.addMethods({
 
 var chUtil = {};
 chUtil.ajax = function(post, callback) {
+	post.version_id = Charts.versionId;
   var params = chUtil.toPost(post);
   
   if (window.XMLHttpRequest) var ajax = new XMLHttpRequest();

@@ -75,3 +75,5 @@ var chColor = ['<?= implode("','",$colors) ?>'];
 var connections = <?= count($connections) > 0 ? json_encode($connections) : '[]' ?>;
 
 var drawing_status = '<?= $drawing_status ?>';
+
+var versionId = <?= $drawing['id'] ?>;
