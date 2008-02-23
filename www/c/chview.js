@@ -94,7 +94,7 @@ Charts = {
 		Charts.connections = new Hash();
 		Charts.drawingStatus = data.drawing_status;
 
-		if(Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft') {
+		if(!Charts.printing && (Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft')) {
 			Charts.element.style.background = 'url(/images/' + Charts.drawingStatus + '-overlay.png)';
 		}
 		
