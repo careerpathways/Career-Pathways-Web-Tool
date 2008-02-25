@@ -104,6 +104,8 @@ Charts = {
 		title.innerHTML = data.titleImg;
 		title.style.zIndex = 100;
 		title.style.position = 'absolute';
+		title.style.top = 0;
+		title.style.left = 0;
 		Charts.element.appendChild(title);
 	
 		// add all the widgets
