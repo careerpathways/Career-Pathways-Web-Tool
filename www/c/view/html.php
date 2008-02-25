@@ -12,10 +12,6 @@
 	?>
 		<script type="text/javascript">
 			<?php if (Request('action') === 'print') : ?>
-			document.observe('chart:drawn', function() {
-				window.print();
-			});
-			
 			Charts.printing = true;
 			<?php endif; ?>
 			Charts.draw();
