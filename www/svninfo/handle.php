@@ -19,7 +19,8 @@ switch($mode) {
 		$txt = shell_exec("/usr/bin/sudo -u aaron /usr/bin/svn update --non-interactive --username=aaron --password=`cat /www/ctpathways.org/aaronsvnpass` /www/ctpathways.org/dev/www");
 		echo $txt;
 
-		$body = "The dev server has been updated.\n\n";
+		$body = "The dev server has been updated.\n";
+		$body .= "Request originated from: ".$_SERVER['REMOTE_ADDR']." (".gethostbyaddr($_SERVER['REMOTE_ADDR']).")\n\n";
 		$body .= $txt;
 
 		$email = new SiteEmail('svn_update');
