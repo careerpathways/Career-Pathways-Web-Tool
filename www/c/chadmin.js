@@ -45,7 +45,7 @@ document.observe('chart:drawn', function(e) {
 					break;
 				case 86: // ctrl+v
 					if( document.chClipboard ) {
-						document.chClipboard.duplicate();
+						document.chClipboard.duplicate(Charts.redraw);
 					}
 					break;
 				case 88: // ctrl+x
@@ -524,15 +524,15 @@ ChartLine.addMethods({
   	this.reposition();
   },
   
-	duplicate: function() {
-		return new ChartLine({
-			startPoint: Geomentry.translatedPoint(this.startPoint, 10, 10),
-			endPoint: Geomentry.translatedPoint(this.endPoint, 10, 10),
+	duplicate: function(callback) {
+		return Charts.createComponent(ChartLine, {
+			startPoint: Geometry.translatedPoint(this.startPoint, 0, 30),
+			endPoint: Geometry.translatedPoint(this.endPoint, 0, 30),
 			arrowheadAtEnd: this.arrowheadAtEnd,
 			config: {
 				color: this.config.color
           	}
-		});      
+		}, callback);      
     },
     
 	onReshape: function() {
@@ -612,10 +612,10 @@ ChartBox.addMethods({
 	  document.editingBox = true;
     },
     
-    duplicate: function() {
-		return new ChartBox({
-			x: parseInt(this.x)+10,
-			y: parseInt(this.y)+10,
+    duplicate: function(callback) {
+		return Charts.createComponent(ChartBox, {
+			x: parseInt(this.x),
+			y: parseInt(this.getTop() + this.getHeight()) + 30,
 			h: this.h,
 			w: this.w,
 			config: {
@@ -624,7 +624,7 @@ ChartBox.addMethods({
 				content: this.config.content,
 				content_html: this.config.content_html
 			}
-		});
+		}, callback);
 	},
   
     /** Handles a connection action (click, etc.) for a box */
@@ -1095,8 +1095,7 @@ var onColorSelect = function(type, args, value) {
 };
 
 var onDuplicateSelect = function() {
-	Charts.contextMenuTarget.duplicate();
-	Charts.redraw();
+	Charts.contextMenuTarget.duplicate(Charts.redraw);
 };
 
 var onSnapToGridSelect = function() {
