@@ -213,11 +213,11 @@ document.observe('chart:drawn', function(e) {
 				offsetPosition.y = Charts.gridSize * Math.round(offsetPosition.y / Charts.gridSize);
 			}
 			
-			offsetPosition.x = Math.max(Charts.bounds.x, offsetPosition.x);
-			offsetPosition.y = Math.max(Charts.bounds.y, offsetPosition.y);
+			offsetPosition.x = Math.max(Charts.drawingArea.x, offsetPosition.x);
+			offsetPosition.y = Math.max(Charts.drawingArea.y, offsetPosition.y);
 			
-			var maxX = Charts.bounds.bottomRight.x;
-			var maxY = Charts.bounds.bottomRight.y;
+			var maxX = Charts.drawingArea.bottomRight.x;
+			var maxY = Charts.drawingArea.bottomRight.y;
 			if (Charts.activeControl.getShape) {
 				maxX -= Charts.activeControl.getShape().getBounds().width;
 				maxY -= Charts.activeControl.getShape().getBounds().height;
@@ -256,7 +256,7 @@ document.observe('chart:drawn', function(e) {
 		Charts.controlReshaped = false;
 	});
 	
-	Charts.bounds = new Geometry.Bounds([Geometry.ORIGIN, Geometry.translatedPoint(Geometry.ORIGIN, Charts.element.offsetWidth, Charts.element.offsetHeight)]);
+	Charts.drawingArea = new Geometry.Bounds([Geometry.ORIGIN, Geometry.translatedPoint(Geometry.ORIGIN, Charts.element.offsetWidth, Charts.element.offsetHeight)]);
 	
 	Charts.snapToGrid = true;
 });

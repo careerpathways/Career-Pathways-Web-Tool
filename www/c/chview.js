@@ -12,7 +12,8 @@ Charts = {
     	Charts.element = $(document.body);
     	Charts._afterOpen = function() {
     		var points = Charts.components.invoke('getShape').invoke('getBounds').pluck('bottomRight');
-    		var bottomRight = new Geometry.Bounds(points).bottomRight;
+    		Charts.bounds = new Geometry.Bounds(points);
+    		var bottomRight = Charts.bounds.bottomRight;
     		Charts.createCanvas(bottomRight.x, bottomRight.y);
 		};
     }
@@ -55,7 +56,8 @@ Charts = {
 		}
 		
 		Charts.canvas = document.createElement('canvas');
-		if (Charts.canvas.getContext && Charts.printing) {
+		Charts._realCanvas = Charts.canvas.getContext;
+		if (Charts._realCanvas && Charts.printing) {
 			Charts.canvasScale = 4;
 		}
 		else {
@@ -68,7 +70,7 @@ Charts = {
 		Charts.canvas.style.width = (width) + 'px';
 		Charts.canvas.style.height = (height) + 'px';
 		
-		if (!Charts.canvas.getContext) {
+		if (!Charts._realCanvas) {
 			Charts.canvas.id = Charts.element.id + '_canvas';
 			Charts.element.appendChild(Charts.canvas);
 			Charts.canvas = G_vmlCanvasManager.initElement(Charts.canvas);
@@ -94,8 +96,12 @@ Charts = {
 		Charts.connections = new Hash();
 		Charts.drawingStatus = data.drawing_status;
 
-		if(!Charts.printing && (Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft')) {
-			Charts.element.style.background = 'url(/images/' + Charts.drawingStatus + '-overlay.png)';
+		if(Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft') {
+			Charts.backgroundImageUrl = '/images/' + Charts.drawingStatus + '-overlay.png';
+			// firefox crashes with this backgroung image
+			if (!(Charts.printing && Prototype.Browser.Gecko)) {
+				Charts.element.style.background = 'url(' + Charts.backgroundImageUrl + ')';
+			}
 		}
 		
 		// add the title image
@@ -228,32 +234,54 @@ Charts = {
 	redraw: function() {
 		var context = Charts.ctx;
 		
+		context.save();
+		var scale = Charts.textSizeMultiplier * Charts.canvasScale;
+		context.scale(scale, scale);
+		
 		if (Charts.printing) {
-			context.fillStyle = '#ffffff';
-			context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
+			if (Prototype.Browser.Gecko) {
+				if (Charts.backgroundImageUrl) {
+					if (!Charts._backgroundImage) {
+						context.restore();
+						Charts._backgroundImage = new Image();
+						Charts._backgroundImage.src = Charts.backgroundImageUrl;
+						Charts._backgroundImage.onload = Charts.redraw;
+						
+						return;
+					}
+					else {
+						for (var x = 0; x < Charts.bounds.width; x += Charts._backgroundImage.width) {
+							for (var y = 0; y < Charts.bounds.height; y += Charts._backgroundImage.height) {
+								context.drawImage(Charts._backgroundImage, x, y, Charts._backgroundImage.width, Charts._backgroundImage.height);
+							}
+						}
+					}
+					
+				}
+				else {
+					context.fillStyle = '#ffffff';
+					context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
+				}
+			}
 		}
 		else {
 			context.clearRect(0, 0, Charts.canvas.width, Charts.canvas.height);
 		}
 		
-		context.save();
-		var scale = Charts.textSizeMultiplier * Charts.canvasScale;
-		context.scale(scale, scale);
-		
 		if (Charts.drawGrid) {
 			context.strokeStyle = Charts.gridColor;
 			context.lineWidth = 1;
-			for (var x = .5; x < Charts.bounds.bottomRight.x; x += Charts.gridSize) {
+			for (var x = .5; x < Charts.drawingArea.bottomRight.x; x += Charts.gridSize) {
 				context.beginPath();
 				context.moveTo(x, 0);
-				context.lineTo(x, Charts.bounds.height);
+				context.lineTo(x, Charts.drawingArea.height);
 				context.stroke();
 				
 			}
-			for (var y = .5; y < Charts.bounds.bottomRight.y; y += Charts.gridSize) {
+			for (var y = .5; y < Charts.drawingArea.bottomRight.y; y += Charts.gridSize) {
 				context.beginPath();
 				context.moveTo(0, y);
-				context.lineTo(Charts.bounds.width, y);
+				context.lineTo(Charts.drawingArea.width, y);
 				context.stroke();
 			}
 		}
