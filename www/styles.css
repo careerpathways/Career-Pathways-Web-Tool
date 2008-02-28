@@ -518,6 +518,10 @@ a.chart_header {
 	padding: 10px;
 }
 
+#helpbar p {
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
 
 #drawing_canvas {
 	background: url('/c/grid.png');

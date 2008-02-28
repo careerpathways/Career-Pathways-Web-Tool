@@ -2,11 +2,57 @@
 header("Content-type: text/css");
 ?>
 
+/* styles to override browser defaults */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+	margin:0px;
+	padding:0px;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-weight:bold;
+	color: black;
+	margin-top: 10px;
+}
+ul {
+	margin-left: 15px;
+}
+hr {
+	padding: 0px;
+	border-top: 1px #000000 solid;
+	border-left: 0px;
+	border-right: 0px;
+	border-bottom: 0px;
+	margin-top: 5px;
+	margin-bottom: 0px;
+}
+p {
+	margin-top: 5px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-width: 100px;
+}
+h1 {
+	font-size: 22px;
+}
+h2 {
+	font-size: 20px;
+}
+h3 {
+	font-size: 17px;
+}
+h4 {
+	font-size: 14px;
+}
+h5 {
+	font-size: 11px;
+}
+h6 {
+	font-size: 10px;
+}
+
+
 .yuimenu {
 	z-index: 10; 
-}
-.ctepathwaysBox input, .ctepathwaysBox textarea {
-  border: none;
 }
 
 .ctepathwaysBox {
@@ -14,14 +60,9 @@ header("Content-type: text/css");
   font-family: verdana;
 }
 
-
 .chSchoolLogo {
   float:left;
   margin-right: 20px;
-}
-
-.ctepathwaysBox li {
-  margin: 0px;
 }
 
 
@@ -32,7 +73,7 @@ header("Content-type: text/css");
 .ctepathwaysBoxTitle {
   font-size: 10px;
   font-weight: bold;
-  color: #fff;
+  color: #ffffff;
   text-transform: uppercase;
 }
 
@@ -50,11 +91,7 @@ header("Content-type: text/css");
 
 .ctepathwaysBox input, .ctepathwaysBox textarea {
   background-color: #ffc;
-}
-
-.ctepathwaysBox ul {
-	margin-left: 0px;
-	padding-left: 15px;
+  border: none;
 }
 
 
@@ -74,7 +111,7 @@ header("Content-type: text/css");
 }
 
 .toolbar .button:hover {
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .toolbar .trash {
@@ -90,25 +127,13 @@ header("Content-type: text/css");
   height: 19px;
 }
 
-/* styles to override browser defaults */
-.ctpathways ul, .ctpathways ol {
-	margin-top: 0px;
-	margin-bottom: 0px;
-}
-.ctpathways p {
-	margin-top: 1em;
-	margin-bottom: 1em;
-	min-width: 100px;
-}
+
 
 .hash {
 	background: url(/images/hash.png);
 	height: auto;
 	width: auto;
 	!height: 100%;
-}
-.normal {
-
 }
 
 
