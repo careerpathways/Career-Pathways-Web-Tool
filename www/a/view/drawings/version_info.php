@@ -37,7 +37,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th>Preview</th>
 	<td>
-		<a href="javascript:preview_drawing(<?= $drawing['id'] ?>)">Preview Drawing</a>
+		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)">Preview Drawing</a>
 	</td>
 </tr>
 <tr>
