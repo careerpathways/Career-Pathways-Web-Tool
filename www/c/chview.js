@@ -240,6 +240,9 @@ Charts = {
 		
 		if (Charts.printing) {
 			if (Prototype.Browser.Gecko) {
+				context.fillStyle = '#ffffff';
+				context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
+					
 				if (Charts.backgroundImageUrl) {
 					if (!Charts._backgroundImage) {
 						context.restore();
@@ -257,10 +260,6 @@ Charts = {
 						}
 					}
 					
-				}
-				else {
-					context.fillStyle = '#ffffff';
-					context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
 				}
 			}
 		}
