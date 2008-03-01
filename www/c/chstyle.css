@@ -91,15 +91,55 @@ header("Content-type: text/css");
 }
 
 /* styles to override browser defaults */
-.ctpathways ul, .ctpathways ol {
+ul, ol {
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
-.ctpathways p {
+p {
 	margin-top: 1em;
 	margin-bottom: 1em;
 	min-width: 100px;
 }
+
+hr
+{
+  border-top: 1px #003366 solid;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 0px;
+  padding-bottom: 5px;
+  margin: 0px;
+  margin-top: 5px;
+}
+
+
+h1
+{
+  font-family: verdana, tahoma, arial, sans-serif;
+  font-size: 13pt;
+  color:#001133;
+  margin: 0px;
+}
+h2
+{
+  font-family: verdana, tahoma, arial, sans-serif;
+  font-size: 13pt;
+  color:#cf9d2b;
+  margin: 0px;
+}
+h3
+{
+  font-family: verdana, tahoma, arial, sans-serif;
+  font-size: 10pt;
+  color:#003366;
+}
+h4
+{
+  font-family: verdana, tahoma, arial, sans-serif;
+  font-size: 10pt;
+  color:#999999;
+}
+
 
 .hash {
 	background: url(/images/hash.png);
