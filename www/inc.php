@@ -206,11 +206,11 @@ function CanEditOtherSchools() {
 
 function CreateDrawingCodeFromTitle($title,$school_id) {
 global $DB;
-	// remove all ' and "
-	// any character that is not a letter or number, convert to _
+	// replace spaces with underscores
+	// remove any character that is not a letter or number
 	$title = strtolower($title);
-	$patterns = array('/[\'"!]/','/[^a-z0-9]+/');
-	$replacements = array('','_');
+	$patterns = array('/\s+/','/[^a-z0-9_]+/');
+	$replacements = array('_','');
 	$code = strtolower($DB->GetValue('school_abbr','schools',$school_id).'_'.preg_replace($patterns,$replacements,$title));
 	return $code;
 }

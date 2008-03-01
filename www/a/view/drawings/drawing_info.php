@@ -39,7 +39,7 @@ if( $id != "" ) {
 <tr>
 	<th>Title</th>
 	<td>
-		<input type="text" id="drawing_title" name="name" size="20" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
+		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 		<span id="checkNameResponse" class="error"></span>
 	</td>
 </tr>
@@ -69,9 +69,10 @@ if( $id != "" ) {
 	<td>
 		<div id="title_fixed"><span id="title_value"><?= $drawing['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 		<div id="title_edit" style="display:none">
-			<input type="text" id="drawing_title" name="name" size="20" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
+			<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
 			<span id="checkNameResponse" class="error"></span>
+		<div class="tiny error">Warning: changing the drawing title will break any external web pages that link to this drawing.</div>
 		</div>
 	</td>
 </tr>
