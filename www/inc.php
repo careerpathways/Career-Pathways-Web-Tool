@@ -208,11 +208,16 @@ function CreateDrawingCodeFromTitle($title,$school_id) {
 global $DB;
 	// replace spaces with underscores
 	// remove any character that is not a letter or number
-	$title = strtolower($title);
-	$patterns = array('/\s+/','/[^a-z0-9_]+/');
-	$replacements = array('_','');
-	$code = strtolower($DB->GetValue('school_abbr','schools',$school_id).'_'.preg_replace($patterns,$replacements,$title));
+	$dirty_code = preg_replace('/\s+/','',strtolower($title));
+	$clean_code = CleanDrawingCode($dirty_code);
+	$school_abbr = preg_replace('/\s+/','',$DB->GetValue('school_abbr','schools',$school_id));
+	$code = strtolower($school_abbr.'_'.$clean_code);
 	return $code;
+}
+
+function CleanDrawingCode($code) {
+	$clean_code = preg_replace('/[^a-z0-9_]/','',$code);
+	return $clean_code;
 }
 
 function GetDrawingInfo($drawing_id, $pk_table = 'drawings') {

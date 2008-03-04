@@ -2,6 +2,8 @@
 chdir("..");
 include("inc.php");
 
+$_REQUEST['d'] = CleanDrawingCode($_REQUEST['d']);
+
 if( KeyInRequest('v') ) {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
