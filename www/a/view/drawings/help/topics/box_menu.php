@@ -17,7 +17,7 @@
 <dd>Creates a dynamic connection and draws a line between the boxes.</dd>
 
 <dt>Duplicate</dt>
-<dd>Makes a copy of the box. Connections to and from the box are <em>not</em> copied. This is the same as <kbd>CTRL+C</kbd>, <kbd>CTRL+V</kbd>.</dd>
+<dd>Makes a copy of the box. Connections to and from the box are <em>not</em> copied. This is the same as <kbd>CTRL+C</kbd>, <kbd>CTRL+V</kbd>. Offsets new duplicate below original.</dd>
 
 <dt>Delete</dt>
 <dd>Permanently removes the box, after confirmation. All connections to and from the box are also deleted.</dd>
