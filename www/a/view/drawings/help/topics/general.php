@@ -1,6 +1,6 @@
 <h2>General</h2>
 
-<p>Right-click the drawing area tools menu to show and/or edit the grid, and/or create new objects.</p>
+<p>Right-click the drawing area for a tools menu to show and/or edit the grid, or create new objects.</p>
 
 <p>Right-click an object for a menu of customizing options.</p>
 
