@@ -11,14 +11,18 @@
 <p>Duplicate the selected object with <kbd>CTRL+C</kbd>, <kbd>CTRL+V</kbd>, or the object's menu. Offsets new duplicate below original.</p>
 
 
-<h2>Positioning Connections, Lines and Arrows</h2>
+<h2>Positioning Objects</h2>
 
-<p>When selected, Connections, Lines and Arrows now show a blue box frame, with a Green start point and Red end point. The object's menu can be brought up anywhere within this box. Click and drag the Green start point or Red end point to adjust the starting or ending location.</p>
+<p>When selected, connections, lines and arrows now show a blue box frame, with a green control point at the start and a red control point at the end. The object's menu can be brought up by right-clicking anywhere within this box. Click and drag the start control point or end control point to adjust the starting or ending location.</p>
+
+<p>When dragging a box, line or arrow, hold down the <kbd>ALT</kbd> key (<kbd>option</kbd> on Mac) to move the object without snapping to the grid.</p>
+
+<p>When dragging a control point for a line or arrow, hold down the <kbd>Shift</kbd> key to make the line vertical or horizontal.</p>
 
 
 <h2>Resizing Boxes</h2>
 
-<p>When selected, boxes are highlighted with a blue box frame, with LEFT and RIGHT blue adjustment points. Click and drag either point to expand/retract box width. Box height is determined by content.</p>
+<p>When selected, boxes are highlighted with a blue box frame, with left and right blue control points. Click and drag either point to expand/retract box width. Box height is determined by content.</p>
 
 
 <h2>Print This Version</h2>
