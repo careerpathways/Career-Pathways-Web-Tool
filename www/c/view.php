@@ -19,6 +19,16 @@ if( KeyInRequest('v') ) {
 		die();
 	}
 
+} else if (KeyInRequest('id')) {
+	$drawing = $DB->SingleQuery("SELECT * FROM drawing_main,drawings
+		WHERE drawings.parent_id=drawing_main.id
+			AND drawings.id=".intval($_REQUEST['id']));
+			
+	if( !is_array($drawing) ) {
+		header("HTTP/1.0 404 Not Found");
+		echo "Not found: ".$_REQUEST['id'];
+		die();
+	}
 } else {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
