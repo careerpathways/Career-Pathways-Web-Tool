@@ -36,7 +36,7 @@ Note: If you ever change the name of the drawing, the drawing code will change a
 
 ++ Embedding an Unpublished Version
 
-If you wish, you can also embed an unpublished version of a drawing. In this case, you provide the version number in addition to the drawing code. You can find the full URL to include on the Version Info page. 
+If you wish, you can also embed an unpublished version of a drawing. In this case, you provide the version number in addition to the drawing code. You can find the full URL to include on the Version Info page.
 
 <code type="php">
 <iframe width="800" height="600" src="http://oregon.ctepathways.org/c/version/cocc_emt_basic/3.html" style="border:0px"></iframe>
@@ -44,9 +44,25 @@ If you wish, you can also embed an unpublished version of a drawing. In this cas
 
 When embedding a drawing this way, you will ALWAYS be linking to this specific version. If a new version is created and published, this content will not be modified. This has the disadvantage of not automatically updating when a new version is created. This method is not recommended except for special cases.
 
+++ Colors
+
+Here is a list of the colors used throughout the Career Pathways Web Tool.
+
+$color_chart
+
 <?php
 $text = ob_get_contents();
 ob_end_clean();
+
+
+$colors = array('999999','cccccc','cf9d2b','e6d09e','295a76');
+$color_chart = '<table style="margin-left:20px">';
+foreach( $colors as $c ) {
+	$color_chart .= '<tr><td width="30" height="20" style="background-color:#'.$c.'"></td><td>#'.strtoupper($c).'</td></tr>';
+}
+$color_chart .= '</table>';
+
+
 
 
 $wiki =& new Text_Wiki();$xhtml = $wiki->transform($text, 'Xhtml');
@@ -54,12 +70,10 @@ $wiki =& new Text_Wiki();$xhtml = $wiki->transform($text, 'Xhtml');
 $xhtml = str_replace("\n".'<span style="color: #0000BB">&lt;?php'."\n\n",'<span>',$xhtml);$xhtml = str_replace('?&gt;','',$xhtml);
 
 $xhtml = str_replace("\$example_url", "examples.ctepathways.org", $xhtml);
-
 $xhtml = str_replace("\$oregon_url", "oregon-test.ctepathways.org", $xhtml);
-//$xhtml = str_replace("\$oregon_url", "pathways", $xhtml);
+$xhtml = str_replace("\$color_chart", $color_chart, $xhtml);
 
 echo $xhtml;
-
 
 
 PrintFooter();
