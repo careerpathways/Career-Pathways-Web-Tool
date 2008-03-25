@@ -35,6 +35,7 @@ foreach($session_keys as $header) {
 }
 echo '</tr>';
 foreach( $sessions as $session ) {
+	if( $session['user_id'] > 0 ) {
 	echo '<tr>';
 		foreach($session_keys as $key) {
 			echo '<td>';
@@ -50,6 +51,7 @@ foreach( $sessions as $session ) {
 			echo '</td>';
 		}
 	echo '</tr>';
+	}
 }
 echo '</table>';
 
