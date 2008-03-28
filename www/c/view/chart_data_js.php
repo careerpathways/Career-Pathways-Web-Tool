@@ -9,7 +9,7 @@ foreach( $objects as $obj ) {
 	$thisobj = unserialize($obj['content']);
 
    //get the connection list for this object
-   $objConnections = $DB->MultiQuery("SELECT * FROM connections WHERE source_object_id=".$thisobj['id']);
+   $objConnections = $DB->MultiQuery("SELECT *, LPAD(color,6,\"0\") AS color FROM connections WHERE source_object_id=".$thisobj['id']);
 
    foreach($objConnections as $connection) {
    	$connections[] = $connection;

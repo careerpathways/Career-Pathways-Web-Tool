@@ -111,19 +111,6 @@ switch( $_REQUEST['a'] ) {
 
 			$obj['id'] = intval($_REQUEST['id']);
 
-			/*
-			if( array_key_exists('config',$_REQUEST['content']) ) {
-				if( array_key_exists('content',$_REQUEST['content']['config']) ) {
-
-					// echo the rendered html to the browser
-					$wiki =& new Text_Wiki();
-					$xhtml = $wiki->transform($obj['config']['content'], 'Xhtml');
-					//echo trim($xhtml);
-
-				}
-			}
-			*/
-
 			if($debug) echo "Resulting object:\n";
 			if($debug) PA($obj);
 
@@ -137,10 +124,7 @@ switch( $_REQUEST['a'] ) {
 		if($debug) {
 			$v = ob_get_contents();
 			ob_end_clean();
-
-			$fp = fopen('c/log.txt','a');
-			fwrite($fp,$v);
-			fclose($fp);
+			chlog($v);
 		}
 	break;
 	case 'remove':

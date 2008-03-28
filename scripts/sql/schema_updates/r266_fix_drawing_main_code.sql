@@ -1,0 +1,1 @@
+ALTER TABLE drawing_main MODIFY COLUMN code VARCHAR(255);
