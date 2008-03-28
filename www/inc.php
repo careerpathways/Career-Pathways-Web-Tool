@@ -204,20 +204,43 @@ function CanEditOtherSchools() {
 }
 
 
-function CreateDrawingCodeFromTitle($title,$school_id) {
+function CreateDrawingCodeFromTitle($title, $school_id, $drawing_id=0) {
 global $DB;
 	// replace spaces with underscores
+	$dirty_code = preg_replace('/\s+/','_',strtolower($title));
+
 	// remove any character that is not a letter or number
-	$dirty_code = preg_replace('/\s+/','',strtolower($title));
 	$clean_code = CleanDrawingCode($dirty_code);
-	$school_abbr = preg_replace('/\s+/','',$DB->GetValue('school_abbr','schools',$school_id));
-	$code = strtolower($school_abbr.'_'.$clean_code);
+
+	// remove any duplicate underscores
+	$clean_code = preg_replace('/_+/','_',$clean_code);
+
+	// get the coded version of the school abbreviation (removes spaces)
+	$school_abbr = CleanDrawingCode($DB->GetValue('school_abbr','schools',$school_id));
+
+	// this is the ideal code for this drawing. but it may already exist in the database
+	$proposed_code = strtolower($school_abbr.'_'.$clean_code);
+
+	// look for conflicting codes
+	$code = $proposed_code;
+	while( DrawingCodeAlreadyExists($code, $drawing_id) ) {
+		// keep trying new codes until we get one that is unique
+		$code = $proposed_code.'_'.rand(100,999);
+	}
+
 	return $code;
 }
 
 function CleanDrawingCode($code) {
-	$clean_code = preg_replace('/[^a-z0-9_]/','',$code);
-	return $clean_code;
+	return preg_replace('/[^a-z0-9_]/i','',$code);
+}
+
+function DrawingCodeAlreadyExists($code, $drawing_id) {
+global $DB;
+	$num = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main
+		WHERE code='".$code."'
+		AND id != ".$drawing_id);
+	return $num['num'] == 1;
 }
 
 function GetDrawingInfo($drawing_id, $pk_table = 'drawings') {

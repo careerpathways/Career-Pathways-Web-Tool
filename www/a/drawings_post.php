@@ -15,13 +15,13 @@ if( Request('id') ) {
 		die();
 	}
 
-	$school_id = $DB->GetValue('school_id', 'drawing_main', $_REQUEST['id']);
+	$school_id = $DB->GetValue('school_id', 'drawing_main', intval($_REQUEST['id']));
 
 	$content = array();
 	$content['name'] = $_REQUEST['title'];
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
-	$content['code'] = CreateDrawingCodeFromTitle($content['name'],$school_id);
+	$content['code'] = CreateDrawingCodeFromTitle($content['name'],$school_id,intval($_REQUEST['id']));
 
 	$DB->Update('drawing_main',$content,intval($_REQUEST['id']));
 
@@ -40,8 +40,8 @@ if( Request('drawing_id') ) {
 		$content = array();
 		$content['note'] = $_REQUEST['note'];
 		$DB->Update('drawings',$content,intval($_REQUEST['drawing_id']));
-	}	
-	
+	}
+
 }
 
 ?>

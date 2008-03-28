@@ -215,12 +215,12 @@ function showVersion() {
 	?>
 
 	<script type="text/javascript" src="/files/greybox.js"></script>
-	
+
 	<style type="text/css" media="print">
 		#drawing_canvas, #header, #topbar {
 			display: none;
 		}
-		
+
 		#printHelp {
 			width: 5in;
 			margin: auto;
@@ -232,17 +232,17 @@ function showVersion() {
 			font-weight: bold;
 		}
 	</style>
-	
+
 	<style type="text/css" media="screen">
 		#printHelp {
-			display: none;	
+			display: none;
 		}
 	</style>
-	
+
 	<div id="printHelp">
 		<p>To print, please click the <var>print this version</var> button in the toolbar.</p>
 	</div>
-	
+
 	<div id="drawing_canvas" class="ctpathways">
 		<?php require('c/view/chart_include.php'); ?>
 		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
@@ -311,7 +311,7 @@ function copyVersion($version_id) {
 
 		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
-		$newdrawing['code'] = strtolower($DB->GetValue('school_abbr','schools',$newdrawing['school_id']).'_'.str_replace(' ','_',$newdrawing['name'])).rand(100,999);
+		$newdrawing['code'] = CreateDrawingCodeFromTitle($newdrawing['name'],$newdrawing['school_id']);
 		$newdrawing['date_created'] = $drawing_main['date_created'];
 		$newdrawing['last_modified'] = $DB->SQLDate();
 		$newdrawing['created_by'] = $drawing_main['created_by'];

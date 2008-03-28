@@ -40,7 +40,7 @@
 					$action = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? 'draw' : 'view';
 						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&amp;version_id='.$v['id'].'">'.($v['published']?'view':$action).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:preview_drawing(\''.$drawing['code'].'\','.$v['version_num'].')">preview</a>';
+						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">preview</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="copy_popup.php?version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
 					echo '</td>';

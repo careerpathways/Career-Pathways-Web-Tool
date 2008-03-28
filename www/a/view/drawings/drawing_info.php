@@ -85,8 +85,7 @@ if( $id != "" ) {
 	<td>
 	<?php
 		if( is_array($published) ) {
-			//echo '<a href="javascript:preview_drawing('.$published['id'].')"><img src="/files/charts/gif/'.$published['id'].'.gif" height="100" width="140" class="border"></a>';
-			echo '<a href="javascript:preview_drawing(\''.$drawing['code'].'\','.$published['version_num'].')">Preview Published Drawing</a>';
+			echo '<a href="javascript:preview_drawing(drawing_code,'.$published['version_num'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
@@ -140,8 +139,10 @@ if( $id != "" ) {
 <?php } ?>
 </p>
 
+<script type="text/javascript" src="/common/URLfunctions1.js"></script>
 <script type="text/javascript">
 
+drawing_code = '<?= $drawing['code'] ?>';
 schools = new Array(<?= count($schools) ?>);
 <?php
 $i=0;
@@ -152,7 +153,7 @@ foreach( $schools as $sid=>$school ) {
 ?>
 
 function checkName(title) {
-	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+title.value<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
 }
 
 function verifyName(result) {
@@ -165,12 +166,12 @@ function verifyName(result) {
 
 function savetitle() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+title.value<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
 }
 
 function submitform() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+title.value<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
 }
 
 function verifyNameSubmitNew(result) {
@@ -186,11 +187,12 @@ function verifyNameSubmit(result) {
 		verifyName(0);
 	} else {
 		var title = getLayer('drawing_title');
-		ajaxCallback(cbNameChanged, '/a/drawings_post.php?id=<?= $drawing['id'] ?>&title='+title.value);
+		ajaxCallback(cbNameChanged, '/a/drawings_post.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
 	}
 }
 
 function cbNameChanged(drawingCode) {
+	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
 	getLayer('drawing_link').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'</a>';
 	getLayer('embed_code').value = '<?= $embed_code ?>';
