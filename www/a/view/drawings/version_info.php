@@ -51,7 +51,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	</td>
 </tr>
 <?php if( $drawing['published'] ) {
-	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$drawing_main['code'].'"></iframe>';
+	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$drawing_main['code'].'" frameborder="0" scrolling="no"></iframe>';
 	?>
 	<tr>
 	<th>Embed Code</th>
