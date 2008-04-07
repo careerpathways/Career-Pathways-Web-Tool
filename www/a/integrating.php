@@ -24,7 +24,7 @@ The purpose of this document is to provide some examples of embedding Career Pat
 You can embed a drawing by inserting an <iframe> tag into your website. You will need to define the height and width of the iframe in your document.
 
 <code type="php">
-<iframe width="800" height="600" src="http://oregon.ctepathways.org/c/published/cocc_emt_basic" style="border:0px"></iframe>
+<iframe width="800" height="600" src="http://oregon.ctepathways.org/c/published/cocc_emt_basic" frameborder="0" scrolling="no"></iframe>
 </code>
 
 You can find the URL for this drawing on the Drawing Info page. It will always look like this: "http://oregon.ctepathways.org/c/published/drawing_code"
