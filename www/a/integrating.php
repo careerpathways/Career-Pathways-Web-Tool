@@ -39,7 +39,7 @@ Note: If you ever change the name of the drawing, the drawing code will change a
 If you wish, you can also embed an unpublished version of a drawing. In this case, you provide the version number in addition to the drawing code. You can find the full URL to include on the Version Info page.
 
 <code type="php">
-<iframe width="800" height="600" src="http://oregon.ctepathways.org/c/version/cocc_emt_basic/3.html" style="border:0px"></iframe>
+<iframe width="800" height="600" src="http://oregon.ctepathways.org/c/version/cocc_emt_basic/3.html" frameborder="0" scrolling="no"></iframe>
 </code>
 
 When embedding a drawing this way, you will ALWAYS be linking to this specific version. If a new version is created and published, this content will not be modified. This has the disadvantage of not automatically updating when a new version is created. This method is not recommended except for special cases.

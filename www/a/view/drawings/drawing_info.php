@@ -19,7 +19,7 @@ if( IsAdmin() ) {
 	$school_id = $_SESSION['school_id'];
 }
 
-$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/%%"  frameborder="0" scrolling="no"></iframe>';
+$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/%%" frameborder="0" scrolling="no"></iframe>';
 
 if( $id != "" ) {
 	$published = $DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND parent_id=".$drawing['id']);
