@@ -1,0 +1,1 @@
+ALTER TABLE `news` ADD COLUMN `sort_index` int NULL  AFTER `active`;

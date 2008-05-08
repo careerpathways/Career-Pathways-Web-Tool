@@ -146,6 +146,7 @@ CREATE TABLE `news` (
   `caption` varchar(255) default NULL,
   `text` text,
   `active` tinyint(1) NOT NULL default '1',
+  `sort_index` int(11) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 

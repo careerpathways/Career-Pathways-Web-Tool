@@ -17,6 +17,7 @@ if( PostRequest() ) {
 	$content = array();
 	$content['caption'] = $_REQUEST['caption'];
 	$content['text'] = $_REQUEST['text'];
+	$content['sort_index'] = $_REQUEST['sort_index'];
 
 	if( Request('id') ) {
 		$DB->Update('news',$content,intval($_REQUEST['id']));
@@ -42,10 +43,10 @@ if( PostRequest() ) {
 		PrintHeader();
 		$news = $DB->MultiQuery("
 			SELECT news.id, news.date, news.text, news.caption, news.active,
-				CONCAT(users.first_name,' ',users.last_name) AS name
+				CONCAT(users.first_name,' ',users.last_name) AS name, sort_index
 			FROM news, users
 			WHERE user_id=users.id
-			ORDER BY date DESC");
+			ORDER BY sort_index");
 		?>
 		<table width="100%">
 		<tr>
@@ -54,7 +55,7 @@ if( PostRequest() ) {
 			<th>Caption</th>
 			<th>Content</th>
 			<th width="160">Posted By</th>
-			<th width="60">Show</th>
+			<th width="60">Sort</th>
 		</tr>
 		<?php
 		foreach( $news as $n ) {
@@ -64,7 +65,7 @@ if( PostRequest() ) {
 			echo '<td>'.$n['caption'].'</td>';
 			echo '<td>'.TrimString($n['text'],45).'</td>';
 			echo '<td>'.$n['name'].'</td>';
-			echo '<td>'.($n['active']?'yes':'no').'</td>';
+			echo '<td>'.$n['sort_index'].'</td>';
 			echo '</tr>';
 		}
 		echo '</table>';
@@ -92,6 +93,10 @@ global $DB;
 	<tr>
 		<th valign="top">Text</th>
 		<td><textarea style="width: 500px; height: 300px;" name="text"><?= $news['text'] ?></textarea><br>(wiki syntax allowed)</td>
+	</tr>
+	<tr>
+		<th>Sort Index</th>
+		<td><input type="text" name="sort_index" style="width: 50px" value="<?= $news['sort_index'] ?>"></td>
 	</tr>
 
 	<tr>
