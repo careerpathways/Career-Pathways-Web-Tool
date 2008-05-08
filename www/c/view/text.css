@@ -1,0 +1,32 @@
+<?php
+header("Content-type: text/css");
+?>
+
+body {
+	font-family: verdana, sans-serif;
+}
+
+body, td {
+	font-size: 12pt;
+}
+
+h1 { 
+	font-size: 22pt;
+}
+
+h2 {
+	font-size: 18pt;
+	margin-bottom: 0px;
+}
+
+h3 {
+	font-size: 13pt;
+	margin-bottom: 0px;
+	font-weight: normal;
+}
+
+ul {
+	margin-top: 0px;
+}
+
+

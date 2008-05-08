@@ -44,6 +44,16 @@ If you wish, you can also embed an unpublished version of a drawing. In this cas
 
 When embedding a drawing this way, you will ALWAYS be linking to this specific version. If a new version is created and published, this content will not be modified. This has the disadvantage of not automatically updating when a new version is created. This method is not recommended except for special cases.
 
+++ ADA Compliance
+
+A URL to an "accessible" (text-only) version of your drawing is available in the drawing's information page, accessed by clicking the drawing title from the drawing menu.
+
+<code type="php">
+<a href="http://oregon.ctepathways.org/c/text/cocc_emt_basic.html">Accessible version</a>
+</code>
+
+The "accessible" URL will always link to the published version of that drawing. Include a link to this URL on your web page where you have embedded the full drawing so that visitors can access a version of your drawing that will be compatible with screen readers.
+
 ++ Colors
 
 Here is a list of the colors used throughout the Career Pathways Web Tool.

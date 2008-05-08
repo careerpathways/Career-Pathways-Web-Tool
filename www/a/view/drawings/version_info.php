@@ -68,6 +68,12 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<th valign="top">XML</th>
 	<td>
 		<a href="<?= $url.'.xml' ?>"><?= $url.'.xml' ?></a>
+	</td>
+</tr>
+<tr>
+	<th valign="top">Accessible</th>
+	<td><?php $url = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/'.$drawing_main['code'].'/'.$drawing['version_num'].'.html'; ?>
+		<a href="<?= $url ?>"><?= $url ?></a>
 		<br>
 		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
 		<br>

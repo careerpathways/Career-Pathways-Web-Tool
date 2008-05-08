@@ -100,11 +100,32 @@ if( $id != "" ) {
 </tr>
 <tr>
 	<th>Link</th>
-	<td>This link, as well as the embed code above, will always link to the published version of this drawing.<br>
+	<td>
 		<div id="drawing_link"><?php
 		$url = "http://".$_SERVER['SERVER_NAME']."/c/published/".$drawing['code'];
-		echo '<a href="'.$url.'">'.$url.'</a>';
-		?></div><br>
+		echo '<a href="'.$url.'.html">'.$url.'.html</a>';
+		?></div>
+	</td>
+</tr>
+<tr>
+	<th valign="top">XML</th>
+	<td>
+		<div id="drawing_link_xml">
+		<a href="<?= $url.'.xml' ?>"><?= $url.'.xml' ?></a>
+		</div>
+	</td>
+</tr>
+<tr>
+	<th valign="top">Accessible</th>
+	<td>
+		<div id="drawing_link_ada">
+		<?php
+			$url = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/'.$drawing['code'].'.html';
+			echo '<a href="'.$url.'">'.$url.'</a>';
+		?>
+		</div>
+		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
+		<br>
 	</td>
 </tr>
 <?php
@@ -194,7 +215,9 @@ function verifyNameSubmit(result) {
 function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('drawing_link').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'</a>';
+	getLayer('drawing_link').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'.html</a>';
+	getLayer('drawing_link_xml').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'.xml</a>';
+	getLayer('drawing_link_ada').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/text/'+drawingCode+'.html</a>';
 	getLayer('embed_code').value = '<?= $embed_code ?>';
 	getLayer('embed_code').value = getLayer('embed_code').value.replace(/%%/,drawingCode);
 	getLayer('title_edit').style.display = 'none';

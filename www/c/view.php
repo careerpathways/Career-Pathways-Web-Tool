@@ -6,7 +6,7 @@ $_REQUEST['d'] = CleanDrawingCode($_REQUEST['d']);
 
 if( KeyInRequest('v') ) {
 
-	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
+	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
 			drawing_main.name, school_id, published, frozen
 		FROM drawing_main,drawings
 		WHERE drawings.parent_id=drawing_main.id
@@ -23,7 +23,7 @@ if( KeyInRequest('v') ) {
 	$drawing = $DB->SingleQuery("SELECT * FROM drawing_main,drawings
 		WHERE drawings.parent_id=drawing_main.id
 			AND drawings.id=".intval($_REQUEST['id']));
-			
+
 	if( !is_array($drawing) ) {
 		header("HTTP/1.0 404 Not Found");
 		echo "Not found: ".$_REQUEST['id'];
@@ -31,7 +31,7 @@ if( KeyInRequest('v') ) {
 	}
 } else {
 
-	$drawing = $DB->SingleQuery("SELECT drawings.id AS id, 
+	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
 			drawing_main.name, school_id, published, frozen
 		FROM drawing_main, drawings
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
@@ -56,14 +56,25 @@ else {
 	$format = 'html';
 }
 
-if ($format === 'xml') {
-	$_REQUEST['id'] = $drawing['id'];
-	require('view/xml.php');
+if( $_REQUEST['page'] == 'text' ) {
+	if( Request('v') ) {
+		$_REQUEST['xml'] = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/'.$_REQUEST['d'].'/'.$_REQUEST['v'].'.xml';
+	} else {
+		$_REQUEST['xml'] = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$_REQUEST['d'].'.xml';
+	}
+	require('view/text.php');
+} else {
+	if ($format === 'xml') {
+		$_REQUEST['id'] = $drawing['id'];
+		require('view/xml.php');
+	}
+	else if ($format === 'js') {
+		header("Content-type: text/javascript");
+		require('view/chart_data_js.php');
+	}
+	else {
+		require('view/html.php');
+	}
 }
-else if ($format === 'js') {
-	header("Content-type: text/javascript");
-	require('view/chart_data_js.php');
-}
-else {
-	require('view/html.php');
-}
+
+?>
