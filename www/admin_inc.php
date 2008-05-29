@@ -84,4 +84,10 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 
 }
 
+function CanDeleteDrawing(&$drawing) {
+        return (IsAdmin()
+                || (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
+                || $drawing['created_by'] == $_SESSION['user_id']);
+}
+
 ?>

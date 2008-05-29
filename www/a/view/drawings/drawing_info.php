@@ -136,11 +136,7 @@ if( $id != "" ) {
 		2. school admins & webmasters at the same school
 		3. the owner of the drawing
 	*/
-	if(
-		IsAdmin()
-		|| (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
-		|| $drawing['created_by'] == $_SESSION['user_id']
-	) { ?>
+	if( CanDeleteDrawing($drawing) ) { ?>
 <tr>
 	<th>Delete</th>
 	<td width="545">
@@ -229,7 +225,7 @@ function showTitleChange() {
 	getLayer('title_fixed').style.display = 'none';
 }
 
-<?php if( IsSchoolAdmin() ) { ?>
+<?php if( CanDeleteDrawing($drawing) ) { ?>
 function deleteConfirm() {
 	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
 }

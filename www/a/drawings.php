@@ -103,7 +103,7 @@ if( KeyInRequest('drawing_id') ) {
 			die();
 		}
 
-		if( IsSchoolAdmin() && Request('delete') == 'delete' ) {
+		if( CanDeleteDrawing($drawing) && Request('delete') == 'delete' ) {
 			$drawing_id = intval($_REQUEST['id']);
 			// when deleting the entire drawing (from drawing_main) actually remove the records
 			$DB->Query('DELETE FROM connections WHERE source_object_id IN (SELECT objects.id FROM objects, drawings WHERE objects.drawing_id=drawings.id AND drawings.parent_id=' . $drawing_id . ')');
