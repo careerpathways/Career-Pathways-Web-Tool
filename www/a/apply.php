@@ -14,7 +14,7 @@ if( PostRequest() ) {
 									$_SERVER['REMOTE_ADDR'],
 									Request('recaptcha_challenge_field'),
 									Request('recaptcha_response_field') );
-	if( 1 || $cap->is_valid ) {
+	if( $cap->is_valid ) {
 
 		$check = $DB->SingleQuery('SELECT * FROM users WHERE email=""');
 		if( is_array($check) ) {
