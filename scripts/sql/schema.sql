@@ -118,6 +118,7 @@ CREATE TABLE `email_text` (
   `description` text,
   `sender` varchar(255) default NULL,
   `recipient` varchar(255) default NULL,
+  `bcc` varchar(255) default NULL,
   `subject` varchar(255) default NULL,
   `emailbody` text,
   PRIMARY KEY  (`id`)
@@ -211,6 +212,11 @@ CREATE TABLE `users` (
   `user_active` tinyint(4) default NULL,
   `user_level` tinyint(4) default NULL,
   `last_module` varchar(50) default NULL,
+  `new_user` tinyint(1) NOT NULL default '0',  
+  `referral` varchar(255) default NULL,        
+  `other_school` varchar(255) default NULL,    
+  `application_key` varchar(255) default NULL,  
+  `approved_by` int(11) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=latin1;
 
