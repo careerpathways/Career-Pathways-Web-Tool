@@ -11,7 +11,9 @@ if( KeyInRequest('change') ) {
 			$_REQUEST['new'] != "" && $_REQUEST['new1'] != "" ) {
 
 			if( $_REQUEST['new'] == $_REQUEST['new1'] ) {
-				$DB->Query("UPDATE users SET password = '".crypt($_REQUEST['new'], $DB->pswdsalt)."' WHERE id = ".$_SESSION['user_id']);
+				if( $_SESSION['email'] != 'guest' ) {
+					$DB->Query("UPDATE users SET password = '".crypt($_REQUEST['new'], $DB->pswdsalt)."' WHERE id = ".$_SESSION['user_id']);
+				}
 				echo "<p>Your password has been successfully changed.</p>";
 				echo '<h2><a href="http://'.$_SERVER['SERVER_NAME'].'/">Continue</a></h2>';
 			} else {
@@ -44,23 +46,27 @@ if( KeyInRequest('change') ) {
 			// generate random 6-character password
 			$password = RandPass(6);
 
-			// pop encrypted password into the database in the temppassword field
-			$DB->Query("UPDATE users SET temp_password = '".crypt($password, $DB->pswdsalt)."' WHERE id = $user_id");
 
+			if( $_SESSION['email'] != 'guest' ) {
 
-			if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
-				$url = "https://".$SITE->https_server()."/a/login.php";
-			} else {
-				$url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
+				// pop encrypted password into the database in the temppassword field
+				$DB->Query("UPDATE users SET temp_password = '".crypt($password, $DB->pswdsalt)."' WHERE id = $user_id");
+	
+				if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
+					$url = "https://".$SITE->https_server()."/a/login.php";
+				} else {
+					$url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
+				}
+	
+				$email = new SiteEmail('forgot_password');
+				$email->IsHTML(false);
+				$email->Assign('LOGIN_LINK', $url.'?email='.$username.'&password='.$password);
+				$email->Assign('PASSWORD', $password);
+				$email->Assign('EMAIL', $username);
+	
+				$email->Send();
+
 			}
-
-			$email = new SiteEmail('forgot_password');
-			$email->IsHTML(false);
-			$email->Assign('LOGIN_LINK', $url.'?email='.$username.'&password='.$password);
-			$email->Assign('PASSWORD', $password);
-			$email->Assign('EMAIL', $username);
-
-			$email->Send();
 
 			?>
 			<p>A temporary <span title="<?= $password ?>">password</span> has been sent to your email address.</p>

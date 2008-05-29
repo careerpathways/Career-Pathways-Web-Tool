@@ -8,6 +8,7 @@ insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`o
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (7,'integrating','Embedding Instructions','Embedding Instructions',1,120);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (8,'schoolcolors','School Colors','School Colors',1,80);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (9,'help','Help','Help',1,200);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (10,'emailcontents','Email Contents','Email Contents',1,105);
 
 /*Data for the table `admin_user_levels` */
 

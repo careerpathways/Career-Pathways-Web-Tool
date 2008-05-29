@@ -101,7 +101,7 @@ if( PostRequest() ) {
 		ShowApplyForm();
 	} else {
 		echo '<p>Thanks for visiting. Are you affiliated with an Oregon school or business?</p>';
-		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="'.$_SERVER['PHP_SELF'].'?contact">No</a></p>';
+		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?a">No</a></p>';
 	}
 }
 

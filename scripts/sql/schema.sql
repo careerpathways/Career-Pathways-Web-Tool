@@ -245,6 +245,7 @@ CREATE TABLE `types` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `helprequests`;
 CREATE TABLE `helprequests` (            
 	`id` int(11) NOT NULL auto_increment,  
 	`date` datetime default NULL,          
@@ -252,5 +253,18 @@ CREATE TABLE `helprequests` (
 	`subject` varchar(255) default NULL,   
 	`message` text,                        
 	PRIMARY KEY  (`id`)                    
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `guest_logins`;
+create table `guest_logins` (    
+	`id` int UNSIGNED   NOT NULL AUTO_INCREMENT ,  
+	`date` datetime   NULL ,  
+	`first_name` varchar (30)   NULL ,  
+	`last_name` varchar (30)   NULL ,  
+	`email` varchar (100)   NULL ,  
+	`school` varchar (200)   NULL ,  
+	`referral` varchar (200)   NULL ,  
+	`ipaddr` varchar (20)   NULL  , 
+	PRIMARY KEY ( `id` )  
+');
 
