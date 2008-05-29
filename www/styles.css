@@ -346,6 +346,7 @@ a.edit:hover {
 #topbar_inside {
 	color: black;
 	padding-right: 30px;
+
 }
 #topbar a {
 	text-decoration: none;
@@ -609,7 +610,9 @@ a.chart_header {
 }
 
 
+
 @media print {
+
 	#toolbar, #helpbar, #infobar, #navbox {
 		display: none;
 	}
@@ -629,72 +632,134 @@ a.chart_header {
 
 
 .editorWindow #myFCKeditor {
+
 	width: 620px;
+
 	margin-left: auto;
+
 	margin-right: auto;
+
 }
 
+
+
 .editorWindow .fckOK {
+
 	background-color: #<?= $L_GOLD ?>;
+
 	border: 1px #<?= $D_GOLD ?> solid;
 	padding: 4px;
+
 	text-align: center;
 	width: 70px;
+
 	margin-top: 3px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
 
+
+
+
 #live_lists {
+
 	width: 100%;
+
 	border: 1px #<?= $D_GOLD ?> solid;
+
 	margin-bottom: 4px;
+
 }
+
+
 
 #live_lists .live_list {
+
 	overflow:auto;
+
 	border: 1px #<?= $D_GOLD ?> solid;
+
 }
+
+
 
 #live_lists .title {
+
 	display: block;
+
 	background-color: #<?= $D_GOLD ?>;
+
 	padding: 2px;
+
 	font-weight: bold;
+
 	color: #FFFFFF;
+
 	margin-bottom: 4px;
+
 }
+
+
 
 #live_lists ul {
+
 	list-style-type: none;
+
 	margin: 0px;
+
 	padding: 0px;
+
 }
+
+
 
 #live_lists ul li {
+
 	margin: 0px;
+
 	padding: 0px;
+
 }
+
+
 
 #live_lists .odd {
+
 	background-color: #DDDDDD;
+
 }
+
+
 
 #live_lists ul li a {
+
 	text-decoration: none;
+
 	display: block;
+
 	padding-left: 16px;
+
 	color: black;
+
 }
+
+
 
 #live_lists ul li a:hover {
+
 	background-color: #<?= $L_GOLD ?>;
+
 }
 
+
+
 #live_lists select {
+
 	width: 100%;
+
 	border: 0px;
+
 }
 
 
@@ -721,6 +786,7 @@ a.chart_header {
 	top: 0px;
 	left: 0px;
 	background: url("/images/greybox-overlay.png");
+
 }
 
 #greybox table {
@@ -791,4 +857,25 @@ a.chart_header {
 }
 #my_drawings_link a:hover {
 	color: #<?= $GOLD ?>;
+}
+
+
+
+.login_button {
+	border: 1px #000000 solid;
+	background-color: #<?= $D_GOLD ?>;
+	padding-top: 10px;
+	padding-bottom: 8px;
+	padding-right: 8px;
+	padding-left: 8px;
+}
+
+.login_button a {
+	color: white;
+	text-decoration: none;
+	font-size: 12pt;
+}
+
+.login_button a, .login_button a:hover,.login_button a:visited, .login_button a:visited:hover {
+	color: white;
 }

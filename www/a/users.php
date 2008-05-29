@@ -15,7 +15,29 @@ ModuleInit('users');
 */
 
 
-if( KeyInRequest('id') ) {
+if( KeyInRequest('id') || Request('key') ) {
+
+	if( Request('key') != '' ) {
+		$temp = $DB->SingleQuery('SELECT id, approved_by FROM users WHERE application_key="'.Request('key').'"');
+		if( is_array($temp) ) {
+			$_REQUEST['id'] = $temp['id'];
+
+			if( $temp['approved_by'] != '' ) {
+				PrintHeader();
+				$appr = $DB->SingleQuery('SELECT * FROM users WHERE id='.$temp['approved_by']);
+				echo '<p>This application request has already been approved by '.$appr['first_name'].' '.$appr['last_name'].'</p>';	
+				PrintFooter();			
+				die();
+			}
+
+		} else {
+			PrintHeader();
+			echo '<p>The application key doesn\'t exist</p>';
+			PrintFooter();
+			die();
+		}
+	}
+
 
 	if( Request('id') != "" ) {
 		$check = $DB->SingleQuery("SELECT COUNT(*) AS num FROM users WHERE id=".intval($_REQUEST['id']));
@@ -24,6 +46,7 @@ if( KeyInRequest('id') ) {
 			die();
 		}
 	}
+
 
 	// check permissions on this id.
 	if( !IsAdmin() && Request('id') ) {
@@ -51,6 +74,8 @@ if( KeyInRequest('id') ) {
 		}
 	}
 
+
+
 	if( KeyInRequest('chown') ) {
 		$from_id = $_REQUEST['id'];
 		$to_id = $_REQUEST['to_id'];
@@ -63,6 +88,8 @@ if( KeyInRequest('id') ) {
 		header("Location: ".$_SERVER['PHP_SELF']."?id=".$from_id);
 		die();
 	}
+
+
 
 
 	if( KeyInRequest('delete') ) {
@@ -87,17 +114,17 @@ if( KeyInRequest('id') ) {
 	}
 
 	if( PostRequest() ) {
-
 		if( $_SESSION['user_level'] == CPUSER_STAFF ) {
 			$_REQUEST['user_level'] = CPUSER_STAFF;
 		}
 
-		$content = Array( 'first_name' => $_REQUEST['first_name'],
+		$content = array( 'first_name' => $_REQUEST['first_name'],
 						  'last_name' => $_REQUEST['last_name'],
 						  'job_title' => $_REQUEST['job_title'],
 						  'phone_number' => $_REQUEST['phone_number'],
 						  'email' => $_REQUEST['email'],
-						  'user_level' => intval($_REQUEST['user_level']) );
+						  'user_level' => intval($_REQUEST['user_level']),
+						  );
 
 		if( $_SESSION['user_level'] == CPUSER_STATEADMIN  ) {
 			// only state admins can change the school someone is assigned to
@@ -114,8 +141,46 @@ if( KeyInRequest('id') ) {
 		if( Request('id') ) {
 		// this is an edit
 
-			$DB->Update('users',$content,$_REQUEST['id']);
-			$user_id = $_REQUEST['id'];
+			switch( $_REQUEST['submit'] ) {
+			case 'Deny':
+				$content['new_user'] = 0;
+				$content['user_active'] = 0;
+				$DB->Update('users',$content,$_REQUEST['id']);
+
+				break;
+			case 'Approve & Send Password':
+				// generate a temporary password and send a welcome email
+				$password = RandPass(6);
+				$content['temp_password'] = crypt($password, $DB->pswdsalt);
+				$content['user_active'] = 1;
+
+				$email = new SiteEmail('account_approved');
+				$email->IsHTML(false);
+				$email->Assign('EMAIL', $_REQUEST['email']);
+				//$email->Assign('EMAIL', 'aaron@aaronparecki.com');
+				$email->Assign('PASSWORD', $password);
+				if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
+					$url = "https://".$SITE->https_server()."/a/login.php";
+				} else {
+					$url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
+				}
+				$email->Assign('LOGIN_LINK', $url.'?email='.$_REQUEST['email'].'&password='.$password);
+	
+				$email->Send();
+			
+				// no break, continue to update the user table
+			case 'Approve':
+				$content['new_user'] = 0;
+				$content['approved_by'] = $_SESSION['user_id'];
+				$DB->Update('users',$content,$_REQUEST['id']);
+			
+				break;
+			case 'Submit':
+				// editing an existing user
+				$DB->Update('users',$content,$_REQUEST['id']);
+
+				break;
+			}
 
 		} else {
 		// this is a new user, check if they already exist in the database
@@ -137,8 +202,8 @@ if( KeyInRequest('id') ) {
 		}
 
 		header("Location: ".$_SERVER['PHP_SELF']);
-
-
+		die();
+		
 	} else {
 
 		PrintHeader();
@@ -174,6 +239,7 @@ if( KeyInRequest('id') ) {
 		echo '<tr><td colspan="6">';
 		echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">'.$s['school_name'].'</div>';
 		if( $s['school_addr'] ) { echo '<div style="font-style:italic;margin-left:10px;">'.$s['school_addr'].', '.$s['school_city'].', '.$s['school_state'].' '.$s['school_zip'].'</div>'; }
+
 		echo '</td></tr>';
 
 		$users = $DB->MultiQuery("
@@ -182,6 +248,7 @@ if( KeyInRequest('id') ) {
 			WHERE school_id=".$s['id']."
 				AND lev.level = users.user_level
 				AND user_active = 1
+
 			");
 		if( count($users) == 0 ) {
 			echo '<tr>';
@@ -189,17 +256,22 @@ if( KeyInRequest('id') ) {
 			echo '<td colspan="5">none</td>';
 			echo '</tr>';
 		} else {
+
 			foreach( $users as $u ) {
 				echo '<tr>';
 
 				if( $u['user_level'] > $_SESSION['user_level'] ) {
 					$edit_text = 'view';
+
 				} else {
 					$edit_text = 'edit';
+
 				}
 				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
+
 				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
 				echo '<td width="140">'.$u['phone_number'].'</td>';
+
 				echo '<td width="180">'.$u['email'].'</td>';
 				echo '<td width="100">'.$u['user_level_name'].'</td>';
 				echo '<td width="140"><div title="'.($u['last_logon_ip']==''?'':$u['last_logon_ip']).'">'.($u['last_logon_ip']==''?'':$DB->Date("n/j/Y g:ia",$u['last_logon'])).'</div></td>';
@@ -208,6 +280,46 @@ if( KeyInRequest('id') ) {
 			}
 		}
 	}
+
+	{
+		// Only state admins can approve users at other schools
+		$users = $DB->MultiQuery("
+			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, schools.school_name
+			FROM users, admin_user_levels AS lev, schools
+			WHERE (school_id=".$_SESSION['school_id']." OR ".(IsAdmin()?1:0).")
+				AND lev.level = users.user_level
+				AND school_id=schools.id
+				AND new_user=1
+			");
+		if( count($users) > 0 ) {
+	
+			echo '<tr><td colspan="6">';
+			echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">Users Pending Approval</div>';
+			echo '</td></tr>';	
+		
+			foreach( $users as $u ) {
+				echo '<tr>';
+	
+				if( $u['user_level'] > $_SESSION['user_level'] ) {
+					$edit_text = 'view';
+	
+				} else {
+					$edit_text = 'edit';
+	
+				}
+				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
+	
+				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
+				echo '<td width="140">'.$u['phone_number'].'</td>';
+	
+				echo '<td width="180">'.$u['email'].'</td>';
+				echo '<td width="100" colspan="2">'.$u['school_name'].'</td>';
+	
+				echo '</tr>';
+			}
+		}
+	}
+
 
 	echo '</table>';
 
@@ -236,12 +348,22 @@ global $DB;
 		getLayer('delete_confirm').innerHTML = '';
 	}
 </script>
+
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br>
 <br>
 
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="userform">
 <table width="100%">
 
+	<?php
+	if( $user['new_user'] == 1 ) {
+	?>
+	<tr>
+		<td colspan="2" class="noborder"><h2>User Account Request</h2></td>
+	</tr>
+	<?php
+	}
+	?>
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
@@ -265,7 +387,6 @@ global $DB;
 		<td class="noborder">Email:</td>
 		<td class="noborder"><input type="text" name="email" value="<?= $user['email'] ?>" size="40"></td>
 	</tr>
-
 	<tr>
 		<td class="noborder">Password:</td>
 		<td class="noborder">
@@ -311,9 +432,31 @@ global $DB;
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
-	<?php } ?>
+	<?php
+	}
+	if( $user['new_user'] == 1 ) {
+	?>
+	<tr>
+		<td>Referred By:</td>
+		<td><?= $user['referral'] ?></td>
+	</tr>
+	<tr>
+		<td colspan="2" class="noborder"><hr></td>
+	</tr>
 
+	<tr>
+		<td class="noborder">&nbsp;</td>
+		<td class="noborder">
+			<input type="submit" name="submit" value="Approve" class="submit">
+			<input type="submit" name="submit" value="Approve & Send Password" class="submit">
+			<input type="submit" name="submit" value="Deny" class="submit">
+		</td>
+		<td class="noborder" align="right">&nbsp;</td>
+	</tr>
 
+	<?php
+	} else {
+	?>
 	<tr>
 		<td>Last Logon:</td>
 		<td>
@@ -326,8 +469,6 @@ global $DB;
 			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip']) ?>
 		</td>
 	</tr>
-
-
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
@@ -337,7 +478,6 @@ global $DB;
 		<td class="noborder">
 			<?php if( $id == "" ) { ?>
 			Once you add this user, they must click the "First time user" link on the login page to request a temporary password.
-
 			<br><br>
 			<?php } ?>
 			<input type="submit" value="Submit" class="submit">
@@ -347,26 +487,26 @@ global $DB;
 	<tr>
 		<td colspan="2">
 		<?php
-		if( $id != "" ) {
+		if( $id != "" ) {
 			ShowVersionsForUser($id);
 		}
 		?>
 		</td>
 	</tr>
-
 	<?php
-	if( IsSchoolAdmin() ) {
-	?>
-	<tr>
-		<td colspan="2" class="noborder"><hr></td>
-	</tr>
-	<tr>
-		<td valign="top" class="noborder">Delete User:</td>
-		<td><span id="delete_link"><a href="javascript:deleteConfirm()">Click to delete</a></span> &nbsp; <span id="delete_confirm"></span><br>
-		Note: It is generally not a good idea to delete users if there are drawings associated with them.
-		</td>
-	</tr>
-	<?php
+		if( IsSchoolAdmin() ) {
+		?>
+		<tr>
+			<td colspan="2" class="noborder"><hr></td>
+		</tr>
+		<tr>
+			<td valign="top" class="noborder">Delete User:</td>
+			<td><span id="delete_link"><a href="javascript:deleteConfirm()">Click to delete</a></span> &nbsp; <span id="delete_confirm"></span><br>
+			Note: It is generally not a good idea to delete users if there are drawings associated with them.
+			</td>
+		</tr>
+		<?php
+		}
 	}
 	?>
 
@@ -376,8 +516,6 @@ global $DB;
 <?php
 
 }
-
-
 
 function ShowExistingUser($user,$tried_to_add=true) {
 global $DB;
@@ -390,10 +528,10 @@ global $DB;
 if( $tried_to_add ) {
 	echo '<b>An existing record for the person you are trying to add was found in the database. If you are trying to change some information about this user, you should edit the existing record.</b>';
 }
+
 ?>
 
 <table width="100%">
-
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
@@ -417,7 +555,6 @@ if( $tried_to_add ) {
 		<td class="noborder">Email:</td>
 		<td class="noborder"><?= $user['email'] ?></td>
 	</tr>
-
 	<tr>
 		<td class="noborder">Password:</td>
 		<td class="noborder">
@@ -474,6 +611,8 @@ if( $tried_to_add ) {
 }
 
 
+
+
 function ShowVersionsForUser($user_id) {
 global $DB;
 	?>
@@ -513,7 +652,6 @@ global $DB;
 		ORDER BY name");
 	return $drawings;
 }
-
 
 
 ?>

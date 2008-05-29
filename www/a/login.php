@@ -76,10 +76,14 @@ global $SITE, $DB, $TEMPLATE;
 	if( $wastemplink ) {
 		header("Location: /a/password.php?change&loggedin");
 	} else {
-		if( IsAdmin() || IsSchoolAdmin() ) {
-			header("Location: http://$server/");
+		if( Request('next') ) {
+			header("Location: http://".$server.Request('next'));
 		} else {
-			header("Location: http://$server/a/drawings.php");
+			if( IsAdmin() || IsSchoolAdmin() ) {
+				header("Location: http://$server/");
+			} else {
+				header("Location: http://$server/a/drawings.php");
+			}
 		}
 	}
 
@@ -112,11 +116,9 @@ global $SITE;
 	?>
 
 	<br><br>
-
 	<div style="text-align:center;width:450px;margin-right:auto;margin-left:auto">
 		Welcome, if you have questions or problems, please email us at <?= EmailEncrypt::EmailLink('help@ctepathways.org') ?> and we'll get back to you in the next business day.
 	</div>
-
 	<br><br>
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
@@ -133,11 +135,17 @@ global $SITE;
 		<td><input type="submit" value="Log In" class="submit"></td>
 	</tr>
 	</table>
+
+	<input type="hidden" name="next" value="<?= (Request('next')) ?>">
 	</form>
-	<br><br><br><br>
-	<a href="/a/password.php">First time user</a>
-	<br>
-	&nbsp;
+	<br><br><br>
+	<br><br><br>
+	<div style="text-align:center;width:450px;margin-right:auto;margin-left:auto">
+		<span class="login_button"><a href="/a/guestlogin.php">Guest Login</a></span>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<span class="login_button"><a href="/a/apply.php">Apply for an account</a></span>
+	</div>
+
 	<?php
 	echo str_repeat('<br>',20);
 }

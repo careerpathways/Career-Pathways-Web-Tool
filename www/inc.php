@@ -13,7 +13,7 @@ class ThisSite extends SiteSettings {
 
 	function name() { return "Pathways"; }
 	function email_name() { return "Oregon CT Pathways"; }
-	function email() { return "oregon@ctepathways.org"; }
+	function email() { return "help@ctepathways.org"; }
 
 	function recipient_email() { return "aaron@ctepathways.org"; }
 
@@ -35,6 +35,9 @@ class ThisSite extends SiteSettings {
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
 	function force_https_login() { return true; }
+	
+	function recaptcha_publickey() { return '6Ldg9wEAAAAAADD5_LekXYwr2W6xeSDvPSrn2ULE'; }
+	function recaptcha_privatekey() { return '6Ldg9wEAAAAAAHq3SbV8Ko0VEpcUEzg-QFq1DIx6'; }
 }
 
 
@@ -59,7 +62,7 @@ class ThisSiteTemplate extends SiteTemplate {
 	}
 
 
-	function Header() {
+	function Header() { 
 		?>
 			<div id="header">
 				<a href="/"><img src="/images/title.gif" width="828" height="61"></a>
@@ -195,7 +198,7 @@ function RandPass($len = 8){
 
 function RequireLogin() {
 	if( $_SESSION['user_level'] == -1 ) {
-		header("Location: /a/login.php");
+		header("Location: /a/login.php?next=".urlencode($_SERVER['REQUEST_URI']));
 	}
 }
 

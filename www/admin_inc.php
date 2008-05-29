@@ -71,7 +71,7 @@ function ModuleInit($module) {
 global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 
 	if( !UserCanEditCategory($module) ) {
-		header("Location: /a/login.php");
+		header("Location: /a/login.php?next=".urlencode($_SERVER['REQUEST_URI']));
 		die();
 	} else {
 		$DB->Query("UPDATE users SET last_module = '$module' WHERE id = '".$_SESSION['user_id']."'");
