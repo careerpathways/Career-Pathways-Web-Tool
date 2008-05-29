@@ -105,7 +105,7 @@ if( PostRequest() ) {
 		</tr>
 		<?php if( !IsLoggedIn() ) { ?>
 		<tr>
-			<td valign="top">Anti-Spam:</td>
+			<th>Anti-Spam</th>
 			<td>
 				<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 			</td>

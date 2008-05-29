@@ -77,23 +77,23 @@ if( PostRequest() ) {
 		<td colspan="2"><h1>Welcome!</h1>Please tell us who you are in order to log in.<br><br></td>
 	</tr>
 	<tr>
-		<td>First Name:</td>
+		<th>First Name</th>
 		<td><input type="text" size="20" name="first_name"></td>
 	</tr>
 	<tr>
-		<td>Last Name:</td>
+		<th>Last Name</th>
 		<td><input type="text" size="20" name="last_name"></td>
 	</tr>
 	<tr>
-		<td>Email:</td>
+		<th>Email</th>
 		<td><input type="text" size="30" name="email"></td>
 	</tr>
 	<tr>
-		<td valign="top">School or Business:</td>
+		<th valign="top">School or Business</th>
 		<td><input type="textbox" name="school" size="30"></td>
 	</tr>
 	<tr>
-		<td valign="top">How did you hear about us?:</td>
+		<th>How did you hear about us?</th>
 		<td>
 			<input type="checkbox" name="referral[]" value="Friend">Through a friend &nbsp;
 			<input type="checkbox" name="referral[]" value="Web Conference">A web conference &nbsp;
@@ -102,7 +102,7 @@ if( PostRequest() ) {
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
-		<td valign="top">Anti-Spam:</td>
+		<th valign="top">Anti-Spam</th>
 		<td>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>

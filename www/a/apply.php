@@ -128,34 +128,34 @@ global $SITE;
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
 	<tr>
-		<td>First Name:</td>
+		<th>First Name</th>
 		<td><input type="text" size="20" name="first_name"></td>
 	</tr>
 	<tr>
-		<td>Last Name:</td>
+		<th>Last Name</th>
 		<td><input type="text" size="20" name="last_name"></td>
 	</tr>
 	<tr>
-		<td>Email:</td>
+		<th>Email</th>
 		<td><input type="text" size="30" name="email"> (This will be your login)</td>
 	</tr>
 	<tr>
-		<td>Job Title:</td>
+		<th>Job Title</th>
 		<td><input type="text" size="20" name="job_title"></td>
 	</tr>
 	<tr>
-		<td>Phone Number:</td>
+		<th>Phone Number</th>
 		<td><input type="text" size="12" name="phone_number"></td>
 	</tr>
 	<tr>
-		<td valign="top">School or Business:</td>
+		<th>School or Business</th>
 		<td><?php
 			echo GenerateSelectBoxDB('schools','school','id','school_name','school_name','',array('0'=>'Other'),'school_name!="Guest"');
 		?><br>
 		If "Other", please enter here: <input type="textbox" name="school_other" size="30"></td>
 	</tr>
 	<tr>
-		<td valign="top">How did you hear about us?:</td>
+		<th>How did you hear about us?</th>
 		<td>
 			<input type="checkbox" name="referral[]" value="Friend">Through a friend &nbsp;
 			<input type="checkbox" name="referral[]" value="Web Conference">A web conference &nbsp;
@@ -164,7 +164,7 @@ global $SITE;
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
-		<td valign="top">Anti-Spam:</td>
+		<th>Anti-Spam</th>
 		<td>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>
