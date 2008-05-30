@@ -136,10 +136,11 @@ if( $id != "" ) {
 		2. school admins & webmasters at the same school
 		3. the owner of the drawing
 	*/
-	if( CanDeleteDrawing($drawing) ) { ?>
+?>
 <tr>
 	<th>Delete</th>
 	<td width="545">
+	<?php if( CanDeleteDrawing($drawing) ) { ?>
 		Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
 		<p><b>There is no way to recover deleted drawings!</b></p>
 		<p>If you are sure you want to delete the entire drawing, click the link below:</p>
@@ -149,9 +150,12 @@ if( $id != "" ) {
 			<input type="hidden" name="id" value="<?= $drawing['id'] ?>">
 			<input type="hidden" name="delete" value="delete">
 		</form>
+	<?php } else { ?>
+		You can't delete this drawing because it was created by <a href="/a/users.php?id=<?= $drawing['created_by'] ?>"><?= $DB->GetValue('CONCAT(first_name," ",last_name)','users',$drawing['created_by']) ?></a>. Contact the creator of the drawing or any <a href="/a/users.php">school admin</a> to delete this drawing.<br><br>
+		Note: Most of the time, what you really want to do is delete a version. There is no need to delete versions, as the Web Tool is designed to maintain archival records of your roadmap designs.
+	<?php } ?>
 	</td>
 </tr>
-<?php } ?>
 </table>
 <?php } ?>
 </p>

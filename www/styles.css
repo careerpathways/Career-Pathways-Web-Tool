@@ -610,9 +610,7 @@ a.chart_header {
 }
 
 
-
 @media print {
-
 	#toolbar, #helpbar, #infobar, #navbox {
 		display: none;
 	}
@@ -626,143 +624,76 @@ a.chart_header {
 		width: 100%;	
 		min-width: 100%;
 	}
-
 }
-
-
 
 .editorWindow #myFCKeditor {
-
 	width: 620px;
-
 	margin-left: auto;
-
 	margin-right: auto;
-
 }
 
-
-
 .editorWindow .fckOK {
-
 	background-color: #<?= $L_GOLD ?>;
-
 	border: 1px #<?= $D_GOLD ?> solid;
 	padding: 4px;
-
 	text-align: center;
 	width: 70px;
-
 	margin-top: 3px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
 
-
-
-
 #live_lists {
-
 	width: 100%;
-
 	border: 1px #<?= $D_GOLD ?> solid;
-
 	margin-bottom: 4px;
-
 }
-
-
 
 #live_lists .live_list {
-
 	overflow:auto;
-
 	border: 1px #<?= $D_GOLD ?> solid;
-
 }
-
-
 
 #live_lists .title {
-
 	display: block;
-
 	background-color: #<?= $D_GOLD ?>;
-
 	padding: 2px;
-
 	font-weight: bold;
-
 	color: #FFFFFF;
-
 	margin-bottom: 4px;
-
 }
-
-
 
 #live_lists ul {
-
 	list-style-type: none;
-
 	margin: 0px;
-
 	padding: 0px;
-
 }
-
-
 
 #live_lists ul li {
-
 	margin: 0px;
-
 	padding: 0px;
-
 }
-
-
 
 #live_lists .odd {
-
 	background-color: #DDDDDD;
-
 }
-
-
 
 #live_lists ul li a {
-
 	text-decoration: none;
-
 	display: block;
-
 	padding-left: 16px;
-
 	color: black;
-
 }
-
-
 
 #live_lists ul li a:hover {
-
 	background-color: #<?= $L_GOLD ?>;
-
 }
-
-
 
 #live_lists select {
-
 	width: 100%;
-
 	border: 0px;
-
 }
-
-
 
 #dpcontainer {
 	background-color: #FFFFFF;
@@ -777,6 +708,9 @@ a.chart_header {
 	height: 600px;
 }
 
+#drawing_list a {
+	text-decoration: none;
+}
 
 
 

@@ -11,8 +11,8 @@
 				AND deleted=0
 			ORDER BY version_num");
 		foreach( $versions as $v ) {
-			$created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
-			$modified = ($v['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
+			$created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name, id FROM users WHERE id=".$v['created_by']));
+			$modified = ($v['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name, id FROM users WHERE id=".$v['last_modified_by']));
 
 			echo '<tr'.($v['published']?' class="version_list_published"':'').'>';
 
@@ -24,11 +24,11 @@
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
-					echo '<td>'.($v['date_created']==''?'':$DB->Date("m/d/Y g:ia",$v['date_created'])).' by '.$created['name'].'</td>';
+					echo '<td>'.($v['date_created']==''?'':$DB->Date("m/d/Y g:ia",$v['date_created'])).' by <a href="/a/users.php?id='.$created['id'].'">'.$created['name'].'</a></td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Modified</b></td>';
-					echo '<td>'.($v['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$v['last_modified'])).' by '.$modified['name'].'</td>';
+					echo '<td>'.($v['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$v['last_modified'])).' by <a href="/a/users.php?id='.$modified['id'].'">'.$modified['name'].'</a></td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Note</b></td>';

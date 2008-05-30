@@ -227,7 +227,10 @@ if( KeyInRequest('id') || Request('key') ) {
 			ORDER BY school_name
 			");
 	} else {
-		$schools = $DB->MultiQuery("SELECT * FROM schools WHERE id=".$_SESSION['school_id']);
+		$schools = $DB->MultiQuery("SELECT schools.* 
+			FROM schools 
+			ORDER BY id=".$_SESSION['school_id']." DESC, school_name
+			");
 	}
 
 	echo '<tr>';
@@ -243,7 +246,7 @@ if( KeyInRequest('id') || Request('key') ) {
 		echo '</td></tr>';
 
 		$users = $DB->MultiQuery("
-			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip
+			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, school_id
 			FROM users, admin_user_levels AS lev
 			WHERE school_id=".$s['id']."
 				AND lev.level = users.user_level
@@ -260,7 +263,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			foreach( $users as $u ) {
 				echo '<tr>';
 
-				if( $u['user_level'] > $_SESSION['user_level'] ) {
+				if( $u['user_level'] > $_SESSION['user_level'] || $u['school_id'] != $_SESSION['school_id'] ) {
 					$edit_text = 'view';
 
 				} else {
@@ -456,7 +459,7 @@ global $DB;
 
 	<?php
 	} else {
-	?>
+		?>
 	<tr>
 		<td>Last Logon:</td>
 		<td>
@@ -480,7 +483,7 @@ global $DB;
 			Once you add this user, they must click the "First time user" link on the login page to request a temporary password.
 			<br><br>
 			<?php } ?>
-			<input type="submit" value="Submit" class="submit">
+			<input type="submit" name="submit" value="Submit" class="submit">
 			</td>
 		<td class="noborder" align="right">&nbsp;</td>
 	</tr>
@@ -555,6 +558,7 @@ if( $tried_to_add ) {
 		<td class="noborder">Email:</td>
 		<td class="noborder"><?= $user['email'] ?></td>
 	</tr>
+	<?php if( IsSchoolAdmin() ) { ?>
 	<tr>
 		<td class="noborder">Password:</td>
 		<td class="noborder">
@@ -572,6 +576,7 @@ if( $tried_to_add ) {
 		?>
 		</td>
 	</tr>
+	<?php } ?>
 
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
@@ -588,6 +593,7 @@ if( $tried_to_add ) {
 		<?= $DB->GetValue('name','admin_user_levels',$user['user_level'],'level') ?>
 		</td>
 	</tr>
+	<?php if( IsSchoolAdmin() ) { ?>
 	<tr>
 		<td>Last Logon:</td>
 		<td>
@@ -600,6 +606,7 @@ if( $tried_to_add ) {
 			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip']) ?>
 		</td>
 	</tr>
+	<?php } ?>
 
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
