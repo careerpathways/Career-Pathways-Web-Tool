@@ -16,3 +16,5 @@ FCKConfig.ToolbarSets["PathwaysEditor"] = [
 ] ;
 
 FCKConfig.StylesXmlPath = '/files/fckstyles.xml';
+FCKConfig.LinkUpload = false;
+FCKConfig.LinkBrowser = false;
