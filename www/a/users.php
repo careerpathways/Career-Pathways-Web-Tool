@@ -48,6 +48,19 @@ if( KeyInRequest('id') || Request('key') ) {
 	}
 
 
+	// Staff users can only view, not edit
+	if( $_SESSION['user_level'] == CPUSER_STAFF ) {
+		if( Request('id') == '' ) {
+			header("Location: ".$_SERVER['PHP_SELF']);
+		} else {
+			PrintHeader();
+			ShowExistingUser($DB->SingleQuery("SELECT * FROM users WHERE id=".Request('id')),false);
+			PrintFooter();
+		}
+		die();
+	}
+
+
 	// check permissions on this id.
 	if( !IsAdmin() && Request('id') ) {
 		$valid = true;
@@ -233,9 +246,11 @@ if( KeyInRequest('id') || Request('key') ) {
 			");
 	}
 
+	if( IsSchoolAdmin() ) { 
 	echo '<tr>';
 		echo '<td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"<img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">add user</span></a></td>';
 	echo '</tr>';
+	}
 
 	foreach( $schools as $s ) {
 
@@ -263,7 +278,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			foreach( $users as $u ) {
 				echo '<tr>';
 
-				if( $u['user_level'] > $_SESSION['user_level'] || $u['school_id'] != $_SESSION['school_id'] ) {
+				if( $_SESSION['user_level'] == CPUSER_STAFF || $u['user_level'] > $_SESSION['user_level'] || $u['school_id'] != $_SESSION['school_id'] ) {
 					$edit_text = 'view';
 
 				} else {
