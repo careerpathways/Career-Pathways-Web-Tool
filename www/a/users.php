@@ -237,7 +237,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			FROM schools
 			INNER JOIN users ON users.school_id=schools.id
 			GROUP BY schools.id
-			ORDER BY school_name
+			ORDER BY schools.id=".$_SESSION['school_id']." DESC, school_name
 			");
 	} else {
 		$schools = $DB->MultiQuery("SELECT schools.* 
@@ -252,12 +252,11 @@ if( KeyInRequest('id') || Request('key') ) {
 	echo '</tr>';
 	}
 
-	foreach( $schools as $s ) {
+	foreach( $schools as $i=>$s ) {
 
 		echo '<tr><td colspan="6">';
 		echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">'.$s['school_name'].'</div>';
 		if( $s['school_addr'] ) { echo '<div style="font-style:italic;margin-left:10px;">'.$s['school_addr'].', '.$s['school_city'].', '.$s['school_state'].' '.$s['school_zip'].'</div>'; }
-
 		echo '</td></tr>';
 
 		$users = $DB->MultiQuery("
@@ -278,9 +277,10 @@ if( KeyInRequest('id') || Request('key') ) {
 			foreach( $users as $u ) {
 				echo '<tr>';
 
-				if( $_SESSION['user_level'] == CPUSER_STAFF || $u['user_level'] > $_SESSION['user_level'] || $u['school_id'] != $_SESSION['school_id'] ) {
+				if( $_SESSION['user_level'] == CPUSER_STAFF || 
+					$u['user_level'] > $_SESSION['user_level'] || 
+					(!IsAdmin() && $u['school_id'] != $_SESSION['school_id']) ) {
 					$edit_text = 'view';
-
 				} else {
 					$edit_text = 'edit';
 
@@ -297,6 +297,8 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '</tr>';
 			}
 		}
+
+		if( $i==0 ) { echo '<tr><td colspan="6"><hr></td></tr>'; }
 	}
 
 	{
