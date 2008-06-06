@@ -88,7 +88,7 @@ if( PostRequest() ) {
 			$email->Send();
 	
 	
-			echo '<p>Thank you. Your application has been received. You can expect a response within one business day.</p>';
+			echo '<p>Thank you. Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
 		}
 
 	} else {
@@ -100,7 +100,7 @@ if( PostRequest() ) {
 	if( KeyInRequest('form') ) {
 		ShowApplyForm();
 	} else {
-		echo '<p>Thanks for visiting. Are you affiliated with an Oregon school or business?</p>';
+		echo '<p>Are you affiliated with an Oregon school or business?</p>';
 		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?a">No</a></p>';
 	}
 }
@@ -123,10 +123,12 @@ global $SITE;
 	?>
 
 	<br><br>
-	<p>You may apply for an account using the form below. </p>
 
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
+	<tr>
+		<td colspan="2"><h1>New Account Request</h1></td>
+	</tr>
 	<tr>
 		<th>First Name</th>
 		<td><input type="text" size="20" name="first_name"></td>
@@ -157,15 +159,15 @@ global $SITE;
 	<tr>
 		<th>How did you hear about us?</th>
 		<td>
-			<input type="checkbox" name="referral[]" value="Friend">Through a friend &nbsp;
-			<input type="checkbox" name="referral[]" value="Web Conference">A web conference &nbsp;
-			<input type="checkbox" name="referral[]" value="Training Session">Attended a training session &nbsp;<br>
-			<input type="checkbox" name="referral[]" value="National Conference">A national conference &nbsp;
+			<input type="checkbox" name="referral[]" value="Friend or Colleague">Friend/Colleague &nbsp;
+			<input type="checkbox" name="referral[]" value="Training Session">Training Session &nbsp;<br>
+			<input type="checkbox" name="referral[]" value="National Conference">National Conference &nbsp;
+			<input type="checkbox" name="referral[]" value="Web Conference">Web Conference &nbsp;
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
 		<th>Anti-Spam</th>
-		<td>
+		<td>(not case-sensitive)<br>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>
 	</tr>

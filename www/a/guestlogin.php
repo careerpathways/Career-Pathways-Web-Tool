@@ -74,7 +74,9 @@ if( PostRequest() ) {
 	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
 	<table align="center">
 	<tr>
-		<td colspan="2"><h1>Welcome!</h1>Please tell us who you are in order to log in.<br><br></td>
+		<td colspan="2"><h1>Guest Login</h1>
+			<p>Please tell us who you are in order to log in.</p>
+			<p>Your information will not be shared with any other parties, and will not be associated with any work you do while logged in.</p></td>
 	</tr>
 	<tr>
 		<th>First Name</th>
@@ -95,15 +97,15 @@ if( PostRequest() ) {
 	<tr>
 		<th>How did you hear about us?</th>
 		<td>
-			<input type="checkbox" name="referral[]" value="Friend">Through a friend &nbsp;
-			<input type="checkbox" name="referral[]" value="Web Conference">A web conference &nbsp;
-			<input type="checkbox" name="referral[]" value="Training Session">Attended a training session &nbsp;<br>
-			<input type="checkbox" name="referral[]" value="National Conference">A national conference &nbsp;
+			<input type="checkbox" name="referral[]" value="Friend or Colleague">Friend/Colleague &nbsp;
+			<input type="checkbox" name="referral[]" value="Training Session">Training Session &nbsp;<br>
+			<input type="checkbox" name="referral[]" value="National Conference">National Conference &nbsp;
+			<input type="checkbox" name="referral[]" value="Web Conference">Web Conference &nbsp;
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
 		<th valign="top">Anti-Spam</th>
-		<td>
+		<td>(not case-sensitive)<br>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>
 	</tr>

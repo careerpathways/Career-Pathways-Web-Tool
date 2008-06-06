@@ -110,7 +110,7 @@ if( strtolower($_SERVER['REQUEST_METHOD']) == "post" ) {
 			echo '<p><b>"'.ucwords(str_replace('_',' ',Request('success'))).'" was updated successfully.</b></p>';
 		}
 
-		echo '<p>Choose an email to edit...</p>';
+		echo '<p>Choose an email template to edit.</p>';
 
 		$header[] = array('text'=>'&nbsp;', 'width'=>20);
 		$header[] = array('text'=>"Email", 'width'=>220);

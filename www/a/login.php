@@ -116,35 +116,38 @@ global $SITE;
 	?>
 
 	<br><br>
-	<div style="text-align:center;width:450px;margin-right:auto;margin-left:auto">
-		Welcome, if you have questions or problems, please email us at <?= EmailEncrypt::EmailLink('help@ctepathways.org') ?> and we'll get back to you in the next business day.
-	</div>
-	<br><br>
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
 	<tr>
 		<td>Email:</td>
 		<td><input type="text" size="20" name="email" id="email" value="<?= $email; ?>"></td>
+		<td width="50">&nbsp;</td>
+		<td><span class="login_button"><a href="/a/apply.php">Apply for an account</a></span></td>
 	</tr>
 	<tr>
 		<td>Password:</td>
 		<td><input type="password" size="20" name="password" id="password"></td>
+		<td width="50">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" value="Log In" class="submit"></td>
+		<td width="50">&nbsp;</td>
+		<td><span class="login_button"><a href="/a/help.php">Questions/Problems?</a></span></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
 	</tr>
 	</table>
 
 	<input type="hidden" name="next" value="<?= (Request('next')) ?>">
 	</form>
-	<br><br><br>
-	<br><br><br>
-	<div style="text-align:center;width:450px;margin-right:auto;margin-left:auto">
-		<span class="login_button"><a href="/a/guestlogin.php">Guest Login</a></span>
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<span class="login_button"><a href="/a/apply.php">Apply for an account</a></span>
-	</div>
 
 	<?php
 	echo str_repeat('<br>',20);

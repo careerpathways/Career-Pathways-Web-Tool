@@ -14,57 +14,68 @@ if( PostRequest() ) {
 									Request('recaptcha_challenge_field'),
 									Request('recaptcha_response_field') );
 	
-	if( $cap->is_valid ) {
-
-		$content = array();
-		$content['date'] = $DB->SQLDate();
-		$content['user_id'] = $_SESSION['user_id'];
-		$content['subject'] = $_REQUEST['subject'];
-
-		$content['message'] = '';
-		if( Request('name') ) {
-			$content['message'] .= 'Name: '.Request('name')."\n";
-		}
-		if( Request('school') ) {
-			$content['message'] .= 'School/Business: '.Request('school')."\n";
-		}
-		$content['message'] .= "\n".$_REQUEST['message'];
-		$DB->Insert('helprequests',$content);
-	
-		$email = new SiteEmail('help_request');
-		$email->IsHTML(false);
-		$email->Assign('EMAIL', (IsLoggedIn()?$_SESSION['email']:Request('email')));
-		$email->Assign('SUBJECT', $_REQUEST['subject']);
-		$email->Assign('BODY', $content['message']);
-	
-		$email->Send();
-	
-		header("Location: ".$_SERVER['PHP_SELF'].'?submitted');
-
-	} else {
+	if( !$cap->is_valid ) {
 		PrintHeader();
 		echo '<p>Sorry, the reCAPTCHA was not solved correctly. Go back and try again.</p>';
 		PrintFooter();
+		die();
 	}
+
+	if( Request('message') == '' || Request('email') == '' || Request('name') == '' ) {
+		PrintHeader();
+		echo '<p>Please go back and fill out all the required fields.</p>';
+		PrintFooter();
+		die();
+	}
+
+
+	$content = array();
+	$content['date'] = $DB->SQLDate();
+	$content['user_id'] = $_SESSION['user_id'];
+	$content['subject'] = $_REQUEST['subject'];
+
+	$content['message'] = '';
+	if( Request('name') ) {
+		$content['message'] .= 'Name: '.Request('name')."\n";
+	}
+	if( Request('school') ) {
+		$content['message'] .= 'School/Business: '.Request('school')."\n";
+	}
+	$content['message'] .= "\n".$_REQUEST['message'];
+	$DB->Insert('helprequests',$content);
+
+	$email = new SiteEmail('help_request');
+	$email->IsHTML(false);
+	$email->Assign('EMAIL', (IsLoggedIn()?$_SESSION['email']:Request('email')));
+	$email->Assign('SUBJECT', $_REQUEST['subject']);
+	$email->Assign('BODY', $content['message']);
+
+	$email->Send();
+
+	header("Location: ".$_SERVER['PHP_SELF'].'?submitted');
+
 
 } else {
 
 	PrintHeader();
 
 	if( KeyInRequest('submitted') ) {
-		echo '<p>Your message was received. We will get back to you within two business days.</p>';
+		echo '<p>Your message was received. We will get back to you within the next business day.</p>';
 	} else {
 		?>
 		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
 
 		<?php
 		if( IsLoggedIn() ) { 
-			echo '<p>Please use this form to submit questions or problems with the Web Tool. We will get back to you within two business days.</p>';
+			echo '<p>Please use this form to send us your questions or problems with the Web Tool. We will get back to you within two business days.</p>';
 		} else {
-			echo '<p>Thanks for visiting the Career Pathways Web Tool.</p>';
 			if( KeyInRequest('a') ) {
-				echo '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon.</p>';
-				echo '<p>You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink('help@ctepathways.org').'</p>';
+				echo '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
+				echo '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon. You can explore the Web Tool as a <a href="/a/guestlogin.php">guest user</a>.</p>';
+				echo '<p>You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink('help@ctepathways.org').'.</p>';
+			} else {
+				echo '<p>Thanks for visiting the Career Pathways Web Tool.</p>';
+				echo '<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink('help@ctepathways.org').'. We will get back to you within the next business day.</p>';
 			}
 		}
 		?>
@@ -80,12 +91,16 @@ if( PostRequest() ) {
 			</tr>
 		<?php } else { ?>
 			<tr>
-				<th>Your Name</th>
+				<th>Your Name*</th>
 				<td><input type="textbox" name="name" size="30"></td>
 			</tr>
 			<tr>
-				<th>Your Email</th>
+				<th>Your Email*</th>
 				<td><input type="textbox" name="email" size="30"></td>
+			</tr>
+			<tr>
+				<th>Phone Number</th>
+				<td><input type="textbox" name="phone" size="20"></td>
 			</tr>
 			<?php 
 				if( KeyInRequest('a') ) { ?>
@@ -100,13 +115,13 @@ if( PostRequest() ) {
 			<td><input type="text" name="subject" style="width: 500px"></td>
 		</tr>
 		<tr>
-			<th valign="top">Message</th>
+			<th valign="top">Message*</th>
 			<td><textarea style="width: 500px; height: 300px;" name="message"></textarea></td>
 		</tr>
 		<?php if( !IsLoggedIn() ) { ?>
 		<tr>
-			<th>Anti-Spam</th>
-			<td>
+			<th>Anti-Spam*</th>
+			<td>(not case-sensitive)<br>
 				<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 			</td>
 		</tr>

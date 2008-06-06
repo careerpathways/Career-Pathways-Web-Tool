@@ -798,8 +798,8 @@ a.chart_header {
 .login_button {
 	border: 1px #000000 solid;
 	background-color: #<?= $D_GOLD ?>;
-	padding-top: 10px;
-	padding-bottom: 8px;
+	padding-top: 3px;
+	padding-bottom: 2px;
 	padding-right: 8px;
 	padding-left: 8px;
 }
@@ -807,9 +807,23 @@ a.chart_header {
 .login_button a {
 	color: white;
 	text-decoration: none;
-	font-size: 12pt;
+	font-size: 11px;
 }
 
 .login_button a, .login_button a:hover,.login_button a:visited, .login_button a:visited:hover {
 	color: white;
 }
+
+.button_link {
+	padding-top: 3px;
+	padding-bottom: 2px;
+	padding-right: 8px;
+	padding-left: 8px;
+	border: 1px #<?= $GREY ?> solid;
+	background-color: #<?= $BLUE ?>;
+}
+.button_link a, .button_link a:hover {
+	color: white;
+	text-decoration: none;
+}
+

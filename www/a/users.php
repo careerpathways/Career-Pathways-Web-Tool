@@ -252,6 +252,48 @@ if( KeyInRequest('id') || Request('key') ) {
 	echo '</tr>';
 	}
 
+	// PENDING USERS
+	{
+		// Only state admins can approve users at other schools
+		$users = $DB->MultiQuery("
+			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, schools.school_name
+			FROM users, admin_user_levels AS lev, schools
+			WHERE (school_id=".$_SESSION['school_id']." OR ".(IsAdmin()?1:0).")
+				AND lev.level = users.user_level
+				AND school_id=schools.id
+				AND new_user=1
+			");
+		if( count($users) > 0 ) {
+	
+			echo '<tr><td colspan="6">';
+			echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">Users Pending Approval</div>';
+			echo '</td></tr>';	
+		
+			foreach( $users as $u ) {
+				echo '<tr>';
+	
+				if( $u['user_level'] > $_SESSION['user_level'] ) {
+					$edit_text = 'view';
+	
+				} else {
+					$edit_text = 'edit';
+	
+				}
+				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
+	
+				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
+				echo '<td width="140">'.$u['phone_number'].'</td>';
+	
+				echo '<td width="180">'.$u['email'].'</td>';
+				echo '<td width="100" colspan="2">'.$u['school_name'].'</td>';
+	
+				echo '</tr>';
+			}
+		}
+	}
+
+
+
 	foreach( $schools as $i=>$s ) {
 
 		echo '<tr><td colspan="6">';
@@ -300,46 +342,6 @@ if( KeyInRequest('id') || Request('key') ) {
 
 		if( $i==0 ) { echo '<tr><td colspan="6"><hr></td></tr>'; }
 	}
-
-	{
-		// Only state admins can approve users at other schools
-		$users = $DB->MultiQuery("
-			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, schools.school_name
-			FROM users, admin_user_levels AS lev, schools
-			WHERE (school_id=".$_SESSION['school_id']." OR ".(IsAdmin()?1:0).")
-				AND lev.level = users.user_level
-				AND school_id=schools.id
-				AND new_user=1
-			");
-		if( count($users) > 0 ) {
-	
-			echo '<tr><td colspan="6">';
-			echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">Users Pending Approval</div>';
-			echo '</td></tr>';	
-		
-			foreach( $users as $u ) {
-				echo '<tr>';
-	
-				if( $u['user_level'] > $_SESSION['user_level'] ) {
-					$edit_text = 'view';
-	
-				} else {
-					$edit_text = 'edit';
-	
-				}
-				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
-	
-				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
-				echo '<td width="140">'.$u['phone_number'].'</td>';
-	
-				echo '<td width="180">'.$u['email'].'</td>';
-				echo '<td width="100" colspan="2">'.$u['school_name'].'</td>';
-	
-				echo '</tr>';
-			}
-		}
-	}
-
 
 	echo '</table>';
 
