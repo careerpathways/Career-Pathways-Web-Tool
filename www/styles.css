@@ -581,6 +581,10 @@ a.chart_header {
 	border-bottom: 1px #<?= $BLUE ?> solid;
 }
 
+.red {
+	color: #<?= $RED ?>;
+}
+
 .news_date {
 	text-align: right;
 	letter-spacing: 1px;
@@ -827,3 +831,12 @@ a.chart_header {
 	text-decoration: none;
 }
 
+
+
+.pager_links {
+	border-top: 1px #<?= $GOLD ?> dashed;
+	border-bottom: 1px #<?= $GOLD ?> dashed;
+}
+.pager_links a {
+	text-decoration: none;
+}

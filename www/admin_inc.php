@@ -14,6 +14,19 @@ function IsStaff() {
 
 
 
+function GetPendingUsers() {
+global $DB;
+	return $DB->MultiQuery("
+		SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, schools.school_name
+		FROM users
+		JOIN admin_user_levels AS lev ON lev.level = users.user_level
+		LEFT JOIN schools ON school_id=schools.id
+		WHERE (school_id=".$_SESSION['school_id']." OR ".(IsAdmin()?1:0).")
+			AND new_user=1
+		");
+}
+
+
 
 function UserCanEditCategory($cat_id) {
 global $DB;

@@ -58,7 +58,7 @@ if( KeyInRequest('change') ) {
 					$url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
 				}
 	
-				$email = new SiteEmail('forgot_password');
+				$email = new SiteEmail('temporary_password');
 				$email->IsHTML(false);
 				$email->Assign('LOGIN_LINK', $url.'?email='.$username.'&password='.$password);
 				$email->Assign('PASSWORD', $password);
@@ -88,7 +88,7 @@ if( KeyInRequest('change') ) {
 		}
 		?>
 		<form action="<?= $form_action; ?>" method="post">
-		<p>Put in your email address below to get a temporary password.</p>
+		<p>Enter your email address below to get a temporary password.</p>
 		<p>You'll need to change your password once you log in.</p>
 		<p><input type="text" name="email" id="email" size="30"></p>
 		<p><input type="submit" value="Submit" class="submit"></p>

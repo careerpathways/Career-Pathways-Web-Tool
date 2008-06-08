@@ -19,11 +19,8 @@ class ThisSite extends SiteSettings {
 
 	function __construct() {
 		$this->DBname = 'pathways';
-
-		if( !$this->is_aaronsdev() ) {
-			$this->DBuser = 'pathways';
-			$this->DBpass = 'pathways';
-		}
+		$this->DBuser = 'pathways';
+		$this->DBpass = 'pathways';
 
 		$this->ConnectDB();
 
@@ -35,7 +32,7 @@ class ThisSite extends SiteSettings {
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
 	function force_https_login() { return true; }
-	
+
 	function recaptcha_publickey() { return '6Ldg9wEAAAAAADD5_LekXYwr2W6xeSDvPSrn2ULE'; }
 	function recaptcha_privatekey() { return '6Ldg9wEAAAAAAHq3SbV8Ko0VEpcUEzg-QFq1DIx6'; }
 }
@@ -62,7 +59,7 @@ class ThisSiteTemplate extends SiteTemplate {
 	}
 
 
-	function Header() { 
+	function Header() {
 		?>
 			<div id="header">
 				<a href="/"><img src="/images/title.gif" width="828" height="61"></a>

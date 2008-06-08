@@ -20,7 +20,7 @@ if( PostRequest() ) {
 		if( is_array($check) ) {
 			echo '<p>It appears you already have an account registered with this email address.</p>';
 			echo '<p>If you have forgotten your password, please visit the <a href="/a/password.php?reset">password reset</a> page</p>';
-			echo '<p>If you continue to have trouble, please <a href="/contact.php">Contact Us</a></p>';
+			echo '<p>If you continue to have trouble, please <a href="/a/help.php">contact us</a></p>';
 		} else {
 			$user = array();
 			$user['first_name'] = Request('first_name');
@@ -88,7 +88,7 @@ if( PostRequest() ) {
 			$email->Send();
 	
 	
-			echo '<p>Thank you. Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
+			echo '<p>Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
 		}
 
 	} else {
@@ -127,18 +127,18 @@ global $SITE;
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
 	<tr>
-		<td colspan="2"><h1>New Account Request</h1></td>
+		<td colspan="2"><h1>New Account Request</h1><br></td>
 	</tr>
 	<tr>
-		<th>First Name</th>
+		<th>First Name*</th>
 		<td><input type="text" size="20" name="first_name"></td>
 	</tr>
 	<tr>
-		<th>Last Name</th>
+		<th>Last Name*</th>
 		<td><input type="text" size="20" name="last_name"></td>
 	</tr>
 	<tr>
-		<th>Email</th>
+		<th>Email*</th>
 		<td><input type="text" size="30" name="email"> (This will be your login)</td>
 	</tr>
 	<tr>
@@ -150,7 +150,7 @@ global $SITE;
 		<td><input type="text" size="12" name="phone_number"></td>
 	</tr>
 	<tr>
-		<th>School or Business</th>
+		<th>School or Business*</th>
 		<td><?php
 			echo GenerateSelectBoxDB('schools','school','id','school_name','school_name','',array('0'=>'Other'),'school_name!="Guest"');
 		?><br>
@@ -166,7 +166,7 @@ global $SITE;
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
-		<th>Anti-Spam</th>
+		<th>Anti-Spam*</th>
 		<td>(not case-sensitive)<br>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>

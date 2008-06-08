@@ -121,28 +121,26 @@ global $SITE;
 	<tr>
 		<td>Email:</td>
 		<td><input type="text" size="20" name="email" id="email" value="<?= $email; ?>"></td>
-		<td width="50">&nbsp;</td>
-		<td><span class="login_button"><a href="/a/apply.php">Apply for an account</a></span></td>
 	</tr>
 	<tr>
 		<td>Password:</td>
 		<td><input type="password" size="20" name="password" id="password"></td>
-		<td width="50">&nbsp;</td>
-		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" value="Log In" class="submit"></td>
-		<td width="50">&nbsp;</td>
-		<td><span class="login_button"><a href="/a/help.php">Questions/Problems?</a></span></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
+		<td><br><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><br><span class="login_button"><a href="/a/apply.php">Apply for an account</a></span></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><br><span class="login_button"><a href="/a/help.php">Questions/Problems?</a></span></td>
 	</tr>
 	</table>
 

@@ -79,19 +79,19 @@ if( PostRequest() ) {
 			<p>Your information will not be shared with any other parties, and will not be associated with any work you do while logged in.</p></td>
 	</tr>
 	<tr>
-		<th>First Name</th>
+		<th>First Name*</th>
 		<td><input type="text" size="20" name="first_name"></td>
 	</tr>
 	<tr>
-		<th>Last Name</th>
+		<th>Last Name*</th>
 		<td><input type="text" size="20" name="last_name"></td>
 	</tr>
 	<tr>
-		<th>Email</th>
+		<th>Email*</th>
 		<td><input type="text" size="30" name="email"></td>
 	</tr>
 	<tr>
-		<th valign="top">School or Business</th>
+		<th valign="top">School or Business*</th>
 		<td><input type="textbox" name="school" size="30"></td>
 	</tr>
 	<tr>
@@ -104,7 +104,7 @@ if( PostRequest() ) {
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
-		<th valign="top">Anti-Spam</th>
+		<th valign="top">Anti-Spam*</th>
 		<td>(not case-sensitive)<br>
 			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
 		</td>

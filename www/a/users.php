@@ -150,6 +150,11 @@ if( KeyInRequest('id') || Request('key') ) {
 			$content['user_level'] = min($_SESSION['user_level'],$content['user_level']);
 		}
 
+		if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
+			$login_url = "https://".$SITE->https_server()."/a/login.php";
+		} else {
+			$login_url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
+		}
 
 		if( Request('id') ) {
 		// this is an edit
@@ -163,35 +168,52 @@ if( KeyInRequest('id') || Request('key') ) {
 				break;
 			case 'Approve & Send Password':
 				// generate a temporary password and send a welcome email
-				$password = RandPass(6);
-				$content['temp_password'] = crypt($password, $DB->pswdsalt);
-				$content['user_active'] = 1;
-
-				$email = new SiteEmail('account_approved');
-				$email->IsHTML(false);
-				$email->Assign('EMAIL', $_REQUEST['email']);
-				//$email->Assign('EMAIL', 'aaron@aaronparecki.com');
-				$email->Assign('PASSWORD', $password);
-				if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
-					$url = "https://".$SITE->https_server()."/a/login.php";
+				
+				if( $content['school_id'] == 0 ) {
+					PrintHeader();
+					echo '<p>Error: Before you can send this user a password, you must assign them to a school. You will need to create the school record first.</p>';
+					PrintFooter();
+					die();
 				} else {
-					$url = "http://".$_SERVER['SERVER_NAME']."/a/login.php";
-				}
-				$email->Assign('LOGIN_LINK', $url.'?email='.$_REQUEST['email'].'&password='.$password);
+
+					$password = RandPass(6);
+					$content['temp_password'] = crypt($password, $DB->pswdsalt);
+					$content['user_active'] = 1;
 	
-				$email->Send();
-			
-				// no break, continue to update the user table
-			case 'Approve':
-				$content['new_user'] = 0;
-				$content['approved_by'] = $_SESSION['user_id'];
-				$DB->Update('users',$content,$_REQUEST['id']);
+					$email = new SiteEmail('account_approved');
+					$email->IsHTML(false);
+					$email->Assign('EMAIL', $_REQUEST['email']);
+					$email->Assign('PASSWORD', $password);
+	
+					$email->Assign('LOGIN_LINK', $login_url.'?email='.$_REQUEST['email'].'&password='.$password);
+		
+					$email->Send();
+				
+					$content['new_user'] = 0;
+					$content['approved_by'] = $_SESSION['user_id'];
+					$DB->Update('users',$content,$_REQUEST['id']);
+				}
 			
 				break;
-			case 'Submit':
+			case 'Save Changes':
 				// editing an existing user
 				$DB->Update('users',$content,$_REQUEST['id']);
 
+				break;
+			case 'Send New Password':
+			
+				$password = RandPass(6);
+				$content['temp_password'] = crypt($password, $DB->pswdsalt);
+				$DB->Update('users',$content,$_REQUEST['id']);
+
+			
+				$email = new SiteEmail('temporary_password');
+				$email->IsHTML(false);
+				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$content['temp_password']);
+				$email->Assign('PASSWORD', $content['temp_password']);
+				$email->Assign('EMAIL', $content['email']);
+				$email->Send();
+			
 				break;
 			}
 
@@ -202,8 +224,22 @@ if( KeyInRequest('id') || Request('key') ) {
 			$user_exists = (count($check) > 0);
 
 			if( !$user_exists ) {
+				// add the record, generate a new password and send
+
+				$password = RandPass(6);
+				$content['temp_password'] = crypt($password, $DB->pswdsalt);
 				$content['user_active'] = 1;
+				$content['new_user'] = 0;
 				$user_id = $DB->Insert('users',$content);
+
+
+				$email = new SiteEmail('temporary_password');
+				$email->IsHTML(false);
+				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$content['temp_password']);
+				$email->Assign('PASSWORD', $content['temp_password']);
+				$email->Assign('EMAIL', $content['email']);
+				$email->Send();
+
 			} else {
 				// show details about the existing user
 
@@ -255,14 +291,7 @@ if( KeyInRequest('id') || Request('key') ) {
 	// PENDING USERS
 	{
 		// Only state admins can approve users at other schools
-		$users = $DB->MultiQuery("
-			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, schools.school_name
-			FROM users, admin_user_levels AS lev, schools
-			WHERE (school_id=".$_SESSION['school_id']." OR ".(IsAdmin()?1:0).")
-				AND lev.level = users.user_level
-				AND school_id=schools.id
-				AND new_user=1
-			");
+		$users = GetPendingUsers();
 		if( count($users) > 0 ) {
 	
 			echo '<tr><td colspan="6">';
@@ -436,7 +465,14 @@ global $DB;
 			<td class="noborder">School:</td>
 			<td class="noborder">
 			<?php
-				echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id']);
+				if( $user['school_id'] == 0 ) {
+					echo 'Other: '.$user['other_school'].'<br>';
+					echo '<p>Before this user will be able to log in, you must create a School record for them and assign them to that school. You can alternatively assign them to an existing school.</p>';
+					$addl[0] = 'Other (Login Disabled)';
+				} else {
+					$addl = array();
+				}
+				echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id'],$addl);
 			?>
 			</td>
 		</tr>
@@ -469,7 +505,6 @@ global $DB;
 	<tr>
 		<td class="noborder">&nbsp;</td>
 		<td class="noborder">
-			<input type="submit" name="submit" value="Approve" class="submit">
 			<input type="submit" name="submit" value="Approve & Send Password" class="submit">
 			<input type="submit" name="submit" value="Deny" class="submit">
 		</td>
@@ -499,10 +534,11 @@ global $DB;
 		<td class="noborder">&nbsp;</td>
 		<td class="noborder">
 			<?php if( $id == "" ) { ?>
-			Once you add this user, they must click the "First time user" link on the login page to request a temporary password.
-			<br><br>
+			<input type="submit" name="submit" value="Add & Send Password" class="submit">
+			<?php } else { ?>
+			<input type="submit" name="submit" value="Save Changes" class="submit">
+			<input type="submit" name="submit" value="Send New Password" class="submit">
 			<?php } ?>
-			<input type="submit" name="submit" value="Submit" class="submit">
 			</td>
 		<td class="noborder" align="right">&nbsp;</td>
 	</tr>
