@@ -840,3 +840,21 @@ a.chart_header {
 .pager_links a {
 	text-decoration: none;
 }
+
+
+.percent_bar {
+	border: 1px black solid;
+	height: 13px;
+}
+
+.percent_inside {
+	background-color: #<?= $GOLD ?>;
+	height: 13px;
+}
+
+.log_scrollbox {
+	overflow:auto; 
+	border: 1px #cf9d2b solid;
+}
+
+

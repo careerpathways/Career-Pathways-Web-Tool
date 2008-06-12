@@ -1,0 +1,4 @@
+Options +FollowSymlinks
+RewriteEngine on
+RewriteRule ^this_month.png$ this_month.php [nc]
+RewriteRule ^monthly.png$ monthly.php [nc]
