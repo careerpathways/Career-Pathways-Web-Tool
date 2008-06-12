@@ -38,6 +38,12 @@ if( PostRequest() ) {
 	if( Request('name') ) {
 		$content['message'] .= 'Name: '.Request('name')."\n";
 	}
+	if( Request('email') ) {
+		$content['message'] .= 'Email: '.Request('email')."\n";
+	}
+	if( Request('phone') ) {
+		$content['message'] .= 'Phone: '.Request('school')."\n";
+	}
 	if( Request('school') ) {
 		$content['message'] .= 'School/Business: '.Request('school')."\n";
 	}
@@ -60,7 +66,7 @@ if( PostRequest() ) {
 	PrintHeader();
 
 	if( KeyInRequest('submitted') ) {
-		echo '<p>Your message has been sent to help@ctepathways.org. We will respond to your inquiry withing one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
+		echo '<p>Thank you, your message has been sent to help@ctepathways.org. We will respond to your inquiry within one business day.<br><br>Pathways Web Tool User Support</p>';
 	} else {
 		?>
 		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
@@ -71,10 +77,10 @@ if( PostRequest() ) {
 		} else {
 			if( KeyInRequest('a') ) {
 				echo '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-				echo '<p>This website is currently only available to Oregon schools and businesses. You can explore the Web Tool as a <a href="/a/guestlogin.php">guest user</a>.</p>';
+				echo '<p>This website is currently only available to Oregon schools and businesses, however, feel free to explore the Web Tool as a <a href="/a/guestlogin.php">guest user</a>.</p>';
 				echo '<p>Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink('help@ctepathways.org').'.</p>';
 			} else {
-				echo '<p>Thanks for visiting the Career Pathways Web Tool.</p>';
+				echo '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
 				echo '<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink('help@ctepathways.org').'. We will get back to you within the next business day.</p>';
 			}
 		}
