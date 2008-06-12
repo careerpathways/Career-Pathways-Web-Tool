@@ -3,7 +3,7 @@ include("firstinclude.inc.php");
 
 define("CPUSER_STAFF", 16);
 define("CPUSER_SCHOOLADMIN", 64);
-define("CPUSER_WEBMASTER", 96);
+define("CPUSER_WEBMASTER", 32);
 define("CPUSER_STATEADMIN", 127);
 
 

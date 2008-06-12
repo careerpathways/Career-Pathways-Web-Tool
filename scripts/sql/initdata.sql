@@ -15,8 +15,8 @@ insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`o
 /*Data for the table `admin_user_levels` */
 
 insert into `admin_user_levels` (`level`,`name`) values (16,'Staff');
+insert into `admin_user_levels` (`level`,`name`) values (32,'Webmaster');
 insert into `admin_user_levels` (`level`,`name`) values (64,'School Admin');
-insert into `admin_user_levels` (`level`,`name`) values (96,'Webmaster');
 insert into `admin_user_levels` (`level`,`name`) values (127,'State Admin');
 
 /*Data for the table `admin_level_module` */
@@ -25,7 +25,7 @@ insert into `admin_level_module` (`module_id`,`level`) values (1,64);
 insert into `admin_level_module` (`module_id`,`level`) values (2,127);
 insert into `admin_level_module` (`module_id`,`level`) values (3,16);
 insert into `admin_level_module` (`module_id`,`level`) values (6,127);
-insert into `admin_level_module` (`module_id`,`level`) values (7,96);
+insert into `admin_level_module` (`module_id`,`level`) values (7,32);
 insert into `admin_level_module` (`module_id`,`level`) values (8,64);
 insert into `admin_level_module` (`module_id`,`level`) values (9,16);
 insert into `admin_level_module` (`module_id`,`level`) values (11,127);
