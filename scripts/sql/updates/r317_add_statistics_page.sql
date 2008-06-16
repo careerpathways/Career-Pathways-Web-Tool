@@ -13,4 +13,9 @@ CREATE TABLE `logs` (
           `user_agent` varchar(255) default NULL,                   
           PRIMARY KEY  (`id`)                                       
         ) ENGINE=MyISAM;
-        
+CREATE TABLE `logs_processed` (                            
+                  `id` int(10) unsigned NOT NULL auto_increment,           
+                  `filename` varchar(50) default NULL,                     
+                  `date_processed` datetime default NULL,                  
+                  PRIMARY KEY  (`id`)                                      
+                );
