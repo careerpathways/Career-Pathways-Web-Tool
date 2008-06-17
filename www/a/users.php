@@ -282,7 +282,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			");
 	}
 
-	if( IsSchoolAdmin() ) { 
+	if( IsWebmaster() ) { 
 	echo '<tr>';
 		echo '<td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"<img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">add user</span></a></td>';
 	echo '</tr>';
@@ -552,7 +552,7 @@ global $DB;
 		</td>
 	</tr>
 	<?php
-		if( IsSchoolAdmin() ) {
+		if( IsWebmaster() ) {
 		?>
 		<tr>
 			<td colspan="2" class="noborder"><hr></td>
@@ -613,7 +613,7 @@ if( $tried_to_add ) {
 		<td class="noborder">Email:</td>
 		<td class="noborder"><?= $user['email'] ?></td>
 	</tr>
-	<?php if( IsSchoolAdmin() ) { ?>
+	<?php if( IsWebmaster() ) { ?>
 	<tr>
 		<td class="noborder">Password:</td>
 		<td class="noborder">
@@ -648,7 +648,7 @@ if( $tried_to_add ) {
 		<?= $DB->GetValue('name','admin_user_levels',$user['user_level'],'level') ?>
 		</td>
 	</tr>
-	<?php if( IsSchoolAdmin() ) { ?>
+	<?php if( IsWebmaster() ) { ?>
 	<tr>
 		<td>Last Logon:</td>
 		<td>

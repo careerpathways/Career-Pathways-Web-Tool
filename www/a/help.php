@@ -73,7 +73,7 @@ if( PostRequest() ) {
 
 		<?php
 		if( IsLoggedIn() ) { 
-			echo '<p>Please use this form to send us your questions or problems with the Web Tool. We will get back to you within two business days.</p>';
+			echo '<p>Please use this form to send us your questions or problems with the Web Tool. We will get back to you within one business day.</p>';
 		} else {
 			if( KeyInRequest('a') ) {
 				echo '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
@@ -81,7 +81,7 @@ if( PostRequest() ) {
 				echo '<p>Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink('help@ctepathways.org').'.</p>';
 			} else {
 				echo '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-				echo '<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink('help@ctepathways.org').'. We will get back to you within the next business day.</p>';
+				echo '<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink('help@ctepathways.org').'. We will get back to you within one business day.</p>';
 			}
 		}
 		?>
