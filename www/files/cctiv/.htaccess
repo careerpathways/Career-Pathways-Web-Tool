@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.+)\.png$ img.php?$1 [nc]

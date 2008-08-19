@@ -858,3 +858,48 @@ a.chart_header {
 }
 
 
+/****** CCTI Styles Below ******/
+
+table.ccti_program {
+	border: 1px #999999 solid;
+	border-collapse: collapse;
+}
+
+table.ccti_program td {
+	border: 1px #999999 solid;
+}
+
+td.ccti_program_header, td.ccti_xy_header, td.ccti_col_header {
+	text-transform: uppercase;
+	font-weight: bold;
+	text-align: center;
+}
+
+td.ccti_program_headleft, td.ccti_program_headright {
+	width: 14px;
+	text-align: center;
+}
+
+td.ccti_occu_head {
+	text-align: center;
+	font-weight: bold;
+	font-size: 7pt;
+}
+
+td.ccti_row_header, td.ccti_header {
+	font-weight: bold;
+}
+
+td.ccti_row_header {
+	text-align: center;
+	width: 60px;
+}
+
+td.ccti_row_header, td.ccti_col_header, td.ccti_header, td.ccti_xy_header, td.ccti_occu_head, td.ccti_program_header {
+	background-color: #CCCCCC;
+}
+
+td.ccti_content {
+	padding: 6px;
+}
+

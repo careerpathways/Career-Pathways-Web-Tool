@@ -340,6 +340,7 @@ function drawing_sort_by_version($a,$b) {
 include("general.inc.php");
 include("admin_inc.php");
 include("json_encode.php");
+include("ccti_drawing.inc.php");
 
 
 function logmsg($message) {
