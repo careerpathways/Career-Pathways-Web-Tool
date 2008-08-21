@@ -11,12 +11,43 @@ $time_start = microtime();
 $memory_start = memory_get_usage();
 
 
+$drawing_id = Request('id');
+$drawing_id = 1; // debug
+CCTI_check_permission($drawing_id);
 
-$ccti = new CCTI_Drawing(1);
+
+$ccti = new CCTI_Drawing($drawing_id);
+
+echo '<script type="text/javascript" src="/c/cctiedit.js"></script>';
+echo "\n";
+?>
+<script type="text/javascript">
+	CCTI.drawing_id = <?= $drawing_id ?>;
+</script>
+
+<link rel="stylesheet" href="/common/jquery/jquery-treeview/jquery.treeview.css" />
+
+<script src="/common/jquery-1.2.6.pack.js" type="text/javascript"></script>
+<script src="/common/jquery/jquery-treeview/lib/jquery.cookie.js" type="text/javascript"></script>
+<script src="/common/jquery/jquery-treeview/jquery.treeview.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+		$(function() {
+			$("#tree").treeview({
+				collapsed: true,
+				animated: "medium",
+				control:"#sidetreecontrol",
+				persist: "location"
+			});
+		})
+</script>
+
+<?php
 
 echo '<h2>'.$ccti->name.'</h2>';
+echo '<br>';
 
-foreach( $ccti->programs as $program )
+foreach( $ccti->programs as $pnum=>$program )
 {
 	echo '<table class="ccti_program">';
 
@@ -121,9 +152,9 @@ foreach( $ccti->programs as $program )
 				{
 					if( !in_array($i.','.$j, $cells_spanned) )
 					{
-						if( array_key_exists($i, $section->content) && array_key_exists($j, $section->content[$i]) )
+						if( $section->content[$i]->offsetExists($j) )
 						{
-							echo '<td colspan="'.$section->content[$i][$j]->colspan.'" width="'.round($section->content[$i][$j]->colspan / $program->num_columns * $content_width).'" class="ccti_content">';
+							echo '<td onclick="CCTI.editContent(this, '.$pnum.','.$snum.','.$i.','.$j.')" colspan="'.$section->content[$i][$j]->colspan.'" width="'.round($section->content[$i][$j]->colspan / $program->num_columns * $content_width).'" class="ccti_content">';
 							echo $section->content[$i][$j]->text;
 							echo '</td>';
 							if( $section->content[$i][$j]->colspan > 1 )
@@ -136,7 +167,9 @@ foreach( $ccti->programs as $program )
 						}
 						else
 						{
-							echo '<td class="ccti_content" width="'.round(1 / $program->num_columns * $content_width).'">&nbsp;</td>';
+							echo '<td onclick="CCTI.editContent(this, '.$pnum.','.$snum.','.$i.','.$j.')" class="ccti_content" width="'.round(1 / $program->num_columns * $content_width).'">';
+							echo '&nbsp;';
+							echo '</td>';
 						}
 					}
 				}
@@ -152,6 +185,40 @@ foreach( $ccti->programs as $program )
 	echo '</table>';
 	echo '<br>';
 }
+
+echo '<h3>Hierarchy View</h3>';
+
+echo '<ul id="tree">';
+foreach( $ccti->programs as $pnum=>$program )
+{
+	echo '<li>Program: '.($program->header?$program->header:'[Untitled]');
+	echo '<ul>';
+	foreach( $program->sections as $snum=>$section )
+	{
+		echo '<li>Section: '.($section->header?$section->header:'[Untitled]');
+		echo '<ul>';
+		for( $i=0; $i<$section->num_rows; $i++ )
+		{
+			echo '<li>Row: ';
+				if( array_key_exists($i, $section->labels_y) )
+					echo $section->labels_y[$i][0]->text;
+				else
+					echo '[Untitled]';
+			echo '<ul>';
+			for( $j=0; $j<$program->num_columns; $j++ )
+			{
+				echo '<li>Cell: '.$section->content[$i][$j]->text.'</li>';
+			}
+			echo '</ul>';
+			echo '</li>';
+		}
+		echo '</ul>';
+		echo '</li>';
+	}
+	echo '</ul>';
+	echo '</li>';
+}
+echo '</ul>';
 
 /*
 echo '<pre>';

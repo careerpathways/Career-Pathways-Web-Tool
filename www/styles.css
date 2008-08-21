@@ -903,3 +903,12 @@ td.ccti_content {
 	padding: 6px;
 }
 
+
+/***** CCTI Editing Styles *****/
+
+td.ccti_content:hover, td.ccti_row_header:hover, td.ccti_header:hover, td.ccti_xy_header:hover, td.ccti_program_header:hover, td.ccti_col_header:hover {
+	background-color: #FFFFAA;
+	cursor: pointer;
+}
+
+

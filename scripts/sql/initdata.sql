@@ -11,6 +11,7 @@ insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`o
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (10,'emailcontents','Email Templates','Email Templates',1,105);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (11,'guestlogins','Guest Logins','Guest Logins','1','190');
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (12,'sitenews','Site News','Site News',1,4);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (13,'ccti_drawings','CCTI Drawings','CCTI Drawings',1,15);
 
 /*Data for the table `admin_user_levels` */
 
@@ -29,6 +30,7 @@ insert into `admin_level_module` (`module_id`,`level`) values (7,32);
 insert into `admin_level_module` (`module_id`,`level`) values (8,64);
 insert into `admin_level_module` (`module_id`,`level`) values (9,16);
 insert into `admin_level_module` (`module_id`,`level`) values (11,127);
+insert into `admin_level_module` (`module_id`,`level`) values (13,16);
 
 /*Data for the table `email_text` */
 

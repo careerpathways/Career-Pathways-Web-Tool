@@ -1,12 +1,29 @@
 <?php
 /*
-   These classes implement the structure of the CCTI drawings. The PHP code should ONLY 
+   These classes implement the structure of the CCTI drawings. The PHP code should ONLY
    interact with these objects, and never with the database directly. These objects
    contain *all* the SQL necessary for dealing with CCTI drawings.
-   
+
    Nothing should ever be written back to the database until "commit" is called.
 
 */
+
+function CCTI_check_permission($id)
+{
+	global $DB;
+
+	// SuperAdmins and people of the same school can edit drawings
+	$drawing = $DB->SingleQuery("SELECT *
+		FROM ccti_drawings
+		WHERE id=".$id);
+	if( !is_array($drawing) || (!IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) ) {
+		chlog("permissions error (CCTI)");
+		die();
+	}
+	return true;
+}
+
+
 
 class CCTI_Drawing
 {
@@ -17,14 +34,14 @@ class CCTI_Drawing
 	{
 		global $DB;
 
-		
+
 		if( $id == '' )
 		{
 			$this->data = $this->loadDefaults();
 
 			$this->programs[] = new CCTI_Program();
-		} 
-		else 
+		}
+		else
 		{
 			$this->data = $DB->LoadRecord('ccti_drawings', $id);
 
@@ -34,10 +51,10 @@ class CCTI_Drawing
 				$this->programs[] = new CCTI_Program($p);
 			}
 		}
-	
+
 	}
-	
-	public function &__get($name) 
+
+	public function &__get($name)
 	{
 		switch($name)
 		{
@@ -58,7 +75,7 @@ class CCTI_Drawing
 			case 'name':
 				$this->data[$name] = $value;
 				break;
-		}	
+		}
 	}
 
 	public function commit()
@@ -66,35 +83,35 @@ class CCTI_Drawing
 		global $DB;
 
 		// save local data
-		
-		
+
+
 		// call each program's commit
 
-	
+
 	}
-	
+
 	protected function loadDefaults()
 	{
 		global $DB;
 		return $DB->LoadRecord('ccti_drawings','');
 	}
-	
+
 }
 
 
-class CCTI_Program 
+class CCTI_Program
 {
 
 	private $data = array();
 	private $sections = array();
 	private $school = array();
-	
+
 
 	public function __construct($id='')
 	{
 		global $DB;
 
-		
+
 		if( $id == '' )
 		{
 			$this->data = $this->loadDefaults();
@@ -115,14 +132,14 @@ class CCTI_Program
 			}
 
 			$sections = $DB->VerticalQuery('SELECT id FROM ccti_sections WHERE program_id='.$id, 'id');
-			foreach( $sections as $s ) 
+			foreach( $sections as $s )
 			{
 				$this->sections[] = new CCTI_Section($s, $this);
 			}
 		}
 	}
 
-	public function &__get($name) 
+	public function &__get($name)
 	{
 		switch($name)
 		{
@@ -148,7 +165,7 @@ class CCTI_Program
 				break;
 			case 'content_rows':
 				$rows = 0;
-				foreach( $this->sections as $s ) 
+				foreach( $this->sections as $s )
 					$rows += $s->total_rows;
 				return $rows;
 				break;
@@ -179,7 +196,7 @@ class CCTI_Program
 			case 'completes_with':
 				$this->data[$name] = $value;
 				break;
-		}	
+		}
 	}
 
 	public function __toString()
@@ -191,9 +208,9 @@ class CCTI_Program
 	{
 		global $DB;
 		// saves all variables back to the database
-	
+
 	}
-	
+
 	protected function loadDefaults()
 	{
 		global $DB;
@@ -209,7 +226,7 @@ class CCTI_Section
 	private $labels_x = array();
 	private $labels_y = array();
 	private $label_xy;
-	private $content = array();
+	private $content;
 	private $parent;
 
 	public function __construct($id='', &$parent)
@@ -218,44 +235,45 @@ class CCTI_Section
 
 		$this->parent = $parent;
 		$this->data = $DB->LoadRecord('ccti_sections', $id);
+		$this->content = new CCTI_Section_Content_Row($id);
 
-		if( $id == '' ) 
+		if( $id == '' )
 		{
 
 
 		}
-		else 
+		else
 		{
-			$labels_x = $DB->MultiQuery('SELECT id, row, col FROM ccti_section_labels 
+			$labels_x = $DB->MultiQuery('SELECT id, row, col FROM ccti_section_labels
 				WHERE section_id='.$id.' AND axis="x" ORDER BY row, col');
 			foreach( $labels_x as $lx )
 			{
 				$this->labels_x[$lx['row']][$lx['col']] = new CCTI_Section_Label($lx['id']);
 			}
 
-			$labels_y = $DB->MultiQuery('SELECT id, row, col FROM ccti_section_labels 
+			$labels_y = $DB->MultiQuery('SELECT id, row, col FROM ccti_section_labels
 				WHERE section_id='.$id.' AND axis="y" ORDER BY row, col');
 			foreach( $labels_y as $ly )
 			{
 				$this->labels_y[$ly['row']][$ly['col']] = new CCTI_Section_Label($ly['id']);
 			}
 
-			$label_xy = $DB->SingleQuery('SELECT id FROM ccti_section_labels 
+			$label_xy = $DB->SingleQuery('SELECT id FROM ccti_section_labels
 				WHERE section_id='.$id.' AND axis="xy"'); // assume the database is correct and only one record exists
 			$this->label_xy = new CCTI_Section_Label($label_xy['id']);
 
-			$content = $DB->MultiQuery('SELECT id, row, col FROM ccti_data
+			$content = $DB->MultiQuery('SELECT id, section_id, row, col FROM ccti_data
 				WHERE section_id='.$id.' ORDER BY row, col');
 			foreach( $content as $c )
 			{
-				$this->content[$c['row']][$c['col']] = new CCTI_Cell($c['id']);
+				$this->content[$c['row']][$c['col']] = new CCTI_Cell($c['row'], $c['col'], $c['section_id'], intval($c['id']));
 			}
 		}
 
-	
+
 	}
 
-	public function &__get($name) 
+	public function &__get($name)
 	{
 		switch($name)
 		{
@@ -269,7 +287,7 @@ class CCTI_Section
 			case 'total_rows':
 				$rows = 0;
 				$rows += $this->num_rows;
-				$rows += ($this->header == ''?0:1);  
+				$rows += ($this->header == ''?0:1);
 				$rows += count($this->labels_x);
 				return $rows;
 				break;
@@ -293,9 +311,34 @@ class CCTI_Section
 	{
 		global $DB;
 		// saves all variables back to the database
-	
+
+		$data = array();
+		$data['header'] = $this->header;
+		$data['`index`'] = $this->index;
+		$data['num_rows'] = $this->num_rows;
+		$DB->Update('ccti_sections', $data, $this->id);
+
+		foreach( $this->labels_x as $lx1 )
+		{
+			foreach( $lx1 as $lx2 )
+			{
+				$lx2->commit();
+			}
+		}
+
+		foreach( $this->labels_y as $ly1 )
+		{
+			foreach( $ly1 as $ly2 )
+			{
+				$ly2->commit();
+			}
+		}
+
+		$this->label_xy->commit();
+		$this->content->commit();
+
 	}
-	
+
 	protected function loadDefaults()
 	{
 		global $DB;
@@ -303,6 +346,124 @@ class CCTI_Section
 	}
 
 }
+
+
+abstract class CCTI_Section_Content extends ArrayIterator implements ArrayAccess
+{
+
+	private $i;
+	private $arrayKeys;
+	private $section_id;
+
+	public function offsetExists($offset)
+	{
+		//echo $this->type.' offsetExists('.$offset.')<br>';
+		return array_key_exists($offset, $this->data);
+	}
+
+	public function offsetUnset($offset)
+	{
+		//echo $this->type.' offsetUnset('.$offset.')<br>';
+	}
+
+
+	public function current()
+	{
+		return $this->data[$this->arrayKeys[$this->i]];
+	}
+	public function key()
+	{
+		return $this->arrayKeys[$i];
+	}
+	public function next()
+	{
+		$this->i++;
+	}
+	public function rewind()
+	{
+		$this->arrayKeys = array_keys($this->data);
+		$this->i = 0;
+		reset($this->data);
+	}
+	public function valid()
+	{
+		return $this->i < count($this->data);
+	}
+
+	abstract function commit();
+
+}
+
+
+class CCTI_Section_Content_Row extends CCTI_Section_Content
+{
+	public function __construct($section_id)
+	{
+		$this->data = array();
+		$this->section_id = $section_id;
+	}
+
+	public function commit()
+	{
+		global $DB;
+
+		foreach( $this->data as $col )
+		{
+			$col->commit();
+		}
+	}
+
+	public function offsetGet($offset)
+	{
+		if( !array_key_exists($offset, $this->data) )
+		{
+			$this->data[$offset] = new CCTI_Section_Content_Col($this->section_id, $offset);
+		}
+		return $this->data[$offset];
+	}
+
+	public function offsetSet($offset, $value)
+	{
+		$this->data[$offset] = $value;
+	}
+
+}
+
+class CCTI_Section_Content_Col extends CCTI_Section_Content
+{
+	private $index;
+
+	public function __construct($section_id, $index)
+	{
+		$this->data = array();
+		$this->index = $index;
+		$this->section_id = $section_id;
+	}
+
+	public function commit()
+	{
+		global $DB;
+
+		foreach( $this->data as $key=>$cell )
+		{
+			$cell->commit();
+		}
+	}
+
+	public function offsetGet($offset)
+	{
+		if( !array_key_exists($offset, $this->data) ) $this->data[$offset] = new CCTI_Cell($this->index, $offset, $this->section_id);
+		return $this->data[$offset];
+	}
+
+	public function offsetSet($offset, $value)
+	{
+		$this->data[$offset] = $value;
+	}
+
+}
+
+
 
 class CCTI_Section_Label
 {
@@ -312,11 +473,11 @@ class CCTI_Section_Label
 	public function __construct($id='')
 	{
 		global $DB;
-		
-		$this->data = $DB->LoadRecord('ccti_section_labels', $id);	
+
+		$this->data = $DB->LoadRecord('ccti_section_labels', $id);
 	}
 
-	public function &__get($name) 
+	public function &__get($name)
 	{
 		switch($name)
 		{
@@ -337,7 +498,10 @@ class CCTI_Section_Label
 	{
 		global $DB;
 		// saves all variables back to the database
-	
+
+		//$sql = '
+		//INSERT INTO ccti_section_labels (id, section_id,
+
 	}
 
 
@@ -347,16 +511,31 @@ class CCTI_Section_Label
 class CCTI_Cell
 {
 	private $data;
+	private $row;
+	private $col;
+	private $section_id;
 
-	public function __construct($id='')
+	public function __construct($row, $col, $section_id, $id_or_text='')
 	{
 		global $DB;
 
-		$this->data = $DB->LoadRecord('ccti_data', $id);
+		if( is_int($id_or_text) )
+		{
+			$this->data = $DB->LoadRecord('ccti_data', $id_or_text);
+		}
+		else
+		{
+			$this->data = $DB->LoadRecord('ccti_data', '');
+			$this->text = $id_or_text;
+		}
+
+		$this->row = $row;
+		$this->col = $col;
+		$this->section_id = $section_id;
 	}
 
 
-	public function &__get($name) 
+	public function &__get($name)
 	{
 		switch($name)
 		{
@@ -367,6 +546,38 @@ class CCTI_Cell
 				return $this->data[$name];
 				break;
 		}
+	}
+
+	public function __set($name, $value)
+	{
+		switch($name)
+		{
+			case 'text':
+				$this->data[$name] = $value;
+				break;
+		}
+	}
+
+	public function commit()
+	{
+		global $DB;
+
+		$data = array();
+		$data['id'] = $this->id;
+		$data['section_id'] = $this->section_id;
+		$data['row'] = $this->row;
+		$data['col'] = $this->col;
+		$data['rowspan'] = $this->rowspan;
+		$data['colspan'] = $this->colspan;
+		$data['text'] = $this->text;
+		PA($data);
+		$id = $DB->InsertODUKU('ccti_data', $data);
+		echo $DB->Error();
+	}
+
+	public function __toString()
+	{
+		return $this->row.'x'.$this->col.': "'.$this->data['text'].'"';
 	}
 
 }
