@@ -33,14 +33,14 @@ if( PostRequest() ) {
 			$user['new_user'] = 1;
 			$user['application_key'] = md5($user['email'].time());
 			$user['last_logon'] = $DB->SQLDate();
-	
+
 			$referral = '';
 			$referral = csl(Request('referral'));
 			if( in_array('Other',Request('referral')) ) {
 				$referral .= ' "'.Request('referral_other').'"';
 			}
 			$user['referral'] = $referral;
-	
+
 			$recipients = '';
 			if( Request('school') != 0 && is_numeric(Request('school')) ) {
 				$user['school_id'] = Request('school');
@@ -72,7 +72,7 @@ if( PostRequest() ) {
 			$email = new SiteEmail('account_request');
 			$email->IsHTML(false);
 			$email->Assign('RECIPIENTS', $recipients);
-			$email->Assign('RECIPIENTS', 'aaron@parecki.com, effie@effie.bz');
+			//$email->Assign('RECIPIENTS', 'aaron@parecki.com, effie@effie.bz');
 			$email->Assign('APPROVE_LINK', 'http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']);
 			$email->Assign('USER_INFO', $user_info);
 
@@ -86,8 +86,8 @@ if( PostRequest() ) {
 			$email->Assign('USER_INFO', $user_info);
 
 			$email->Send();
-	
-	
+
+
 			echo '<p>Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
 		}
 

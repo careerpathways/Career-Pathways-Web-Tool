@@ -25,8 +25,8 @@ if( KeyInRequest('id') || Request('key') ) {
 			if( $temp['approved_by'] != '' ) {
 				PrintHeader();
 				$appr = $DB->SingleQuery('SELECT * FROM users WHERE id='.$temp['approved_by']);
-				echo '<p>This application request has already been approved by '.$appr['first_name'].' '.$appr['last_name'].'</p>';	
-				PrintFooter();			
+				echo '<p>This application request has already been approved by '.$appr['first_name'].' '.$appr['last_name'].'</p>';
+				PrintFooter();
 				die();
 			}
 
@@ -168,7 +168,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				break;
 			case 'Approve & Send Password':
 				// generate a temporary password and send a welcome email
-				
+
 				if( $content['school_id'] == 0 ) {
 					PrintHeader();
 					echo '<p>Error: Before you can send this user a password, you must assign them to a school. You will need to create the school record first.</p>';
@@ -179,21 +179,21 @@ if( KeyInRequest('id') || Request('key') ) {
 					$password = RandPass(6);
 					$content['temp_password'] = crypt($password, $DB->pswdsalt);
 					$content['user_active'] = 1;
-	
+
 					$email = new SiteEmail('account_approved');
 					$email->IsHTML(false);
 					$email->Assign('EMAIL', $_REQUEST['email']);
 					$email->Assign('PASSWORD', $password);
-	
+
 					$email->Assign('LOGIN_LINK', $login_url.'?email='.$_REQUEST['email'].'&password='.$password);
-		
+
 					$email->Send();
-				
+
 					$content['new_user'] = 0;
 					$content['approved_by'] = $_SESSION['user_id'];
 					$DB->Update('users',$content,$_REQUEST['id']);
 				}
-			
+
 				break;
 			case 'Save Changes':
 				// editing an existing user
@@ -201,19 +201,19 @@ if( KeyInRequest('id') || Request('key') ) {
 
 				break;
 			case 'Send New Password':
-			
+
 				$password = RandPass(6);
 				$content['temp_password'] = crypt($password, $DB->pswdsalt);
 				$DB->Update('users',$content,$_REQUEST['id']);
 
-			
+
 				$email = new SiteEmail('temporary_password');
 				$email->IsHTML(false);
-				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$content['temp_password']);
-				$email->Assign('PASSWORD', $content['temp_password']);
+				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$password);
+				$email->Assign('PASSWORD', $password);
 				$email->Assign('EMAIL', $content['email']);
 				$email->Send();
-			
+
 				break;
 			}
 
@@ -233,10 +233,10 @@ if( KeyInRequest('id') || Request('key') ) {
 				$user_id = $DB->Insert('users',$content);
 
 
-				$email = new SiteEmail('temporary_password');
+				$email = new SiteEmail('account_approved');
 				$email->IsHTML(false);
-				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$content['temp_password']);
-				$email->Assign('PASSWORD', $content['temp_password']);
+				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$password);
+				$email->Assign('PASSWORD', $password);
 				$email->Assign('EMAIL', $content['email']);
 				$email->Send();
 
@@ -252,7 +252,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 		header("Location: ".$_SERVER['PHP_SELF']);
 		die();
-		
+
 	} else {
 
 		PrintHeader();
@@ -276,13 +276,13 @@ if( KeyInRequest('id') || Request('key') ) {
 			ORDER BY schools.id=".$_SESSION['school_id']." DESC, school_name
 			");
 	} else {
-		$schools = $DB->MultiQuery("SELECT schools.* 
-			FROM schools 
+		$schools = $DB->MultiQuery("SELECT schools.*
+			FROM schools
 			ORDER BY id=".$_SESSION['school_id']." DESC, school_name
 			");
 	}
 
-	if( IsWebmaster() ) { 
+	if( IsWebmaster() ) {
 	echo '<tr>';
 		echo '<td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"<img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">add user</span></a></td>';
 	echo '</tr>';
@@ -293,29 +293,29 @@ if( KeyInRequest('id') || Request('key') ) {
 		// Only state admins can approve users at other schools
 		$users = GetPendingUsers();
 		if( count($users) > 0 ) {
-	
+
 			echo '<tr><td colspan="6">';
 			echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">Users Pending Approval</div>';
-			echo '</td></tr>';	
-		
+			echo '</td></tr>';
+
 			foreach( $users as $u ) {
 				echo '<tr>';
-	
+
 				if( $u['user_level'] > $_SESSION['user_level'] ) {
 					$edit_text = 'view';
-	
+
 				} else {
 					$edit_text = 'edit';
-	
+
 				}
 				echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
-	
+
 				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
 				echo '<td width="140">'.$u['phone_number'].'</td>';
-	
+
 				echo '<td width="180">'.$u['email'].'</td>';
 				echo '<td width="100" colspan="2">'.$u['school_name'].'</td>';
-	
+
 				echo '</tr>';
 			}
 		}
@@ -348,8 +348,8 @@ if( KeyInRequest('id') || Request('key') ) {
 			foreach( $users as $u ) {
 				echo '<tr>';
 
-				if( $_SESSION['user_level'] == CPUSER_STAFF || 
-					$u['user_level'] > $_SESSION['user_level'] || 
+				if( $_SESSION['user_level'] == CPUSER_STAFF ||
+					$u['user_level'] > $_SESSION['user_level'] ||
 					(!IsAdmin() && $u['school_id'] != $_SESSION['school_id']) ) {
 					$edit_text = 'view';
 				} else {

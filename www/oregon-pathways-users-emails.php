@@ -2,7 +2,7 @@
 include("inc.php");
 
 
-if( $_SERVER['REMOTE_ADDR'] != '207.210.65.232' ) {
+if( $_SERVER['REMOTE_ADDR'] != '207.192.71.230' ) {
 	die();
 }
 

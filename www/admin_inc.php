@@ -3,16 +3,16 @@
 
 // abstractions to work with USER_ definitions in general.inc.php
 function IsAdmin() {
-	return $_SESSION['user_level'] >= CPUSER_ADMIN;
+	return $_SESSION['user_level'] >= CPUSER_STATEADMIN;
 }
 function IsSchoolAdmin() {
-	return $_SESSION['user_level'] >= CPUSER_STAFF;
+	return $_SESSION['user_level'] >= CPUSER_SCHOOLADMIN;
 }
 function IsWebmaster() {
 	return $_SESSION['user_level'] >= CPUSER_WEBMASTER;
 }
 function IsStaff() {
-	return $_SESSION['user_level'] >= CPUSER_MEMBER;
+	return $_SESSION['user_level'] >= CPUSER_STAFF;
 }
 
 
