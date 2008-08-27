@@ -58,6 +58,10 @@ var dragged_x; var dragged_y;
 var colorPicker;
 var currentColorTable;
 
+var curColorsLoaded = false;
+var webColorsLoaded = false;
+var yuiLoaded = false;
+
 function switch_school(id) {
 	document.location.href = "/a/schoolcolors.php?school_id="+id;
 }
@@ -95,6 +99,9 @@ function receivedAutoColor(colors) {
 			getLayer('auto_color_help').innerHTML = 'No colors were found or unable to parse website. Enter colors using the Color Picker below.';
 		}
 	}
+	
+	webColorsLoaded = true;
+	loadPicker();
 }
 
 function receivedCurrentColors(obj) {
@@ -103,18 +110,22 @@ function receivedCurrentColors(obj) {
 
 	showColorList(data.colors, container, 'current');
 
+	curColorsLoaded = true;
+	loadPicker();
 }
 
 function showColorList(colors, container, mode) {
 	// mode is either 'auto' or 'current'
 
+	var cl_tbody = document.createElement('tbody');
 	var cl_table = document.createElement('table');
-	var wrap_num = 18;  // wrapping doesn't work very well, so hopefully it will never happen with n=18
+	var wrap_num = 12;  // wrapping doesn't work very well, so hopefully it will never happen with n=18
 
+	var cl_row;
 	for( var i=0; i<colors.length; i++ ) {
 		if( i % wrap_num == 0 ) {
-			var cl_row = document.createElement('tr');
-			cl_table.appendChild(cl_row);
+			cl_row = document.createElement('tr');
+			cl_tbody.appendChild(cl_row);
 		}
 
 		var cl_cell = document.createElement('td');
@@ -146,7 +157,20 @@ function showColorList(colors, container, mode) {
 			var cl_color_drag = new autoColorDD('autocolor_' + colors[i]);
 		}
 	}
+	
+	/* fill the remaining empty cells with <td>s so it draws a border */
+	if( colors.length % wrap_num > 0 ) {
+		for( var j = colors.length % wrap_num; j < wrap_num; j++ ) {
+			var cl_cell = document.createElement('td');
+				cl_cell.className = 'content_cell';
+				cl_cell.width = '40px';
+			cl_row.appendChild(cl_cell);
+		}
+	}
 
+	cl_table.appendChild(cl_tbody);
+
+	/*
 	if( mode == 'current' ) {
 		var cl_cell = document.createElement('td');
 			cl_cell.className = 'content_cell';
@@ -155,10 +179,12 @@ function showColorList(colors, container, mode) {
 		// there will always be a cl_row object because #333333 will always be returned even if there are no colors
 		cl_row.appendChild(cl_cell);
 	}
+	*/
 
 	if( mode == 'auto' && colors.length == 0 ) {
 		var cl_row = document.createElement('tr');
-		cl_table.appendChild(cl_row);
+		cl_tbody.appendChild(cl_row);
+		cl_table.appendChild(cl_tbody);
 		for( var j=0; j<8; j++ ) {
 			var cl_cell = document.createElement('td');
 				cl_cell.className = 'content_cell';
@@ -180,22 +206,29 @@ function showColorList(colors, container, mode) {
 
 
 function initPage() {
-	colorPicker = new YAHOO.widget.ColorPicker('ycolorpicker', {
-		showhexcontrols: true,
-		showwebsafe: false,
-		images: {
-			PICKER_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/picker_thumb.png",
-			HUE_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/hue_thumb.png"
-		}
-	});
-	colorPicker.setValue([0,0,0],false);
-
-	var picker_drag = new colorPickerDD('yui-picker-swatch');
-	var picker_target = new YAHOO.util.DDTarget('school_colors');
-
+	//curColorsLoaded = true;
+	//webColorsLoaded = true;
+	//loadPicker();
 	getColors(<?= $id ?>);
-
 	fetchColors('blank');
+}
+
+function loadPicker() {
+	if( curColorsLoaded && webColorsLoaded && !yuiLoaded ) {
+		colorPicker = new YAHOO.widget.ColorPicker('ycolorpicker', {
+			showhexcontrols: true,
+			showwebsafe: false,
+			images: {
+				PICKER_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/picker_thumb.png",
+				HUE_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/hue_thumb.png"
+			}
+		});
+		colorPicker.setValue([0,0,0],false);
+	
+		var picker_drag = new colorPickerDD('yui-picker-swatch');
+		var picker_target = new YAHOO.util.DDTarget('school_colors');
+		yuiLoaded = true;
+	}
 }
 
 schoolOptionColorDD = function(id, sGroup, config) {
@@ -301,9 +334,6 @@ Event.onDOMReady(initPage);
 		background-color: #FFFF33;
 	}
 
-	#school_colors, #auto_colors {
-		height: 43px;
-	}
 
 	#auto_colors .content_cell {
 		height: 43px;
@@ -316,6 +346,10 @@ Event.onDOMReady(initPage);
 	#auto_color_form {
 		margin-bottom: 4px;
 	}
+	
+	.color_table {
+		margin-bottom: 3px;
+	}	
 
 </style>
 
@@ -332,8 +366,9 @@ if( IsAdmin() ) {
 ?>
 <hr>
 
+
 <h3>Current Colors</h3>
-	<div id="school_colors"></div>
+	<div id="school_colors" class="color_table"></div>
 	<div id="colors_help" class="grey">
 		Changes are saved as soon as you see them here.<br>
 		WARNING: Removing colors that are in use will cause objects which use that color to appear grey.
@@ -342,13 +377,14 @@ if( IsAdmin() ) {
 
 <h3>Find Colors</h3>
 	<div id="auto_color_form">Website: <input value="<?= $school['school_website'] ?>" type="textbox" id="school_website" name="school_website"> <input type="button" onclick="fetchColors('website')" class="submit" value="Find Colors"></div>
-	<div id="auto_colors"></div>
+	<div id="auto_colors" class="color_table"></div>
 	<div id="auto_color_help" class="grey">Enter a website above and click "Find Colors" to automatically fetch the RGB color codes from the HTML and any related CSS files.</div>
-
 
 <h3>Color Picker</h3>
 	<div id="ycolorpicker"></div>
-	<div id="picker_help" class="grey">Select a color, then drag the swatch onto the "Current Colors" list above.</div>
+	<div id="picker_help" class="grey">Select a color, then drag the swatch onto the "Current Colors" list above. Note: If the picker target or sliding bar appear to be misaligned, reload the page to correct this.</div>
+
+
 
 <?php
 
