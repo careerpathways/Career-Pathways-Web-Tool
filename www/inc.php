@@ -85,7 +85,7 @@ class ThisSiteTemplate extends SiteTemplate {
 				<a href="/a/login.php<?= (IsLoggedIn()?'?logout':'') ?>">Log <?= (IsLoggedIn()?'Out':'In') ?></a>
 			</div></div>
 
-
+			<div id="sideboxes">
 			<?php if( IsLoggedIn() ) { ?>
 			<div id="navbox">
 				<div class="links">
@@ -113,6 +113,7 @@ class ThisSiteTemplate extends SiteTemplate {
 
 			$this->PublicToolbar();
 			?>
+			</div> <!-- sideboxes -->
 
 			<?php
 			if( !$this->is_chart_page ) {

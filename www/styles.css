@@ -397,10 +397,12 @@ a.edit:hover {
 	color: black;
 }
 
+#sideboxes {
+	float: left;
+}
 #main {
-	position: absolute;
 	top: 74px;
-	left: 180px;
+	margin-left: 180px;
 	margin-right: 30px;
 }
 
@@ -415,6 +417,7 @@ a.edit:hover {
 	padding: 5px;
 }
 #main-b {
+	position: relative;
 	background: url("/images/outline-bl.gif") bottom left;
 	background-repeat: no-repeat;	
 	height: 30px;
