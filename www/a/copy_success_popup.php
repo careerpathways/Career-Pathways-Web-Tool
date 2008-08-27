@@ -16,7 +16,7 @@ body {
 <?php if ($_REQUEST['create'] === 'new_version') : ?>
 <p>A new version of this drawing has been created.</p>
 <?php else : ?>
-<p>This version has been copied to a new drawing<?php if ($_REQUEST['copy_to']  === 'user_school') :?> at your school<?php endif; ?>.</p>
+<p>This version has been copied to a new drawing<?php if ($_REQUEST['copy_to']  === 'user_school') :?> at your organization<?php endif; ?>.</p>
 <?php endif; ?>
 <p><input type="submit" value="OK" onclick="opener.location.href='/a/drawings.php?action=draw&amp;version_id=<?= $_REQUEST['version_id'] ?>';window.close();return false;"/></p>
 </body>

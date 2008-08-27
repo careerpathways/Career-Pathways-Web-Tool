@@ -90,7 +90,7 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 		header("Location: /a/login.php?next=".urlencode($_SERVER['REQUEST_URI']));
 		die();
 	} else {
-		$DB->Query("UPDATE users SET last_module = '$module' WHERE id = '".$_SESSION['user_id']."'");
+		//$DB->Query("UPDATE users SET last_module = '$module' WHERE id = '".$_SESSION['user_id']."'");
 		$info = $DB->SingleQuery("SELECT page_title, friendly_name FROM admin_module WHERE name = '$module'");
 		$MODULE_NAME = $info['friendly_name'];
 		$MODULE_PAGETITLE = $info['page_title'];

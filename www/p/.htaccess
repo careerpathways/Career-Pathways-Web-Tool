@@ -1,0 +1,5 @@
+RewriteEngine on
+
+RewriteRule ^dashboard$ ../ [L]
+
+RewriteRule ^(.*)$ handler.php?page=$1 [nc]

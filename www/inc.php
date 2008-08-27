@@ -86,8 +86,8 @@ class ThisSiteTemplate extends SiteTemplate {
 			</div></div>
 
 
-			<div id="navbox">
 			<?php if( IsLoggedIn() ) { ?>
+			<div id="navbox">
 				<div class="links">
 				<ul>
 				<?php
@@ -103,14 +103,15 @@ class ThisSiteTemplate extends SiteTemplate {
 				</ul>
 				</div>
 				<br>
-
-			<?php } ?>
 			</div>
+			<?php } ?>
 
 			<?php
 			if( $this->toolbar_function != '' ) {
 				eval($this->toolbar_function.'();');
 			}
+
+			$this->PublicToolbar();
 			?>
 
 			<?php
@@ -149,6 +150,7 @@ class ThisSiteTemplate extends SiteTemplate {
 		<style type="text/css">@import "/styles.css";</style>
 		<script src="/files/ajax.js" type="text/javascript"></script>
 		<script src="/common/common.js" type="text/javascript"></script>
+		<script src="/common/email.js" type="text/javascript"></script>
 		<script src="/common/actb.js" type="text/javascript"></script>
 
 		<!-- Core + Skin CSS -->
@@ -176,6 +178,31 @@ class ThisSiteTemplate extends SiteTemplate {
 		return ' xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"';
 	}
 
+	function PublicToolbar() {
+		echo '<div id="resourcebar">';
+		if( IsLoggedIn() ) {
+			echo '<div id="resourcebar_header"></div>';
+		}
+		echo '<div id="resourcebar_content" class="links">';
+		echo '<ul>';
+			echo '<li><a href="/p/tutorial">Tutorial</a></li>';
+			echo '<li><a href="/p/release_info">Release Info</a></li>';
+			echo '<li><a href="/p/ada">ADA Compliance</a></li>';
+			echo '<li><a href="/a/help">Help</a></li>';
+		echo '</ul>';
+		echo '</div><br></div>';
+	}
+
+	function resource_categories() {
+		return array(
+			'dashboard' => "Dashboard",
+			'welcome' => "Welcome",
+			'tutorial' => "Tutorial",
+			'release_info' => "Release Info",
+			'ada' => "ADA Compliance"
+		);
+	}
+
 }
 
 function IsLoggedIn() {
@@ -184,6 +211,10 @@ function IsLoggedIn() {
 	} else {
 		return FALSE;
 	}
+}
+
+function IsGuestUser() {
+	return $_SESSION['email'] == 'guest';
 }
 
 function RandPass($len = 8){
@@ -377,6 +408,52 @@ function getdominantcolor($hex) {
 	if( $b == $max ) {
 		return 'b';
 	}
+}
+
+
+function ShowLoginForm($email="") {
+global $SITE;
+
+	if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
+		$form_action = "https://".$SITE->https_server().':'.$SITE->https_port()."/a/login.php";
+	} else {
+		$form_action = "/a/login.php";
+	}
+
+	if( IsIE() && !strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0') ) {
+		echo '<div style="font-size:19pt; font-weight: bold; color: #cf9d2b">Notice for Internet Explorer 6 Users</div>';
+		echo '<p>IE 6 is not yet fully supported by this website. Most things will work, but you may experience slight glitches.</p>';
+		echo '<p>We recommend using <a href="http://www.mozilla.com/en-US/firefox/">Firefox</a> or Internet Explorer 7 instead. Or you can continue logging in below.</p>';
+	}
+
+	?>
+
+	<br><br>
+	<form action="<?= $form_action; ?>" method="post">
+	<table align="center">
+	<tr>
+		<td>Email:</td>
+		<td><input type="text" size="20" name="email" id="email" value="<?= $email; ?>"></td>
+	</tr>
+	<tr>
+		<td>Password:</td>
+		<td><input type="password" size="20" name="password" id="password"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="Log In" class="submit"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><br><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
+	</tr>
+	</table>
+
+	<input type="hidden" name="next" value="<?= (Request('next')) ?>">
+	</form>
+
+	<?php
+	echo str_repeat('<br>',20);
 }
 
 

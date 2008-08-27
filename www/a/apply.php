@@ -5,6 +5,8 @@ include("recaptcha-php/recaptchalib.php");
 
 RedirectSecure();
 
+RequireLogin();
+
 
 PrintHeader();
 
@@ -33,28 +35,31 @@ if( PostRequest() ) {
 			$user['new_user'] = 1;
 			$user['application_key'] = md5($user['email'].time());
 			$user['last_logon'] = $DB->SQLDate();
-
+	
 			$referral = '';
 			$referral = csl(Request('referral'));
 			if( in_array('Other',Request('referral')) ) {
 				$referral .= ' "'.Request('referral_other').'"';
 			}
 			$user['referral'] = $referral;
-
+	
 			$recipients = '';
 			if( Request('school') != 0 && is_numeric(Request('school')) ) {
 				$user['school_id'] = Request('school');
-				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64');
+				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64 AND active=1');
 				foreach( $admins as $m ) {
 					$recipients .= $m['email'].', ';
 				}
 				$user['other_school'] = '';
 				$school = $DB->SingleQuery('SELECT school_name FROM schools WHERE id='.$user['school_id']);
 				$school_name = $school['school_name'];
+			/*
+			// disable requests from schools not in the system
 			} else {
 				$user['school_id'] = 0;
 				$user['other_school'] = Request('school_other');
 				$school_name = $user['other_school'];
+			*/
 			}
 
 			$DB->Insert('users',$user);
@@ -66,7 +71,7 @@ if( PostRequest() ) {
 			$user_info .= "Job Title: ".$user['job_title']."\n";
 			$user_info .= "Phone Number: ".$user['phone_number']."\n";
 			$user_info .= "Email: ".$user['email']."\n";
-			$user_info .= "School/Business: ".$school_name."\n";
+			$user_info .= "Organization: ".$school_name."\n";
 
 
 			$email = new SiteEmail('account_request');
@@ -86,7 +91,7 @@ if( PostRequest() ) {
 			$email->Assign('USER_INFO', $user_info);
 
 			$email->Send();
-
+	
 
 			echo '<p>Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
 		}
@@ -101,7 +106,7 @@ if( PostRequest() ) {
 		ShowApplyForm();
 	} else {
 		echo '<p>Are you affiliated with an Oregon school or business?</p>';
-		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?a">No</a></p>';
+		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?template=outside">No</a></p>';
 	}
 }
 
@@ -122,10 +127,8 @@ global $SITE;
 
 	?>
 
-	<br><br>
-
 	<form action="<?= $form_action; ?>" method="post">
-	<table align="center">
+	<table>
 	<tr>
 		<td colspan="2"><h1>New Account Request</h1><br></td>
 	</tr>
@@ -138,7 +141,7 @@ global $SITE;
 		<td><input type="text" size="20" name="last_name"></td>
 	</tr>
 	<tr>
-		<th>Email*</th>
+		<th>Organization Email*</th>
 		<td><input type="text" size="30" name="email"> (This will be your login)</td>
 	</tr>
 	<tr>
@@ -150,11 +153,10 @@ global $SITE;
 		<td><input type="text" size="12" name="phone_number"></td>
 	</tr>
 	<tr>
-		<th>School or Business*</th>
+		<th>Organization*</th>
 		<td><?php
-			echo GenerateSelectBoxDB('schools','school','id','school_name','school_name','',array('0'=>'Other'),'school_name!="Guest"');
-		?><br>
-		If "Other", please enter here: <input type="textbox" name="school_other" size="30"></td>
+			echo GenerateSelectBoxDB('schools','school','id','school_name','school_name','',array(0=>''),'school_name!="Guest"');
+		?></td>
 	</tr>
 	<tr>
 		<th>How did you hear about us?</th>

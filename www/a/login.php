@@ -79,11 +79,14 @@ global $SITE, $DB, $TEMPLATE;
 		if( Request('next') ) {
 			header("Location: http://".$server.Request('next'));
 		} else {
+			header("Location: http://$server/");
+			/*
 			if( IsAdmin() || IsSchoolAdmin() ) {
 				header("Location: http://$server/");
 			} else {
 				header("Location: http://$server/a/drawings.php");
 			}
+			*/
 		}
 	}
 
@@ -96,59 +99,6 @@ function ShowLoginFailure() {
 	<p>Did you forget your password?<br>
 	   <a href="password.php">Reset</a></p>
 	<?php
-}
-
-function ShowLoginForm($email="") {
-global $SITE;
-
-	if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
-		$form_action = "https://".$SITE->https_server().':'.$SITE->https_port()."/a/login.php";
-	} else {
-		$form_action = "login.php";
-	}
-
-	if( IsIE() && !strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0') ) {
-		echo '<div style="font-size:19pt; font-weight: bold; color: #cf9d2b">Notice for Internet Explorer 6 Users</div>';
-		echo '<p>IE 6 is not yet fully supported by this website. Most things will work, but you may experience slight glitches.</p>';
-		echo '<p>We recommend using <a href="http://www.mozilla.com/en-US/firefox/">Firefox</a> or Internet Explorer 7 instead. Or you can continue logging in below.</p>';
-	}
-
-	?>
-
-	<br><br>
-	<form action="<?= $form_action; ?>" method="post">
-	<table align="center">
-	<tr>
-		<td>Email:</td>
-		<td><input type="text" size="20" name="email" id="email" value="<?= $email; ?>"></td>
-	</tr>
-	<tr>
-		<td>Password:</td>
-		<td><input type="password" size="20" name="password" id="password"></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" value="Log In" class="submit"></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><br><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><br><span class="login_button"><a href="/a/apply.php">Apply for an account</a></span></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><br><span class="login_button"><a href="/a/help.php">Questions/Problems?</a></span></td>
-	</tr>
-	</table>
-
-	<input type="hidden" name="next" value="<?= (Request('next')) ?>">
-	</form>
-
-	<?php
-	echo str_repeat('<br>',20);
 }
 
 ?>

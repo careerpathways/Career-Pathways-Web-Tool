@@ -69,10 +69,8 @@ if( PostRequest() ) {
 
 	?>
 
-	<br><br>
-
 	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
-	<table align="center">
+	<table>
 	<tr>
 		<td colspan="2"><h1>Guest Login</h1>
 			<p>Please tell us who you are in order to log in.</p>
@@ -91,7 +89,7 @@ if( PostRequest() ) {
 		<td><input type="text" size="30" name="email"></td>
 	</tr>
 	<tr>
-		<th valign="top">School or Business*</th>
+		<th valign="top">Organization*</th>
 		<td><input type="textbox" name="school" size="30"></td>
 	</tr>
 	<tr>

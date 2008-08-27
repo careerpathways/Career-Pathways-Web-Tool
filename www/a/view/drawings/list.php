@@ -25,7 +25,7 @@ PrintHeader();
 <table id="live_lists"><tr>
 <td width="33%">
 	<div class="live_list">
-		<div class="title">Schools</div>
+		<div class="title">Organizations</div>
 		<select size="13" id="list_schools" multiple onchange="queue_change(this)">
 		</select>
 	</div>

@@ -858,6 +858,46 @@ a.chart_header {
 }
 
 
+
+#dash_links {
+	width: 200px;
+	border: 1px #<?= $D_GOLD ?> solid;
+	float: right;
+}
+#dash_links_title {
+	background-color: #<?= $D_GOLD ?>;
+	text-align: center;
+	text-transform: uppercase;
+	color: white;
+	font-weight: bold;
+	padding-bottom: 2px;
+}
+#dash_links ul {
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+#dash_links li {
+	background-color: #efefef;
+	margin-top: 10px;
+	text-align: center;
+}
+#dash_links a {
+	text-decoration: none;
+	font-size: 10pt;
+	display: block;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	color: black;
+}
+#dash_links a:hover {
+	background-color: #<?= $GOLD ?>;
+	color: black;
+}
+
+
+
+
 /****** CCTI Styles Below ******/
 
 table.ccti_program {

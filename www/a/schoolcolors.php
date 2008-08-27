@@ -323,8 +323,8 @@ Event.onDOMReady(initPage);
 <?php
 if( IsAdmin() ) {
 	echo '<div style="margin-top: 4px">';
-	echo 'Switch School: ';
-	$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools','school_name','id');
+	echo 'Switch Organization: ';
+	$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools ORDER BY school_name','school_name','id');
 	$schools = array("-1"=>'') + $schools_;
 	echo GenerateSelectBox($schools,'school_id',-1,'switch_school(this.value)');
 	echo '</div>';

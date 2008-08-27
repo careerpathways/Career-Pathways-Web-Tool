@@ -36,8 +36,8 @@ fieldset {
 <?php if (IsAdmin() && $_SESSION['school_id'] !== $version['school_id']) : ?>
 <fieldset id="copy_to">
 <legend>Copy To</legend>
-<input type="radio" name="copy_to" value="user_school" id="copy_to_user_school" checked="true"/> <label for="copy_to_user_school">Your School</label><br/>
-<input type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school">This School</label><br/>
+<input type="radio" name="copy_to" value="user_school" id="copy_to_user_school" checked="true"/> <label for="copy_to_user_school">Your Organization</label><br/>
+<input type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school">This Organization</label><br/>
 </fieldset>
 <?php endif;
 
@@ -48,7 +48,7 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id']) : ?>
 <input type="radio" name="create" value="new_drawing" id="create_new_drawing"/> <label for="create_new_drawing">New Drawing</label><br/>
 </fieldset>
 <?php else : ?>
-<p>A new drawing will be created in your school.</p>
+<p>A new drawing will be created in your organization.</p>
 <?php endif; ?>
 
 <fieldset id="drawingName">

@@ -62,7 +62,7 @@ if( KeyInRequest('id') ) {
 	echo '<tr>';
 		echo '<th width="30"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"><img src="/common/silk/add.png" width="16" height="16"></a></th>';
 		echo '<th width="40">Abbr.</th>';
-		echo '<th width="270">School Name</th>';
+		echo '<th width="270">Organization Name</th>';
 		echo '<th width="50">Users</th>';
 		echo '<th width="70">Drawings</th>';
 		echo '<th>Colors</th>';
@@ -124,7 +124,7 @@ global $DB, $STATES;
 		<td colspan="2" valign="top"><input type="text" name="school_abbr" value="<?= $school['school_abbr'] ?>" size="10"></td>
 	</tr>
 	<tr>
-		<td width="100">School Name:</td>
+		<td width="100">Organization Name:</td>
 		<td colspan="2"><input type="text" name="school_name" value="<?= $school['school_name'] ?>" size="50"></td>
 	</tr>
 	<tr>
