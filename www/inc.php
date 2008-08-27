@@ -132,9 +132,6 @@ class ThisSiteTemplate extends SiteTemplate {
 				?>
 					</div>
 				</div>
-				<div id="main-b">
-					<div id="main-br"></div>
-				</div>
 				<div id="helplink"><a href="/a/help.php">Questions/Problems?</a></div>
 			</div>
 			<?php

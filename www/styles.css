@@ -400,15 +400,18 @@ a.edit:hover {
 #sideboxes {
 	float: left;
 }
+
 #main {
+	position: absolute;
 	top: 74px;
-	margin-left: 180px;
+	left: 180px;
 	margin-right: 30px;
 }
 
 #main-c {
 	border-left: 1px #<?= $D_GOLD ?> solid;
 	border-right: 1px #<?= $D_GOLD ?> solid;
+	border-bottom: 1px #<?= $D_GOLD ?> solid;
 	min-height: 300px;
 	min-width: 840px;
 	padding: 0px;
