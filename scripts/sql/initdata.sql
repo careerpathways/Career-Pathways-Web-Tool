@@ -1,16 +1,16 @@
 
 /*Data for the table `admin_module` */
 
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (1,'users','Edit Users','Users',1,100);
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (2,'schools','Configure Schools','Schools',1,90);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (15,'dashboard','Dashboard','Dashboard',1,1);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (6,'news','Edit Resources','Edit Resources',1,5);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (3,'drawings','Drawings','Drawings',1,10);
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (6,'news','Edit Site News','Edit Site News',1,5);
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (7,'integrating','Embedding Instructions','Embedding Instructions',1,120);
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (8,'schoolcolors','School Colors','School Colors',1,80);
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (9,'help','Help','Help',1,200);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (8,'schoolcolors','Organization Colors','Organization Colors',1,80);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (2,'schools','Configure Organizations','Organizations',1,90);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (1,'users','Edit Users','Users',1,100);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (10,'emailcontents','Email Templates','Email Templates',1,105);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (7,'integrating','Embedding Instructions','Embedding Instructions',1,120);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (11,'guestlogins','Guest Logins','Guest Logins','1','190');
-insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (12,'sitenews','Site News','Site News',1,4);
+insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (13,'stats','Stats','Stats',1,195);
 insert into `admin_module` (`id`,`name`,`friendly_name`,`page_title`,`active`,`order`) values (13,'ccti_drawings','CCTI Drawings','CCTI Drawings',1,15);
 
 /*Data for the table `admin_user_levels` */

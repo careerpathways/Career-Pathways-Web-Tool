@@ -143,6 +143,7 @@ DROP TABLE IF EXISTS `news`;
 CREATE TABLE `news` (
   `id` int(11) NOT NULL auto_increment,
   `date` datetime default NULL,
+  `category` varchar(50) default NULL,
   `user_id` int(11) default NULL,
   `caption` varchar(255) default NULL,
   `text` text,
