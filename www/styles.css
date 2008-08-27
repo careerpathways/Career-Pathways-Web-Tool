@@ -473,16 +473,17 @@ a.chart_header {
 	text-decoration: none;
 }
 
-
-#toolbar, #helpbar, #infobar {
-	margin-top: 20px;
+#toolbar, #helpbar, #infobar, #resourcebar {
 	background: url("/images/navbox-br.gif") bottom right;
 	background-repeat: no-repeat;	
 	background-color: #<?= $GOLD ?>;
 	width: 170px;
 }
+#toolbar, #helpbar, #infobar, #resourcebar, #navbox {
+	margin-bottom: 20px;
+}
 
-#toolbar_header, #helpbar_header, #infobar_header {
+#toolbar_header, #helpbar_header, #infobar_header, #resourcebar_header {
 	background-repeat: no-repeat;
 	background-color: #<?= $D_GOLD ?>;
 	height: 30px;
@@ -495,6 +496,9 @@ a.chart_header {
 }
 #infobar_header {
 	background-image: url("/images/infobar-head.gif");
+}
+#resourcebar_header {
+	background-image: url("/images/resources-head.gif");
 }
 
 #toolbar_content, #helpbar_content, #infobar_content {
