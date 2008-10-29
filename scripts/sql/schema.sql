@@ -179,6 +179,7 @@ CREATE TABLE `schools` (
   `school_city` varchar(100) default NULL,     
   `school_state` varchar(2) default NULL,      
   `school_zip` varchar(12) default NULL,    
+  `date_created` datetime default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
@@ -218,6 +219,7 @@ CREATE TABLE `users` (
   `other_school` varchar(255) default NULL,    
   `application_key` varchar(255) default NULL,  
   `approved_by` int(11) default NULL,
+  `date_created` datetime default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=latin1;
 
@@ -267,7 +269,17 @@ create table `guest_logins` (
 	`referral` varchar (200)   NULL ,  
 	`ipaddr` varchar (20)   NULL  , 
 	PRIMARY KEY ( `id` )  
-');
+);
+
+CREATE TABLE `login_history` (                           
+ `id` int(10) unsigned NOT NULL auto_increment,         
+ `date` datetime default NULL,                          
+ `user_id` int(11) default NULL,                        
+ `name` varchar(50) default NULL,                       
+ `ip_address` varchar(20) default NULL,                 
+ `user_agent` varchar(255) default NULL,                
+ PRIMARY KEY  (`id`)                                    
+);
 
 CREATE TABLE `logs` (                                       
 	`id` int(10) unsigned NOT NULL auto_increment,            

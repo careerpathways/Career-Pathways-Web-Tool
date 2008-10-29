@@ -1,0 +1,1 @@
+alter table `users` add column `date_created` datetime   NULL  after `approved_by`;create table `login_history` (  	`id` int UNSIGNED NOT NULL AUTO_INCREMENT , 	`date` datetime , 	`user_id` int , 	`name` varchar (50) , 	`ip_address` varchar (20) , 	`user_agent` varchar (255) , 	PRIMARY KEY (`id`));
