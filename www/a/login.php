@@ -73,6 +73,13 @@ global $SITE, $DB, $TEMPLATE;
 
 	$server = $_SERVER['SERVER_NAME'];
 
+	$info['date'] = $DB->SQLDate();
+	$info['user_id'] = $_SESSION['user_id'];
+	$info['name'] = $_SESSION['full_name'];
+	$info['ip_address'] = $_SERVER['REMOTE_ADDR'];
+	$info['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+	$DB->Insert('login_history', $info);
+	
 	if( $wastemplink ) {
 		header("Location: /a/password.php?change&loggedin");
 	} else {
@@ -80,13 +87,6 @@ global $SITE, $DB, $TEMPLATE;
 			header("Location: http://".$server.Request('next'));
 		} else {
 			header("Location: http://$server/");
-			/*
-			if( IsAdmin() || IsSchoolAdmin() ) {
-				header("Location: http://$server/");
-			} else {
-				header("Location: http://$server/a/drawings.php");
-			}
-			*/
 		}
 	}
 

@@ -32,6 +32,7 @@ if( PostRequest() ) {
 			$user['phone_number'] = Request('phone_number');
 			$user['user_level'] = 16;
 			$user['user_active'] = 0;
+			$user['date_created'] = $DB->SQLDate();
 			$user['new_user'] = 1;
 			$user['application_key'] = md5($user['email'].time());
 			$user['last_logon'] = $DB->SQLDate();
@@ -92,7 +93,7 @@ if( PostRequest() ) {
 
 			$email->Send();
 	
-
+	
 			echo '<p>Your application has been submitted for approval. You can expect a response within one business day.<br><br>Thank you,<br>Pathways Web Tool User Support</p>';
 		}
 

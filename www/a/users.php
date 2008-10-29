@@ -230,6 +230,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				$content['temp_password'] = crypt($password, $DB->pswdsalt);
 				$content['user_active'] = 1;
 				$content['new_user'] = 0;
+				$content['date_created'] = $DB->SQLDate();
 				$user_id = $DB->Insert('users',$content);
 
 

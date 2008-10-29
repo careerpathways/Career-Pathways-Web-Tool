@@ -4,6 +4,29 @@ include("inc.php");
 
 ModuleInit('stats');
 
+if( Request('from_date') ) {
+	header("Content-type: text/plain");
+
+	$from = date('y-m-d', strtotime(Request('from_date')));
+	$to = date('y-m-d', strtotime(Request('to_date')));
+
+	$d = $DB->SingleQuery('SELECT COUNT(DISTINCT(user_id)) num FROM login_history WHERE date>"'.$from.'" AND date<"'.$to.'"');
+	echo $d['num']."\n";
+
+	$d = $DB->SingleQuery('SELECT COUNT(*) num FROM users WHERE date_created>"'.$from.'" AND date_created<"'.$to.'"');
+	echo $d['num']."\n";
+
+	$d = $DB->MultiQuery('SELECT * FROM schools WHERE date_created>"'.$from.'" AND date_created<"'.$to.'"');
+	echo count($d)."<br />";
+
+	foreach( $d as $org ) {
+		echo $org['school_name']."<br />";
+	}
+	
+	die();
+}
+	
+
 PrintHeader();
 
 ?>
@@ -16,23 +39,74 @@ PrintHeader();
 	function loadLinkContent(content) {
 		document.getElementById('greybox_content').innerHTML = content;
 	}
-
+	function date_clicked(obj) {
+		obj.value = '';
+		obj.style.color = '#000000';
+	}
+	function do_user_stats() {
+		getLayer('total_active_users').innerHTML = 'loading...';
+		getLayer('total_users_added').innerHTML = 'loading...';
+		getLayer('total_orgs_added').innerHTML = 'loading...';
+		ajaxCallback(user_cb, 'stats.php?from_date='+getLayer('from_date').value+'&to_date='+getLayer('to_date').value);
+	}
+	function user_cb(data) {
+		data = data.split("\n");
+		getLayer('total_active_users').innerHTML = data[0];
+		getLayer('total_users_added').innerHTML = data[1];
+		getLayer('total_orgs_added').innerHTML = data[2];
+	}
 </script>
 <?php
 
-/*
-# of maps in the system
-# of maps published
-# of views of published drawings
-list of maps (external link) embedded (or linked to)
+echo '<h2>User Stats</h2>';
+echo '<br>';
 
-DONE BY THURSDAY MORNING!!
-*/
+$total_users = $DB->SingleQuery('SELECT COUNT(*) AS num FROM users WHERE user_active=1');
+$total_organizations = $DB->SingleQuery('SELECT COUNT(*) AS num FROM schools');
+
+echo '<table class="bordered">';
+	echo '<tr>';
+		echo '<th>Total Users</th>';
+		echo '<td>'.$total_users['num'].'</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<th>Total Organizations</th>';
+		echo '<td>'.$total_organizations['num'].'</td>';
+	echo '</tr>';
+echo '</table>';
+echo '<br>';
+
+?>
+<table class="bordered">
+	<tr>
+		<td colspan="2">From: <input style="color: #999999" type="text" size="15" id="from_date" name="from_date" value="<?= Request('from_date')?Request('from_date'):'yyyy-mm-dd' ?>" onfocus="date_clicked(this)">
+			To:<input style="color: #999999" type="text" size="15" id="to_date" name="to_date" value="<?= Request('to_date')?Request('to_date'):'yyyy-mm-dd' ?>" onfocus="date_clicked(this)">
+			<input type="button" value="Search" onclick="do_user_stats()">
+		</td>
+	</tr>
+	<tr>
+		<td>Active Users</td>
+		<td width="400"><div id="total_active_users"></div></td>
+	</tr>
+	<tr>
+		<td>Users Added</td>
+		<td><div id="total_users_added"></div></td>
+	</tr>
+	<tr>
+		<td valign="top">Organizations Added</td>
+		<td><div id="total_orgs_added"></div></td>
+	</tr>
+</table>
+<p class="tiny">Note: Statistics data available only after Nov 1, 2008</p>
+<br />
+<?php
+echo '<br>';
 
 
 // SNAPSHOT
-
-echo '<h2>At a Glance</h2>';
+echo '<hr>';
+echo '<h2>Drawing Counts</h2>';
+echo '<br>';
 
 $snapshot = $DB->SingleQuery('SELECT *
 	FROM
@@ -46,7 +120,7 @@ $snapshot = $DB->SingleQuery('SELECT *
 			GROUP BY drawings.id) c
 		WHERE c.num_objects > 5) d');
 
-echo '<table>';
+echo '<table class="bordered">';
 	echo '<tr>';
 		echo '<th>Total Published Drawings</th>';
 		echo '<td>'.$snapshot['published'].'</td>';

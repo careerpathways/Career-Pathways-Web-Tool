@@ -36,6 +36,7 @@ if( KeyInRequest('id') ) {
 				$DB->Update('schools',$content,$_REQUEST['id']);
 				$school_id = $_REQUEST['id'];
 			} else {
+				$content['date_created'] = $DB->SQLDate();
 				$school_id = $DB->Insert('schools',$content);
 			}
 
