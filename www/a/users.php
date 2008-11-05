@@ -712,7 +712,7 @@ function GetDrawingsForUser($user_id) {
 global $DB;
 	$drawings = $DB->MultiQuery("
 		SELECT drawing_main.id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
-			created_by, last_modified_by, date_created, last_modified, school_id
+			created_by, last_modified_by, drawing_main.date_created, last_modified, school_id
 		FROM drawing_main, schools
 		WHERE school_id=schools.id
 			AND drawing_main.id IN (SELECT parent_id FROM drawings WHERE (created_by=".$user_id." OR last_modified_by=".$user_id."))

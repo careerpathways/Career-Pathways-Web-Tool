@@ -47,7 +47,7 @@ if( PostRequest() ) {
 			$recipients = '';
 			if( Request('school') != 0 && is_numeric(Request('school')) ) {
 				$user['school_id'] = Request('school');
-				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64 AND active=1');
+				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64 AND user_active=1');
 				foreach( $admins as $m ) {
 					$recipients .= $m['email'].', ';
 				}

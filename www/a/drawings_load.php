@@ -2,23 +2,39 @@
 chdir("..");
 include("inc.php");
 
-ModuleInit('drawings');
+switch( Request('type') ) {
+	case 'ccti':
+		$module_name = 'ccti_drawings';
+		$session_key = 'ccti_drawing_list';
+		$main_table = 'ccti_drawing_main';
+		$version_table = 'ccti_drawings';
+		break;
+	case 'pathways':
+	default:
+		$module_name = 'drawings';
+		$session_key = 'drawing_list';
+		$main_table = 'drawing_main';
+		$version_table = 'drawings';
+		break;
+}
+
+ModuleInit($module_name);
 
 if( Request('mode') != 'drawing_list' ) {
 	// save state of selections
-	if( !array_key_exists('drawing_list',$_SESSION) || KeyInRequest('userdefaults') ) {
-		$_SESSION['drawing_list'] = array('school_id'=>$_SESSION['school_id'],
+	if( !array_key_exists($session_key,$_SESSION) || KeyInRequest('userdefaults') ) {
+		$_SESSION[$session_key] = array('school_id'=>$_SESSION['school_id'],
 			'people_id'=>$_SESSION['user_id'],
 			'categories'=>'');
 	}
 	if( KeyInRequest('school_id') ) {
-		$_SESSION['drawing_list']['school_id'] = Request('school_id');
+		$_SESSION[$session_key]['school_id'] = Request('school_id');
 	}
 	if( KeyInRequest('people_id') ) {
-		$_SESSION['drawing_list']['people_id'] = Request('people_id');
+		$_SESSION[$session_key]['people_id'] = Request('people_id');
 	}
 	if( KeyInRequest('categories') ) {
-		$_SESSION['drawing_list']['categories'] = Request('categories');
+		$_SESSION[$session_key]['categories'] = Request('categories');
 	}
 }
 
@@ -32,9 +48,9 @@ switch( Request('mode') ) {
 		if( Request('categories') ) {
 			$schools = $DB->VerticalQuery('
 				SELECT schools.id, school_name
-				FROM drawing_main
+				FROM '.$main_table.'
 				LEFT JOIN schools ON school_id=schools.id
-				WHERE drawing_main.name IN ("'.str_replace(',','","',Request('categories')).'")',
+				WHERE '.$main_table.'.name IN ("'.str_replace(',','","',Request('categories')).'")',
 			'school_name','id');
 		} else {
 			$schools = $DB->VerticalQuery("
@@ -48,12 +64,12 @@ switch( Request('mode') ) {
 		$response[1] = array_keys($schools);
 		$response[2] = array_values($schools);
 
-		if( KeyInRequest('selectdefault') && array_key_exists('school_id',$_SESSION['drawing_list']) ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('school_id',$_SESSION[$session_key]) ) {
 			foreach( array_keys($schools) as $k ) {
-				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['school_id']))?1:0);
+				$response[3][] = (in_array($k,explode(',',$_SESSION[$session_key]['school_id']))?1:0);
 			}
 		} else {
-			$_SESSION['drawing_list']['school_id'] = "";
+			$_SESSION[$session_key]['school_id'] = "";
 			if( count($schools) > 0 ) {
 				$response[3] = array_fill(0,count($schools),0);
 			} else {
@@ -71,7 +87,7 @@ switch( Request('mode') ) {
 			$people_ = $DB->MultiQuery('
 				SELECT u1.id AS u1_id, CONCAT(u1.first_name," ",u1.last_name) AS u1_name,
 					u2.id AS u2_id, CONCAT(u2.first_name," ",u2.last_name) AS u2_name
-				FROM drawing_main
+				FROM '.$main_table.'
 				LEFT JOIN users AS u1 ON u1.id=created_by
 				LEFT JOIN users AS u2 ON u2.id=last_modified_by
 				WHERE name IN ("'.str_replace(',','","',Request('categories')).'")');
@@ -109,12 +125,12 @@ switch( Request('mode') ) {
 		$response[1] = array_keys($people);
 		$response[2] = array_values($people);
 
-		if( KeyInRequest('selectdefault') && array_key_exists('people_id',$_SESSION['drawing_list']) ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('people_id',$_SESSION[$session_key]) ) {
 			foreach( array_keys($people) as $k ) {
-				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['people_id']))?1:0);
+				$response[3][] = (in_array($k,explode(',',$_SESSION[$session_key]['people_id']))?1:0);
 			}
 		} else {
-			$_SESSION['drawing_list']['people_id'] = "";
+			$_SESSION[$session_key]['people_id'] = "";
 			if( count($people) > 0 ) {
 				$response[3] = array_fill(0,count($people),0);
 			} else {
@@ -131,8 +147,8 @@ switch( Request('mode') ) {
 		if( Request('people_id') ) {
 			$cats_people = $DB->VerticalQuery("
 				SELECT DISTINCT(IF(name='','(no title)',name)) AS name
-				FROM drawing_main
-				WHERE drawing_main.id IN (SELECT parent_id FROM drawings
+				FROM ".$main_table."
+				WHERE ".$main_table.".id IN (SELECT parent_id FROM ".$version_table."
 					WHERE (created_by IN (".Request('people_id').") OR last_modified_by IN (".Request('people_id')."))
 					)
 				ORDER BY name", 'name','name');
@@ -141,8 +157,8 @@ switch( Request('mode') ) {
 		if( Request('school_id') ) {
 			$cats_school = $DB->VerticalQuery("
 				SELECT DISTINCT(IF(name='','(no title)',name)) AS name
-				FROM drawing_main
-				WHERE drawing_main.id IN (SELECT parent_id FROM drawings
+				FROM ".$main_table."
+				WHERE ".$main_table.".id IN (SELECT parent_id FROM ".$version_table."
 					WHERE (school_id IN (".Request('school_id')."))
 					)
 				ORDER BY name", 'name','name');
@@ -157,7 +173,7 @@ switch( Request('mode') ) {
 			// if neither search is requested, return all titles
 			$cats = $DB->VerticalQuery("
 				SELECT DISTINCT(name) AS name
-				FROM drawing_main
+				FROM ".$main_table."
 				ORDER BY name"
 			,'name','name');
 		}
@@ -169,9 +185,9 @@ switch( Request('mode') ) {
 		$response[0] = Request('mode');
 		$response[1] = array_values($cats);
 		$response[2] = array_values($cats);
-		if( KeyInRequest('selectdefault') && array_key_exists('categories',$_SESSION['drawing_list']) ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('categories',$_SESSION[$session_key]) ) {
 			foreach( array_keys($cats) as $k ) {
-				$response[3][] = (in_array($k,explode(',',$_SESSION['drawing_list']['categories']))?1:0);
+				$response[3][] = (in_array($k,explode(',',$_SESSION[$session_key]['categories']))?1:0);
 			}
 		} else {
 			$_SESSION['drawing_list']['categories'] = "";
@@ -222,7 +238,7 @@ switch( Request('mode') ) {
 							$where .= ") ";
 							break;
 						case 'people':
-							$where .= "AND drawing_main.id IN (SELECT parent_id FROM drawings WHERE (";
+							$where .= "AND ".$main_table.".id IN (SELECT parent_id FROM ".$version_table." WHERE (";
 							$where2 .= " AND (";
 							$i=0;
 							foreach( $items as $s ) {
@@ -244,9 +260,9 @@ switch( Request('mode') ) {
 			}
 
 			$mains = $DB->MultiQuery("
-				SELECT drawing_main.id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
-					created_by, last_modified_by, date_created, last_modified, school_id
-				FROM drawing_main, schools
+				SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
+					created_by, last_modified_by, ".$main_table.".date_created, last_modified, school_id
+				FROM ".$main_table.", schools
 				WHERE school_id=schools.id
 					$where
 				ORDER BY name");
@@ -254,8 +270,8 @@ switch( Request('mode') ) {
 			foreach( $mains as &$parent ) {
 				$drawings = $DB->ArrayQuery("
 					SELECT *
-					FROM drawings
-					WHERE drawings.parent_id=".$parent['id']."
+					FROM ".$version_table."
+					WHERE ".$version_table.".parent_id=".$parent['id']."
 						AND deleted=0
 						$where2
 					ORDER BY version_num");
@@ -267,8 +283,8 @@ switch( Request('mode') ) {
 				SELECT m.id, s.school_name, CONCAT(school_abbr,': ',IF(m.name='','(no title)',m.name)) AS name, m.code, GROUP_CONCAT(DISTINCT(d.id)) AS drawing_list,
 					m.created_by, m.last_modified_by, m.date_created, m.last_modified, m.school_id
 				FROM objects AS o
-				JOIN drawings AS d ON o.drawing_id=d.id
-				JOIN drawing_main AS m ON d.parent_id=m.id
+				JOIN ".$version_table." AS d ON o.drawing_id=d.id
+				JOIN ".$main_table." AS m ON d.parent_id=m.id
 				JOIN schools AS s ON m.school_id=s.id
 				LEFT JOIN users AS dum ON dum.id=d.last_modified_by
 				LEFT JOIN users AS duc ON duc.id=d.created_by
@@ -292,7 +308,7 @@ switch( Request('mode') ) {
 				foreach( explode(',',$parent['drawing_list']) as $d_id ) {
 					$drawing = $DB->SingleQuery("
 						SELECT *
-						FROM drawings
+						FROM ".$version_table."
 						WHERE id=".$d_id);
 					$parent['drawings'][] = $drawing;
 				}
@@ -301,7 +317,7 @@ switch( Request('mode') ) {
 
 		}
 
-		ShowDrawingList($mains);
+		ShowDrawingList($mains, Request('type'));
 
 		break;
 }
