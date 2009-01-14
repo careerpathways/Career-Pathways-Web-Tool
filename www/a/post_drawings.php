@@ -172,13 +172,15 @@ function showVersion() {
 	global $DB, $TEMPLATE;
 
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
+	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
 
 	$editing = 1;   // TODO? set this to 0 when in view mode
 	if( $editing ) 
 	{
-		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery-1.2.6.pack.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
+		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
+		$TEMPLATE->addl_scripts[] = '/files/greybox/greybox.js';
 	}
 	
 	PrintHeader();

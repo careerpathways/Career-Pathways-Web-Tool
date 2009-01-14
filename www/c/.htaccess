@@ -6,3 +6,5 @@ RewriteRule ^text/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=text [nc,qsa
 
 RewriteRule ^post/(.+)/(\d+)(?:\.(.+))?$ ccti_view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
 RewriteRule ^post/([^\.]+)(?:\.(.+))?$ ccti_view.php?d=$1&format=$2&page=published [nc,qsa]
+
+RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]

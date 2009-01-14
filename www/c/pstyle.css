@@ -29,10 +29,21 @@ table.post_chart, table.post_chart td, table.post_chart th {
 	vertical-align: middle;
 }
 
+.post_head_main {
+	cursor: pointer;
+}
 .post_cell {
 	text-align: center;
 	vertical-align: middle;
 	width: 120px;
+	cursor: pointer;
+}
+.post_cell_noClick {
+	cursor: auto;
+}
+
+.postCellHover {
+	background: #FFFFAA;
 }
 
 .post_sidebar_right, .post_sidebar_left {

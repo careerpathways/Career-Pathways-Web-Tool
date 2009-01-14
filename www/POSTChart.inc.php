@@ -103,7 +103,13 @@ abstract class POSTChart
 			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>';
 			foreach( $row as $cell )
 			{
-				echo '<td class="post_cell">' . $this->_cellContent($cell) . '</td>';		
+				$classAppend = $cellID = '';
+				if(!$cell->id)
+					$classAppend = ' post_cell_noClick';
+				else
+					$cellID = ' id="post_cell_' . $cell->id . '"';
+
+				echo '<td' . $cellID . ' class="post_cell' . $classAppend . '">' . $this->_cellContent($cell) . '</td>';		
 			}
 			echo '</tr>';
 		}
@@ -223,13 +229,13 @@ class POSTCell
 	{
 		$this->_data = $data;
 	}
-	
+
 	public function __get($key)
 	{
 		if( array_key_exists($key, $this->_data) )
 			return $this->_data[$key];
 		else
-			return ' ';
+			return NULL;
 	}
 }
 
