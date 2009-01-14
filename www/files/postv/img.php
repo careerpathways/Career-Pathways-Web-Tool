@@ -7,7 +7,7 @@ $text = strtoupper(base64_decode($text));
 
 $hash = md5($text);
 
-$title_font = '/www/w/ctepathways.org/common/font/verdanab.ttf';
+$title_font = '/web/common/font/verdanab.ttf';
 $font_size = 6;
 $filename = $SITE->cache_path() . "post_vertical/".$hash;
 

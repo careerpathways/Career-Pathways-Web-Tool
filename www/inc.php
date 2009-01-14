@@ -18,7 +18,7 @@ class ThisSite extends SiteSettings {
 	function recipient_email() { return "aaron@ctepathways.org"; }
 
 	function __construct() {
-		$this->DBname = 'pathways_post';
+		$this->DBname = 'pathways_aaron';
 		$this->DBuser = 'pathways';
 		$this->DBpass = 'pathways';
 
@@ -28,7 +28,7 @@ class ThisSite extends SiteSettings {
 	}
 
 	function base_url() { return $_SERVER['SERVER_NAME']; }
-	function cache_path() { return '/www/var/ctepathways.org/post/cache/'; }
+	function cache_path() { return '/tmp/pathways/'; }
 
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
