@@ -9,6 +9,7 @@ abstract class POSTChart
 	protected $_content;
 
 	protected $_cols;
+	protected $_cells;
 
 	// factory method to create an object of the correct type
 	public static function create($id)
