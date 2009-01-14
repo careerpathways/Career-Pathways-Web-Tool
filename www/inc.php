@@ -152,7 +152,6 @@ class ThisSiteTemplate extends SiteTemplate {
 		<style type="text/css">@import "/styles.css";</style>
 		<script src="/files/ajax.js" type="text/javascript"></script>
 		<script src="/common/common.js" type="text/javascript"></script>
-		<script src="/common/email.js" type="text/javascript"></script>
 		<script src="/common/actb.js" type="text/javascript"></script>
 
 		<!-- Core + Skin CSS -->
