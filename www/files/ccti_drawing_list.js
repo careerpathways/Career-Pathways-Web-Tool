@@ -3,27 +3,15 @@ header("Content-type: text/javascript");
 chdir("..");
 include("inc.php");
 
-switch( Request('mode') ) {
-	case 'ccti':
-		$module_name = 'ccti_drawings';
-		$session_key = 'ccti_drawing_list';
-		break;
-	case 'pathways':
-	default:
-		$module_name = 'drawings';
-		$session_key = 'drawing_list';
-		break;
-}
-
-ModuleInit($module_name);
+ModuleInit('ccti_drawings');
 
 // defaults
 $school_id = $_SESSION['school_id'];
 $people_id = $_SESSION['user_id'];
 $categories = "-1";
 
-if( array_key_exists($session_key,$_SESSION) ) {
-	$dl = $_SESSION[$session_key];
+if( array_key_exists('drawing_list',$_SESSION) ) {
+	$dl = $_SESSION['drawing_list'];
 	if( array_key_exists('school_id',$dl) ) { $school_id = $dl['school_id']; }
 	if( array_key_exists('people_id',$dl) ) { $people_id = $dl['people_id']; }
 	if( array_key_exists('categories',$dl) ) { $categories = $dl['categories']; }
@@ -37,7 +25,7 @@ var people_id = "<?= $people_id ?>";
 var categories = "<?= $categories ?>";
 
 function load_data(selectbox, search) {
-	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search+'&type='+MODE;
+	var url = "/a/ccti_drawings_load.php?mode="+selectbox+"&"+search;
 	ajaxCallback(load_cb, url);
 }
 
@@ -64,7 +52,7 @@ function removeAllOptions(from) {
 }
 
 function selectDefaults() {
-	ajaxCallback(selectDefaults2, '/a/drawings_load.php?userdefaults&type='+MODE);
+	ajaxCallback(selectDefaults2, '/a/ccti_drawings_load.php?userdefaults');
 	school_id = <?= $_SESSION['school_id'] ?>;
 	people_id = <?= $_SESSION['user_id'] ?>;
 	categories = "";
@@ -75,7 +63,7 @@ function selectDefaults2() {
 }
 
 function init() {
-	var url = "/a/drawings_load.php?mode=list_schools&selectdefault&type="+MODE;
+	var url = "/a/ccti_drawings_load.php?mode=list_schools&selectdefault";
 	ajaxCallback(init2, url);
 	Event.observe(getLayer('search_box'), 'keydown', function(evt) {
 	  if (!evt) evt = window.event;
@@ -85,13 +73,13 @@ function init() {
 
 function init2(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_people&school_id="+school_id+"&selectdefault&type="+MODE;
+	var url = "/a/ccti_drawings_load.php?mode=list_people&school_id="+school_id+"&selectdefault";
 	ajaxCallback(init3, url);
 }
 
 function init3(data) {
 	load_cb(data);
-	var url = "/a/drawings_load.php?mode=list_categories&selectdefault&school_id="+school_id+"&people_id="+people_id+"&type="+MODE;
+	var url = "/a/ccti_drawings_load.php?mode=list_categories&selectdefault&school_id="+school_id+"&people_id="+people_id;
 	ajaxCallback(init4, url);
 }
 
@@ -140,7 +128,6 @@ function do_change(whichbox) {
 			var categories_list = csl(search,',');
 
 			var schools = get_selected(getLayer('list_schools'));
-			
 			var schools_list = csl(schools,',');
 
 			if( get_selected(getLayer('list_people')).length == 0 ) {
@@ -151,7 +138,7 @@ function do_change(whichbox) {
 				load_data('list_schools','categories='+categories_list);
 			}
 
-			doNoOutput("/a/drawings_load.php?mode=list_categories&categories="+categories_list+"&type="+MODE);
+			doNoOutput("/a/ccti_drawings_load.php?mode=list_categories&categories="+categories_list);
 
 			break;
 	}
@@ -174,7 +161,7 @@ function load_drawing_list() {
 	var cats_list = csl(search_c,',');
 	var search = getLayer('search_box').value;
 
-	var url = "/a/drawings_load.php?mode=drawing_list&search="+search+"&people="+people_list+"&schools="+schools_list+"&categories="+cats_list+"&type="+MODE;
+	var url = "/a/ccti_drawings_load.php?mode=drawing_list&search="+search+"&people="+people_list+"&schools="+schools_list+"&categories="+cats_list;
 	doSomething(getLayer('drawing_list'),url);
 }
 
@@ -184,9 +171,7 @@ function get_selected(selbox) {
 	for( var i=0; i<selbox.options.length; i++ ) {
 		if( selbox.options[i].selected ) {
 			if( selbox.options[i].value != -1 ) {
-				
 				ret.push(selbox.options[i].value);
-			
 			}
 		}
 	}
@@ -204,12 +189,9 @@ function csl(arr, sep) {
 	return str;
 }
 
-function preview_drawing(code,version,mode) {
-	if( MODE == 'pathways' ) {
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600);
+function preview_drawing(code,version) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/ccti/'+code+'/'+version+'.html"></iframe></div>',800,600);
 
-	} else {	
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600);
-
-	}
 }
+
+

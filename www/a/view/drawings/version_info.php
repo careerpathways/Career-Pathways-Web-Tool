@@ -1,6 +1,33 @@
 <?php
-$drawing = GetDrawingInfo($version_id);
-$drawing_main = $DB->LoadRecord('drawing_main',$drawing['parent_id']);
+
+switch( $MODE ) {
+case 'pathways':
+	$main_table = 'drawing_main';
+	$drawings_table = 'drawings';
+	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/%%/##.html';
+	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/%%/##.xml';
+	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%/##.html';
+	break;
+case 'ccti':
+	$main_table = 'ccti_drawing_main';
+	$drawings_table = 'ccti_drawings';
+	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.html';
+	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.xml';
+	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%/##.html';
+	break;
+}
+
+$drawing = GetDrawingInfo($version_id, $MODE);
+$drawing_main = $DB->LoadRecord($main_table, $drawing['parent_id']);
+
+switch( $MODE ) {
+case 'pathways':
+	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$drawing_main['code'].'.html" frameborder="0" scrolling="no"></iframe>';
+	break;
+case 'ccti':
+	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/post/'.$drawing_main['code'].'.html" frameborder="0" scrolling="no"></iframe>';
+	break;
+}
 
 $created = ($drawing['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['created_by']));
 $modified = ($drawing['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['last_modified_by']));
@@ -51,7 +78,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	</td>
 </tr>
 <?php if( $drawing['published'] ) {
-	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$drawing_main['code'].'" frameborder="0" scrolling="no"></iframe>';
 	?>
 	<tr>
 	<th>Embed Code</th>
@@ -60,19 +86,19 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <?php } ?>
 <tr>
 	<th valign="top">Link</th>
-	<td><?php $url = "http://".$_SERVER['SERVER_NAME']."/c/version/".$drawing_main['code']."/".$drawing['version_num']; ?>
-		<a href="<?= $url.'.html' ?>"><?= $url.'.html' ?></a>
+	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
+		<a href="<?= $url ?>"><?= $url ?></a>
 	</td>
 </tr>
 <tr>
 	<th valign="top">XML</th>
-	<td>
-		<a href="<?= $url.'.xml' ?>"><?= $url.'.xml' ?></a>
+	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
+		<a href="<?= $url ?>"><?= $url ?></a>
 	</td>
 </tr>
 <tr>
 	<th valign="top">Accessible</th>
-	<td><?php $url = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/'.$drawing_main['code'].'/'.$drawing['version_num'].'.html'; ?>
+	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
 		<a href="<?= $url ?>"><?= $url ?></a>
 		<br>
 		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
@@ -140,7 +166,7 @@ function publishVersion() {
 
 function savenote() {
 	var note = getLayer('version_note');
-	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?drawing_id=<?= $version_id ?>&note='+note.value);
+	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note='+note.value);
 }
 
 function cbNoteChanged() {
@@ -155,7 +181,7 @@ function showNoteChange() {
 }
 
 function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600);
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600);
 }
 
 <?php if( $can_delete ) { ?>

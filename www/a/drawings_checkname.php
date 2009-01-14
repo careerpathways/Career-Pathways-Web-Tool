@@ -2,7 +2,19 @@
 chdir("..");
 include("inc.php");
 
-ModuleInit('drawings');
+switch( Request('mode') ) {
+	case 'ccti':
+		$module_name = 'ccti_drawings';
+		$table_name = 'ccti_drawing_main';
+		break;
+	case 'pathways':
+	default:
+		$module_name = 'drawings';
+		$table_name = 'drawing_name';
+		break;
+}
+
+ModuleInit($module_name);
 
 
 // verify a drawing name is not already taken
@@ -16,7 +28,7 @@ $title = $DB->Safe(Request('title'));
 $id = intval(Request('id')?Request('id'):0);
 
 
-$check = $DB->SingleQuery("SELECT * FROM drawing_main WHERE name='".$title."' AND school_id=".$school_id." AND id!=".$id);
+$check = $DB->SingleQuery("SELECT * FROM ".$table_name." WHERE name='".$title."' AND school_id=".$school_id." AND id!=".$id);
 if( is_array($check) ) {
 	echo 0;
 } else {

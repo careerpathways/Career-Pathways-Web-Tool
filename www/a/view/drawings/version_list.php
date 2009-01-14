@@ -3,11 +3,10 @@
 	<td>
 	<table>
 	<?php
-
 		$versions = $DB->MultiQuery("
 			SELECT *
-			FROM drawings
-			WHERE drawings.parent_id=".$drawing['id']."
+			FROM ".$drawings_table."
+			WHERE ".$drawings_table.".parent_id=".$drawing['id']."
 				AND deleted=0
 			ORDER BY version_num");
 		foreach( $versions as $v ) {
@@ -20,7 +19,7 @@
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
-					echo '<td><a href="/a/drawings.php?action=version_info&version_id='.$v['id'].'">'.$v['version_num'].'</a>'.($v['published']?' (Published)':'').'</td>';
+					echo '<td><a href="/a/'.$php_page.'?action=version_info&version_id='.$v['id'].'">'.$v['version_num'].'</a>'.($v['published']?' (Published)':'').'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
@@ -38,11 +37,11 @@
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
 					$action = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? 'draw' : 'view';
-						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&amp;version_id='.$v['id'].'">'.($v['published']?'view':$action).'</a>';
+						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'">'.($v['published']?'view':$action).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">preview</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="copy_popup.php?version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
+						echo '<a href="copy_popup.php?mode='.$MODE.'&version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

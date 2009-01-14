@@ -2,6 +2,7 @@
 chdir("..");
 include("inc.php");
 
+$MODE = 'pathways';
 ModuleInit('drawings');
 
 $version_id = Request('version_id');
@@ -163,13 +164,6 @@ if( KeyInRequest('drawing_id') ) {
 
 } else {
 	require('view/drawings/list.php');
-}
-
-function showVersionInfo() {
-	global $DB, $version_id;
-	PrintHeader();
-	require('view/drawings/version_info.php');
-	PrintFooter();
 }
 
 function showVersion() {
@@ -384,9 +378,12 @@ function showNewDrawingForm() {
 }
 
 function showDrawingInfo() {
+global $DB;
 	PrintHeader();
 
-	$drawing = GetDrawingInfo(intval(Request('id')), 'drawing_main');
+	$drawing = $DB->SingleQuery("SELECT drawing_main.*
+		FROM drawing_main
+		WHERE drawing_main.id=".intval(Request('id')));
 	if( is_array($drawing) ) {
 		if( IsAdmin() || $drawing['school_id'] == $_SESSION['school_id'] ) {
 			ShowDrawingForm(Request('id'));
@@ -401,8 +398,15 @@ function showDrawingInfo() {
 }
 
 function ShowDrawingForm($id) {
-	global $DB;
+	global $DB, $MODE;
 	require('view/drawings/drawing_info.php');
+}
+
+function showVersionInfo() {
+	global $DB, $version_id, $MODE;
+	PrintHeader();
+	require('view/drawings/version_info.php');
+	PrintFooter();
 }
 
 function ShowInfobar() {

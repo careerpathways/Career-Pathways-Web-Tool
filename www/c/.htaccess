@@ -3,3 +3,6 @@ RewriteRule ^version/(.+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3&page=ve
 RewriteRule ^published/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=published [nc,qsa]
 RewriteRule ^text/([^\.]+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3&page=text [nc,qsa]
 RewriteRule ^text/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=text [nc,qsa]
+
+RewriteRule ^post/(.+)/(\d+)(?:\.(.+))?$ ccti_view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
+RewriteRule ^post/([^\.]+)(?:\.(.+))?$ ccti_view.php?d=$1&format=$2&page=published [nc,qsa]

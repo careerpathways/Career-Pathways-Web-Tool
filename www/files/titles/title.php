@@ -1,4 +1,5 @@
 <?php
+require_once "inc.php";
 require_once "gd_color.inc.php";
 //require_once "gd_vwfont.inc.php";
 
@@ -17,7 +18,7 @@ if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
 }
 
 $hash = md5($school.$title);
-$filename = "../../../cache/titles/".$hash;
+$filename = $SITE->cache_path()."titles/".$hash;
 
 $width = 800;
 

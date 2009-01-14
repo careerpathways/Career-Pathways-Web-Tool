@@ -4,12 +4,16 @@ $TEMPLATE->toolbar_function = 'ShowDrawingListHelp';
 PrintHeader();
 ?>
 
-<script type="text/javascript" src="/files/drawing_list.js"></script>
+<script type="text/javascript">
+	var MODE = '<?= $MODE ?>';
+</script>
+
+<script type="text/javascript" src="/files/drawing_list.js?mode=<?= $MODE ?>"></script>
 <script type="text/javascript" src="/files/prototype.js"></script>
 
 <table width="100%"><tr>
 <td>
-	<a href="<?= $_SERVER['PHP_SELF'] ?>?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+	<a href="#" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust" style="color: grey">new drawing</span></a> (disabled in beta)
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="javascript:selectDefaults()" class="edit"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
 </td>

@@ -13,35 +13,64 @@ CCTI = {
 		console.debug(msg);
 	},
 
-	editContent: function(cell, program, section, row, col) {
-		if( this.activeEdit == null ) {
-			this.activeEdit = {cell: cell, program: program, section: section, row: row, col: col};
-			this.activeEditCellOldContent = cell.innerHTML;
-			if( cell.innerHTML == '&nbsp;' ) cell.innerHTML = '';
-			cell.innerHTML = '<textarea style="width:100%; height:100%">' + cell.innerHTML + '</textarea><br /><a href="javascript:CCTI.saveContent()" class="tiny">save</a> <a href="javascript:CCTI.cancelContent()" class="tiny">cancel</a>';
-			cell.firstChild.focus();
+	editContent: function(cell, program, section, type, row, col, extra) {
+		if( this.activeEdit != null ) {
+			this.saveContent();
 		}
+		this.activeEdit = {cell: cell, program: program, section: section, type: type, row: row, col: col, extra: extra};
+		this.activeEditCellOldContent = cell.innerHTML;
+		this.activeEditOnClick = this.activeEdit.cell.onclick;
+		this.activeEdit.cell.onclick = "";
+		if( cell.innerHTML == '&nbsp;' ) cell.innerHTML = '';
+		var height = (type=='occ'?'300px':'100%');
+		cell.innerHTML = '<textarea style="width:100%; height:'+height+'">' + cell.innerHTML + '</textarea><br /><a href="javascript:CCTI.saveContent()" class="tiny">save</a> <a href="javascript:CCTI.cancelContent()" class="tiny">cancel</a>';
+		jQuery(cell).addClass('selected');
+		cell.firstChild.focus();
 	},
 
 	saveContent: function() {
 		this.ajax( {
-			action: "content",
+			action: "save",
 			program: this.activeEdit.program, 
 			section: this.activeEdit.section, 
+			type: this.activeEdit.type,
 			row: this.activeEdit.row, 
 			col: this.activeEdit.col,
-			content: this.activeEdit.cell.firstChild.value,
+			extra: this.activeEdit.extra,
+			text: this.activeEdit.cell.firstChild.value,
 			} );
 		this.activeEdit.cell.innerHTML = this.activeEdit.cell.firstChild.value;
+		if( this.activeEdit.cell.innerHTML == '' ) this.activeEdit.cell.innerHTML = '&nbsp;';
+		jQuery(this.activeEdit.cell).removeClass('selected');
+		this.activeEdit.cell.onclick = this.activeEditOnClick;
+		this.activeEditOnClick = null;
 		this.activeEdit = null;
 	},
 
 	cancelContent: function() {
 		this.activeEdit.cell.innerHTML = this.activeEditCellOldContent;
+		jQuery(this.activeEdit.cell).removeClass('selected');
+		this.activeEdit.cell.onclick = this.activeEditOnClick;
+		this.activeEditOnClick = null;
 		this.activeEdit = null;
 		this.activeEditCellOldContent = null;
 	},
 
+	editImgHead: function(program, type) {
+		if( this.activeEdit == null ) {
+			var oldtext = jQuery('#head'+type+program).attr('alt');
+			var newtext = prompt("Enter text", oldtext );
+			if( oldtext != newtext && newtext != "" ) {
+				jQuery('#head'+type+program).attr({src: '/files/cctiv/'+jQuery.base64Encode(newtext)+'.png', alt: newtext})
+				this.ajax( {
+					action: "save",
+					program: program,
+					type: 'head'+type,
+					text: newtext
+				} );
+			}
+		}
+	},
 
 	ajax: function(post, callback) {
 		post.drawing_id = this.drawing_id;

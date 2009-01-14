@@ -1,7 +1,9 @@
 <?php
 chdir("..");
 include("inc.php");
-$version = GetDrawingInfo($_REQUEST['version_id']);
+
+$version = GetDrawingInfo($_REQUEST['version_id'], $_REQUEST['mode']);
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -28,7 +30,7 @@ fieldset {
 <h1>Copy Version</h1>
 <h2><?= $version['name'] ?></h2>
 
-<form action="drawings.php" method="post">
+<form action="<?= Request('mode')=='ccti'?'ccti_drawings.php':'drawings.php' ?>" method="post">
 <input type="hidden" name="from_popup" value="true"/>
 <input type="hidden" name="action" value="copy_version"/>
 <input type="hidden" name="version_id" value="<?= $version['id'] ?>"/>

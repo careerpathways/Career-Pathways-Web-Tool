@@ -1,0 +1,54 @@
+<?php
+header("Content-type: text/css");
+?>
+
+body {
+	font-family: verdana, sans-serif;
+	font-size: 8pt;
+}
+
+td {
+	font-size: 8pt;
+}
+
+#post_title {
+	height: 17px;
+	background-color: #649FC2;
+	margin-bottom: 10px;
+}
+
+table.post_chart, table.post_chart td, table.post_chart th {
+	border: 1px #999999 solid;
+}
+
+.post_head {
+	color: black;
+	font-weight: bold;
+	background-color: #DDDDDD;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.post_cell {
+	text-align: center;
+	vertical-align: middle;
+	width: 120px;
+}
+
+.post_sidebar_right, .post_sidebar_left {
+	vertical-align: middle;
+	width: 9px;
+}
+
+.post_sidebar_right {
+	text-align: left;
+}
+.post_sidebar_left {
+	text-align: right;
+}
+
+.post_footer {
+	font-size: 7pt;
+	height: 14px;
+}
+

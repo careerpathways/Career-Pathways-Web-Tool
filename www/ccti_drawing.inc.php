@@ -1,15 +1,13 @@
 <?php
 /*
-   These classes implement the structure of the CCTI drawings. The PHP code should ONLY
-   interact with these objects, and never with the database directly. These objects
-   contain *all* the SQL necessary for dealing with CCTI drawings.
-
-   Nothing should ever be written back to the database until "commit" is called.
-
+   These classes implement the structure of the CCTI drawings. There should be no other code that
+   reads from the CCTI tables except here. The cctiserv.php file contains all the SQL necessary
+   to write to the tables. These two files are the only places where SQL code should exist.
 */
 
 function CCTI_check_permission($id)
 {
+	return true;
 	global $DB;
 
 	// SuperAdmins and people of the same school can edit drawings
@@ -18,7 +16,7 @@ function CCTI_check_permission($id)
 		WHERE id=".$id);
 	if( !is_array($drawing) || (!IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) ) {
 		chlog("permissions error (CCTI)");
-		die();
+		//die();
 	}
 	return true;
 }
@@ -28,6 +26,7 @@ function CCTI_check_permission($id)
 class CCTI_Drawing
 {
 	private $data = array();
+	private $parent_data = array();
 	private $programs = array();
 
 	public function __construct($id='')
@@ -35,21 +34,13 @@ class CCTI_Drawing
 		global $DB;
 
 
-		if( $id == '' )
-		{
-			$this->data = $this->loadDefaults();
+		$this->data = $DB->LoadRecord('ccti_drawings', $id);
+		$this->parent_data = $DB->LoadRecord('ccti_drawing_main', $this->data['parent_id']);
 
-			$this->programs[] = new CCTI_Program();
-		}
-		else
+		$programs = $DB->VerticalQuery('SELECT id FROM ccti_programs WHERE drawing_id='.$id.' ORDER BY `index`', 'id');
+		foreach( $programs as $p )
 		{
-			$this->data = $DB->LoadRecord('ccti_drawings', $id);
-
-			$programs = $DB->VerticalQuery('SELECT id FROM ccti_programs WHERE drawing_id='.$id.' ORDER BY `index`', 'id');
-			foreach( $programs as $p )
-			{
-				$this->programs[] = new CCTI_Program($p);
-			}
+			$this->programs[$p] = new CCTI_Program($p);
 		}
 
 	}
@@ -59,8 +50,10 @@ class CCTI_Drawing
 		switch($name)
 		{
 			case 'id':
-			case 'name':
 				return $this->data[$name];
+				break;
+			case 'name':
+				return $this->parent_data[$name];
 				break;
 			case 'programs':
 				return $this->programs;
@@ -134,7 +127,7 @@ class CCTI_Program
 			$sections = $DB->VerticalQuery('SELECT id FROM ccti_sections WHERE program_id='.$id, 'id');
 			foreach( $sections as $s )
 			{
-				$this->sections[] = new CCTI_Section($s, $this);
+				$this->sections[$s] = new CCTI_Section($s, $this);
 			}
 		}
 	}
@@ -148,9 +141,11 @@ class CCTI_Program
 			case 'header':
 			case 'footer':
 			case 'school_id':
-			case 'completes_with':
 			case 'num_columns':
 			case 'show_occ_titles':
+			case 'occ_titles':
+			case 'headleft':
+			case 'headright':
 				return $this->data[$name];
 				break;
 			case 'school_name':
@@ -163,10 +158,29 @@ class CCTI_Program
 				$rows += $this->content_rows;
 				return $rows;
 				break;
+			case 'total_rows_edit':
+				$rows = 0;
+				$rows += 1;
+				$rows += 1;
+				$rows += $this->content_rows_edit;
+				return $rows;
+				break;
+			case 'all_header_rows':
+				$rows = 0;
+				foreach( $this->sections as $s )
+					$rows += $s->header_rows;
+				return $rows;
+				break;
 			case 'content_rows':
 				$rows = 0;
 				foreach( $this->sections as $s )
 					$rows += $s->total_rows;
+				return $rows;
+				break;
+			case 'content_rows_edit':
+				$rows = 0;
+				foreach( $this->sections as $s )
+					$rows += $s->total_rows_edit;
 				return $rows;
 				break;
 			case 'total_cols':
@@ -291,6 +305,17 @@ class CCTI_Section
 				$rows += count($this->labels_x);
 				return $rows;
 				break;
+			case 'total_rows_edit':
+				$rows = 0;
+				$rows += $this->num_rows;
+				$rows += 1;
+				$rows += count($this->labels_x);
+				return $rows;
+				break;
+			case 'header_rows':
+				$rows = count($this->labels_x);
+				return $rows;
+				break;
 			case 'labels_x':
 				return $this->labels_x;
 				break;
@@ -311,7 +336,7 @@ class CCTI_Section
 	{
 		global $DB;
 		// saves all variables back to the database
-
+		/*
 		$data = array();
 		$data['header'] = $this->header;
 		$data['`index`'] = $this->index;
@@ -336,7 +361,7 @@ class CCTI_Section
 
 		$this->label_xy->commit();
 		$this->content->commit();
-
+		*/
 	}
 
 	protected function loadDefaults()
@@ -405,12 +430,14 @@ class CCTI_Section_Content_Row extends CCTI_Section_Content
 
 	public function commit()
 	{
+		/*
 		global $DB;
 
 		foreach( $this->data as $col )
 		{
 			$col->commit();
 		}
+		*/
 	}
 
 	public function offsetGet($offset)
@@ -443,11 +470,12 @@ class CCTI_Section_Content_Col extends CCTI_Section_Content
 	public function commit()
 	{
 		global $DB;
-
+		/*
 		foreach( $this->data as $key=>$cell )
 		{
 			$cell->commit();
 		}
+		*/
 	}
 
 	public function offsetGet($offset)
@@ -491,17 +519,25 @@ class CCTI_Section_Label
 			case 'text':
 				return $this->data[$name];
 				break;
+			default:
+				$m = "";
+				return $m;
+				break;
 		}
 	}
 
+	public function __set($name, $value)
+	{
+		switch($name)
+		{
+			case 'text':
+				$this->data[$name] = $value;
+				break;
+		}
+	}
+	
 	public function commit()
 	{
-		global $DB;
-		// saves all variables back to the database
-
-		//$sql = '
-		//INSERT INTO ccti_section_labels (id, section_id,
-
 	}
 
 
@@ -560,19 +596,6 @@ class CCTI_Cell
 
 	public function commit()
 	{
-		global $DB;
-
-		$data = array();
-		$data['id'] = $this->id;
-		$data['section_id'] = $this->section_id;
-		$data['row'] = $this->row;
-		$data['col'] = $this->col;
-		$data['rowspan'] = $this->rowspan;
-		$data['colspan'] = $this->colspan;
-		$data['text'] = $this->text;
-		PA($data);
-		$id = $DB->InsertODUKU('ccti_data', $data);
-		echo $DB->Error();
 	}
 
 	public function __toString()
@@ -581,9 +604,6 @@ class CCTI_Cell
 	}
 
 }
-
-
-
 
 
 ?>

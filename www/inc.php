@@ -18,20 +18,21 @@ class ThisSite extends SiteSettings {
 	function recipient_email() { return "aaron@ctepathways.org"; }
 
 	function __construct() {
-		$this->DBname = 'pathways';
+		$this->DBname = 'pathways_post';
 		$this->DBuser = 'pathways';
 		$this->DBpass = 'pathways';
 
 		$this->ConnectDB();
 
-		$this->add_local_name('pathways');
+		$this->add_local_name('pathways','ccti.ctepathways.org');
 	}
 
 	function base_url() { return $_SERVER['SERVER_NAME']; }
+	function cache_path() { return '/www/var/ctepathways.org/post/cache/'; }
 
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
-	function force_https_login() { return true; }
+	function force_https_login() { return false; }
 
 	function recaptcha_publickey() { return '6Ldg9wEAAAAAADD5_LekXYwr2W6xeSDvPSrn2ULE'; }
 	function recaptcha_privatekey() { return '6Ldg9wEAAAAAAHq3SbV8Ko0VEpcUEzg-QFq1DIx6'; }
@@ -45,6 +46,9 @@ class ThisSiteTemplate extends SiteTemplate {
 	public $toolbar_function = '';
 
 	public $is_chart_page = false;
+
+	public $addl_scripts = array();
+	public $addl_styles = array();
 
 	function __construct() {
 		if( !defined('NOSESSION') ) {
@@ -62,7 +66,7 @@ class ThisSiteTemplate extends SiteTemplate {
 	function Header() {
 		?>
 			<div id="header">
-				<a href="/"><img src="/images/title.gif" width="828" height="61"></a>
+				<a href="/"><img src="/images/title.gif" width="828" height="61" alt="Career Pathways Web Tool" /></a>
 			</div>
 
 			<div id="topbar"><div id="topbar_inside">
@@ -102,7 +106,7 @@ class ThisSiteTemplate extends SiteTemplate {
 				?>
 				</ul>
 				</div>
-				<br>
+				<br />
 			</div>
 			<?php } ?>
 
@@ -152,7 +156,7 @@ class ThisSiteTemplate extends SiteTemplate {
 		<script src="/common/actb.js" type="text/javascript"></script>
 
 		<!-- Core + Skin CSS -->
-		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.4.0/build/menu/assets/skins/sam/menu.css">
+		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.4.0/build/menu/assets/skins/sam/menu.css" />
 
 		<!-- Dependencies -->
 		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
@@ -165,6 +169,16 @@ class ThisSiteTemplate extends SiteTemplate {
 		if( $this->is_chart_page ) {
 			echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
 		}
+		
+		foreach( $this->addl_styles as $css )
+		{
+			echo '<style type="text/css">@import "' . $css . '";</style>' . "\n";
+		}
+		foreach( $this->addl_scripts as $js )
+		{
+			echo '<script type="text/javascript" src="' . $js. '"></script>'."\n";
+		}
+
 	}
 
 	function tag_doctype() {
@@ -188,7 +202,7 @@ class ThisSiteTemplate extends SiteTemplate {
 			echo '<li><a href="/p/ada">ADA Compliance</a></li>';
 			echo '<li><a href="/a/help">Help</a></li>';
 		echo '</ul>';
-		echo '</div><br></div>';
+		echo '</div><br /></div>';
 	}
 
 	function resource_categories() {
@@ -233,7 +247,7 @@ function CanEditOtherSchools() {
 }
 
 
-function CreateDrawingCodeFromTitle($title, $school_id, $drawing_id=0) {
+function CreateDrawingCodeFromTitle($title, $school_id, $drawing_id=0, $mode='pathways') {
 global $DB;
 	// replace spaces with underscores
 	$dirty_code = preg_replace('/\s+/','_',strtolower($title));
@@ -252,7 +266,7 @@ global $DB;
 
 	// look for conflicting codes
 	$code = $proposed_code;
-	while( DrawingCodeAlreadyExists($code, $drawing_id) ) {
+	while( DrawingCodeAlreadyExists($code, $drawing_id, $mode) ) {
 		// keep trying new codes until we get one that is unique
 		$code = $proposed_code.'_'.rand(100,999);
 	}
@@ -264,20 +278,27 @@ function CleanDrawingCode($code) {
 	return preg_replace('/[^a-z0-9_]/i','',$code);
 }
 
-function DrawingCodeAlreadyExists($code, $drawing_id) {
+function DrawingCodeAlreadyExists($code, $drawing_id, $mode) {
 global $DB;
-	$num = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main
+	$num = $DB->SingleQuery("SELECT COUNT(*) AS num FROM ".($mode=='pathways'?'drawing_main':'ccti_drawing_main')."
 		WHERE code='".$code."'
 		AND id != ".$drawing_id);
 	return $num['num'] == 1;
 }
 
-function GetDrawingInfo($drawing_id, $pk_table = 'drawings') {
+function GetDrawingInfo($drawing_id, $type='pathways') {
 global $DB;
-	$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id
-		FROM drawing_main, drawings
-		WHERE drawings.parent_id=drawing_main.id
-		AND $pk_table.id=".$drawing_id);
+	if( $type == 'pathways' ) {
+		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id
+			FROM drawing_main, drawings
+			WHERE drawings.parent_id=drawing_main.id
+			AND drawings.id=".$drawing_id);
+	} elseif( $type == 'ccti' ) {
+		$drawing = $DB->SingleQuery("SELECT ccti_drawing_main.*, ccti_drawings.*, ccti_drawings.id drawings_id
+			FROM ccti_drawing_main, ccti_drawings
+			WHERE ccti_drawings.parent_id=ccti_drawing_main.id
+			AND ccti_drawings.id=".$drawing_id);
+	}
 	return $drawing;
 }
 
@@ -285,8 +306,10 @@ global $DB;
 
 
 
-function ShowDrawingList(&$mains) {
+function ShowDrawingList(&$mains, $type='pathways') {
 	global $DB;
+
+	$draw_page = $type=='pathways'?'drawings.php':'ccti_drawings.php';
 
 	if( count($mains) == 0 ) {
 		echo '<p>(none)</p>';
@@ -301,7 +324,7 @@ function ShowDrawingList(&$mains) {
 		foreach( $mains as $mparent ) {
 			echo '<tr class="row0">';
 
-			echo '<td colspan="4"><a href="drawings.php?id='.$mparent['id'].'" class="edit">'.$mparent['name'].'</a></td>';
+			echo '<td colspan="4"><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit">'.$mparent['name'].'</a></td>';
 			$created = ($mparent['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['created_by']));
 			$modified = ($mparent['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['last_modified_by']));
 			echo '<td>'.($mparent['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$mparent['last_modified'])).' <a href="/a/users.php?id='.$mparent['last_modified_by'].'">'.$modified['name'].'</a></td>';
@@ -326,15 +349,15 @@ function ShowDrawingList(&$mains) {
 
 					echo '<td width="160">';
 						echo 'Version '.$dr['version_num'].' '.($dr['published']?'(published)':'');
-						echo ($dr['note']==""?"":' ('.$dr['note'].')');
+						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 
 					echo '<td width="70">';
-						echo '<a href="drawings.php?action=version_info&amp;version_id='.$dr['id'].'" class="edit">info</a>';
+						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit">info</a>';
 					echo '</td>';
 
 					echo '<td width="70">';
-						echo '<a href="drawings.php?action=draw&amp;version_id='.$dr['id'].'" class="edit">'.$linktext.'</a>';
+						echo '<a href="'.$draw_page.'?action=draw&amp;version_id='.$dr['id'].'" class="edit">'.$linktext.'</a>';
 					echo '</td>';
 
 
@@ -426,7 +449,7 @@ global $SITE;
 
 	?>
 
-	<br><br>
+	<br /><br />
 	<form action="<?= $form_action; ?>" method="post">
 	<table align="center">
 	<tr>
@@ -443,7 +466,7 @@ global $SITE;
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><br><br><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
+		<td><br/><br/><span class="button_link"><a href="/a/guestlogin.php">Guest Login</a></span></td>
 	</tr>
 	</table>
 
@@ -451,7 +474,7 @@ global $SITE;
 	</form>
 
 	<?php
-	echo str_repeat('<br>',20);
+	echo str_repeat('<br/>',20);
 }
 
 

@@ -1,12 +1,25 @@
 <?php
 
-/*
-	TODO: parse access_log looking for referers linking to each drawing.
-		grep "GET /c/published/" access_log
-		build a list of web pages that link to a drawing, show here
-*/
+switch( $MODE ) {
+case 'pathways':
+	$php_page = 'drawings.php';
+	$main_table = 'drawing_main';
+	$drawings_table = 'drawings';
+	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.html';
+	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.xml';
+	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%.html';
+	break;
+case 'ccti':
+	$php_page = 'ccti_drawings.php';
+	$main_table = 'ccti_drawing_main';
+	$drawings_table = 'ccti_drawings';
+	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.html';
+	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.xml';
+	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%.html';
+	break;
+}
 
-$drawing = $DB->LoadRecord('drawing_main',$id);
+$drawing = $DB->LoadRecord($main_table,$id);
 
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
 if( IsAdmin() ) {
@@ -19,10 +32,10 @@ if( IsAdmin() ) {
 	$school_id = $_SESSION['school_id'];
 }
 
-$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/%%" frameborder="0" scrolling="no"></iframe>';
+$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
 
 if( $id != "" ) {
-	$published = $DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND parent_id=".$drawing['id']);
+	$published = $DB->SingleQuery("SELECT * FROM $drawings_table WHERE published=1 AND parent_id=".$drawing['id']);
 }
 
 ?>
@@ -102,28 +115,27 @@ if( $id != "" ) {
 	<th>Link</th>
 	<td>
 		<div id="drawing_link"><?php
-		$url = "http://".$_SERVER['SERVER_NAME']."/c/published/".$drawing['code'];
-		echo '<a href="'.$url.'.html">'.$url.'.html</a>';
+		$url = str_replace('%%',$drawing['code'],$published_link);
+		echo '<a href="'.$url.'">'.$url.'</a>';
 		?></div>
 	</td>
 </tr>
 <tr>
 	<th valign="top">XML</th>
 	<td>
-		<div id="drawing_link_xml">
-		<a href="<?= $url.'.xml' ?>"><?= $url.'.xml' ?></a>
-		</div>
+		<div id="drawing_link_xml"><?php
+		$url = str_replace('%%',$drawing['code'],$xml_link);
+		echo '<a href="'.$url.'">'.$url.'</a>';
+		?></div>
 	</td>
 </tr>
 <tr>
 	<th valign="top">Accessible</th>
 	<td>
-		<div id="drawing_link_ada">
-		<?php
-			$url = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/'.$drawing['code'].'.html';
-			echo '<a href="'.$url.'">'.$url.'</a>';
-		?>
-		</div>
+		<div id="drawing_link_ada"><?php
+		$url = str_replace('%%',$drawing['code'],$accessible_link);
+		echo '<a href="'.$url.'">'.$url.'</a>';
+		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
 		<br>
 	</td>
@@ -163,8 +175,10 @@ if( $id != "" ) {
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
 <script type="text/javascript">
 
-drawing_code = '<?= $drawing['code'] ?>';
-schools = new Array(<?= count($schools) ?>);
+var MODE = '<?= $MODE ?>';
+
+var drawing_code = '<?= $drawing['code'] ?>';
+var schools = new Array(<?= count($schools) ?>);
 <?php
 $i=0;
 foreach( $schools as $sid=>$school ) {
@@ -172,6 +186,10 @@ foreach( $schools as $sid=>$school ) {
 	$i++;
 }
 ?>
+
+var published_link = "<?= $published_link ?>";
+var xml_link = "<?= $xml_link ?>";
+var accessible_link = "<?= $accessible_link ?>";
 
 function checkName(title) {
 	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
@@ -208,16 +226,16 @@ function verifyNameSubmit(result) {
 		verifyName(0);
 	} else {
 		var title = getLayer('drawing_title');
-		ajaxCallback(cbNameChanged, '/a/drawings_post.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
+		ajaxCallback(cbNameChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
 	}
 }
 
 function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('drawing_link').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'.html</a>';
-	getLayer('drawing_link_xml').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'.xml</a>';
-	getLayer('drawing_link_ada').innerHTML = '<a href="http://<?= $_SERVER['SERVER_NAME'] ?>/c/published/'+drawingCode+'">http://<?= $_SERVER['SERVER_NAME'] ?>/c/text/'+drawingCode+'.html</a>';
+	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
+	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
+	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
 	getLayer('embed_code').value = '<?= $embed_code ?>';
 	getLayer('embed_code').value = getLayer('embed_code').value.replace(/%%/,drawingCode);
 	getLayer('title_edit').style.display = 'none';
