@@ -18,7 +18,7 @@ class ThisSite extends SiteSettings {
 	function recipient_email() { return "aaron@ctepathways.org"; }
 
 	function __construct() {
-		$this->DBname = 'pathways_aaron';
+		$this->DBname = 'pathways';
 		$this->DBuser = 'pathways';
 		$this->DBpass = 'pathways';
 
