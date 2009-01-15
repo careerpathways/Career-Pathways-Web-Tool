@@ -162,6 +162,7 @@ abstract class POSTChart
 
 class POSTChart_HS extends POSTChart
 {
+	protected $_type = "hs";
 
 	protected function _rowName($num)
 	{
@@ -192,12 +193,17 @@ class POSTChart_HS extends POSTChart
 
 	protected function _cellContent(&$cell)
 	{
-		return htmlentities($cell->content);
+		// Is there a link?
+		$link = ($cell->href != '');
+
+		// Draw the item inside the post_cell
+		return ($link?'<a href="' . $cell->href . '">':'') . htmlentities($cell->content) . ($link?'</a>':'');
 	}
 }
 
 class POSTChart_CC extends POSTChart
 {
+	protected $_type = "cc";
 
 	protected function _rowName($num)
 	{

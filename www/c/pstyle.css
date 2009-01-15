@@ -29,17 +29,10 @@ table.post_chart, table.post_chart td, table.post_chart th {
 	vertical-align: middle;
 }
 
-.post_head_main {
-	cursor: pointer;
-}
 .post_cell {
 	text-align: center;
 	vertical-align: middle;
 	width: 120px;
-	cursor: pointer;
-}
-.post_cell_noClick {
-	cursor: auto;
 }
 
 .postCellHover {
@@ -63,3 +56,16 @@ table.post_chart, table.post_chart td, table.post_chart th {
 	height: 14px;
 }
 
+.postGreyboxWrapper {
+	background: #FFFFFF;
+	border: 1px #777777 solid;
+	width: 425px;
+	margin-left: 25px;
+}
+.postGreyboxContent {
+	padding: 10px;
+}
+.greyboxError {
+	color: #AA0000;
+	font-weight: bold;
+}

@@ -180,7 +180,8 @@ function showVersion() {
 		$TEMPLATE->addl_scripts[] = '/common/jquery-1.2.6.pack.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
-		$TEMPLATE->addl_scripts[] = '/files/greybox/greybox.js';
+//		$TEMPLATE->addl_scripts[] = '/files/greybox/greybox.js';
+		$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	}
 	
 	PrintHeader();

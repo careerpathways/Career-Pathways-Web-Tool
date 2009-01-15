@@ -3,11 +3,12 @@
  */
 $(document).ready(function()
 {
-	// Set the greybox animation speed ( in millis )
-	GB_ANIMATION = 300;
-
 	bindEditableCells();
-
+	
+	$(".post_cell, .post_head_main").css({cursor: "pointer"});
+	$(".post_cell_noClick").css({cursor: "auto"});
+	
+	$(".post_cell a").attr("href", "javascript:void(0);");
 });
 
 /******************************/
@@ -24,9 +25,26 @@ function bindEditableCells()
 	});
 
 	$(".post_head_main").click(function(){
-		GB_show("Edit Row/Column Header", "/a/postserv.php?mode=prompt&type=header&content=" + escape($(this).html), 400, 300);
+		// Split apart the id into meaningful components
+		var id = $(this).attr("id").split("_");
+		var category = id[2];
+		id = id[3];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "header", content: escape($(this).html())},
+			function(data){
+			chGreybox.create(data, 450, 300);
+		});
 	});
 	$(".post_cell:not(.post_cell_noClick)").click(function(){
-		GB_show("Edit Row/Column Header", "/a/postserv.php?mode=prompt&type=cell&content=" + escape($(this).html), 400, 300);
+		// Split apart the id into meaningful components
+		var cellID = $(this).attr("id").split("_");
+		cellID = cellID[2];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "cell", id: cellID},
+			function(data){
+			chGreybox.create(data, 450, 300);
+		});
 	});
 }
