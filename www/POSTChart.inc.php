@@ -56,7 +56,7 @@ abstract class POSTChart
 		// store the column names for later
 		foreach( $cols as $col )
 		{
-			$this->_cols[$col['num']] = $col['title'];
+			$this->_cols[$col['num']] = new POSTCol($col);
 		}
 
 		// create the empty 2D array
@@ -97,19 +97,14 @@ abstract class POSTChart
 
 		echo '<table border="1" class="post_chart">';
 		$this->_printHeaderRow();
+
 		foreach( $this->_content as $rowNum=>$row )
 		{
 			echo '<tr>';
 			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>';
 			foreach( $row as $cell )
 			{
-				$classAppend = $cellID = '';
-				if(!$cell->id)
-					$classAppend = ' post_cell_noClick';
-				else
-					$cellID = ' id="post_cell_' . $cell->id . '"';
-
-				echo '<td' . $cellID . ' class="post_cell' . $classAppend . '">' . $this->_cellContent($cell) . '</td>';		
+				echo '<td id="post_cell_' . $cell->id . '" class="post_cell">' . $this->_cellContent($cell) . '</td>';		
 			}
 			echo '</tr>';
 		}
@@ -162,7 +157,7 @@ abstract class POSTChart
 
 class POSTChart_HS extends POSTChart
 {
-	protected $_type = "hs";
+	protected $_type = "HS";
 
 	protected function _rowName($num)
 	{
@@ -185,7 +180,7 @@ class POSTChart_HS extends POSTChart
 			echo '<th class="post_head_xy post_head">Grade</th>';
 			foreach( $this->_cols as $col )
 			{
-				echo '<th class="post_head_main post_head">' . $col . '</th>';
+				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head">' . $col->title . '</th>';
 			}
 			echo '<td  class="post_sidebar_right" rowspan="' . $this->totalRows . '">' . $this->verticalText('High School Diploma') . '</td>';
 		echo '</tr>';
@@ -203,7 +198,7 @@ class POSTChart_HS extends POSTChart
 
 class POSTChart_CC extends POSTChart
 {
-	protected $_type = "cc";
+	protected $_type = "CC";
 
 	protected function _rowName($num)
 	{
@@ -215,7 +210,7 @@ class POSTChart_CC extends POSTChart
 		echo '<tr>';
 			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>';
 			echo '<th class="post_head_xy post_head" style="width:40px;">Term</th>';
-			echo '<th class="post_head_main post_head" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>';
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>';
 			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>';
 		echo '</tr>';
 	}
@@ -245,5 +240,22 @@ class POSTCell
 	}
 }
 
+class POSTCol
+{
+	private $_data;
+	
+	public function __construct($data=array())
+	{
+		$this->_data = $data;
+	}
+
+	public function __get($key)
+	{
+		if( array_key_exists($key, $this->_data) )
+			return $this->_data[$key];
+		else
+			return NULL;
+	}
+}
 
 ?>
