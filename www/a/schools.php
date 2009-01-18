@@ -25,6 +25,8 @@ if( KeyInRequest('id') ) {
 							  'school_city' => $_REQUEST['school_city'],
 							  'school_state' => $_REQUEST['school_state'],
 							  'school_zip' => $_REQUEST['school_zip'],
+							  'school_county' => $_REQUEST['school_county'],
+							  'organization_type' => $_REQUEST['organization_type'],
 							);
 
 			$content['school_website'] = str_replace('http://','',$content['school_website']);
@@ -56,48 +58,67 @@ if( KeyInRequest('id') ) {
 
 	PrintHeader();
 
-	echo '<table>';
+	foreach( array('CC', 'HS', 'Other') as $type )
+	{
+		switch( $type )
+		{
+			case 'CC':
+				$header = 'Community Colleges';
+				break;
+			case 'Other':
+				$header = 'Other Organizations';
+				break;
+			case 'HS':
+				$header = 'High Schools';
+				break;
+		}
+	
+		$schools = $DB->MultiQuery('SELECT * FROM schools WHERE organization_type="' . $type . '" ORDER BY school_name');
 
-	$schools = $DB->MultiQuery("SELECT * FROM schools ORDER BY school_name");
+		echo '<h3 style="margin-bottom:0">' . $header . '</h3>';
+	
+		echo '<table>';
 
-	echo '<tr>';
-		echo '<th width="30"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"><img src="/common/silk/add.png" width="16" height="16"></a></th>';
-		echo '<th width="40">Abbr.</th>';
-		echo '<th width="270">Organization Name</th>';
-		echo '<th width="50">Users</th>';
-		echo '<th width="70">Drawings</th>';
-		echo '<th>Colors</th>';
-	echo '</tr>';
-
-	foreach( $schools as $num=>$s ) {
-
-		echo '<tr class="row'.($num%2).'">';
-			echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$s['id'].'" class="edit">edit</a></td>';
-			echo '<td>'.$s['school_abbr'].'</td>';
-			echo '<td>'.$s['school_name'].'</td>';
-
-			$users = $DB->SingleQuery("SELECT COUNT(*) AS num FROM users WHERE school_id=".$s['id']." AND user_active=1");
-			echo '<td>'.($users['num']==0?'&nbsp;':$users['num']).'</td>';
-
-			$drawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main WHERE school_id=".$s['id']."");
-			echo '<td>'.($drawings['num']==0?'&nbsp;':$drawings['num']).'</td>';
-
-			echo '<td>';
-
-			$str = '';
-			$colors = $DB->MultiQuery("SELECT * FROM color_schemes WHERE school_id=".$s['id']);
-			foreach( $colors as $c ) {
-				$str .= '<div title="#'.$c['hex'].'" style="background-color:#'.$c['hex'].'" class="school_color_box_mini"></div>';
-			}
-			$str .= '<div title="#333333" style="background-color:#333333" class="school_color_box_mini"></div>';
-			echo $str;
-
-			echo '</td>';
+		echo '<tr>';
+			echo '<th width="30"><a href="'.$_SERVER['PHP_SELF'].'?id&type=' . $type . '" class="edit"><img src="/common/silk/add.png" width="16" height="16"></a></th>';
+			echo '<th width="80">Abbr.</th>';
+			echo '<th width="290">Organization Name</th>';
+			echo '<th width="50">Users</th>';
+			echo '<th width="70">Drawings</th>';
+			if( $type != 'HS' ) echo '<th>Colors</th>';
 		echo '</tr>';
-
+	
+		foreach( $schools as $num=>$s ) {
+	
+			echo '<tr class="row'.($num%2).'">';
+				echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$s['id'].'" class="edit">edit</a></td>';
+				echo '<td>'.$s['school_abbr'].'</td>';
+				echo '<td>'.$s['school_name'].'</td>';
+	
+				$users = $DB->SingleQuery("SELECT COUNT(*) AS num FROM users WHERE school_id=".$s['id']." AND user_active=1");
+				echo '<td>'.($users['num']==0?'&nbsp;':$users['num']).'</td>';
+	
+				$drawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main WHERE school_id=".$s['id']."");
+				echo '<td>'.($drawings['num']==0?'&nbsp;':$drawings['num']).'</td>';
+	
+				echo '<td>';
+	
+				if( $type != 'HS' )
+				{
+					$str = '';
+					$colors = $DB->MultiQuery("SELECT * FROM color_schemes WHERE school_id=".$s['id']);
+					foreach( $colors as $c ) {
+						$str .= '<div title="#'.$c['hex'].'" style="background-color:#'.$c['hex'].'" class="school_color_box_mini"></div>';
+					}
+					$str .= '<div title="#333333" style="background-color:#333333" class="school_color_box_mini"></div>';
+					echo $str;
+					echo '</td>';
+				}
+			echo '</tr>';
+		}
+	
+		echo '</table>';
 	}
-
-	echo '</table>';
 
 	PrintFooter();
 
@@ -108,7 +129,28 @@ if( KeyInRequest('id') ) {
 function ShowSchoolForm($id="") {
 global $DB, $STATES;
 
+	$COUNTIES = array('Clatsop', 'Tillamook', 'Columbia', 'Washington', 'Multnomah',
+			'Yamhill', 'Clackamas', 'Marion', 'Polk', 'Lincoln', 'Benton', 'Linn',
+			'Hood River', 'Wasco', 'Sherman', 'Gilliam', 'Morrow', 'Umatilla', 'Union',
+			'Wallowa', 'Baker', 'Grant', 'Wheeler', 'Jefferson', 'Lane', 'Deschutes',
+			'Crook', 'Grant', 'Malheur', 'Harney', 'Lake', 'Klamath', 'Jackson',
+			'Josephine', 'Curry', 'Coos', 'Douglas');
+	asort($COUNTIES);
+	$allcounties = array();
+	foreach( $COUNTIES as $c ) {
+			$allcounties[$c] = $c;
+	}
+	$COUNTIES[''] = '';
+	$COUNTIES = array_merge($COUNTIES, $allcounties);
+	unset($allcounties);
+	
+	$orgtypes['CC'] = 'Community College';
+	$orgtypes['Other'] = 'Other Organization';
+	$orgtypes['HS'] = 'High School';
+
 	$school = $DB->LoadRecord('schools',$id);
+
+	if( Request('type') ) $school['organization_type'] = Request('type');
 
 ?>
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br>
@@ -121,34 +163,46 @@ global $DB, $STATES;
 		<td colspan="3"><hr></td>
 	</tr>
 	<tr>
+		<td width="120" valign="top">Organization Type:</td>
+		<td colspan="2"><?=
+			GenerateSelectBox($orgtypes, 'organization_type', $school['organization_type'])
+		?></td>
+	</tr>
+	<tr>
 		<td valign="top">Abbreviation:</td>
 		<td colspan="2" valign="top"><input type="text" name="school_abbr" value="<?= $school['school_abbr'] ?>" size="10"></td>
 	</tr>
 	<tr>
-		<td width="100">Organization Name:</td>
+		<td>Organization Name:</td>
 		<td colspan="2"><input type="text" name="school_name" value="<?= $school['school_name'] ?>" size="50"></td>
 	</tr>
 	<tr>
-		<td width="100">Website:</td>
+		<td>Website:</td>
 		<td colspan="2"><input type="text" name="school_website" id="school_website" value="<?= $school['school_website'] ?>" size="50"></td>
 	</tr>
 	<tr>
-		<td width="100">Address:</td>
+		<td>Address:</td>
 		<td colspan="2"><input type="text" name="school_addr" id="school_addr" value="<?= $school['school_addr'] ?>" size="50"></td>
 	</tr>
 	<tr>
-		<td width="100">City:</td>
+		<td>City:</td>
 		<td colspan="2"><input type="text" name="school_city" id="school_city" value="<?= $school['school_city'] ?>" size="20"></td>
 	</tr>
 	<tr>
-		<td width="100">State:</td>
+		<td>State:</td>
 		<td colspan="2"><?php
 			echo GenerateSelectBox($STATES,'school_state','OR');
 		?></td>
 	</tr>
 	<tr>
-		<td width="100">Zip Code:</td>
+		<td>Zip Code:</td>
 		<td colspan="2"><input type="text" name="school_zip" id="school_zip" value="<?= $school['school_zip'] ?>" size="10"></td>
+	</tr>
+	<tr>
+		<td>County:</td>
+		<td colspan="2"><?=
+			GenerateSelectBox($COUNTIES, 'school_county', $school['school_county'])
+		?></td>
 	</tr>
 
 	<tr>

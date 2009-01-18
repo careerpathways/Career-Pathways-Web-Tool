@@ -1,8 +1,15 @@
 <?php
+
 chdir("..");
 include("inc.php");
 
 switch( Request('type') ) {
+	case 'post':
+		$module_name = 'post_drawings';
+		$session_key = 'post_drawing_list';
+		$main_table = 'post_drawing_main';
+		$version_table = 'post_drawings';
+		break;
 	case 'ccti':
 		$module_name = 'ccti_drawings';
 		$session_key = 'ccti_drawing_list';

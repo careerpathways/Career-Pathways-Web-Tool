@@ -4,6 +4,10 @@ chdir("..");
 include("inc.php");
 
 switch( Request('mode') ) {
+	case 'post':
+		$module_name = 'post_drawings';
+		$session_key = 'post_drawing_list';
+		break;
 	case 'ccti':
 		$module_name = 'ccti_drawings';
 		$session_key = 'ccti_drawing_list';

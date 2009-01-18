@@ -717,6 +717,9 @@ a.chart_header {
 	height: 600px;
 }
 
+#drawing_list .drawinglist_name {
+	font-size: 1.2em;
+}
 #drawing_list a {
 	text-decoration: none;
 }

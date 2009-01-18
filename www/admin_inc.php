@@ -36,7 +36,7 @@ global $DB;
 	if( IsAdmin() ) {
 		return TRUE;
 	} else {
-		if( $_SESSION['user_level'] >= USER_MEMBER ) {
+		if( $_SESSION['user_level'] >= CPUSER_HIGHSCHOOL ) {
 			if( !is_numeric($cat_id) ) {
 				$DB->Query("SELECT id FROM admin_module WHERE name = '$cat_id'");
 				$line = $DB->NextRecord();

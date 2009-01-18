@@ -1,6 +1,7 @@
 <?php
 include("firstinclude.inc.php");
 
+define('CPUSER_HIGHSCHOOL', 8);
 define("CPUSER_STAFF", 16);
 define("CPUSER_SCHOOLADMIN", 64);
 define("CPUSER_WEBMASTER", 32);
@@ -297,6 +298,11 @@ global $DB;
 			FROM ccti_drawing_main, ccti_drawings
 			WHERE ccti_drawings.parent_id=ccti_drawing_main.id
 			AND ccti_drawings.id=".$drawing_id);
+	} elseif( $type == 'post' ) {
+		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id
+			FROM post_drawing_main, post_drawings
+			WHERE post_drawings.parent_id=post_drawing_main.id
+			AND post_drawings.id=".$drawing_id);
 	}
 	return $drawing;
 }
@@ -308,7 +314,18 @@ global $DB;
 function ShowDrawingList(&$mains, $type='pathways') {
 	global $DB;
 
-	$draw_page = $type=='pathways'?'drawings.php':'ccti_drawings.php';
+	switch( $type )
+	{
+		case 'pathways':
+			$draw_page = 'drawings.php';
+			break;
+		case 'ccti':
+			$draw_page = 'ccti_drawings.php';
+			break;
+		case 'post':
+			$draw_page = 'post_drawings.php';
+			break;		
+	}
 
 	if( count($mains) == 0 ) {
 		echo '<p>(none)</p>';
@@ -323,14 +340,12 @@ function ShowDrawingList(&$mains, $type='pathways') {
 		foreach( $mains as $mparent ) {
 			echo '<tr class="row0">';
 
-			echo '<td colspan="4"><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit">'.$mparent['name'].'</a></td>';
+			echo '<td><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16"/></a></td>';
+			echo '<td colspan="3" class="drawinglist_name">'.$mparent['name'].'</td>';
 			$created = ($mparent['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['created_by']));
 			$modified = ($mparent['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['last_modified_by']));
 			echo '<td>'.($mparent['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$mparent['last_modified'])).' <a href="/a/users.php?id='.$mparent['last_modified_by'].'">'.$modified['name'].'</a></td>';
 			echo '<td>'.($mparent['date_created']==''?'':$DB->Date("m/d/Y g:ia",$mparent['date_created'])).' <a href="/a/users.php?id='.$mparent['created_by'].'">'.$created['name'].'</a></td>';
-			//echo '<td>';
-			//	echo '<a href="/files/charts/svg/'.$mparent['code'].'.svg"><img src="/images/svg_icon.png" width="16" height="12"></a>';
-			//echo '</td>';
 
 			foreach( $mparent['drawings'] as $dr ) {
 				echo '<tr class="'.($dr['published']==1?'published':'row1').'">';
