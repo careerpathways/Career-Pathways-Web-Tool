@@ -91,10 +91,15 @@ require_once("inc.php");
 			});
 
 			$("#postFormSave").click(function(){
+				if($("#postTopRadio").attr("checked"))
+					$("#postFormContent, #postFormURL").val("");
+				else
+					$("#postFormSubject, #postFormNumber, #postFormTitle").val("");
+
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title" + $("#postFormTitle").val() + "=&content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val(),
+					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + $("#postFormTitle").val() + "&content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val(),
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
 						chGreybox.close();
@@ -157,14 +162,18 @@ require_once("inc.php");
 				$href = 'http://' . $_POST['href'];
 		}
 
-		$subject = (isset($_POST['course_subject']))?$_POST['course_subject']:'';
-		$number = (isset($_POST['course_number']))?$_POST['course_number']:'';
-		$title = (isset($_POST['course_title']))?$_POST['course_title']:'';
+		$subject = (isset($_POST['subject']))?$_POST['subject']:'';
+		$number = (isset($_POST['number']))?$_POST['number']:'';
+		$title = (isset($_POST['title']))?$_POST['title']:'';
 
 		// Update the database
 		$DB->Update('post_cell', array('course_subject'=>$subject, 'course_number'=>$number, 'course_title'=>$title, 'content'=>$_POST['content'], 'href' => $href), intval($id));
 
-		echo ($link?'<a href="javascript:void(0);">':'') . $_POST['content'] . ($link?'</a>':'');
+		// Decide what we should draw back to the page
+		if($subject != '' && $number != '' && $title != '')
+			echo '<a href="javascript:void(0);">' . $subject . ' ' . $number . '<br />' . $title . '</a>';
+		else
+			echo ($link?'<a href="javascript:void(0);">':'') . $_POST['content'] . ($link?'</a>':'');
 	}//end function commitCell
 	
 	function commitHead($id)
@@ -189,7 +198,7 @@ require_once("inc.php");
 			<div style="font-weight: bold;">Course Content:</div>
 			<input type="text" id="postFormContent" style="width: 400px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
 			<br /><br />
-			<div style="font-weight: bold;">Link this Content:</div>
+			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
 			<br /><br />
 			<div style="text-align: right;">
@@ -239,7 +248,7 @@ require_once("inc.php");
 						<div style="font-weight: bold;">Course Content:</div>
 						<input type="text" id="postFormContent" style="width: 340px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
 						<br /><br />
-						<div style="font-weight: bold;">Link this Content:</div>
+						<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 						URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
 					</td>
 				</tr>
