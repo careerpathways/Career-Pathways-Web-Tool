@@ -5,6 +5,12 @@ header("Content-type: text/css");
 body {
 	font-family: verdana, sans-serif;
 	font-size: 8pt;
+	margin: 0;
+	padding: 0;
+}
+
+a:link, a:hover, a:active, a:visited {
+	color: #001133;
 }
 
 td {
@@ -15,6 +21,11 @@ td {
 	height: 17px;
 	background-color: #649FC2;
 	margin-bottom: 10px;
+}
+
+table.post_chart {
+	border-collapse: collapse;
+	border-spacing: 0;
 }
 
 table.post_chart, table.post_chart td, table.post_chart th {
