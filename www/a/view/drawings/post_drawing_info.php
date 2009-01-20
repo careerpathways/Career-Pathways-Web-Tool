@@ -25,6 +25,9 @@ if( $id != "" ) {
 
 ?>
 
+<script type="text/javascript" src="/files/greybox.js"></script>
+<script type="text/javascript" src="/files/post_drawing_list.js"></script>
+
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
 <p>
@@ -143,3 +146,91 @@ if( $id != "" ) {
 </table>
 <?php } ?>
 </p>
+
+<script type="text/javascript" src="/common/URLfunctions1.js"></script>
+<script type="text/javascript">
+
+var MODE = '<?= $MODE ?>';
+
+var drawing_code = '<?= $drawing['code'] ?>';
+var schools = new Array(<?= count($schools) ?>);
+<?php
+$i=0;
+foreach( $schools as $sid=>$school ) {
+	echo 'schools['.$i.'] = '.$sid.";\n";
+	$i++;
+}
+?>
+
+var published_link = "<?= $published_link ?>";
+var xml_link = "<?= $xml_link ?>";
+var accessible_link = "<?= $accessible_link ?>";
+
+function checkName(title) {
+	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+}
+
+function verifyName(result) {
+	if( result == 0 ) {
+		getLayer('checkNameResponse').innerHTML = 'There is already a drawing by that name. Choose a different name.';
+	} else {
+		getLayer('checkNameResponse').innerHTML = '';
+	}
+}
+
+function savetitle() {
+	var title = getLayer('drawing_title');
+	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+}
+
+function submitform() {
+	var title = getLayer('drawing_title');
+	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+}
+
+function verifyNameSubmitNew(result) {
+	if( result == 0 ) {
+		verifyName(0);
+	} else {
+		getLayer('drawing_form').submit();
+	}
+}
+
+function verifyNameSubmit(result) {
+	if( result == 0 ) {
+		verifyName(0);
+	} else {
+		var title = getLayer('drawing_title');
+		ajaxCallback(cbNameChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
+	}
+}
+
+function cbNameChanged(drawingCode) {
+	drawing_code = drawingCode;
+	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
+	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
+	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
+	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
+	getLayer('title_edit').style.display = 'none';
+	getLayer('title_fixed').style.display = 'block';
+}
+
+function showTitleChange() {
+	getLayer('title_edit').style.display = 'block';
+	getLayer('title_fixed').style.display = 'none';
+}
+
+function preview_drawing(code,version) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600);
+}
+
+<?php if( CanDeleteDrawing($drawing) ) { ?>
+function deleteConfirm() {
+	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
+}
+function doDelete() {
+	getLayer('delete_form').submit();
+}
+<?php } ?>
+
+</script>

@@ -280,7 +280,7 @@ function CleanDrawingCode($code) {
 
 function DrawingCodeAlreadyExists($code, $drawing_id, $mode) {
 global $DB;
-	$num = $DB->SingleQuery("SELECT COUNT(*) AS num FROM ".($mode=='pathways'?'drawing_main':'ccti_drawing_main')."
+	$num = $DB->SingleQuery("SELECT COUNT(*) AS num FROM ".($mode=='pathways'?'drawing_main':'post_drawing_main')."
 		WHERE code='".$code."'
 		AND id != ".$drawing_id);
 	return $num['num'] == 1;

@@ -2,6 +2,7 @@
 
 $main_table = 'post_drawing_main';
 $drawings_table = 'post_drawings';
+
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%/##.html';
@@ -67,13 +68,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 		</div>
 	</td>
 </tr>
-<?php if( $drawing['published'] ) {
-	?>
-	<tr>
-	<th>Embed Code</th>
-	<td><textarea style="width:560px;height:50px;" class="code"><?= htmlspecialchars($embed_code) ?></textarea></td>
-	</tr>
-<?php } ?>
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
