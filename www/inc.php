@@ -344,8 +344,8 @@ function ShowDrawingList(&$mains, $type='pathways') {
 			echo '<td colspan="3" class="drawinglist_name">'.$mparent['name'].'</td>';
 			$created = ($mparent['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['created_by']));
 			$modified = ($mparent['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['last_modified_by']));
-			echo '<td>'.($mparent['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$mparent['last_modified'])).' <a href="/a/users.php?id='.$mparent['last_modified_by'].'">'.$modified['name'].'</a></td>';
-			echo '<td>'.($mparent['date_created']==''?'':$DB->Date("m/d/Y g:ia",$mparent['date_created'])).' <a href="/a/users.php?id='.$mparent['created_by'].'">'.$created['name'].'</a></td>';
+			echo '<td>'.($mparent['last_modified']==''?'':$DB->Date("n/d/Y g:ia",$mparent['last_modified'])).' <a href="/a/users.php?id='.$mparent['last_modified_by'].'">'.$modified['name'].'</a></td>';
+			echo '<td>'.($mparent['date_created']==''?'':$DB->Date("n/d/Y g:ia",$mparent['date_created'])).' <a href="/a/users.php?id='.$mparent['created_by'].'">'.$created['name'].'</a></td>';
 
 			foreach( $mparent['drawings'] as $dr ) {
 				echo '<tr class="'.($dr['published']==1?'published':'row1').'">';
@@ -377,8 +377,8 @@ function ShowDrawingList(&$mains, $type='pathways') {
 
 					$created = ($dr['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$dr['created_by']));
 					$modified = ($dr['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$dr['last_modified_by']));
-					echo '<td>'.($dr['last_modified']==''?'':$DB->Date("m/d/Y g:ia",$dr['last_modified'])).' <a href="/a/users.php?id='.$dr['last_modified_by'].'">'.$modified['name'].'</a></td>';
-					echo '<td>'.($dr['date_created']==''?'':$DB->Date("m/d/Y g:ia",$dr['date_created'])).' <a href="/a/users.php?id='.$dr['created_by'].'">'.$created['name'].'</a></td>';
+					echo '<td>'.($dr['last_modified']==''?'':$DB->Date("n/d/Y g:ia",$dr['last_modified'])).' <a href="/a/users.php?id='.$dr['last_modified_by'].'">'.$modified['name'].'</a></td>';
+					echo '<td>'.($dr['date_created']==''?'':$DB->Date("n/d/Y g:ia",$dr['date_created'])).' <a href="/a/users.php?id='.$dr['created_by'].'">'.$created['name'].'</a></td>';
 
 					//echo '<td>';
 					//	echo '<a href="/files/charts/svg/'.$dr['id'].'.svg"><img src="/images/svg_icon.png" width="16" height="12"></a>';

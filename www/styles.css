@@ -61,6 +61,7 @@ h3
   font-family: verdana, tahoma, arial, sans-serif;
   font-size: 10pt;
   color:#<?= $BLUE; ?>;
+  margin-bottom: 2px;
 }
 
 h4
@@ -717,7 +718,7 @@ a.chart_header {
 	height: 600px;
 }
 
-#drawing_list .drawinglist_name {
+.drawinglist_name {
 	font-size: 1.2em;
 }
 #drawing_list a {

@@ -180,7 +180,6 @@ function showVersion() {
 		$TEMPLATE->addl_scripts[] = '/common/jquery-1.2.6.pack.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
-//		$TEMPLATE->addl_scripts[] = '/files/greybox/greybox.js';
 		$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	}
 	
@@ -203,7 +202,7 @@ function showVersion() {
 	
 	echo '<div id="canvas">';
 	$post->display();
-	echo '</div>'; // canvas
+	echo '</div> <!-- end canvas -->';
 	
 	PrintFooter();
 
@@ -348,14 +347,14 @@ function showNewDrawingForm() {
 
 function ShowDrawingForm($id) {
 	global $DB, $MODE;
-	require('view/drawings/drawing_info.php');
+	require('view/drawings/post_drawing_info.php');
 }
 
 function showVersionInfo() {
 	global $DB, $MODE;
 	PrintHeader();
 	$version_id = Request('version_id');
-	require('view/drawings/version_info.php');
+	require('view/drawings/post_version_info.php');
 	PrintFooter();
 }
 

@@ -209,123 +209,165 @@ switch( Request('mode') ) {
 		break;
 
 	case 'drawing_list':
-
-		if( Request('search') == "" ) {
-			$search = array();
-			$fields = array('schools','people','categories');
-			$field_sql = array(
-				'schools'=>array('school_id'),
-				'people'=>array('created_by','last_modified_by'),
-				'categories'=>array('name')
-			);
-			foreach( $fields as $f ) {
-				if( Request($f) ) {
-					$search[$f] = explode(',',Request($f));
-				}
-			}
-
-			$where = "";
-			$where2 = "";
-			if( count($search) > 0 ) {
-				foreach( $search as $field=>$items ) {
-					switch( $field ) {
-						case 'schools':
-						case 'categories':
-							$where .= " AND (";
-							$i=0;
-							foreach( $items as $s ) {
-								foreach( $field_sql[$field] as $sfield ) {
-									if( $i > 0 ) {
-										$where .= ' OR ';
-									}
-									$where .= $sfield.'="'.$s.'" ';
-									$i++;
-								}
-							}
-							$where .= ") ";
-							break;
-						case 'people':
-							$where .= "AND ".$main_table.".id IN (SELECT parent_id FROM ".$version_table." WHERE (";
-							$where2 .= " AND (";
-							$i=0;
-							foreach( $items as $s ) {
-								foreach( $field_sql[$field] as $sfield ) {
-									if( $i > 0 ) {
-										$where .= ' OR ';
-										$where2 .= ' OR ';
-									}
-									$where .= $sfield.'="'.$s.'" ';
-									$where2 .= $sfield.'="'.$s.'" ';
-									$i++;
-								}
-							}
-							$where .= "))";
-							$where2 .= ")";
-							break;
-					}
-				}
-			}
-
-			$mains = $DB->MultiQuery("
-				SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
-					created_by, last_modified_by, ".$main_table.".date_created, last_modified, school_id
-				FROM ".$main_table.", schools
-				WHERE school_id=schools.id
-					$where
-				ORDER BY name");
-
-			foreach( $mains as &$parent ) {
-				$drawings = $DB->ArrayQuery("
-					SELECT *
-					FROM ".$version_table."
-					WHERE ".$version_table.".parent_id=".$parent['id']."
-						AND deleted=0
-						$where2
-					ORDER BY version_num");
-				$parent['drawings'] = $drawings;
-			}
-		} else {
-
-			$mains = $DB->MultiQuery("
-				SELECT m.id, s.school_name, CONCAT(school_abbr,': ',IF(m.name='','(no title)',m.name)) AS name, m.code, GROUP_CONCAT(DISTINCT(d.id)) AS drawing_list,
-					m.created_by, m.last_modified_by, m.date_created, m.last_modified, m.school_id
-				FROM objects AS o
-				JOIN ".$version_table." AS d ON o.drawing_id=d.id
-				JOIN ".$main_table." AS m ON d.parent_id=m.id
-				JOIN schools AS s ON m.school_id=s.id
-				LEFT JOIN users AS dum ON dum.id=d.last_modified_by
-				LEFT JOIN users AS duc ON duc.id=d.created_by
-				LEFT JOIN users AS mum ON mum.id=m.last_modified_by
-				LEFT JOIN users AS muc ON muc.id=m.created_by
-				WHERE d.deleted=0
-					AND (INSTR(content,'".$DB->Safe(Request('search'))."')
-						OR INSTR(m.name,'".$DB->Safe(Request('search'))."')
-						OR INSTR(s.school_name,'".$DB->Safe(Request('search'))."')
-						OR INSTR(s.school_abbr,'".$DB->Safe(Request('search'))."')
-						OR INSTR(s.school_abbr,'".$DB->Safe(Request('search'))."')
-						OR INSTR(CONCAT(dum.first_name,' ',dum.last_name),'".$DB->Safe(Request('search'))."')
-						OR INSTR(CONCAT(duc.first_name,' ',duc.last_name),'".$DB->Safe(Request('search'))."')
-						OR INSTR(CONCAT(mum.first_name,' ',dum.last_name),'".$DB->Safe(Request('search'))."')
-						OR INSTR(CONCAT(muc.first_name,' ',duc.last_name),'".$DB->Safe(Request('search'))."')
-					)
-				GROUP BY m.id
-				ORDER BY version_num");
-
-			foreach( $mains as &$parent ) {
-				foreach( explode(',',$parent['drawing_list']) as $d_id ) {
-					$drawing = $DB->SingleQuery("
-						SELECT *
-						FROM ".$version_table."
-						WHERE id=".$d_id);
-					$parent['drawings'][] = $drawing;
-				}
-				usort($parent['drawings'],'drawing_sort_by_version');
-			}
-
+	
+		if( Request('type') == 'post' )
+		{
+			$types = array('HS', 'CC');
+		}
+		else
+		{
+			$types = array('Pathways');
 		}
 
-		ShowDrawingList($mains, Request('type'));
+		foreach( $types as $t )
+		{
+			if( $t == 'HS' || $t == 'CC' )
+			{
+				$post_where = ' AND `type`="'.$t.'"';
+			}
+			else
+			{
+				$post_where = '';
+			}
 
+			if( Request('search') == "" ) {
+				$search = array();
+				$fields = array('schools','people','categories');
+				$field_sql = array(
+					'schools'=>array('school_id'),
+					'people'=>array('created_by','last_modified_by'),
+					'categories'=>array('name')
+				);
+				foreach( $fields as $f ) {
+					if( Request($f) ) {
+						$search[$f] = explode(',',Request($f));
+					}
+				}
+	
+				$where = "";
+				$where2 = "";
+				if( count($search) > 0 ) {
+					foreach( $search as $field=>$items ) {
+						switch( $field ) {
+							case 'schools':
+							case 'categories':
+								$where .= " AND (";
+								$i=0;
+								foreach( $items as $s ) {
+									foreach( $field_sql[$field] as $sfield ) {
+										if( $i > 0 ) {
+											$where .= ' OR ';
+										}
+										$where .= $sfield.'="'.$s.'" ';
+										$i++;
+									}
+								}
+								$where .= ") ";
+								break;
+							case 'people':
+								$where .= "AND ".$main_table.".id IN (SELECT parent_id FROM ".$version_table." WHERE (";
+								$where2 .= " AND (";
+								$i=0;
+								foreach( $items as $s ) {
+									foreach( $field_sql[$field] as $sfield ) {
+										if( $i > 0 ) {
+											$where .= ' OR ';
+											$where2 .= ' OR ';
+										}
+										$where .= $sfield.'="'.$s.'" ';
+										$where2 .= $sfield.'="'.$s.'" ';
+										$i++;
+									}
+								}
+								$where .= "))";
+								$where2 .= ")";
+								break;
+						}
+					}
+				}
+	
+				$mains = $DB->MultiQuery("
+					SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
+						created_by, last_modified_by, ".$main_table.".date_created, last_modified, school_id
+					FROM ".$main_table.", schools
+					WHERE school_id=schools.id
+						$where $post_where
+					ORDER BY name");
+	
+				foreach( $mains as &$parent ) {
+					$drawings = $DB->ArrayQuery("
+						SELECT *
+						FROM ".$version_table."
+						WHERE ".$version_table.".parent_id=".$parent['id']."
+							AND deleted=0
+							$where2
+						ORDER BY version_num");
+					$parent['drawings'] = $drawings;
+				}
+			} else {
+	
+				if( $t == 'Pathways' )
+				{
+					$objects_table = 'objects';
+					$post_ors = '';
+				}
+				else
+				{
+					$objects_table = 'post_cell';
+					$post_ors = "OR INSTR(o.course_subject, '".$DB->Safe(Request('search'))."')
+						OR INSTR(o.course_number, '".$DB->Safe(Request('search'))."')
+						OR INSTR(o.course_title, '".$DB->Safe(Request('search'))."')";
+				}
+	
+				$mains = $DB->MultiQuery("
+					SELECT m.id, s.school_name, CONCAT(school_abbr,': ',IF(m.name='','(no title)',m.name)) AS name, m.code, GROUP_CONCAT(DISTINCT(d.id)) AS drawing_list,
+						m.created_by, m.last_modified_by, m.date_created, m.last_modified, m.school_id
+					FROM ".$objects_table." AS o
+					JOIN ".$version_table." AS d ON o.drawing_id=d.id
+					JOIN ".$main_table." AS m ON d.parent_id=m.id
+					JOIN schools AS s ON m.school_id=s.id
+					LEFT JOIN users AS dum ON dum.id=d.last_modified_by
+					LEFT JOIN users AS duc ON duc.id=d.created_by
+					LEFT JOIN users AS mum ON mum.id=m.last_modified_by
+					LEFT JOIN users AS muc ON muc.id=m.created_by
+					WHERE d.deleted=0
+						AND (INSTR(o.content,'".$DB->Safe(Request('search'))."')
+							$post_ors
+							OR INSTR(m.name,'".$DB->Safe(Request('search'))."')
+							OR INSTR(s.school_name,'".$DB->Safe(Request('search'))."')
+							OR INSTR(s.school_abbr,'".$DB->Safe(Request('search'))."')
+							OR INSTR(s.school_abbr,'".$DB->Safe(Request('search'))."')
+							OR INSTR(CONCAT(dum.first_name,' ',dum.last_name),'".$DB->Safe(Request('search'))."')
+							OR INSTR(CONCAT(duc.first_name,' ',duc.last_name),'".$DB->Safe(Request('search'))."')
+							OR INSTR(CONCAT(mum.first_name,' ',dum.last_name),'".$DB->Safe(Request('search'))."')
+							OR INSTR(CONCAT(muc.first_name,' ',duc.last_name),'".$DB->Safe(Request('search'))."')
+						)
+						$post_where
+					GROUP BY m.id
+					ORDER BY version_num");
+	
+				foreach( $mains as &$parent ) {
+					foreach( explode(',',$parent['drawing_list']) as $d_id ) {
+						$drawing = $DB->SingleQuery("
+							SELECT *
+							FROM ".$version_table."
+							WHERE id=".$d_id);
+						$parent['drawings'][] = $drawing;
+					}
+					usort($parent['drawings'],'drawing_sort_by_version');
+				}
+	
+			}
+	
+			if( $t == 'HS' )
+				echo '<h3>High School Programs</h3>';
+			
+			if( $t == 'CC' )
+				echo '<h3>Community College Pathways</h3>';
+	
+			ShowDrawingList($mains, Request('type'));
+		}
+		
 		break;
 }
 

@@ -5,8 +5,8 @@
 	<?php
 		$versions = $DB->MultiQuery("
 			SELECT *
-			FROM ".$drawings_table."
-			WHERE ".$drawings_table.".parent_id=".$drawing['id']."
+			FROM post_drawings
+			WHERE post_drawings.parent_id=".$drawing['id']."
 				AND deleted=0
 			ORDER BY version_num");
 		foreach( $versions as $v ) {
@@ -19,7 +19,7 @@
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
-					echo '<td>'.$v['version_num'].' <a href="/a/'.$php_page.'?action=version_info&version_id='.$v['id'].'">info</a>'.($v['published']?' (Published)':'').'</td>';
+					echo '<td>'.$v['version_num'].' <a href="/a/post_drawings.php?action=version_info&version_id='.$v['id'].'">info</a>'.($v['published']?' (Published)':'').'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
@@ -41,7 +41,8 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">preview</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="copy_popup.php?mode='.$MODE.'&version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
+						#echo '<a href="copy_popup.php?mode='.$MODE.'&version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
+						echo '<span style="color:#999999">copy this version</span>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

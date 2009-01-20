@@ -217,7 +217,19 @@ class POSTChart_CC extends POSTChart
 
 	protected function _cellContent(&$cell)
 	{
-		return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title . '</a>';
+		if( $cell->course_subject )
+		{
+			return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title . '</a>';
+		}
+		else
+		{
+			// Is there a link?
+			$link = ($cell->href != '');
+	
+			// Draw the item inside the post_cell
+			return ($link?'<a href="' . $cell->href . '">':'') . htmlentities($cell->content) . ($link?'</a>':'');
+
+		}
 	}
 }
 

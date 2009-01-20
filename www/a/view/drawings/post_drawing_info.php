@@ -1,14 +1,13 @@
 <?php
 
-$php_page = 'drawings.php';
-$main_table = 'drawing_main';
-$drawings_table = 'drawings';
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.html';
-$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.xml';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%.html';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.html';
+$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.xml';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%.html';
 
-$drawing = $DB->LoadRecord($main_table,$id);
 
+$drawing = $DB->LoadRecord('post_drawing_main',$id);
+
+// force non-admins to the school of this drawing to prevent attacks
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
 if( IsAdmin() ) {
 	if( $id != "" ) {
@@ -20,16 +19,11 @@ if( IsAdmin() ) {
 	$school_id = $_SESSION['school_id'];
 }
 
-$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
-
 if( $id != "" ) {
-	$published = $DB->SingleQuery("SELECT * FROM $drawings_table WHERE published=1 AND parent_id=".$drawing['id']);
+	$published = $DB->SingleQuery("SELECT * FROM post_drawings WHERE published=1 AND parent_id=".$drawing['id']);
 }
 
 ?>
-<script type="text/javascript" src="/files/greybox.js"></script>
-<script type="text/javascript" src="/files/drawing_list.js"></script>
-<script type="text/javascript" src="/c/drawings.js"></script>
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
@@ -63,7 +57,9 @@ if( $id != "" ) {
 </table>
 <input type="hidden" name="id" value="">
 </form>
+
 <?php } else { ?>
+
 <table>
 <tr>
 	<th>Title</th>
@@ -91,12 +87,6 @@ if( $id != "" ) {
 			echo 'No versions have been published yet.';
 		}
 	?>
-	</td>
-</tr>
-<tr>
-	<th>Embed Code</th>
-	<td>
-		<textarea style="width:560px;height:40px;" class="code" id="embed_code"><?= htmlspecialchars(str_replace('%%',$drawing['code'],$embed_code)) ?></textarea>
 	</td>
 </tr>
 <tr>
@@ -129,13 +119,7 @@ if( $id != "" ) {
 	</td>
 </tr>
 <?php
-	require('version_list.php');
-	/*
-	who can delete drawings?
-		1. admins
-		2. school admins & webmasters at the same school
-		3. the owner of the drawing
-	*/
+	require('post_version_list.php');
 ?>
 <tr>
 	<th>Delete</th>
@@ -159,89 +143,3 @@ if( $id != "" ) {
 </table>
 <?php } ?>
 </p>
-
-<script type="text/javascript" src="/common/URLfunctions1.js"></script>
-<script type="text/javascript">
-
-var MODE = '<?= $MODE ?>';
-
-var drawing_code = '<?= $drawing['code'] ?>';
-var schools = new Array(<?= count($schools) ?>);
-<?php
-$i=0;
-foreach( $schools as $sid=>$school ) {
-	echo 'schools['.$i.'] = '.$sid.";\n";
-	$i++;
-}
-?>
-
-var published_link = "<?= $published_link ?>";
-var xml_link = "<?= $xml_link ?>";
-var accessible_link = "<?= $accessible_link ?>";
-
-function checkName(title) {
-	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
-}
-
-function verifyName(result) {
-	if( result == 0 ) {
-		getLayer('checkNameResponse').innerHTML = 'There is already a drawing by that name. Choose a different name.';
-	} else {
-		getLayer('checkNameResponse').innerHTML = '';
-	}
-}
-
-function savetitle() {
-	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
-}
-
-function submitform() {
-	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
-}
-
-function verifyNameSubmitNew(result) {
-	if( result == 0 ) {
-		verifyName(0);
-	} else {
-		getLayer('drawing_form').submit();
-	}
-}
-
-function verifyNameSubmit(result) {
-	if( result == 0 ) {
-		verifyName(0);
-	} else {
-		var title = getLayer('drawing_title');
-		ajaxCallback(cbNameChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
-	}
-}
-
-function cbNameChanged(drawingCode) {
-	drawing_code = drawingCode;
-	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('embed_code').value = '<?= $embed_code ?>';
-	getLayer('embed_code').value = getLayer('embed_code').value.replace(/%%/,drawingCode);
-	getLayer('title_edit').style.display = 'none';
-	getLayer('title_fixed').style.display = 'block';
-}
-
-function showTitleChange() {
-	getLayer('title_edit').style.display = 'block';
-	getLayer('title_fixed').style.display = 'none';
-}
-
-<?php if( CanDeleteDrawing($drawing) ) { ?>
-function deleteConfirm() {
-	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
-}
-function doDelete() {
-	getLayer('delete_form').submit();
-}
-<?php } ?>
-
-</script>
