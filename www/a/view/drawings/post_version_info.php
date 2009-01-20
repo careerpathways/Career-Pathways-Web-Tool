@@ -74,6 +74,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 		<a href="<?= $url ?>"><?= $url ?></a>
 	</td>
 </tr>
+<!--
 <tr>
 	<th valign="top">XML</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
@@ -84,10 +85,12 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<th valign="top">Accessible</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
 		<a href="<?= $url ?>"><?= $url ?></a>
-		<br>
-		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
-		<br>
 	</td>
+</tr>
+-->
+<tr>
+	<td>&nbsp;</td>
+	<td><!--These are permanent links -->This is a permanent link to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.</td>
 </tr>
 <?php
 	/* who can delete versions?

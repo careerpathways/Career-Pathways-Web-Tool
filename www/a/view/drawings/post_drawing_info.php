@@ -101,6 +101,7 @@ if( $id != "" ) {
 		?></div>
 	</td>
 </tr>
+<!--
 <tr>
 	<th valign="top">XML</th>
 	<td>
@@ -120,6 +121,11 @@ if( $id != "" ) {
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
 		<br>
 	</td>
+</tr>
+-->
+<tr>
+	<td>&nbsp;</td>
+	<td><!--These links -->This link will always link to the <b>published</b> version of this drawing.</td>
 </tr>
 <?php
 	require('post_version_list.php');
