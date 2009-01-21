@@ -9,7 +9,7 @@ abstract class POSTChart
 	protected $_content;
 
 	protected $_cols;
-	
+
 	// Should we draw from an import array?
 	protected $_drawFromArray = FALSE;
 
@@ -17,8 +17,8 @@ abstract class POSTChart
 	public static function create($id)
 	{
 		global $DB;
-		
-		$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.school_name, d.num_rows, d.id
+
+		$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.school_name, d.num_rows, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -154,7 +154,12 @@ abstract class POSTChart
 			echo '</tr>', "\n";
 		}
 		echo '<tr>', "\n";
-			echo '<td class="post_footer" colspan="' . $this->footerCols . '">footer</td>', "\n";
+
+		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
+			. ($this->_drawing['footer_link']?'<a href="javascript:void(0);">':'')
+			. $this->_drawing['footer_text']
+			. ($this->_drawing['footer_link']?'</a>':'')
+			. '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '</table>', "\n";
 	}

@@ -5,7 +5,7 @@ $(document).ready(function()
 {
 	bindEditableCells();
 	
-	$(".post_head_main:not(.post_head_noClick), .post_cell").css({cursor: "pointer"});
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").css({cursor: "pointer"});
 	$(".post_cell a").attr("href", "javascript:void(0);");
 });
 
@@ -16,7 +16,7 @@ $(document).ready(function()
 function bindEditableCells()
 {
 	// Set up the class to update on hover
-	$(".post_head_main:not(.post_head_noClick), .post_cell").hover(function(){
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").hover(function(){
 		$(this).addClass("postCellHover");
 	},function(){
 		$(this).removeClass("postCellHover");
@@ -40,6 +40,17 @@ function bindEditableCells()
 
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "cell", id: cellID},
+			function(data){
+				chGreybox.create(data, 450, 300);
+		});
+	});
+	$(".post_footer").click(function(){
+		// Split apart the id into meaningful components
+		var footerID = $(this).attr("id").split("_");
+		footerID = footerID[2];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "footer", id: footerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
 		});

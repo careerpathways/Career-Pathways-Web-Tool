@@ -17,6 +17,8 @@ require_once("inc.php");
 				printCellForm($_GET['id']);
 			elseif($_GET['type'] == 'head')
 				printHeadForm($_GET['id']);
+			elseif($_GET['type'] == 'footer')
+				printFooterForm($_GET['id']);
 			else
 				die('<div class="greyboxError">Misunderstood Action Type</div>');
 ?>
@@ -29,6 +31,8 @@ require_once("inc.php");
 				commitCell($_GET['id']);
 			elseif($_GET['type'] == 'head')
 				commitHead($_GET['id']);
+			elseif($_GET['type'] == 'footer')
+				commitFooter($_GET['id']);
 			else
 				die('<div class="greyboxError">Misunderstood Commit Type</div>');
 		break;
@@ -145,6 +149,35 @@ require_once("inc.php");
 		echo ob_get_clean();
 	}//end function printHeadForm
 
+	function printFooterForm( $id)
+	{
+		global $DB;
+
+		$cell = $DB->SingleQuery("SELECT `footer_text`, `footer_link`
+			FROM `post_drawings`
+			WHERE `id` = '" . intval($id) . "'");
+
+		// Draw the Footer form
+		ob_start();
+
+		echo getFooterHTML($cell);
+?>
+		<script language="JavaScript" type="text/javascript">
+			$("#postFormSave").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/a/postserv.php?mode=commit&type=footer&id=<?=$id?>",
+					data: "text=" + $("#postFormContent").val() + "&link=" + $("#postFormURL").val(),
+					success: function(data){
+						$("#post_footer_<?=$id?>").html(data);
+						chGreybox.close();
+					}
+				});
+			});
+		</script>
+<?php
+	}//end function printFooterForm
+
 	/**************************/
 	/****** COMMIT CODE *******/
 	/**************************/
@@ -182,6 +215,23 @@ require_once("inc.php");
 		$DB->Update('post_col', array('title' => $_POST['title']), intval($id));
 		echo $_POST['title'];
 	}//end function commitHeader
+
+	function commitFooter($id)
+	{
+		global $DB;
+
+		$href = $_POST['link'];
+		$link = FALSE;
+		if(isset($_POST['link']) && $_POST['link'] != '')
+		{
+			$link = TRUE;
+			if(substr($href, 0, 7) != 'http://' && substr($href, 0, 8) != 'https://')
+				$href = 'http://' . $_POST['link'];
+		}
+
+		$DB->Update('post_drawings', array('footer_text' => $_POST['text'], 'footer_link'=>$href), intval($id));
+		echo ($link?'<a href="javascript:void(0);">':'') . $_POST['text'] . ($link?'</a>':'');
+	}//end function commitFooter
 
 	/*****************************/
 	/******* FORM PRINTERS *******/
@@ -261,4 +311,26 @@ require_once("inc.php");
 <?php
 		return ob_get_clean();	
 	}//end function printCCFormHTML
+
+	function getFooterHTML(&$footer = NULL)
+	{
+		if(!$footer)
+			$footer = array('text'=>'', 'link'=>'');
+
+		ob_start();
+?>
+		<form action="javascript:void(0);">
+			<div style="font-weight: bold;">Footer Content:</div>
+			<input type="text" id="postFormContent" style="width: 400px; border: 1px #AAA solid;" value="<?=$footer['footer_text']?>" />
+			<br /><br />
+			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
+			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$footer['footer_link']?>" />
+			<br /><br />
+			<div style="text-align: right;">
+				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
+			</div>
+		</form>
+<?php
+		return ob_get_clean();
+	}//end function getFooterHTML
 ?>
