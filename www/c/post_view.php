@@ -34,7 +34,6 @@ if( $drawing_id == 0 ) {
 	die();
 }
 
-
 $page_title = 'test';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -48,7 +47,7 @@ $page_title = 'test';
 		<img src="/files/titles/<?=base64_encode($drawing['school_abbr'])?>/<?=base64_encode($page_title)?>.png" alt="Career POST" />
 	</div>
 <?php
-	$post = POSTChart::Create($drawing_id);
+	$post = POSTChart::create($drawing_id);
 	$post->display();
 ?>
 </body>

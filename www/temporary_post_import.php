@@ -2,7 +2,7 @@
 chdir("..");
 require_once("inc.php");
 
-
+$rollingIDs = 0;
 
 $ord['first'] = 1;
 $ord['second'] = 2;
@@ -58,7 +58,7 @@ while( $gradeFound == false && $rowI < count($excelData) )
 
 		for( $j = 2; $j < count($row); $j++ )
 		{
-			if( trim($row[$j]) != '' ) $hsHeaders[] = $row[$j];
+			if( trim($row[$j]) != '' ) $hsHeaders[] = array('title'=>$row[$j], 'id'=>++$rollingIDs);
 		}
 
 	}
@@ -110,7 +110,7 @@ while( !$hsDone && $rowI < count($excelData) )
 			// This 'if' shouldn't fire, but just in case...
 			if( strtolower($row[$i]) == 'high school diploma' ) $row[$i] = '';
 			
-			$hsContent[$hsRowGradeFound][] = $row[$i];
+			$hsContent[$hsRowGradeFound][$i - 2] = array('id'=>++$rollingIDs, 'content'=>$row[$i], 'row_num'=>$rowI - 7, 'col_num'=>$i);
 		}
 	}
 	else
@@ -119,7 +119,7 @@ while( !$hsDone && $rowI < count($excelData) )
 		// We're going to just have to guess about which columns they go in, since we can't know for sure w/o col/rowspan data.
 		for( $i = $lastContentStart; $i < count($row) && $i-$hsContentStart < count($hsHeaders); $i++ )
 		{
-			$hsContent['extra'][] = $row[$i];
+			$hsContent['extra'][] = array('id'=>++$rollingIDs, 'content'=>$row[$i], 'row_num'=>$rowI, 'col_num'=>$i);
 		}
 		
 		// Force the end of the HS section now
@@ -179,7 +179,7 @@ for( $rowI; $rowI < count($excelData); $rowI++ )
 			$lastTerm = $currentTerm;
 		}
 
-		foreach( $row as $cell )
+		foreach( $row as $i=>$cell )
 		{
 			$cell = trim($cell);
 			if( !preg_match('/([a-z]+)\s+term/i', $cell) )
@@ -188,9 +188,12 @@ for( $rowI; $rowI < count($excelData); $rowI++ )
 				if( $prg = preg_match('/^([a-z]{2,4}) ([0-9]{3}[a-z]{0,1}) (.+)$/i', $cell, $match) )
 				{
 					$goodCell = array(
+						'id' => ++$rollingIDs,
 						'course_subject' => $match[1],
 						'course_number' => $match[2],
-						'course_title' => $match[3]
+						'course_title' => $match[3],
+						'row_num' => $currentTerm,
+						'col_num' => $i
 					);
 					$ccContent[$ccI][$currentTerm][] = $goodCell;
 				}
@@ -203,7 +206,10 @@ for( $rowI; $rowI < count($excelData); $rowI++ )
 					  )
 					{
 						$goodCell = array(
-							'content' => $cell
+							'id' => ++$rollingIDs,
+							'content' => $cell,
+							'row_num' => $currentTerm,
+							'col_num' => $i
 						);
 						$ccContent[$ccI][$currentTerm][] = $goodCell;
 					}
@@ -221,6 +227,7 @@ $return = array();
 $hsDrawing['headers'] = $hsHeaders;
 $hsDrawing['content'] = $hsContent;
 $hsDrawing['type'] = 'HS';
+$hsDrawing['drawing'] = array('num_rows'=>count($hsContent), 'name'=>'Import Preview (HS)', 'school_name'=>'High School');
 
 $return[] = $hsDrawing;
 
@@ -230,11 +237,37 @@ foreach( $ccContent as $cc )
 	$ccDrawing['headers'] = array_fill(0, count($cc[1]), '');
 	$ccDrawing['content'] = $cc;
 	$ccDrawing['type'] = 'CC';
+
+	$ccDrawing['drawing'] = array('num_rows'=>count($cc), 'name'=>'Import Preview (CC)', 'school_name'=>'Community College');
+
 	$return[] = $ccDrawing;
 }
 
-pa($return);
-
-
+$page_title = 'Import Tool';
 
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title><?=$page_title?></title>
+	<link rel="stylesheet" type="text/css" href="/c/pstyle.css" />
+</head>
+<body>
+	<div id="post_title">
+		<img src="/files/titles/<?=base64_encode('Import Tool')?>/<?=base64_encode($page_title)?>.png" alt="Career POST" />
+	</div>
+<?php
+	include('POSTChart.inc.php');
+
+	$post = POSTChart::createFromArray($return[0]['type'], $return[0]);
+	$post->display();
+	?><br /><br /><br /><?php
+	$post = POSTChart::createFromArray($return[1]['type'], $return[1]);
+	$post->display();
+	?><br /><br /><br /><?php
+	$post = POSTChart::createFromArray($return[2]['type'], $return[2]);
+	$post->display();
+
+?>
+</body>
+</html>

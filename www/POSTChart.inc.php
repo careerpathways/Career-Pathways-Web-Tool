@@ -9,7 +9,9 @@ abstract class POSTChart
 	protected $_content;
 
 	protected $_cols;
-	protected $_cells;
+	
+	// Should we draw from an import array?
+	protected $_drawFromArray = FALSE;
 
 	// factory method to create an object of the correct type
 	public static function create($id)
@@ -34,14 +36,37 @@ abstract class POSTChart
 		}	
 	}
 
+	public static function createFromArray($chartType, &$array)
+	{
+		//sanity checking
+		if($chartType != 'HS' && $chartType != 'CC')
+			throw new Exception('Invalid Chart Type Initialized.');
 
-	public function __construct($drawing)
+		// Create the appropriate POSTChart type
+		if($chartType == 'HS')
+			$post = new POSTChart_HS(array('id'=>'temp1234'), $array);
+		else
+			$post = new POSTChart_CC(array('id'=>'temp1234'), $array);
+
+		return $post;
+	}
+
+
+	public function __construct($drawing, $array = null)
 	{
 		global $DB;
-	
+
 		$this->_id = $drawing['id'];
 		$this->_drawing = $drawing;
 
+		if(is_array($array))
+		{
+			$this->_drawFromArray = TRUE;
+			$this->_drawing = $array['drawing'];
+			$this->_content = $array['content'];
+			$this->_cols = $array['headers'];
+			$this->_loadDataFromArray();
+		}
 	}
 
 	// create an empty $_cells array of the appropriate size
@@ -62,7 +87,7 @@ abstract class POSTChart
 		// create the empty 2D array
 		for( $row = 1; $row <= $num_rows; $row++ )
 		{
-			$this->_cells[$row] = array();
+			$this->_content[$row] = array();
 			foreach( $cols as $col )
 			{
 				$this->_content[$row][$col['num']] = new POSTCell();
@@ -71,7 +96,7 @@ abstract class POSTChart
 	}
 
 
-	// populate the $_cells array from the DB
+	// populate the $_content array from the DB
 	private function _loadData()
 	{
 		global $DB;
@@ -89,29 +114,49 @@ abstract class POSTChart
 		}
 	}
 
+	// populate the $_content from an array
+	private function _loadDataFromArray()
+	{
+		$tempArray = array();
+
+		foreach($this->_content as $row)
+			foreach($row as $cell)
+				$tempArray[$cell['row_num']][$cell['col_num']] = new POSTCell($cell);
+
+		$this->_content = $tempArray;
+		$tempArray = array();
+
+		foreach($this->_cols as $col)
+			$tempArray[] = new POSTCol($col);
+		$this->_cols = $tempArray;
+	}
 
 	public function display()
 	{
-		$this->_initCells();
-		$this->_loadData();
+		// Groom our database information if we're not previewing an import
+		if(!$this->_drawFromArray)
+		{
+			$this->_initCells();
+			$this->_loadData();
+		}
 
-		echo '<table border="1" class="post_chart">';
+		echo '<table border="1" class="post_chart">', "\n";
 		$this->_printHeaderRow();
 
 		foreach( $this->_content as $rowNum=>$row )
 		{
-			echo '<tr>';
-			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>';
+			echo '<tr>', "\n";
+			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
-				echo '<td id="post_cell_' . $cell->id . '" class="post_cell">' . $this->_cellContent($cell) . '</td>';		
+				echo '<td id="post_cell_' . $cell->id . '" class="post_cell">' . $this->_cellContent($cell) . '</td>', "\n";
 			}
-			echo '</tr>';
+			echo '</tr>', "\n";
 		}
-		echo '<tr>';
-			echo '<td class="post_footer" colspan="' . $this->footerCols . '">footer</td>';
-		echo '</tr>';
-		echo '</table>';
+		echo '<tr>', "\n";
+			echo '<td class="post_footer" colspan="' . $this->footerCols . '">footer</td>', "\n";
+		echo '</tr>', "\n";
+		echo '</table>', "\n";
 	}
 
 
@@ -172,18 +217,18 @@ class POSTChart_HS extends POSTChart
 				return '';
 		}
 	}
-	
+
 	protected function _printHeaderRow()
 	{
-		echo '<tr>';
-			echo '<td class="post_sidebar_left" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>';
-			echo '<th class="post_head_xy post_head">Grade</th>';
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>', "\n";
+			echo '<th class="post_head_xy post_head">Grade</th>', "\n";
 			foreach( $this->_cols as $col )
 			{
-				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head">' . $col->title . '</th>';
+				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head">' . $col->title . '</th>', "\n";
 			}
-			echo '<td  class="post_sidebar_right" rowspan="' . $this->totalRows . '">' . $this->verticalText('High School Diploma') . '</td>';
-		echo '</tr>';
+			echo '<td  class="post_sidebar_right" rowspan="' . $this->totalRows . '">' . $this->verticalText('High School Diploma') . '</td>', "\n";
+		echo '</tr>', "\n";
 	}
 
 	protected function _cellContent(&$cell)
@@ -192,7 +237,7 @@ class POSTChart_HS extends POSTChart
 		$link = ($cell->href != '');
 
 		// Draw the item inside the post_cell
-		return ($link?'<a href="' . $cell->href . '">':'') . htmlentities($cell->content) . ($link?'</a>':'');
+		return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 	}
 }
 
@@ -207,12 +252,12 @@ class POSTChart_CC extends POSTChart
 
 	protected function _printHeaderRow()
 	{
-		echo '<tr>';
-			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>';
-			echo '<th class="post_head_xy post_head" style="width:40px;">Term</th>';
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>';
-			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>';
-		echo '</tr>';
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>', "\n";
+			echo '<th class="post_head_xy post_head" style="width:40px;">Term</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>', "\n";
+			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
+		echo '</tr>', "\n";
 	}
 
 	protected function _cellContent(&$cell)
@@ -227,7 +272,7 @@ class POSTChart_CC extends POSTChart
 			$link = ($cell->href != '');
 	
 			// Draw the item inside the post_cell
-			return ($link?'<a href="' . $cell->href . '">':'') . htmlentities($cell->content) . ($link?'</a>':'');
+			return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 
 		}
 	}
