@@ -367,7 +367,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '</td>';
 
 					echo '<td width="70">';
-						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit">info</a>';
+						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit">settings</a>';
 					echo '</td>';
 
 					echo '<td width="70">';
