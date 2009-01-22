@@ -252,7 +252,7 @@ class POSTChart_CC extends POSTChart
 
 	protected function _rowName($num)
 	{
-		return ucfirst(ordinalize($num)) . ' Term';
+		return ($num < 100 ? ucfirst(ordinalize($num)) . ' Term' : '');
 	}
 
 	protected function _printHeaderRow()
