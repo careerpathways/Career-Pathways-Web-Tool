@@ -43,7 +43,9 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 	}
 
 	// TODO: Confirmation message
-	print_r($_POST);
+	echo 'TODO: This is a nice confirmation message';
+
+	pa($_POST);
 
 	PrintFooter();
 	die();
