@@ -19,7 +19,7 @@ abstract class POSTChart
 	{
 		global $DB;
 
-		$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.school_name, d.num_rows, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.school_name, d.num_rows, d.num_extra_rows, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -84,6 +84,7 @@ abstract class POSTChart
 		global $DB;
 
 		$num_rows = $this->_drawing['num_rows'];
+		$num_extra_rows = $this->_drawing['num_extra_rows'];
 
 		$cols = $DB->MultiQuery('SELECT * FROM post_col WHERE drawing_id=' . $this->_id . ' ORDER BY num');
 
@@ -95,6 +96,14 @@ abstract class POSTChart
 
 		// create the empty 2D array
 		for( $row = 1; $row <= $num_rows; $row++ )
+		{
+			$this->_content[$row] = array();
+			foreach( $cols as $col )
+			{
+				$this->_content[$row][$col['num']] = new POSTCell();
+			}
+		}
+		for( $row = 100; $row <= $num_extra_rows+99; $row++ )
 		{
 			$this->_content[$row] = array();
 			foreach( $cols as $col )
@@ -217,7 +226,10 @@ abstract class POSTChart
 		$post_drawing['last_modified'] = $DB->SQLDate();
 		$post_drawing['created_by'] = $_SESSION['user_id'];
 		$post_drawing['last_modified_by'] = $_SESSION['user_id'];
-		$post_drawing['num_rows'] = count($this->_content);
+
+		$post_drawing['num_rows'] = $this->_drawing['num_rows'];
+		$post_drawing['num_extra_rows'] = $this->_drawing['num_extra_rows'];
+
 		$post_drawing_id = $DB->Insert('post_drawings', $post_drawing);
 
 		$colmap = array();
@@ -238,7 +250,7 @@ abstract class POSTChart
 				$post_cell = array();
 				$post_cell['drawing_id'] = $post_drawing_id;
 				$post_cell['row_num'] = $row_num;
-				$post_cell['col_id'] = (array_key_exists($cell->col_num, $colmap) ? $colmap[$cell->col_num] : '');
+				$post_cell['col_id'] = (array_key_exists($cell->col_num, $colmap) ? $colmap[$cell->col_num] : -1);
 				$post_cell['content'] = dv($cell->content);
 				$post_cell['course_subject'] = dv($cell->course_subject);
 				$post_cell['course_number'] = dv($cell->course_number);
@@ -249,8 +261,6 @@ abstract class POSTChart
 
 		return $post_drawing_id;
 	}
-
-
 
 	protected abstract function _printHeaderRow();
 	protected abstract function _rowName($num);

@@ -268,48 +268,6 @@ function copyVersion($version_id) {
 
 	$new_version_id = $DB->Insert('post_drawings',$content);
 
-	/*
-	// Copy the content of the actual drawing now
-	$programs = $DB->MultiQuery('SELECT * FROM ccti_programs WHERE drawing_id='.$version_id);
-	foreach( $programs as $p ) 
-	{
-		$old_program_id = $p['id'];
-		unset($p['id']);
-		$p['`index`'] = $p['index'];
-		unset($p['index']);
-		$p['drawing_id'] = $new_version_id;
-		$new_program_id = $DB->Insert('ccti_programs', $p);
-
-		$sections = $DB->MultiQuery('SELECT * FROM ccti_sections WHERE program_id='.$old_program_id);
-		foreach( $sections as $s ) 
-		{
-			$old_section_id = $s['id'];
-			unset($s['id']);
-			$s['`index`'] = $s['index'];
-			unset($s['index']);
-			$s['program_id'] = $new_program_id;
-			$new_section_id = $DB->Insert('ccti_sections', $s);
-
-			$section_labels = $DB->MultiQuery('SELECT * FROM ccti_section_labels WHERE section_id='.$old_section_id);
-			foreach( $section_labels as $sl ) 
-			{
-				unset($sl['id']);
-				$sl['section_id'] = $new_section_id;
-				$DB->Insert('ccti_section_labels', $sl);
-			}
-		
-			$data = $DB->MultiQuery('SELECT * FROM ccti_data WHERE section_id='.$old_section_id);
-			foreach( $data as $d ) 
-			{
-				unset($d['id']);
-				$d['section_id'] = $new_section_id;
-				$DB->Insert('post_data', $d);
-			}
-		
-		}	
-	}
-	*/
-
 	if (Request('from_popup') == 'true') {
 		header("Location: /a/copy_success_popup.php?mode=post&version_id=$new_version_id&copy_to=$copy_to&create=$create");
 	}

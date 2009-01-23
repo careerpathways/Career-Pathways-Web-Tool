@@ -104,7 +104,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link"><?php
 		$url = str_replace('%%',$drawing['code'],$published_link);
-		echo '<a href="'.$url.'">'.$url.'</a>';
+		echo '<input type="text" style="width:560px" value="'.$url.'" />';
 		?></div>
 	</td>
 </tr>
@@ -113,7 +113,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link_xml"><?php
 		$url = str_replace('%%',$drawing['code'],$xml_link);
-		echo '<a href="'.$url.'">'.$url.'</a>';
+		echo '<input type="text" style="width:560px" value="'.$url.'" />';
 		?></div>
 	</td>
 </tr>
@@ -122,7 +122,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link_ada"><?php
 		$url = str_replace('%%',$drawing['code'],$accessible_link);
-		echo '<a href="'.$url.'">'.$url.'</a>';
+		echo '<input type="text" style="width:560px" value="'.$url.'" />';
 		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
 		<br>

@@ -25,7 +25,7 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post = POSTChart::createFromArray($drawings[0]['type'], $drawings[0]);
 		$post->setDrawingName($_POST['postHSName']);
 		$post->setSchoolID($_POST['school_HSid']);
-		$HS_id == $post->saveToDB();
+		$HS_id = $post->saveToDB();
 	}
 	if(isset($_POST['postCC1Include']))
 	{
@@ -42,8 +42,10 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$CC2_id = $post->saveToDB();
 	}
 
+	// TODO: Confirmation message
 	print_r($_POST);
 
+	PrintFooter();
 	die();
 }//handle actual importing of contents
 
@@ -88,31 +90,55 @@ if(!move_uploaded_file($_FILES['post_excel_file']['tmp_name'], $cachePath . $new
 $xml = file_get_contents($cachePath . $newName);
 $drawings = parseXML($xml);
 
+$school = $DB->SingleQuery('SELECT * FROM schools WHERE id='.$_SESSION['school_id']);
+
+
+$high_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" ORDER BY school_name', 'school_name', 'id');
+$colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
+
+
 ?>
 <form action="post_import.php" method="post">
 	<input type="hidden" name="xmlLocation" value="<?=$cachePath . $newName?>" />
 	<div style="width: 100%; text-align: center;">
-		<span style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Here is the result of your Import.</span>
+		<span style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Here is a preview of your import.</span>
 		<br /><br />
+		If this does not look the way you expected, <a href="<?= $_SERVER['PHP_SELF'] ?>">go back</a>, edit your Excel file, and re-upload.<br />
+		You can also make changes after this has been imported.
 	</div>
 
 	<div style="width: 100%; margin: 10px 0; text-align: center; position: relative;">
-		<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">High School Drawing</div>
+	<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">High School Plan</div>
 
-<form action="input.txt" method="post">
 <?php
 	$post = POSTChart::createFromArray($drawings[0]['type'], $drawings[0]);
 	$post->display();
 ?>
 	<table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
 		<tr>
-			<td align="right">Enter a name for this High School: &nbsp;&nbsp;</td>
-			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postHSName" style="width: 300px;" /></td>
+			<td align="right">Enter a name for this drawing:</td>
+			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postHSName" style="width: 300px;" value="High School <?= rand(1000,9999) ?>" /></td>
 		</tr>
+<?php
+if( !IsAdmin() && array_key_exists($_SESSION['school_id'], $high_schools) )  // if the logged in user is a high school user
+{
+?>
 		<tr>
-			<td align="right">Select your College: &nbsp;&nbsp;</td>
-			<td align-"left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBoxDB('schools','school_HSid','id','school_name','school_name',$_SESSION['school_id'])?></td>
+			<td align="right">This drawing will be added to:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=$high_schools[$_SESSION['school_id']]?></td>
 		</tr>
+<?php
+}
+else
+{
+?>
+		<tr>
+			<td align="right">Select a high school for this drawing:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBox($high_schools, 'school_HSid', $_SESSION['school_id'])?></td>
+		</tr>
+<?php
+}
+?>
 	</table>
 	<div style="position: relative; width: 700px; height: 50px; margin: 5px auto 0 auto">
 		<div style="position: absolute; bottom: top: 30px; right: 0;">
@@ -120,20 +146,36 @@ $drawings = parseXML($xml);
 		</div>
 	</div>
 
-	<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">Community College Drawing</div>
+	<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">Community College Program</div>
 <?php
 	$post = POSTChart::createFromArray($drawings[1]['type'], $drawings[1]);
 	$post->display();
 ?>
 	<table border="0" cellpadding="0" cellspacing="0" style="margin: 5px auto;">
 		<tr>
-			<td align="right">Enter a name for this Community College: &nbsp;&nbsp;&nbsp;</td>
-			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postCC1Name" style="width: 300px; margin-top: 5px;" /></td>
+			<td align="right">Enter a name for this drawing:</td>
+			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postCC1Name" style="width: 300px; margin-top: 5px;" value="<?= $school['school_name'].' '.rand(1000,9999) ?>" /></td>
 		</tr>
+<?php
+if( !IsAdmin() && array_key_exists($_SESSION['school_id'], $colleges) )  // if the logged in user is a high school user
+{
+?>
 		<tr>
-			<td align="right">Select your School:</td>
-			<td align-"left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBoxDB('schools','school_CC1id','id','school_name','school_name',$_SESSION['school_id'])?></td>
+			<td align="right">This drawing will be added to:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=$colleges[$_SESSION['school_id']]?></td>
 		</tr>
+<?php
+}
+else
+{
+?>
+		<tr>
+			<td align="right">Select an organization for this drawing:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBox($colleges, 'school_CC1id', $_SESSION['school_id'])?></td>
+		</tr>
+<?php
+}
+?>
 	</table>
 	<div style="position: relative; width: 700px; height: 50px; margin: 5px auto 0 auto">
 		<div style="position: absolute; bottom: top: 30px; right: 0;">
@@ -144,20 +186,36 @@ $drawings = parseXML($xml);
 	if(isset($drawings[2]))
 	{
 ?>
-		<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">Additional Community College</div>
+	<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">Community College Program</div>
 <?php
 	$post = POSTChart::createFromArray($drawings[2]['type'], $drawings[2]);
 	$post->display();
 ?>
 	<table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
 		<tr>
-			<td align="right">Enter a name for this High School: &nbsp;&nbsp;</td>
-			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postCC2Name" style="width: 300px;" /></td>
+			<td align="right">Enter a name for this drawing:</td>
+			<td align="left" style="padding: 10px 0 0 10px;"><input type="text" name="postCC2Name" style="width: 300px;" value="<?= $school['school_name'].' '.rand(1000,9999) ?>" /></td>
 		</tr>
+<?php
+if( !IsAdmin() && array_key_exists($_SESSION['school_id'], $colleges) )  // if the logged in user is a high school user
+{
+?>
 		<tr>
-			<td align="right">Select your College: &nbsp;&nbsp;</td>
-			<td align-"left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBoxDB('schools','school_CC2id','id','school_name','school_name',$_SESSION['school_id'])?></td>
+			<td align="right">This drawing will be added to:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=$colleges[$_SESSION['school_id']]?></td>
 		</tr>
+<?php
+}
+else
+{
+?>
+		<tr>
+			<td align="right">Select an organization for this drawing:</td>
+			<td align="left" style="padding: 5px 0 0 10px;"><?=GenerateSelectBox($colleges, 'school_CC2id', $_SESSION['school_id'])?></td>
+		</tr>
+<?php
+}
+?>
 	</table>
 	<div style="position: relative; width: 700px; height: 50px; margin: 5px auto 0 auto">
 		<div style="position: absolute; bottom: top: 30px; right: 0;">
@@ -169,8 +227,10 @@ $drawings = parseXML($xml);
 ?>
 
 	<div style="margin-bottom: 20px; padding-top: 10px; border-bottom: 1px #AAA solid;"></div>
-	<span style="font: normal 20px Arial, Helvetica, sans-serif;">To import these drawing, blick "continue"
+	<span style="font: normal 20px Arial, Helvetica, sans-serif;">To import these drawings, click</span>
 	<input name="submit" type="submit" value="Continue" style="font: normal 18px Arial, Helvetica, sans-serif;" />
+
+</div>
 
 </form>
 <?php
@@ -185,14 +245,8 @@ function parseXML(&$xmlData)
 {
 	// give everything a fake ID
 	$rollingIDs = 0;
-	
-	
+		
 	$goodData = array();
-	
-	
-	$xmlData = file_get_contents('/web/aaron/tmp/POST Template 2009-01-07. ECE WILLAMETTE.EX.xml');
-	
-	
 	
 	$xml = new SimpleXMLElement($xmlData);
 	$excelXml = ($xml->Worksheet->Table);
@@ -487,6 +541,7 @@ function parseXML(&$xmlData)
 					{
 						$new_cell = $r;
 						$new_cell['row_num'] = $i + 100;
+						$new_cell['col_num'] = $new_cell['col_num'] % count($row) + 1;
 						$new_row[] = $new_cell;
 					}
 					$ccContent[$j][$i+100] = $new_row;
@@ -495,17 +550,7 @@ function parseXML(&$xmlData)
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	
 	$return = array();
 	
@@ -514,6 +559,7 @@ function parseXML(&$xmlData)
 	$hsDrawing['type'] = 'HS';
 	$hsDrawing['drawing'] = array(
 		'num_rows'=>count($hsContent),
+		'num_extra_rows'=>0,
 		'name'=>'Import Preview (HS)',
 		'school_name'=>'High School',
 		'footer_text'=>'',
@@ -528,16 +574,26 @@ function parseXML(&$xmlData)
 		$ccDrawing['content'] = $cc;
 		$ccDrawing['type'] = 'CC';
 		$ccDrawing['drawing'] = array(
-			'num_rows'=>count($cc),
+			'num_rows'=>count(array_filter(array_keys($cc), 'filter_term_rows')),
+			'num_extra_rows'=>count(array_filter(array_keys($cc), 'filter_extra_rows')),
 			'name'=>'Import Preview (CC)',
 			'school_name'=>'Community College',
 			'footer_text'=>'',
 			'footer_link'=>'');
-	
+
 		$return[] = $ccDrawing;
 	}
 	return $return;
 }//end function parseXML
+
+function filter_term_rows($v)
+{
+	return $v < 100;
+}
+function filter_extra_rows($v)
+{
+	return $v >= 100;
+}
 
 /**
  * debugging function
