@@ -1,2 +1,4 @@
 RewriteEngine on
-RewriteRule ^(.+)$ title.php?$1 [nc]
+RewriteBase /files/titles
+RewriteRule post/([^/]+)/([^/]+).png$ title.php?type=post&school=$1&title=$2 [nc,L]
+RewriteRule ([^/]+)/([^/]+).png$ title.php?type=pathways&school=$1&title=$2 [nc,L]

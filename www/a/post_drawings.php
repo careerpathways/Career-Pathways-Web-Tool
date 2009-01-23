@@ -198,7 +198,7 @@ function showVersion() {
 
 	$post = POSTChart::Create($drawing['id']);
 
-	echo '<div id="post_title"><img src="/files/titles/'.base64_encode($post->school_abbr).'/'.base64_encode($post->name).'.png" alt="' . $post->school_abbr . ' Career Pathways - ' . $post->name . '" /></div>';
+	echo '<div id="post_title"><img src="/files/titles/post/'.base64_encode($post->school_abbr).'/'.base64_encode($post->name).'.png" alt="' . $post->school_abbr . ' Career Pathways - ' . $post->name . '" /></div>';
 	
 	echo '<div id="canvas">';
 	$post->display();
