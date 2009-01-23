@@ -51,7 +51,8 @@ require_once("inc.php");
 
 		$cell = $DB->SingleQuery("SELECT `post_drawing_main`.`type`, `content`, `href`, `course_subject`, `course_number`, `course_title`
 			FROM `post_cell`
-			LEFT JOIN `post_drawing_main` ON (`post_cell`.`drawing_id` = `post_drawing_main`.`id`)
+			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
+			LEFT JOIN `post_drawing_main` ON (`post_drawings`.`parent_id` = `post_drawing_main`.`id`)
 			WHERE `post_cell`.`id` = '" . intval($id) . "'");
 
 		// Draw the High School form
@@ -333,4 +334,5 @@ require_once("inc.php");
 <?php
 		return ob_get_clean();
 	}//end function getFooterHTML
+
 ?>

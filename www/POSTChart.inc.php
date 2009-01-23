@@ -4,6 +4,7 @@ abstract class POSTChart
 {
 	protected $_id;
 	protected $_drawing;
+	protected $_type;
 
 	// 2D array [row][col]
 	protected $_content;
@@ -32,6 +33,8 @@ abstract class POSTChart
 					return new POSTChart_HS($drawing);
 				case 'CC':
 					return new POSTChart_CC($drawing);
+				default:
+					throw new Exception('No drawing type was found in the record.');
 			}
 		}	
 	}
@@ -44,20 +47,22 @@ abstract class POSTChart
 
 		// Create the appropriate POSTChart type
 		if($chartType == 'HS')
+		{
 			$post = new POSTChart_HS(array('id'=>'temp1234'), $array);
+		}
 		else
+		{
 			$post = new POSTChart_CC(array('id'=>'temp1234'), $array);
+		}
 
 		return $post;
 	}
-
 
 	public function __construct($drawing, $array = null)
 	{
 		global $DB;
 
 		$this->_id = $drawing['id'];
-		$this->_drawing = $drawing;
 
 		if(is_array($array))
 		{
@@ -66,6 +71,10 @@ abstract class POSTChart
 			$this->_content = $array['content'];
 			$this->_cols = $array['headers'];
 			$this->_loadDataFromArray();
+		}
+		else
+		{
+			$this->_drawing = $drawing;
 		}
 	}
 
@@ -162,6 +171,83 @@ abstract class POSTChart
 			. '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '</table>', "\n";
+	}
+
+	// For copying drawings, to give the copy a different name
+	public function setDrawingName($name)
+	{
+		$this->_drawing['name'] = $name;
+	}
+
+	// For copying drawings, to change the school
+	public function setSchoolID($id)
+	{
+		global $DB;
+		$this->_drawing['school_id'] = $id;
+		$school = $DB->SingleQuery('SELECT * FROM schools WHERE id='.intval($id));
+		$this->_drawing['school_name'] = $school['school_name'];
+		$this->_drawing['school_abbr'] = $school['school_abbr'];
+	}
+
+	public function saveToDB()
+	{
+		global $DB;
+
+		// create post_drawing_main record
+		$post_drawing_main = array();
+		$post_drawing_main['school_id'] = $this->_drawing['school_id'];
+		$post_drawing_main['name'] = $this->_drawing['name'];
+		$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_drawing['name'], $this->_drawing['school_id'], 0, 'post');
+		$post_drawing_main['date_created'] = $DB->SQLDate();
+		$post_drawing_main['last_modified'] = $DB->SQLDate();
+		$post_drawing_main['created_by'] = $_SESSION['user_id'];
+		$post_drawing_main['last_modified_by'] = $_SESSION['user_id'];
+		$post_drawing_main['type'] = $this->_type;
+		$post_drawing_main_id = $DB->Insert('post_drawing_main', $post_drawing_main);
+
+		$post_drawing = array();
+		$post_drawing['parent_id'] = $post_drawing_main_id;
+		$post_drawing['version_num'] = 1;
+		$post_drawing['footer_text'] = $this->_drawing['footer_text'];
+		$post_drawing['footer_link'] = $this->_drawing['footer_link'];
+		$post_drawing['published'] = 0;
+		$post_drawing['frozen'] = 0;
+		$post_drawing['deleted'] = 0;
+		$post_drawing['date_created'] = $DB->SQLDate();
+		$post_drawing['last_modified'] = $DB->SQLDate();
+		$post_drawing['created_by'] = $_SESSION['user_id'];
+		$post_drawing['last_modified_by'] = $_SESSION['user_id'];
+		$post_drawing['num_rows'] = count($this->_content);
+		$post_drawing_id = $DB->Insert('post_drawings', $post_drawing);
+
+		$colmap = array();
+		foreach( $this->_cols as $i=>$col )
+		{
+			$post_col = array();
+			$post_col['drawing_id'] = $post_drawing_id;
+			$post_col['title'] = dv($col->title);
+			$post_col['num'] = $i+1;
+			$post_col_id = $DB->Insert('post_col', $post_col);
+			$colmap[$i+1] = $post_col_id;
+		}
+
+		foreach( $this->_content as $row_num=>$row )
+		{
+			foreach( $row as $cell )
+			{
+				$post_cell = array();
+				$post_cell['drawing_id'] = $post_drawing_id;
+				$post_cell['row_num'] = $row_num;
+				$post_cell['col_id'] = (array_key_exists($cell->col_num, $colmap) ? $colmap[$cell->col_num] : '');
+				$post_cell['content'] = dv($cell->content);
+				$post_cell['course_subject'] = dv($cell->course_subject);
+				$post_cell['course_number'] = dv($cell->course_number);
+				$post_cell['course_title'] = dv($cell->course_title);
+				$DB->Insert('post_cell', $post_cell);
+			}
+		}
+
+		return $post_drawing_id;
 	}
 
 
@@ -295,7 +381,7 @@ class POSTCell
 
 	public function __get($key)
 	{
-		if( array_key_exists($key, $this->_data) )
+		if( is_array($this->_data) && array_key_exists($key, $this->_data) )
 			return $this->_data[$key];
 		else
 			return NULL;
@@ -313,7 +399,7 @@ class POSTCol
 
 	public function __get($key)
 	{
-		if( array_key_exists($key, $this->_data) )
+		if( is_array($this->_data) && array_key_exists($key, $this->_data) )
 			return $this->_data[$key];
 		else
 			return NULL;

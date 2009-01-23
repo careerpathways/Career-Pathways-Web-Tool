@@ -446,6 +446,15 @@ function getdominantcolor($hex) {
 }
 
 
+/**
+ * If $value is not null, returns $value. Otherwise returns $default
+ */
+function dv($value, $default='')
+{
+	return ( $value ? $value : $default );	
+}
+
+
 function ShowLoginForm($email="") {
 global $SITE;
 

@@ -10,6 +10,9 @@ $goodData = array();
 
 
 $xmlData = file_get_contents('/web/aaron/tmp/POST Template 2009-01-07. ECE WILLAMETTE.EX.xml');
+
+
+
 $xml = new SimpleXMLElement($xmlData);
 $excelXml = ($xml->Worksheet->Table);
 
@@ -319,6 +322,10 @@ foreach( $ccContent as $j=>$cc )
 
 
 
+
+
+
+
 $return = array();
 
 $hsDrawing['headers'] = $hsHeaders;
@@ -339,7 +346,6 @@ foreach( $ccContent as $cc )
 	$ccDrawing['headers'] = array_fill(0, count($cc[1]), '');
 	$ccDrawing['content'] = $cc;
 	$ccDrawing['type'] = 'CC';
-
 	$ccDrawing['drawing'] = array(
 		'num_rows'=>count($cc),
 		'name'=>'Import Preview (CC)',
@@ -369,15 +375,38 @@ $page_title = 'Import Tool';
 <?php
 	include('POSTChart.inc.php');
 
-	$post = POSTChart::createFromArray($return[0]['type'], $return[0]);
-	$post->display();
-	?><br /><br /><br /><?php
-	$post = POSTChart::createFromArray($return[1]['type'], $return[1]);
-	$post->display();
-	?><br /><br /><br /><?php
-	$post = POSTChart::createFromArray($return[2]['type'], $return[2]);
+/*
+	$post = POSTChart::create(19);
 	$post->display();
 
+	$post->setSchoolID(7);
+	$post->setDrawingName('Architectural Drafting (copy)');
+
+	$dmid = $post->saveToDB();
+	$post = POSTChart::create($dmid);
+	$post->display();
+*/
+	
+/*
+	$post = POSTChart::createFromArray($return[0]['type'], $return[0], 23, 'Child Education');
+	$post->display();
+
+	$post->saveToDB();
+*/	
+/*
+	?><br /><br /><br /><?php
+	$post = POSTChart::createFromArray($return[1]['type'], $return[1], 1, 'Child Education');
+
+	$post->setSchoolID(7);
+	$post->setDrawingName('Architectural Drafting (copy)');
+	$post->saveToDB();
+	$post->display();
+*/
+/*
+	?><br /><br /><br /><?php
+	$post = POSTChart::createFromArray($return[2]['type'], $return[2], 1, 'Child Education');
+	$post->display();
+*/
 ?>
 </body>
 </html>
