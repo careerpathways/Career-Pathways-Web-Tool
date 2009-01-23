@@ -204,7 +204,7 @@ require_once("inc.php");
 		$DB->Update('post_cell', array('course_subject'=>$subject, 'course_number'=>$number, 'course_title'=>$title, 'content'=>$_POST['content'], 'href' => $href), intval($id));
 
 		// Decide what we should draw back to the page
-		if($subject != '' && $number != '' && $title != '')
+		if($subject != '' && $number != '')
 			echo '<a href="javascript:void(0);">' . $subject . ' ' . $number . '<br />' . $title . '</a>';
 		else
 			echo ($link?'<a href="javascript:void(0);">':'') . $_POST['content'] . ($link?'</a>':'');

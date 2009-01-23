@@ -30,6 +30,7 @@ table.post_chart {
 
 table.post_chart, table.post_chart td, table.post_chart th {
 	border: 1px #999999 solid;
+	margin: 0 auto;
 }
 
 .post_head {
