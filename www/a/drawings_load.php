@@ -106,12 +106,15 @@ switch( Request('mode') ) {
 			$people = $people_cat;
 		}
 		if( Request('school_id') ) {
-			$people_school = $DB->VerticalQuery('
-				SELECT id, CONCAT(first_name," ",last_name) AS name
-				FROM users
-				WHERE school_id IN ("'.str_replace(',','","',Request('school_id')).'")
-				ORDER BY last_name, first_name'
-			,'name','id');
+			$school_ids = implode('","', array_filter(explode(',',Request('school_id')), 'is_numeric'));
+			$org_types = strtoupper(implode('","', array_filter(explode(',',Request('school_id')), 'is_not_numeric')));
+			
+			$sql = 'SELECT users.id, CONCAT(first_name," ",last_name) AS name
+					FROM users
+					JOIN schools ON users.school_id = schools.id
+					WHERE ' . (strlen($school_ids)>0 ? 'school_id IN ("'.$school_ids.'")' : 'organization_type IN ("'.$org_types.'")' ) . '
+					ORDER BY last_name, first_name';
+			$people_school = $DB->VerticalQuery($sql,'name','id');
 			$people = $people_school;
 		}
 
@@ -151,7 +154,8 @@ switch( Request('mode') ) {
 
 	case 'list_categories':
 
-		if( Request('people_id') ) {
+		if( Request('people_id') )
+		{
 			$cats_people = $DB->VerticalQuery("
 				SELECT DISTINCT(IF(name='','(no title)',name)) AS name
 				FROM ".$main_table."
@@ -161,22 +165,29 @@ switch( Request('mode') ) {
 				ORDER BY name", 'name','name');
 			$cats = $cats_people;
 		}
-		if( Request('school_id') ) {
-			$cats_school = $DB->VerticalQuery("
-				SELECT DISTINCT(IF(name='','(no title)',name)) AS name
-				FROM ".$main_table."
-				WHERE ".$main_table.".id IN (SELECT parent_id FROM ".$version_table."
-					WHERE (school_id IN (".Request('school_id')."))
-					)
-				ORDER BY name", 'name','name');
+		if( Request('school_id') )
+		{
+			$school_ids = implode('","', array_filter(explode(',',Request('school_id')), 'is_numeric'));
+			$org_types = strtoupper(implode('","', array_filter(explode(',',Request('school_id')), 'is_not_numeric')));
+
+			$sql = '
+				SELECT DISTINCT(IF(name="","(no title)",name)) AS name
+				FROM '.$main_table.'
+				JOIN schools ON school_id=schools.id
+				WHERE ' . (strlen($school_ids)>0 ? 'school_id IN ("'.$school_ids.'")' : 'organization_type IN ("'.$org_types.'")' ) . '
+				ORDER BY name';
+			
+			$cats_school = $DB->VerticalQuery($sql, 'name','name');
 			$cats = $cats_school;
 		}
 
-		if( Request('people_id')!="" && Request('school_id')!="" ) {
+		if( Request('people_id')!="" && Request('school_id')!="" )
+		{
 			// if they're both set, take the intersection of the two searches instead of writing a separate query
 			$cats = array_intersect($cats_people,$cats_school);
-
-		} elseif( Request('people_id')=="" && Request('school_id')=="" ) {
+		}
+		elseif( Request('people_id')=="" && Request('school_id')=="" )
+		{
 			// if neither search is requested, return all titles
 			$cats = $DB->VerticalQuery("
 				SELECT DISTINCT(name) AS name
@@ -185,24 +196,23 @@ switch( Request('mode') ) {
 			,'name','name');
 		}
 
-		//if( count($cats) == 0 ) {
-		//	$cats[] = '(none)';
-		//}
-
 		$response[0] = Request('mode');
 		$response[1] = array_values($cats);
 		$response[2] = array_values($cats);
-		if( KeyInRequest('selectdefault') && array_key_exists('categories',$_SESSION[$session_key]) ) {
-			foreach( array_keys($cats) as $k ) {
+		if( KeyInRequest('selectdefault') && array_key_exists('categories',$_SESSION[$session_key]) )
+		{
+			foreach( array_keys($cats) as $k )
+			{
 				$response[3][] = (in_array($k,explode(',',$_SESSION[$session_key]['categories']))?1:0);
 			}
-		} else {
+		}
+		else
+		{
 			$_SESSION['drawing_list']['categories'] = "";
-			if( count($cats) > 0 ) {
+			if( count($cats) > 0 )
 				$response[3] = array_fill(0,count($cats),0);
-			} else {
+			else
 				$response[3] = array();
-			}
 		}
 		echo(json_encode_array($response));
 
@@ -212,7 +222,28 @@ switch( Request('mode') ) {
 	
 		if( Request('type') == 'post' )
 		{
-			$types = array('HS', 'CC');
+			if( count(explode(',', Request('schools'))) == 1 )
+			{
+				switch( Request('schools') )
+				{
+					case 'hs':
+					case 'cc':
+						$types = array(strtoupper(Request('schools')));
+						break;
+					case -1:
+					case '':
+						$types = array('HS','CC');
+						break;
+					default:
+						$sch = $DB->SingleQuery('SELECT organization_type FROM schools WHERE id='.intval(Request('schools')));
+						$types = array(($sch['organization_type']=='HS'?'HS':'CC'));
+					break;
+				}
+			}
+			else
+			{
+				$types = array('HS', 'CC');
+			}
 		}
 		else
 		{
@@ -230,7 +261,8 @@ switch( Request('mode') ) {
 				$post_where = '';
 			}
 
-			if( Request('search') == "" ) {
+			if( Request('search') == "" )
+			{
 				$search = array();
 				$fields = array('schools','people','categories');
 				$field_sql = array(
@@ -240,7 +272,8 @@ switch( Request('mode') ) {
 				);
 				foreach( $fields as $f ) {
 					if( Request($f) ) {
-						$search[$f] = explode(',',Request($f));
+						#$search[$f] = explode(',',Request($f));
+						$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
 					}
 				}
 	
@@ -262,6 +295,7 @@ switch( Request('mode') ) {
 										$i++;
 									}
 								}
+								if( count($items) == 0 ) $where .= "1";
 								$where .= ") ";
 								break;
 							case 'people':
@@ -285,14 +319,24 @@ switch( Request('mode') ) {
 						}
 					}
 				}
+
+				$non_numeric = array_filter(explode(',', Request('schools')), 'is_not_numeric');
+				if( count($non_numeric) > 0 )
+				{
+					$where_post_type = ' AND schools.`organization_type` IN ("' . strtoupper(implode('","', $non_numeric)) . '")';
+				}
+				else
+				{
+					$where_post_type = '';
+				}
 	
-				$mains = $DB->MultiQuery("
-					SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
+				$sql = "SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
 						created_by, last_modified_by, ".$main_table.".date_created, last_modified, school_id
 					FROM ".$main_table.", schools
 					WHERE school_id=schools.id
-						$where $post_where
-					ORDER BY name");
+						$where $post_where $where_post_type
+					ORDER BY name";
+				$mains = $DB->MultiQuery($sql);
 	
 				foreach( $mains as &$parent ) {
 					$drawings = $DB->ArrayQuery("
@@ -372,6 +416,9 @@ switch( Request('mode') ) {
 }
 
 
-
+function is_not_numeric($a)
+{
+	return $a != '' && !is_numeric($a);
+}
 
 ?>

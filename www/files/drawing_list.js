@@ -51,7 +51,17 @@ function load_cb(data) {
 	removeAllOptions(sel);
 	sel.options[0] = new Option("[Show All]", "-1", false);
 	sel.options[0].className = 'even';
-	for( var i=0; i<obj[1].length; i++ ) {
+
+	if( MODE == 'post' && sel.id == 'list_schools' )
+	{
+		sel.options[1] = new Option("[Show All High Schools]", "hs", false);
+		sel.options[1].className = 'odd';
+		sel.options[2] = new Option("[Show All Community Colleges]", "cc", false);
+		sel.options[2].className = 'even';
+	}
+
+	for( var i=0; i<obj[1].length; i++ )
+	{
 		sel.options[sel.options.length] = new Option(obj[2][i], obj[1][i], false, obj[3][i]);
 		sel.options[sel.options.length-1].className = (i%2==0?"odd":"even");
 	}

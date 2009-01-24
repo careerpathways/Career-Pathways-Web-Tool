@@ -215,8 +215,10 @@ function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
 	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
+	/*
 	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
 	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
+	*/
 	getLayer('title_edit').style.display = 'none';
 	getLayer('title_fixed').style.display = 'block';
 }
