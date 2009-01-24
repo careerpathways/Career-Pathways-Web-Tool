@@ -13,8 +13,8 @@ PrintHeader();
 
 <table width="100%"><tr>
 <td>
-	<a href="/a/post_drawings.php?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust" style="color: grey">new drawing</span></a>
-	&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_import.php" class="edit"><img src="/common/silk/lightning_go.png" width="16" height="16"> <span class="imglinkadjust" style="color: grey">import drawing</span></a>
+	<a href="/a/post_drawings.php?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+	&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_import.php" class="edit"><img src="/common/silk/lightning_go.png" width="16" height="16"> <span class="imglinkadjust">import drawing</span></a>
 	&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:selectDefaults()" class="edit"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
 </td>
 <td width="290">

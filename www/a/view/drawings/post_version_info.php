@@ -71,7 +71,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+	<input type="text" style="width:560px" value="<?= $url ?>" />
 	</td>
 </tr>
 <!--

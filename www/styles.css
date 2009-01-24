@@ -298,13 +298,13 @@ a.linksubhead:hover
 
 
 
-a.edit {
+a.edit, a.edit:visited {
   font-weight:normal;
   color:#<?= $BLUE; ?>;
   text-decoration: none;
 }
 
-a.edit:hover {
+a.edit:hover, a.edit:visited:hover {
 	color: #<?= $GREY ?>;
 }
 

@@ -19,6 +19,9 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 	$xml = file_get_contents($_POST['xmlLocation']);
 	$drawings = parseXML($xml);
 
+	echo '<h2>Import Results</h2>';
+	echo '<br />';
+
 	// Use the POSTChart to import our XML
 	if(isset($_POST['postHSInclude']))
 	{
@@ -26,6 +29,8 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setDrawingName($_POST['postHSName']);
 		$post->setSchoolID($_POST['school_HSid']);
 		$HS_id = $post->saveToDB();
+
+		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$HS_id.'">' . $_POST['postHSName'] . '</a></p>';
 	}
 	if(isset($_POST['postCC1Include']))
 	{
@@ -33,6 +38,8 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setDrawingName($_POST['postCC1Name']);
 		$post->setSchoolID($_POST['school_CC1id']);
 		$CC1_id = $post->saveToDB();
+
+		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$CC1_id.'">' . $_POST['postCC1Name'] . '</a></p>';
 	}
 	if(isset($_POST['postCC2Include']))
 	{
@@ -40,12 +47,9 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setDrawingName($_POST['postCC2Name']);
 		$post->setSchoolID($_POST['school_CC2id']);
 		$CC2_id = $post->saveToDB();
+
+		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$CC2_id.'">' . $_POST['postCC2Name'] . '</a></p>';
 	}
-
-	// TODO: Confirmation message
-	echo 'TODO: This is a nice confirmation message';
-
-	pa($_POST);
 
 	PrintFooter();
 	die();
@@ -57,14 +61,15 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 if(!isset($_FILES['post_excel_file']) && !isset($_POST['xmlLocation']))
 {
 ?>
-	<div style="width: 100%; text-align: center;">
-		<span style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Import From Excel</span>
-		<br /><br />
-		<span style="font: normal 12px Arial, Helvetica, sans-serif; color: #444444; text-align: center;">Welcome, Bol lob law.
-		<br />Please review the <a href="javascript:void(0);">Instructions</a> for using this Excel Import tool.
-		<br />We have provided you with a <a href="javascript:void(0)">sample file</a> that can help ensure positive results when you import
-		</span>
-	</div>
+	<ul>
+		<li class="l1">Export your file from Excel in the "Excel 2004 XML" format.</li>
+		<li class="l2">Upload the file in the form below.</li>
+		<li class="l3">You will see a preview of your file as the system can read it.</li>
+		<li class="l4">You will then have a chance to choose which components of the file to include in your import, as well as give each a name and assign them to schools.</li>
+	</ul>
+
+	You can download <a href="/files/POST-Example.xls" target="_new">POST-Example.xls</a> to use as a guide to help ensure positive results when you import.
+
 	<br /><br />
 	<div style="width: 430px; margin: 0 auto;">
 		<form action="/a/post_import.php" method="post" enctype="multipart/form-data">
@@ -89,8 +94,21 @@ if(!move_uploaded_file($_FILES['post_excel_file']['tmp_name'], $cachePath . $new
 	die('Could not move uploaded file!');
 
 // Gather the contents of our file and parse it
-$xml = file_get_contents($cachePath . $newName);
-$drawings = parseXML($xml);
+try
+{
+	$xml = file_get_contents($cachePath . $newName);
+	$drawings = parseXML($xml);
+}
+catch( Exception $e )
+{
+	echo '<p>There was a problem trying to read the file:<br />"'.$e->getMessage().'"</p>';
+	echo '<p>Make sure you first export the Excel file in the "Excel 2004 XML" format before uploading. You cannot upload a .xls file.</p>';
+	echo '<p><a href="'.$_SERVER['PHP_SELF'].'" class="edit">go back</a></p>';
+	PrintFooter();
+	die();
+}
+
+
 
 $school = $DB->SingleQuery('SELECT * FROM schools WHERE id='.$_SESSION['school_id']);
 
@@ -102,12 +120,14 @@ $colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="
 ?>
 <form action="post_import.php" method="post">
 	<input type="hidden" name="xmlLocation" value="<?=$cachePath . $newName?>" />
-	<div style="width: 100%; text-align: center;">
-		<span style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Here is a preview of your import.</span>
-		<br /><br />
-		If this does not look the way you expected, <a href="<?= $_SERVER['PHP_SELF'] ?>">go back</a>, edit your Excel file, and re-upload.<br />
-		You can also make changes after this has been imported.
+	<div style="width: 100%;">
+		<div style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Here is a preview of your import.</div>
+		<br />
+		<p>If this does not look the way you expected, <a href="<?= $_SERVER['PHP_SELF'] ?>">go back</a>, edit your Excel file, and re-upload.</p>
+		<p>You can also make changes to your drawings after they have been imported.</p>
+		<p>You must give each drawing a name, and assign each drawing to a school. Once you assign a drawing to a school that is not your own, you will not be able to edit it. Someone at that school will need to make changes and/or publish the drawing.</p>
 	</div>
+	<br /><br /><br />
 
 	<div style="width: 100%; margin: 10px 0; text-align: center; position: relative;">
 	<div style="font: normal 16px Arial, Helvetica, sans-serif; text-align: center;">High School Plan</div>
@@ -250,8 +270,8 @@ function parseXML(&$xmlData)
 		
 	$goodData = array();
 	
-	$xml = new SimpleXMLElement($xmlData);
-	$excelXml = ($xml->Worksheet->Table);
+	@$xml = new SimpleXMLElement($xmlData);
+	@$excelXml = ($xml->Worksheet->Table);
 	
 	d('Beginning import process');
 	

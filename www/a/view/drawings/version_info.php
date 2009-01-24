@@ -87,19 +87,19 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+	<input type="text" style="width:560px" value="<?= $url ?>" />
 	</td>
 </tr>
 <tr>
 	<th valign="top">XML</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+	<input type="text" style="width:560px" value="<?= $url ?>" />
 	</td>
 </tr>
 <tr>
 	<th valign="top">Accessible</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
+		<input type="text" style="width:560px" value="<?= $url ?>" />
 		<br>
 		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
 		<br>
