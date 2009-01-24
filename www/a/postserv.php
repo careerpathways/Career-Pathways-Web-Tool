@@ -19,6 +19,8 @@ require_once("inc.php");
 				printHeadForm($_GET['id']);
 			elseif($_GET['type'] == 'footer')
 				printFooterForm($_GET['id']);
+			elseif($_GET['type'] == 'swap')
+				die('<div class="greyboxError">Cannot Prompt to Swap, must Commit to Swap</div>');
 			else
 				die('<div class="greyboxError">Misunderstood Action Type</div>');
 ?>
@@ -33,6 +35,8 @@ require_once("inc.php");
 				commitHead($_GET['id']);
 			elseif($_GET['type'] == 'footer')
 				commitFooter($_GET['id']);
+			elseif($_GET['type'] == 'swap')
+				commitSwap($_POST['fromID'], $_POST['toID']);
 			else
 				die('<div class="greyboxError">Misunderstood Commit Type</div>');
 		break;
@@ -233,6 +237,15 @@ require_once("inc.php");
 		$DB->Update('post_drawings', array('footer_text' => $_POST['text'], 'footer_link'=>$href), intval($id));
 		echo ($link?'<a href="javascript:void(0);">':'') . $_POST['text'] . ($link?'</a>':'');
 	}//end function commitFooter
+
+	function commitSwap($fromID, $toID)
+	{
+		global $DB;
+		$rows = $DB->MultiQuery("SELECT `id`, `row_num`, `col_id` FROM `post_cell` WHERE `id` = '" . intval($fromID) . "' OR `id` = '" . intval($toID) . "'");
+
+		$DB->Update('post_cell', array('row_num'=>$rows[0]['row_num'], 'col_id'=>$rows[0]['col_id']), $rows[1]['id']);
+		$DB->Update('post_cell', array('row_num'=>$rows[1]['row_num'], 'col_id'=>$rows[1]['col_id']), $rows[0]['id']);
+	}//end function commitSwap
 
 	/*****************************/
 	/******* FORM PRINTERS *******/

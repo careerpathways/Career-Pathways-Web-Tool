@@ -167,7 +167,7 @@ abstract class POSTChart
 			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
-				echo '<td id="post_cell_' . $cell->id . '" class="post_cell">' . $this->_cellContent($cell) . '</td>', "\n";
+				echo '<td class="post_cell"><div id="post_cell_' . $cell->id . '" class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
 			}
 			echo '</tr>', "\n";
 		}
