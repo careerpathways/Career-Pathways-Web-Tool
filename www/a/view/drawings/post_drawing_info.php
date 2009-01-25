@@ -77,7 +77,7 @@ if( $id != "" ) {
 	</td>
 </tr>
 <tr>
-	<th width="80">School</th>
+	<th width="80">Organization</th>
 	<td><b><?= $schools[$school_id] ?></b></td>
 </tr>
 <tr>
