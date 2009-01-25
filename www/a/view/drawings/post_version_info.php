@@ -60,9 +60,10 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	?></td>
 </tr>
 <tr>
-	<th>Preview</th>
+	<th>Actions</th>
 	<td>
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)">Preview Drawing</a>
+		<a href="/a/post_drawings.php?action=draw&version_id=<?= $drawing['id'] ?>">Draw</a> &nbsp;
+		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)">Preview</a>
 	</td>
 </tr>
 <tr>

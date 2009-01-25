@@ -29,16 +29,53 @@ require_once("inc.php");
 <?php
 		break;
 		case "commit":
-			if($_GET['type'] == 'cell')
-				commitCell($_GET['id']);
-			elseif($_GET['type'] == 'head')
-				commitHead($_GET['id']);
-			elseif($_GET['type'] == 'footer')
-				commitFooter($_GET['id']);
-			elseif($_GET['type'] == 'swap')
-				commitSwap($_POST['fromID'], $_POST['toID']);
-			else
-				die('<div class="greyboxError">Misunderstood Commit Type</div>');
+
+			switch( $_GET['type'] )
+			{
+				case 'cell':
+					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_GET['id']));
+					break;
+				case 'head':
+					$version_id = $DB->GetValue('drawing_id', 'post_col', intval($_GET['id']));
+					break;
+				case 'footer':
+					$version_id = intval($_GET['id']);
+					break;
+				case 'swap':
+					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_GET['toID']));
+					break;
+				default:
+					die('<div class="greyboxError">Misunderstood Commit Type</div>');
+			}
+
+			$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".$version_id);
+			if( !CanEditDrawing($drawing) )
+			{
+				die('Cannot edit this drawing due to a permissions error');
+			}
+
+			$update = array();
+			$update['last_modified'] = $DB->SQLDate();
+			$update['last_modified_by'] = $_SESSION['user_id'];
+			$DB->Update('post_drawings', $update, $version_id);
+			$DB->Update('post_drawing_main', $update, $drawing['parent_id']);
+			
+			switch( $_GET['type'] )
+			{
+				case 'cell':
+					commitCell($_GET['id']);
+					break;
+				case 'head':
+					commitHead($_GET['id']);
+					break;
+				case 'footer':
+					commitFooter($_GET['id']);
+					break;
+				case 'swap':
+					commitSwap($_POST['fromID'], $_POST['toID']);
+					break;
+			}
+
 		break;
 		default:
 			echo '<div style="greyboxError">This mode is not supported</div>';
@@ -205,7 +242,12 @@ require_once("inc.php");
 		$title = (isset($_POST['title']))?$_POST['title']:'';
 
 		// Update the database
-		$DB->Update('post_cell', array('course_subject'=>$subject, 'course_number'=>$number, 'course_title'=>$title, 'content'=>$_POST['content'], 'href' => $href), intval($id));
+		$DB->Update('post_cell', array(
+			'course_subject'=>$subject,
+			'course_number'=>$number,
+			'course_title'=>$title,
+			'content'=>$_POST['content'],
+			'href' => $href), intval($id));
 
 		// Decide what we should draw back to the page
 		if($subject != '' && $number != '')

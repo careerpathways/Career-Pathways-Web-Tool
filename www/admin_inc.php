@@ -95,15 +95,20 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 		$MODULE_NAME = $info['friendly_name'];
 		$MODULE_PAGETITLE = $info['page_title'];
 	}
-	$TEMPLATE->AddCrumb('/admin/', "Admin");
 	$TEMPLATE->AddCrumb('/modules/'.$module.'.php', $MODULE_PAGETITLE);
-
 }
 
 function CanDeleteDrawing(&$drawing) {
         return (IsAdmin()
                 || (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
                 || $drawing['created_by'] == $_SESSION['user_id']);
+}
+
+function CanEditDrawing(&$drawing) {
+        return (IsAdmin()
+                || ($_SESSION['school_id'] == $drawing['school_id']
+					&& (IsSchoolAdmin() || $drawing['created_by'] == $_SESSION['user_id']))
+					);
 }
 
 ?>

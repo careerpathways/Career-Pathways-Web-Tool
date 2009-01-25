@@ -12,7 +12,7 @@ class ThisSite extends SiteSettings {
 
 	var $debug = true;
 
-	function name() { return "Pathways"; }
+	function name() { return "Career Pathways Web Tool"; }
 	function email_name() { return "Oregon CT Pathways"; }
 	function email() { return "help@ctepathways.org"; }
 
