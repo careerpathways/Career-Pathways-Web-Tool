@@ -44,7 +44,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <p>
 <table>
 <tr>
-	<th width="70">Drawing</th>
+	<th width="80">Drawing</th>
 	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
 		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>"><img src="/common/silk/cog.png" height="16" width="16" /></a></td>
 </tr>
