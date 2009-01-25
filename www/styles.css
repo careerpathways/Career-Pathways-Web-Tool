@@ -920,8 +920,32 @@ a.chart_header {
 
 
 
-
-
+.post_mini_full
+{
+  background-color: #CCCCCC;
+}
+.post_chart_mini 
+{
+  width: 300px;
+}
+.post_chart_mini .post_head_row
+{
+  width: 14px;
+  text-align: center;
+  font-size: 8px;
+}
+.post_chart_mini .post_cell
+{
+  height: 24px;
+}
+.post_chart_mini .post_head_main, .post_chart_mini .post_footer
+{
+  height: 5px;
+}
+.post_chart_mini .post_sidebar_left, .post_chart_mini .post_sidebar_right
+{
+  width: 2px;
+}
 
 
 

@@ -150,6 +150,42 @@ if( $drawing['published'] ) {
 <input type="hidden" name="drawing_id" value="<?= $drawing['id'] ?>">
 </form>
 
+<br /><br />
+
+<h3>Drawing Structure</h3>
+<br />
+<table>
+<tr>
+	<th width="80">Block Diagram</th>
+	<td>
+		<?php
+			$post = POSTChart::create($drawing['id']);
+			$post->displayMini();
+		?>
+	</td>
+</tr>
+<?php
+if( $post->type == 'CC' )
+{
+	?>
+	<tr>
+		<th>Terms</th>
+		<td><?= $post->numRows ?></td>
+	</tr>
+<?php
+}
+?>
+<tr>
+	<th>Extra Rows</th>
+	<td><?= $post->numExtraRows ?></td>
+</tr>
+<tr>
+	<th>Columns</th>
+	<td><?= $post->numCols ?></td>
+</tr>
+</table>
+
+
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript">
 

@@ -182,6 +182,35 @@ abstract class POSTChart
 		echo '</table>', "\n";
 	}
 
+	public function displayMini()
+	{
+		// Groom our database information if we're not previewing an import
+		if(!$this->_drawFromArray)
+		{
+			$this->_initCells();
+			$this->_loadData();
+		}
+
+		echo '<table border="1" class="post_chart_mini">', "\n";
+		$this->_printHeaderRowMini();
+
+		foreach( $this->_content as $rowNum=>$row )
+		{
+			echo '<tr>', "\n";
+			echo '<td class="post_head_row post_mini_full">'. $this->_rowNameMini($rowNum) . '</td>', "\n";
+			foreach( $row as $cell )
+			{
+				echo '<td class="post_cell'.($this->_cellHasContent($cell)?' post_mini_full':'').'"><div id="post_cell_' . $cell->id . '"></div></td>', "\n";
+			}
+			echo '</tr>', "\n";
+		}
+		echo '<tr>', "\n";
+
+		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '"></td>', "\n";
+		echo '</tr>', "\n";
+		echo '</table>', "\n";
+	}
+
 	// For copying drawings, to give the copy a different name
 	public function setDrawingName($name)
 	{
@@ -263,7 +292,11 @@ abstract class POSTChart
 	}
 
 	protected abstract function _printHeaderRow();
+	protected abstract function _printHeaderRowMini();
 	protected abstract function _rowName($num);
+	protected abstract function _rowNameMini($num);
+	protected abstract function _cellContent(&$cell);
+	protected abstract function _cellHasContent(&$cell);
 	
 	public function verticalText($text)
 	{
@@ -275,6 +308,15 @@ abstract class POSTChart
 		// some predefined variables
 		switch( $key )
 		{
+			case 'numRows':
+				return $this->_drawing['num_rows'];
+			
+			case 'numExtraRows':
+				return $this->_drawing['num_extra_rows'];
+				
+			case 'numCols':
+				return count($this->_cols);
+
 			case 'totalRows':
 				return count($this->_content) + 2;
 				
@@ -289,6 +331,9 @@ abstract class POSTChart
 				
 			case 'drawingName':
 				return $this->_drawing['name'];
+			
+			case 'type':
+				return $this->_type;
 		}
 
 		// lastly, check for any keys in the drawing record
@@ -319,6 +364,11 @@ class POSTChart_HS extends POSTChart
 		}
 	}
 
+	protected function _rowNameMini($num)
+	{
+		return $this->_rowName($num);
+	}
+
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
@@ -332,6 +382,19 @@ class POSTChart_HS extends POSTChart
 		echo '</tr>', "\n";
 	}
 
+	protected function _printHeaderRowMini()
+	{
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left post_mini_full" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
+			foreach( $this->_cols as $col )
+			{
+				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head'.($col->title?' post_mini_full':'').'"></th>', "\n";
+			}
+			echo '<td  class="post_sidebar_right post_mini_full" rowspan="' . $this->totalRows . '"></td>', "\n";
+		echo '</tr>', "\n";
+	}
+
 	protected function _cellContent(&$cell)
 	{
 		// Is there a link?
@@ -339,6 +402,11 @@ class POSTChart_HS extends POSTChart
 
 		// Draw the item inside the post_cell
 		return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+	}
+	
+	protected function _cellHasContent(&$cell)
+	{
+		return ($cell->content != '');
 	}
 }
 
@@ -351,6 +419,11 @@ class POSTChart_CC extends POSTChart
 		return ($num < 100 ? ucfirst(ordinalize($num)) . ' Term' : '');
 	}
 
+	protected function _rowNameMini($num)
+	{
+		return ($num < 100 ? $num : '');
+	}
+
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
@@ -358,6 +431,16 @@ class POSTChart_CC extends POSTChart
 			echo '<th class="post_head_xy post_head" style="width:40px;">Term</th>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>', "\n";
 			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
+		echo '</tr>', "\n";
+	}
+
+	protected function _printHeaderRowMini()
+	{
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
+			echo '<th class="post_head_main post_head post_mini_full" colspan="' . count($this->_cols) . '"></th>', "\n";
+			echo '<td class="post_sidebar_right post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
 		echo '</tr>', "\n";
 	}
 
@@ -376,6 +459,11 @@ class POSTChart_CC extends POSTChart
 			return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 
 		}
+	}
+	
+	protected function _cellHasContent(&$cell)
+	{
+		return $cell->content != '' || $cell->course_subject != '';		
 	}
 }
 
