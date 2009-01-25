@@ -447,7 +447,7 @@ a.edit:hover, a.edit:visited:hover {
 
 #title_value, .drawing_title
 {
-  font-size: 16pt;
+  font-size: 14pt;
   color: #<?= $BLUE ?>;
 }
 .version_title

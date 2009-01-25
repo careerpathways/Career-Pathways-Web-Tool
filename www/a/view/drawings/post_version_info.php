@@ -23,6 +23,8 @@ case 'ccti':
 $created = ($drawing['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['created_by']));
 $modified = ($drawing['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['last_modified_by']));
 
+$school_name = $DB->GetValue('school_name', 'schools', $drawing_main['school_id']);
+
 $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_id=".$drawing_main['id']);
 
 ?>
@@ -35,11 +37,15 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th width="70">Drawing</th>
 	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
-		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>">Drawing Properties</a></td>
+		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>"><img src="/common/silk/cog.png" width="16" height="16" /></a></td>
 </tr>
 <tr>
 	<th>Version</th>
 	<td><div class="version_title">Version <?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></div></td>
+</tr>
+<tr>
+	<th>School</th>
+	<td><?= $school_name ?></td>
 </tr>
 <tr>
 	<th>Created</th>

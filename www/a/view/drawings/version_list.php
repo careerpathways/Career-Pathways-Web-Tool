@@ -19,7 +19,7 @@
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
-					echo '<td><span class="version_title">Version '.$v['version_num'].'</span> <a href="/a/'.$php_page.'?action=version_info&version_id='.$v['id'].'">Version Settings</a>'.($v['published']?' (Published)':'').'</td>';
+					echo '<td><span class="version_title">'.$v['version_num'].'</span> <a href="/a/'.$php_page.'?action=version_info&version_id='.$v['id'].'">settings</a>'.($v['published']?' (Published)':'').'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
