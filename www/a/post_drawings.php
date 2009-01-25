@@ -281,7 +281,7 @@ function copyVersion($version_id) {
 function showDrawingInfo() {
 global $DB, $TEMPLATE;
 
-	$TEMPLATE->AddCrumb('', 'Drawing Properties');
+	$TEMPLATE->AddCrumb('', 'POST Drawing Properties');
 	
 	PrintHeader();
 
@@ -314,7 +314,7 @@ function ShowDrawingForm($id) {
 
 function showVersionInfo() {
 	global $DB, $MODE, $TEMPLATE;
-	$TEMPLATE->AddCrumb('', 'Version Settings');
+	$TEMPLATE->AddCrumb('', 'POST Version Settings');
 	PrintHeader();
 	$version_id = Request('version_id');
 	require('view/drawings/post_version_info.php');

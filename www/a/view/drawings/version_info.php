@@ -42,12 +42,13 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <p>
 <table>
 <tr>
-	<th>Version</th>
-	<td><?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></td>
+	<th width="70">Drawing</th>
+	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
+		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>">Drawing Properties</a></td>
 </tr>
 <tr>
-	<th width="70">Drawing</th>
-	<td><a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>"><?= $drawing_main['name'] ?></a></td>
+	<th>Version</th>
+	<td><div class="version_title">Version <?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></div></td>
 </tr>
 <tr>
 	<th>Created</th>
@@ -87,19 +88,19 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
-	<input type="text" style="width:560px" value="<?= $url ?>" />
+	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
 <tr>
 	<th valign="top">XML</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
-	<input type="text" style="width:560px" value="<?= $url ?>" />
+	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
 <tr>
 	<th valign="top">Accessible</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
-		<input type="text" style="width:560px" value="<?= $url ?>" />
+		<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
 		<br>
 		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
 		<br>

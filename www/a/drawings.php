@@ -378,7 +378,10 @@ function showNewDrawingForm() {
 }
 
 function showDrawingInfo() {
-global $DB;
+global $DB, $TEMPLATE;
+
+	$TEMPLATE->AddCrumb('', 'Roadmap Drawing Properties');
+	
 	PrintHeader();
 
 	$drawing = $DB->SingleQuery("SELECT drawing_main.*
@@ -403,7 +406,8 @@ function ShowDrawingForm($id) {
 }
 
 function showVersionInfo() {
-	global $DB, $version_id, $MODE;
+	global $DB, $version_id, $MODE, $TEMPLATE;
+	$TEMPLATE->AddCrumb('', 'Roadmap Version Settings');
 	PrintHeader();
 	require('view/drawings/version_info.php');
 	PrintFooter();

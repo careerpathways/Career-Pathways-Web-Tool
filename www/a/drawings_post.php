@@ -54,7 +54,7 @@ if( Request('drawing_id') ) {
 			die();
 	}
 
-	if( Request('note') ) {
+	if( Request('note') !== false ) {
 			$content = array();
 			$content['note'] = $_REQUEST['note'];
 			$DB->Update($version_table, $content, intval($_REQUEST['drawing_id']));

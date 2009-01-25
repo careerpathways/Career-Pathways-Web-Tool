@@ -35,7 +35,7 @@ if( $id != "" ) {
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <table>
 <tr>
-	<th>Title</th>
+	<th valign="bottom">Title</th>
 	<td>
 		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 		<span id="checkNameResponse" class="error"></span>
@@ -97,7 +97,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link"><?php
 		$url = str_replace('%%',$drawing['code'],$published_link);
-		echo '<input type="text" style="width:560px" value="'.$url.'" />';
+		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
 </tr>
@@ -107,7 +107,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link_xml"><?php
 		$url = str_replace('%%',$drawing['code'],$xml_link);
-		echo '<input type="text" style="width:560px" value="'.$url.'" />';
+		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
 </tr>
@@ -116,7 +116,7 @@ if( $id != "" ) {
 	<td>
 		<div id="drawing_link_ada"><?php
 		$url = str_replace('%%',$drawing['code'],$accessible_link);
-		echo '<input type="text" style="width:560px" value="'.$url.'" />';
+		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
 		<br>
