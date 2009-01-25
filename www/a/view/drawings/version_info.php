@@ -50,11 +50,11 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 </tr>
 <tr>
 	<th>Version</th>
-	<td><div class="version_title">Version <?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></div></td>
+	<td><div class="version_title"><?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></div></td>
 </tr>
 <tr>
 	<th>School</th>
-	<td><?= $school_name ?></td>
+	<td><b><?= $school_name ?></b></td>
 </tr>
 <tr>
 	<th>Created</th>
