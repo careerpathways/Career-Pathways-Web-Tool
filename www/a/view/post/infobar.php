@@ -1,8 +1,8 @@
 <?php
-global $DB, $drawing_id;
-$drawing = $DB->SingleQuery("SELECT * FROM drawings WHERE id=$drawing_id");
-$parent = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing['parent_id']);
-$num_siblings = $DB->GetValue("COUNT(*)", 'drawings', $drawing['parent_id'], 'parent_id');
+global $DB;
+$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".Request('version_id'));
+$parent = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$drawing['parent_id']);
+$num_siblings = $DB->GetValue("COUNT(*)", 'post_drawings', $drawing['parent_id'], 'parent_id');
 ?>
 <div id="infobar">
 	<div id="infobar_header"></div>

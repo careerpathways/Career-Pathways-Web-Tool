@@ -175,23 +175,8 @@ if( KeyInRequest('drawing_id') ) {
 function showVersion() {
 	global $DB, $TEMPLATE;
 
-	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
-	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
 
-	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
-	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
-
-	$editing = 1;   // TODO? set this to 0 when in view mode
-	if( $editing ) 
-	{
-		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
-		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
-		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
-	}
-	
-	PrintHeader();
-	
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id
+	$drawing = $DB->SingleQuery('SELECT main.*, d.published, d.frozen, schools.school_abbr, d.id
 		FROM post_drawing_main AS main, post_drawings AS d, schools
 		WHERE d.parent_id = main.id
 			AND main.school_id = schools.id
@@ -202,6 +187,47 @@ function showVersion() {
 		die();
 	}
 
+	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
+	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
+
+	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
+
+
+
+	if( CanEditOtherSchools() || $_SESSION['school_id'] == $drawing['school_id'] ) {
+		$readonly = false;
+	} else {
+		$readonly = true;
+	}
+
+	if( $readonly == false ) 
+	{
+		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
+		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
+		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
+	}
+
+
+	if( !($drawing['published']==1 || $drawing['frozen']==1) ) {
+		$TEMPLATE->toolbar_function = "ShowToolbar";
+	}
+	if( $drawing['frozen'] == 1 ) {
+		$TEMPLATE->toolbar_function = "ShowFrozenHelp";
+	}
+	if( $drawing['published'] == 1 ) {
+		$TEMPLATE->toolbar_function = "ShowPublishedHelp";
+	}
+	if( KeyInRequest('view') ) {
+		$TEMPLATE->toolbar_function = "";
+	}
+	if( $readonly ) {
+		$TEMPLATE->toolbar_function = "ShowReadonlyHelp";
+	}
+
+	
+	PrintHeader();
+	
 	$post = POSTChart::Create($drawing['id']);
 
 	echo '<div id="post_title"><img src="/files/titles/post/'.base64_encode($post->school_abbr).'/'.base64_encode($post->name).'.png" alt="' . $post->school_abbr . ' Career Pathways - ' . $post->name . '" /></div>';
@@ -363,7 +389,7 @@ function ShowDrawingListHelp() {
 }
 
 function ShowReadonlyForm($id) {
-	require('view/post/read_only_form.php');
+	require('view/drawings/read_only_form.php');
 }
 
 function showToolbarAndHelp($publishAllowed, $helpFile = false) {
