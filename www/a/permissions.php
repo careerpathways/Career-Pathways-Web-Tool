@@ -11,6 +11,7 @@ $levels = $DB->MultiQuery('SELECT * FROM admin_user_levels ORDER BY level DESC')
 
 echo '<table class="bordered">';
 echo '<tr>';
+	echo '<th width="20">ID</th>';
 	echo '<th width="150">Name</th>';
 	foreach( $levels as $l )
 	{
@@ -26,6 +27,7 @@ $modules = $DB->MultiQuery('
 foreach( $modules as $m )
 {
 	echo '<tr>';
+	echo '<td>' . $m['id'] . '</td>';
 	echo '<td>' . $m['friendly_name'] . '</td>';
 	foreach( $levels as $l )
 	{
