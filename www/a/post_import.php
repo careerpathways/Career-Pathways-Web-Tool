@@ -27,7 +27,12 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 	{
 		$post = POSTChart::createFromArray($drawings[0]['type'], $drawings[0]);
 		$post->setDrawingName($_POST['postHSName']);
-		$post->setSchoolID($_POST['school_HSid']);
+
+		if( Request('school_HSid') )
+			$post->setSchoolID($_POST['school_HSid']);
+		else
+			$post->setSchoolID($_SESSION['school_id']);
+
 		$HS_id = $post->saveToDB();
 
 		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$HS_id.'">' . $_POST['postHSName'] . '</a></p>';
@@ -36,7 +41,12 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 	{
 		$post = POSTChart::createFromArray($drawings[1]['type'], $drawings[1]);
 		$post->setDrawingName($_POST['postCC1Name']);
-		$post->setSchoolID($_POST['school_CC1id']);
+
+		if( Request('school_CC1id') )
+			$post->setSchoolID($_POST['school_CC1id']);
+		else
+			$post->setSchoolID($_SESSION['school_id']);
+
 		$CC1_id = $post->saveToDB();
 
 		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$CC1_id.'">' . $_POST['postCC1Name'] . '</a></p>';
@@ -45,7 +55,12 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 	{
 		$post = POSTChart::createFromArray($drawings[2]['type'], $drawings[2]);
 		$post->setDrawingName($_POST['postCC2Name']);
-		$post->setSchoolID($_POST['school_CC2id']);
+
+		if( Request('school_CC2id') )
+			$post->setSchoolID($_POST['school_CC2id']);
+		else
+			$post->setSchoolID($_SESSION['school_id']);
+
 		$CC2_id = $post->saveToDB();
 
 		echo '<p><a href="/a/post_drawings.php?action=draw&version_id='.$CC2_id.'">' . $_POST['postCC2Name'] . '</a></p>';
@@ -61,7 +76,7 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 if(!isset($_FILES['post_excel_file']) && !isset($_POST['xmlLocation']))
 {
 ?>
-	<ul>
+	<ul class="import_instructions">
 		<li class="l1">Export your file from Excel in the "Excel 2004 XML" format.</li>
 		<li class="l2">Upload the file in the form below.</li>
 		<li class="l3">You will see a preview of your file as the system can read it.</li>

@@ -952,6 +952,35 @@ a.chart_header {
   font-size: 11pt;
 }
 
+ul.import_instructions 
+{
+  list-style-type: none;
+  margin: 0 auto 30px auto;
+  padding: 0;
+  width: 500px;
+}
+ul.import_instructions li
+{
+  margin: 0;
+  padding: 15px 0 15px 40px;
+}
+
+ul.import_instructions li.l1 {
+  background: url(/images/numbers/01.png) left no-repeat;
+}
+ul.import_instructions li.l2 {
+  background: url(/images/numbers/02.png) left no-repeat;
+}
+ul.import_instructions li.l3 {
+  background: url(/images/numbers/03.png) left no-repeat;
+}
+ul.import_instructions li.l4 {
+  background: url(/images/numbers/04.png) left no-repeat;
+}
+
+
+
+
 #drawing_form #num_columns, #drawing_form #num_terms, #drawing_form #num_extra_rows
 {
   width: 50px;
