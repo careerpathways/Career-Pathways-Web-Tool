@@ -62,6 +62,10 @@ function bindPostCells()
 			{mode: "prompt", type: "cell", id: cellID},
 			function(data){
 				chGreybox.create(data, 450, 300);
+				$(document).keypress( function(e) {
+					chGreybox.close();
+					$(document).keypress( function(e) {} );
+				});
 		});
 	});
 

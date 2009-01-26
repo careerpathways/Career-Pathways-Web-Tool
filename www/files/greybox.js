@@ -38,7 +38,7 @@ var chGreybox = {
 
 	close: function() {
 		var gb = document.getElementById('greybox');
-		document.body.removeChild(gb);
+		if( gb ) document.body.removeChild(gb);
 
 		if( this.onClose != null ) {
 			this.onClose();

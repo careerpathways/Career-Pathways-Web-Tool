@@ -155,6 +155,10 @@ require_once("inc.php");
 		</script>
 <?php
 		}//if (community college)
+		else
+		{
+			echo 'There is a problem with this cell';
+		}
 
 		echo ob_get_clean();
 	}//end function printCellForm
