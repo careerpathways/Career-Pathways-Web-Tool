@@ -40,8 +40,7 @@ if( PostRequest() && $school_id )
 	{
 		for( $i=0; $i<count($_REQUEST['head']); $i++ )
 		{
-			$data['num'] = $i;
-			$DB->Query('UPDATE post_default_col SET num=' . $i . ' WHERE school_id=' . $school_id . ' AND id=' . intval($_REQUEST['head'][$i]));
+			$DB->Query('UPDATE post_default_col SET num=' . ($i+1) . ' WHERE school_id=' . $school_id . ' AND id=' . intval($_REQUEST['head'][$i]));
 		}
 		echo "1";
 		die();

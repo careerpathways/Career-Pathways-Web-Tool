@@ -952,5 +952,8 @@ a.chart_header {
   font-size: 11pt;
 }
 
-
+#drawing_form #num_columns, #drawing_form #num_terms, #drawing_form #num_extra_rows
+{
+  width: 50px;
+}
 

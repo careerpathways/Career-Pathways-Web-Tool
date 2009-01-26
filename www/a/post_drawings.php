@@ -125,7 +125,7 @@ if( KeyInRequest('drawing_id') ) {
 			$content['date_created'] = $DB->SQLDate();
 			$content['created_by'] = $_SESSION['user_id'];
 			$content['school_id'] = $school_id;
-
+			$content['type'] = Request('type');
 			$parent_id = $DB->Insert('post_drawing_main',$content);
 
 			// create the first default drawing
@@ -137,7 +137,68 @@ if( KeyInRequest('drawing_id') ) {
 			$content['last_modified_by'] = $_SESSION['user_id'];
 			$content['parent_id'] = $parent_id;
 
+			if( Request('type') == 'cc' )
+			{
+				$content['num_rows'] = intval(Request('num_terms'));
+				$content['num_extra_rows'] = intval(Request('num_extra_rows'));
+			}
+			else
+			{
+				$content['num_rows'] = 4;
+				$content['num_extra_rows'] = 1;
+			}
+
 			$drawing_id = $DB->Insert('post_drawings',$content);
+
+			if( Request('type') == 'cc' )
+			{
+				// create n empty column headers
+				for( $i=0; $i<intval(Request('num_columns')); $i++ )
+				{
+					$col = array();
+					$col['drawing_id'] = $drawing_id;
+					$col['title'] = '';
+					$col['num'] = $i+1;
+					$colmap[$i+1] = $DB->Insert('post_col', $col);
+				}
+				$num_cols = intval(Request('num_columns'));
+			}
+			else
+			{
+				// copy the default columns to this drawing
+				$cols = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$school_id.' ORDER BY num');
+				foreach( $cols as $c )
+				{
+					$col = array();
+					$col['drawing_id'] = $drawing_id;
+					$col['title'] = $c['title'];
+					$col['num'] = $c['num'];
+					$colmap[$c['num']] = $DB->Insert('post_col', $col);
+				}
+				$num_cols = count($cols);
+			}
+
+			// now create all the empty cells for the drawing
+			for( $x=1; $x<=$num_cols; $x++ )
+			{
+				for( $y=1; $y<=$content['num_rows']; $y++ )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['row_num'] = $y;
+					$cell['col_id'] = $colmap[$x];
+					$DB->Insert('post_cell', $cell);
+				}
+				for( $y=100; $y<$content['num_extra_rows']+100; $y++ )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['row_num'] = $y;
+					$cell['col_id'] = $colmap[$x];
+					$DB->Insert('post_cell', $cell);
+				}
+				
+			}
 
 			// start drawing it
 			header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id);
@@ -397,6 +458,9 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/post/helpbar.php');
 }
 
+/**
+ * This is an ajax handler for configuring rows/columns
+ */
 function processConfigRequest()
 {
 	global $DB;
@@ -528,6 +592,25 @@ function processConfigRequest()
 	
 		break;	
 	}
+}
+
+
+function showNewDrawingPreview(&$config)
+{
+	global $DB;
+	
+	/**
+	 * $config['type'] = [HS, CC]
+	 * $config['cols'] = [int, 'default']
+	 * $config['rows'] = [int]
+	 **/
+	
+	
+	
+	
+	
+	
+	
 }
 
 

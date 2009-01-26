@@ -63,8 +63,11 @@ function bindPostCells()
 			function(data){
 				chGreybox.create(data, 450, 300);
 				$(document).keypress( function(e) {
-					chGreybox.close();
-					$(document).keypress( function(e) {} );
+					if( e.which == 0 )
+					{
+						chGreybox.close();
+						$(document).keypress( function(e) {} );
+					}
 				});
 		});
 	});

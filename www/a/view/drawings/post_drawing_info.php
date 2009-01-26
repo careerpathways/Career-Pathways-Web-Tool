@@ -7,7 +7,7 @@ $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%.html';
 
 $drawing = $DB->LoadRecord('post_drawing_main',$id);
 
-// force non-admins to the school of this drawing to prevent attacks
+// force non-admins to the school of this drawing to prevent hacks
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
 if( IsAdmin() ) {
 	if( $id != "" ) {
@@ -46,19 +46,75 @@ if( $id != "" ) {
 	<td>
 	<?php
 	if( IsAdmin() ) {
-		echo GenerateSelectBox($schools,'school_id',$school_id);
+		if( Request('type') == 'cc' )
+		{
+			$colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
+			echo GenerateSelectBox($colleges, 'school_id', $_SESSION['school_id']);
+		}
+		else
+		{
+			$high_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" ORDER BY school_name', 'school_name', 'id');
+			echo GenerateSelectBox($high_schools, 'school_id', $_SESSION['school_id']);
+		}
 	} else {
 		echo '<b>'.$schools[$school_id].'</b>';
 	}
 	?>
 	</td>
 </tr>
+<?php
+if( Request('type') == 'cc' ) {
+	?>
+	<tr>
+		<th>&nbsp;</th>
+		<td><br />Choose the initial size of your drawing. You will be able to change this later.</td>
+	</tr>
+	<tr>
+		<th>Terms</th>
+		<td>
+			<?php
+				$range = array(0,3,6,9,12);
+				$options = array();
+				foreach( $range as $i )
+					$options[$i] = $i;
+				echo GenerateSelectBox($options, 'num_terms', 3);
+			?>
+		</td>
+	</tr>
+	<tr>
+		<th>Empty Rows</th>
+		<td>
+			<?php
+				$range = range(0, 9);
+				$options = array();
+				foreach( $range as $i )
+					$options[$i] = $i;
+				echo GenerateSelectBox($options, 'num_extra_rows', 3);
+			?>
+		</td>
+	</tr>
+	<tr>
+		<th>Columns</th>
+		<td>
+			<?php
+				$range = range(3, 9);
+				$options = array();
+				foreach( $range as $i )
+					$options[$i] = $i;
+				echo GenerateSelectBox($options, 'num_columns', 6);
+			?>
+		</td>
+	</tr>
+<?php
+}
+?>
 <tr>
 	<td>&nbsp;</td>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>
 </tr>
 </table>
-<input type="hidden" name="id" value="">
+<input type="hidden" name="id" value="" />
+<input type="hidden" name="type" value="<?= Request('type') ?>" />
 </form>
 
 <?php } else { ?>

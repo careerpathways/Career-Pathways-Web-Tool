@@ -13,8 +13,39 @@ PrintHeader();
 
 <table width="100%"><tr>
 <td>
-	<a href="/a/post_drawings.php?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
-	&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_import.php" class="edit"><img src="/common/silk/lightning_go.png" width="16" height="16"> <span class="imglinkadjust">import drawing</span></a>
+<?php
+	if( $MODE == 'post' )
+	{
+		$my_type = $DB->GetValue('organization_type', 'schools', intval($_SESSION['school_id']));
+		if( IsAdmin() ) {
+			?>
+			<a href="/a/post_drawings.php?action=new_drawing_form&type=hs" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new hs program</span></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new cc pathway</span></a>
+			<?php
+		}
+		elseif( $my_type == 'HS' )
+		{
+			?>
+			<a href="/a/post_drawings.php?action=new_drawing_form&type=hs" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+			<?php
+		}
+		else
+		{
+			?>
+			<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+			<?php
+		}
+		?>
+		&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_import.php" class="edit"><img src="/common/silk/lightning_go.png" width="16" height="16"> <span class="imglinkadjust">import drawing</span></a>
+		<?php
+	}
+	else
+	{
+		?>
+		<a href="/a/drawings.php?action=new_drawing_form" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+		<?php
+	}
+	?>
 	&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:selectDefaults()" class="edit"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
 </td>
 <td width="290">

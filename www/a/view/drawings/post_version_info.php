@@ -182,9 +182,7 @@ if( $post->type == 'CC' )
 					$range = array(0,3,6,9,12);
 					$options = array();
 					foreach( $range as $i )
-					{
 						$options[$i] = $i;
-					}
 					echo GenerateSelectBox($options, 'new_num_terms', $post->numRows);	
 				?>
 				<a href="javascript:saveConfig('terms', 'num_terms')">save</a>
@@ -203,9 +201,7 @@ if( $post->type == 'CC' )
 				$range = range(0, 9);
 				$options = array();
 				foreach( $range as $i )
-				{
 					$options[$i] = $i;
-				}
 				echo GenerateSelectBox($options, 'new_num_extra_rows', $post->numExtraRows);			
 			?>
 			<a href="javascript:saveConfig('extra_rows', 'num_extra_rows')">save</a>
@@ -221,9 +217,7 @@ if( $post->type == 'CC' )
 				$range = range(3, 9);
 				$options = array();
 				foreach( $range as $i )
-				{
 					$options[$i] = $i;
-				}
 				echo GenerateSelectBox($options, 'new_num_columns', $post->numCols);			
 			?>
 			<a href="javascript:saveConfig('columns', 'num_columns')">save</a>
