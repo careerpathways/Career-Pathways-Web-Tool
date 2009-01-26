@@ -31,6 +31,10 @@ if (KeyInRequest('action')) {
 			showNewDrawingForm();
 			die();
 			break;
+		case 'config':
+			processConfigRequest();
+			die();
+			break;
 	}
 }
 
@@ -174,14 +178,15 @@ function showVersion() {
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
 	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
 
+	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
+
 	$editing = 1;   // TODO? set this to 0 when in view mode
 	if( $editing ) 
 	{
-		$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
-		$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	}
 	
 	PrintHeader();
@@ -314,7 +319,11 @@ function ShowDrawingForm($id) {
 
 function showVersionInfo() {
 	global $DB, $MODE, $TEMPLATE;
+
+	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
+
 	PrintHeader();
 	$version_id = Request('version_id');
 	require('view/drawings/post_version_info.php');
@@ -354,7 +363,7 @@ function ShowDrawingListHelp() {
 }
 
 function ShowReadonlyForm($id) {
-	require('view/ccti/read_only_form.php');
+	require('view/post/read_only_form.php');
 }
 
 function showToolbarAndHelp($publishAllowed, $helpFile = false) {
@@ -362,7 +371,138 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/post/helpbar.php');
 }
 
+function processConfigRequest()
+{
+	global $DB;
 
+	$drawing_id = intval(Request('drawing_id'));
+	
+	if( !CanEditDrawing($drawing_id) )
+		die('Permissions error');
+	
+	switch( Request('change') )
+	{
+	case 'terms':
+		$old_rows = $DB->GetValue('num_rows', 'post_drawings', $drawing_id);
+		$new_rows = intval(Request('value'));
+		
+		$drawing = array();
+		$drawing['num_rows'] = $new_rows;
+		$DB->Update('post_drawings', $drawing, $drawing_id);
+
+		if( $new_rows < $old_rows )
+		{
+			// removing rows. delete some database records.
+			$DB->Query('DELETE FROM post_cell 
+				WHERE drawing_id='.$drawing_id.'
+ 				AND row_num>'.($new_rows));
+		}
+		elseif( $old_rows < $new_rows )
+		{
+			// adding rows. make some new empty cells.
+
+			$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
+			
+			for( $i = $old_rows+1; $i <= $new_rows; $i++ )
+			{
+				foreach( $cols as $num=>$col_id )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['col_id'] = $col_id;
+					$cell['row_num'] = $i;
+					$DB->Insert('post_cell', $cell);
+				}
+			}
+		
+		}
+		
+		break;
+	case 'extra_rows':
+		$old_rows = $DB->GetValue('num_extra_rows', 'post_drawings', $drawing_id);
+		$new_rows = intval(Request('value'));
+		
+		$drawing = array();
+		$drawing['num_extra_rows'] = $new_rows;
+		$DB->Update('post_drawings', $drawing, $drawing_id);
+
+		if( $new_rows < $old_rows )
+		{
+			// removing rows. delete some database records.
+			$DB->Query('DELETE FROM post_cell 
+				WHERE drawing_id='.$drawing_id.'
+ 				AND row_num>='.(100+$new_rows));
+		}
+		elseif( $old_rows < $new_rows )
+		{
+			// adding rows. make some new empty cells.
+
+			$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
+			
+			for( $i = $old_rows; $i < $new_rows; $i++ )
+			{
+				foreach( $cols as $num=>$col_id )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['col_id'] = $col_id;
+					$cell['row_num'] = $i+100;
+					$DB->Insert('post_cell', $cell);
+				}
+			}
+		}
+		break;
+	case 'columns':
+		$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
+		$drawing = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$drawing_id);
+
+		$old_cols = count($cols);
+		$new_cols = intval(Request('value'));
+		
+		if( $new_cols < $old_cols )
+		{
+			// removing columns. delete cells vertically
+			for( $i = $old_cols; $i > $new_cols; $i-- )
+			{
+				$DB->Query('DELETE FROM post_col WHERE id='.$cols[$i]);
+				$DB->Query('DELETE FROM post_cell WHERE col_id='.$cols[$i]);
+			}
+		}
+		else
+		{
+			// adding columns. add cells vertically
+			
+			for( $i = $old_cols+1; $i <= $new_cols; $i++ )
+			{
+				$col = array();
+				$col['drawing_id'] = $drawing_id;
+				$col['num'] = $i;
+				$col_id = $DB->Insert('post_col', $col);
+				
+				for( $j=1; $j<=$drawing['num_rows']; $j++ )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['row_num'] = $j;
+					$cell['col_id'] = $col_id;
+					$DB->Insert('post_cell', $cell);
+				}
+
+				for( $j=100; $j<$drawing['num_extra_rows']+100; $j++ )
+				{
+					$cell = array();
+					$cell['drawing_id'] = $drawing_id;
+					$cell['row_num'] = $j;
+					$cell['col_id'] = $col_id;
+					$DB->Insert('post_cell', $cell);
+				}
+
+			}
+		}
+	
+		break;	
+	}
+}
 
 
 ?>

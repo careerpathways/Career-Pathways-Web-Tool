@@ -360,7 +360,7 @@ class POSTChart_HS extends POSTChart
 			case 4:
 				return '' . $num+8;
 			default:
-				return '';
+				return '<br/><br/>';
 		}
 	}
 
@@ -416,7 +416,7 @@ class POSTChart_CC extends POSTChart
 
 	protected function _rowName($num)
 	{
-		return ($num < 100 ? ucfirst(ordinalize($num)) . ' Term' : '');
+		return ($num < 100 ? ucfirst(ordinalize($num)) . ' Term' : '<br/><br/>');
 	}
 
 	protected function _rowNameMini($num)

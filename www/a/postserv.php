@@ -42,7 +42,7 @@ require_once("inc.php");
 					$version_id = intval($_GET['id']);
 					break;
 				case 'swap':
-					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_GET['toID']));
+					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_POST['toID']));
 					break;
 				default:
 					die('<div class="greyboxError">Misunderstood Commit Type</div>');

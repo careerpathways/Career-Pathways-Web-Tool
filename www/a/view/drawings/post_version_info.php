@@ -155,7 +155,7 @@ if( $drawing['published'] ) {
 
 <h3>Drawing Structure</h3>
 <br />
-<table>
+<table class="post_drawing_structure">
 <tr>
 	<th width="80">Block Diagram</th>
 	<td>
@@ -165,30 +165,107 @@ if( $drawing['published'] ) {
 		?>
 	</td>
 </tr>
+<tr>
+	<th>Help</th>
+	<td>The diagram above represents your drawing. Shaded cells have content entered in them, white cells are empty. Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you remove 3 columns, the contents of those columns will be permanently erased.</td>
+</tr>
 <?php
 if( $post->type == 'CC' )
 {
 	?>
 	<tr>
 		<th>Terms</th>
-		<td><?= $post->numRows ?></td>
+		<td id="num_terms">
+			<div class="current"><span class="post_large_number"><?= $post->numRows ?></span> <a href="javascript:changeTerms()">change</a></div>
+			<div class="editing" style="display:none">
+				<?php
+					$range = array(0,3,6,9,12);
+					$options = array();
+					foreach( $range as $i )
+					{
+						$options[$i] = $i;
+					}
+					echo GenerateSelectBox($options, 'new_num_terms', $post->numRows);	
+				?>
+				<a href="javascript:saveConfig('terms', 'num_terms')">save</a>
+			</div>
+		</td>
 	</tr>
 <?php
 }
 ?>
 <tr>
-	<th>Extra Rows</th>
-	<td><?= $post->numExtraRows ?></td>
+	<th>Blank Rows</th>
+	<td id="num_extra_rows">
+		<div class="current"><span class="post_large_number"><?= $post->numExtraRows ?></span> <a href="javascript:changeExtraRows()">change</a></div>
+		<div class="editing" style="display:none">
+			<?php
+				$range = range(0, 9);
+				$options = array();
+				foreach( $range as $i )
+				{
+					$options[$i] = $i;
+				}
+				echo GenerateSelectBox($options, 'new_num_extra_rows', $post->numExtraRows);			
+			?>
+			<a href="javascript:saveConfig('extra_rows', 'num_extra_rows')">save</a>
+		</div>
+	</td>
 </tr>
 <tr>
 	<th>Columns</th>
-	<td><?= $post->numCols ?></td>
+	<td id="num_columns">
+		<div class="current"><span class="post_large_number"><?= $post->numCols ?></span> <a href="javascript:changeColumns()">change</a></div>
+		<div class="editing" style="display:none">
+			<?php
+				$range = range(3, 9);
+				$options = array();
+				foreach( $range as $i )
+				{
+					$options[$i] = $i;
+				}
+				echo GenerateSelectBox($options, 'new_num_columns', $post->numCols);			
+			?>
+			<a href="javascript:saveConfig('columns', 'num_columns')">save</a>
+		</div>
+	</td>
 </tr>
 </table>
 
 
-<script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript">
+
+var $j = jQuery.noConflict();
+
+function changeTerms() {
+	$j('#num_terms .current').css({display: 'none'});
+	$j('#num_terms .editing').css({display: 'block'});
+}
+
+function changeExtraRows() {
+	$j('#num_extra_rows .current').css({display: 'none'});
+	$j('#num_extra_rows .editing').css({display: 'block'});
+}
+
+function changeColumns() {
+	$j('#num_columns .current').css({display: 'none'});
+	$j('#num_columns .editing').css({display: 'block'});
+}
+
+function saveConfig(change, did) {
+	$j.post('post_drawings.php', {
+			action: 'config',
+			drawing_id: <?= $version_id ?>,
+			change: change,
+			value: $j('#'+did+' select').attr('value')
+		},
+		function() {
+			window.location.reload();
+		}
+	);
+}
+
+
 
 function publishVersion() {
 	getLayer('action_field').value = "publish";
