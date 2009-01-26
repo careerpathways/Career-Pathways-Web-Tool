@@ -104,18 +104,20 @@ if( KeyInRequest('drawing_id') ) {
 			die();
 		}
 
-		if( CanDeleteDrawing($drawing) && Request('delete') == 'delete' ) {
+		if( Request('delete') == 'delete' ) {
 			$drawing_id = intval($_REQUEST['id']);
-			// when deleting the entire drawing (from drawing_main) actually remove the records
-			$DB->Query('DELETE FROM connections WHERE source_object_id IN (SELECT objects.id FROM objects, drawings WHERE objects.drawing_id=drawings.id AND drawings.parent_id=' . $drawing_id . ')');
-
-			$drawings = $DB->VerticalQuery("SELECT id FROM drawings WHERE parent_id=" . $drawing_id,'id');
-			foreach( $drawings as $did ) {
-				$DB->Query("DELETE FROM objects WHERE drawing_id=".$did);
+			if( CanDeleteDrawing($drawing_id) ) {
+				// when deleting the entire drawing (from drawing_main) actually remove the records
+				$DB->Query('DELETE FROM connections WHERE source_object_id IN (SELECT objects.id FROM objects, drawings WHERE objects.drawing_id=drawings.id AND drawings.parent_id=' . $drawing_id . ')');
+	
+				$drawings = $DB->VerticalQuery("SELECT id FROM drawings WHERE parent_id=" . $drawing_id,'id');
+				foreach( $drawings as $did ) {
+					$DB->Query("DELETE FROM objects WHERE drawing_id=".$did);
+				}
+				$DB->Query("DELETE FROM drawings WHERE parent_id=".$_REQUEST['id']);
+				$DB->Query("DELETE FROM drawing_main WHERE id=".$_REQUEST['id']);
+				header("Location: ".$_SERVER['PHP_SELF']);
 			}
-			$DB->Query("DELETE FROM drawings WHERE parent_id=".$_REQUEST['id']);
-			$DB->Query("DELETE FROM drawing_main WHERE id=".$_REQUEST['id']);
-			header("Location: ".$_SERVER['PHP_SELF']);
 			die();
 		}
 

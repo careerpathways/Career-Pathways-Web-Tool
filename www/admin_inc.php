@@ -98,17 +98,32 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 	$TEMPLATE->AddCrumb('/modules/'.$module.'.php', $MODULE_PAGETITLE);
 }
 
-function CanDeleteDrawing(&$drawing) {
-        return (IsAdmin()
-                || (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
-                || $drawing['created_by'] == $_SESSION['user_id']);
+function CanDeleteDrawing($drawing_id) {
+	global $DB;
+	
+	$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
+
+	// state admins can delete anything
+	// school admins can delete any drawing at their school
+	// anyone else can delete drawings created by them
+
+	return (IsAdmin()
+			|| (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] )
+			|| $drawing['created_by'] == $_SESSION['user_id']);
 }
 
-function CanEditDrawing(&$drawing) {
-        return (IsAdmin()
-                || ($_SESSION['school_id'] == $drawing['school_id']
-					&& (IsSchoolAdmin() || $drawing['created_by'] == $_SESSION['user_id']))
-					);
+function CanEditVersion($drawing) {
+	global $DB;
+	
+	if( !is_array($drawing) )
+	{
+		$drawing = $DB->SingleQuery('SELECT *, M.school_id FROM post_drawings D, post_drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
+	}
+
+	return (IsAdmin()
+			|| ($_SESSION['school_id'] == $drawing['school_id']
+				&& (IsSchoolAdmin() || $drawing['created_by'] == $_SESSION['user_id']))
+				);
 }
 
 ?>

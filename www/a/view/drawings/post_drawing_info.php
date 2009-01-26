@@ -31,7 +31,10 @@ if( $id != "" ) {
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
 <p>
-<?php if( $id == "" ) { ?>
+<?php if( $id == "" ) {
+	$drawing = array('id'=>'', 'code'=>'', 'name'=>'');	
+	
+?>
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <table>
 <tr>
@@ -73,7 +76,7 @@ if( Request('type') == 'cc' ) {
 		<th>Terms</th>
 		<td>
 			<?php
-				$range = array(0,3,6,9,12);
+				$range = array(3,6,9,12);
 				$options = array();
 				foreach( $range as $i )
 					$options[$i] = $i;
@@ -89,7 +92,7 @@ if( Request('type') == 'cc' ) {
 				$options = array();
 				foreach( $range as $i )
 					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'num_extra_rows', 3);
+				echo GenerateSelectBox($options, 'num_extra_rows', 0);
 			?>
 		</td>
 	</tr>
@@ -189,7 +192,7 @@ if( Request('type') == 'cc' ) {
 <tr>
 	<th>Delete</th>
 	<td width="545">
-	<?php if( CanDeleteDrawing($drawing) ) { ?>
+	<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
 		Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
 		<p><b>There is no way to recover deleted drawings!</b></p>
 		<p>If you are sure you want to delete the entire drawing, click the link below:</p>
@@ -288,7 +291,7 @@ function preview_drawing(code,version) {
 	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600);
 }
 
-<?php if( CanDeleteDrawing($drawing) ) { ?>
+<?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
 function deleteConfirm() {
 	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
 }

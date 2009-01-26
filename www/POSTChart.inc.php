@@ -206,7 +206,7 @@ abstract class POSTChart
 		}
 		echo '<tr>', "\n";
 
-		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '"></td>', "\n";
+		echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_drawing['footer_text']?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
 		echo '</tr>', "\n";
 		echo '</table>', "\n";
 	}

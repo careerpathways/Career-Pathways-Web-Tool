@@ -130,17 +130,11 @@ if( $id != "" ) {
 </tr>
 <?php
 	require('version_list.php');
-	/*
-	who can delete drawings?
-		1. admins
-		2. school admins & webmasters at the same school
-		3. the owner of the drawing
-	*/
 ?>
 <tr>
 	<th>Delete</th>
 	<td width="545">
-	<?php if( CanDeleteDrawing($drawing) ) { ?>
+	<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
 		Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
 		<p><b>There is no way to recover deleted drawings!</b></p>
 		<p>If you are sure you want to delete the entire drawing, click the link below:</p>
@@ -235,7 +229,7 @@ function showTitleChange() {
 	getLayer('title_fixed').style.display = 'none';
 }
 
-<?php if( CanDeleteDrawing($drawing) ) { ?>
+<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
 function deleteConfirm() {
 	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
 }

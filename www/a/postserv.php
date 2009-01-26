@@ -48,11 +48,11 @@ require_once("inc.php");
 					die('<div class="greyboxError">Misunderstood Commit Type</div>');
 			}
 
-			$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".$version_id);
-			if( !CanEditDrawing($drawing) )
+			if( !CanEditVersion($version_id) )
 			{
 				die('Cannot edit this drawing due to a permissions error');
 			}
+			$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".$version_id);
 
 			$update = array();
 			$update['last_modified'] = $DB->SQLDate();

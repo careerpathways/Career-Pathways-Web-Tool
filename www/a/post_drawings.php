@@ -99,14 +99,17 @@ if( KeyInRequest('drawing_id') ) {
 			die();
 		}
 
-		if( CanDeleteDrawing($drawing) && Request('delete') == 'delete' ) {
+		if( Request('delete') == 'delete' ) {
 			$drawing_id = intval($_REQUEST['id']);
-			// when deleting the entire drawing (from drawing_main) actually remove the records
-
-					
-			$DB->Query("DELETE FROM post_drawings WHERE parent_id=".$drawing_id);
-			$DB->Query("DELETE FROM post_drawing_main WHERE id=".$drawing_id);
-			header("Location: ".$_SERVER['PHP_SELF']);
+			if( CanDeleteDrawing($drawing_id) ) {
+				// when deleting the entire drawing (from drawing_main) actually remove the records
+						
+				$DB->Query("DELETE FROM post_drawings WHERE parent_id=".$drawing_id);
+				$DB->Query("DELETE FROM post_drawing_main WHERE id=".$drawing_id);
+				$DB->Query("DELETE FROM post_cell WHERE drawing_id=".$drawing_id);
+				$DB->Query("DELETE FROM post_col WHERE drawing_id=".$drawing_id);
+				header("Location: ".$_SERVER['PHP_SELF']);
+			}
 			die();
 		}
 
@@ -467,7 +470,7 @@ function processConfigRequest()
 
 	$drawing_id = intval(Request('drawing_id'));
 	
-	if( !CanEditDrawing($drawing_id) )
+	if( !CanEditVersion($drawing_id) )
 		die('Permissions error');
 	
 	switch( Request('change') )
