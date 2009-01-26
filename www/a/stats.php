@@ -418,33 +418,5 @@ function bar($index, &$arr, $key, $width=100) {
 
 
 
-function PT($a) {
-	echo '<table border="1" cellpadding="2" style="border-collapse:collapse">';
-	foreach( $a as $num=>$row ) {
-		if( $num == 0 ) {
-			echo '<tr>';
-			foreach( $row as $field=>$val ) {
-				echo '<td>'.$field.'</td>';
-			}
-			echo '</tr>';
-		}
-		echo '<tr>';
-		foreach( $row as $field=>$val ) {
-			echo '<td>';
-			if( 0 && is_array($val) ) {
-				pa($val);
-			} else {
-				if( $val == '' ) {
-					echo '&nbsp;';
-				} else {
-					echo $val;
-				}
-			}
-			echo '</td>';
-		}
-		echo '</tr>';
-	}
-	echo '</table>';
-}
 
 ?>

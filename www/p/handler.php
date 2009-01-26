@@ -39,6 +39,23 @@ foreach( $news as $n ) {
 
 	$wiki =& new Text_Wiki();
 	$xhtml = $wiki->transform($n['text'], 'Xhtml');
+
+	/*** for the embedding instructions ***/
+	$colors = array('999999','cccccc','cf9d2b','e6d09e','295a76');
+	$color_chart = '<table style="margin-left:20px">';
+	foreach( $colors as $c ) {
+		$color_chart .= '<tr><td width="30" height="20" style="background-color:#'.$c.'"></td><td>#'.strtoupper($c).'</td></tr>';
+	}
+	$color_chart .= '</table>';
+	
+	$xhtml = str_replace("\n".'<span style="color: #0000BB">&lt;?php'."\n\n", '<span>', $xhtml);
+	$xhtml = str_replace('?&gt;','',$xhtml);
+	
+	$xhtml = str_replace("\$example_url", "examples.ctepathways.org", $xhtml);
+	$xhtml = str_replace("\$oregon_url", "oregon.ctepathways.org", $xhtml);
+	$xhtml = str_replace("\$color_chart", $color_chart, $xhtml);
+	/****************/	
+
 	echo $xhtml;
 
 	echo '<br>';
