@@ -103,6 +103,12 @@ require_once("inc.php");
 			echo getHSFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
+			$("#postFormContent").focus();
+
+			$(".postGreyboxContent input").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#postFormSave").click();
+			});
+
 			$("#postFormSave").click(function(){
 				$.ajax({
 					type: "POST",
@@ -122,6 +128,12 @@ require_once("inc.php");
 			echo getCCFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
+			$("#postFormSubject").focus();
+
+			$(".postGreyboxContent input").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#postFormSave").click();
+			});
+
 			if($("#postTopRadio").attr("checked"))
 				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
 			else
@@ -179,6 +191,7 @@ require_once("inc.php");
 			</div>
 		</form>
 		<script language="JavaScript" type="text/javascript">
+			$("#postFormTitle").focus();
 			$("#postFormSave").click(function(){
 				$.ajax({
 					type: "POST",

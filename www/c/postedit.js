@@ -47,12 +47,20 @@ function bindEditableCells()
 				chGreybox.create(data, 450, 300);
 		});
 	});
+	
 }//end function bindEditableCells
 
 function bindPostCells()
 {
 	// The event is on 'mouseup', not 'click', so we can also overload each cell to be draggable
-	$(".post_cell").unbind('mouseup').bind('mouseup', function(){
+	$(".post_cell").unbind('mouseup').bind('mouseup', function(e) {
+	
+		if( e.button != 0 )
+		{
+			// prevent right-clicks from triggering this
+			return false;
+		}
+	
 		// Split apart the id into meaningful components
 		var cellID = $(this).children().attr("id").split("_");
 		cellID = cellID[2];
@@ -62,16 +70,16 @@ function bindPostCells()
 			{mode: "prompt", type: "cell", id: cellID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				/*
-				$(document).keypress( function(e) {
-					if( e.which == 0 )
+				$(document).keydown( function(e) {
+					if( e.which == 27 )
 					{
 						chGreybox.close();
 						$(document).keypress( function(e) {} );
 					}
 				});
-				*/
 		});
+		
+		return true;
 	});
 
 	// Droppable cells can have any other cell dragged into them

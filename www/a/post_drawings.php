@@ -259,11 +259,15 @@ function showVersion() {
 
 
 
-	if( CanEditOtherSchools() || $_SESSION['school_id'] == $drawing['school_id'] ) {
+	if(
+	   (CanEditOtherSchools() || $_SESSION['school_id'] == $drawing['school_id'])   // check for matching schools
+	   
+	   ) {
 		$readonly = false;
 	} else {
 		$readonly = true;
 	}
+
 
 	if( $readonly == false ) 
 	{
