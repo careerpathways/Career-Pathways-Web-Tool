@@ -30,7 +30,7 @@ if( $id != "" ) {
 var $j = jQuery.noConflict();
 </script>
 <script type="text/javascript" src="/files/greybox.js"></script>
-<script type="text/javascript" src="/files/post_drawing_list.js"></script>
+<!--<script type="text/javascript" src="/files/post_drawing_list.js"></script>-->
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
@@ -321,12 +321,12 @@ function doDelete() {
 }
 <?php } ?>
 
-
+<?php if( $drawing['id'] ) { ?>
 
 function createConnection(drawing_id)
 {
 	$j.get("post_drawings.php",
-		{drawing_id: <?= $drawing['id'] ?>, action: 'drawing_list', showForm: 1},
+		{drawing_id: <?= intval($drawing['id']) ?>, action: 'drawing_list', showForm: 1},
 		function(data) {
 			chGreybox.create(data, 700,500);
 		}
@@ -394,7 +394,7 @@ function save_drawing_selection()
 	{
 		$j.post("post_drawings.php",
 			{action: 'drawing_list',
-			 drawing_id: <?= $drawing['id'] ?>,
+			 drawing_id: <?= intval($drawing['id']) ?>,
 			 save: 1,
 			 drawings: selected_drawings.join(",")
 			},
@@ -410,12 +410,14 @@ function remove_connection(id)
 {
 		$j.post("post_drawings.php",
 			{action: 'drawing_list',
-			 drawing_id: <?= $drawing['id'] ?>,
+			 drawing_id: <?= intval($drawing['id']) ?>,
 			 delete: id
 			},
 			function(data) {
 				$j('#connected_drawing_list').html(data);
 			});
 }
+
+<?php } ?>
 
 </script>
