@@ -965,29 +965,29 @@ a.chart_header {
   padding-top: 10px;
   border-bottom: 1px #<?= $BLUE ?> solid;
 }
-ul.import_instructions 
+ol.import_instructions 
 {
   list-style-type: none;
   margin: 0 auto 30px auto;
   padding: 0;
   width: 500px;
 }
-ul.import_instructions li
+ol.import_instructions > li
 {
   margin: 0;
   padding: 15px 0 15px 40px;
 }
 
-ul.import_instructions li.l1 {
+.import_instructions li.l1 {
   background: url(/images/numbers/01.png) left no-repeat;
 }
-ul.import_instructions li.l2 {
+.import_instructions li.l2 {
   background: url(/images/numbers/02.png) left no-repeat;
 }
-ul.import_instructions li.l3 {
+.import_instructions li.l3 {
   background: url(/images/numbers/03.png) left no-repeat;
 }
-ul.import_instructions li.l4 {
+.import_instructions li.l4 {
   background: url(/images/numbers/04.png) left no-repeat;
 }
 

@@ -157,9 +157,11 @@ global $DB;
 	}
 	
 	echo '<h2>' . $school['school_name'] . '</h2>';
-	echo '<hr>';
-	echo '<br />';
-	
+	?>
+		<p><span class="red">NOTE:</span> Changes are saved automatically. Changes to the default column headers will affect any drawings created in the future.</p>
+		<p>Existing drawings will not be affected by changes made here. Existing versions copied into NEW versions will retain the columns of the existing drawing.</p>
+		<p>Click and drag to re-order the columns</p>
+	<?php
 	echo '<h3>Default Column Headers</h3>';
 	
 	$defaults = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$id.' ORDER BY num');

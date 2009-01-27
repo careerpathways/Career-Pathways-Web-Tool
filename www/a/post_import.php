@@ -82,14 +82,17 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 if(!isset($_FILES['post_excel_file']) && !isset($_POST['xmlLocation']))
 {
 ?>
-	<ul class="import_instructions">
-		<li class="l1">Export your file from Excel in the "Excel 2004 XML" format.</li>
-		<li class="l2">Upload the file in the form below.</li>
-		<li class="l3">You will see a preview of your file as the system can read it.</li>
-		<li class="l4">You will then have a chance to choose which components of the file to include in your import, as well as give each a name and assign them to schools.</li>
-	</ul>
-
-	You can download <a href="/files/POST-Example.xls" target="_new">POST-Example.xls</a> to use as a guide to help ensure positive results when you import.
+	<ol class="import_instructions">
+		<li class="l1">Optional: Download this Excel file (<a href="/files/POST-Example.xls" target="_new">POST-Example.xls</a>) to use as a guide to ensure positive results when importing your POST drawing. Add your content to this file and save it on your computer for your conversion needs.</li>
+		<li class="l2">Save your POST file from Excel in one of the following formats: "XML Spreadsheet (.xml)" or "Excel 2004 XML Spreadsheet (.xml)".</li>
+		<li class="l3">Upload the .xml file using the file browser below.</li>
+		<li class="l4">The following screen will display a preview of your file. From there you will be able to:</li>
+		<ul>
+			<li>select which components (high school section, community college section, or both) of the file to include in your import</li>
+			<li>give each section a name, and</li>
+			<li>assign each section to a school. Your school will be assigned by default to your section.</li>
+		</ul>
+	</ol>
 
 	<br /><br />
 	<div style="width: 430px; margin: 0 auto;">
@@ -144,9 +147,13 @@ $colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="
 	<div style="width: 100%;">
 		<div style="font: normal 22px Arial, Helvetica, sans-serif; color: #777777; text-align: center;">Here is a preview of your import.</div>
 		<br />
-		<p>If this does not look the way you expected, <a href="<?= $_SERVER['PHP_SELF'] ?>">go back</a>, edit your Excel file, and re-upload.</p>
-		<p>You can also make changes to your drawings after they have been imported.</p>
-		<p>You must give each drawing a name, and assign each drawing to a school. Once you assign a drawing to a school that is not your own, you will not be able to edit it. Someone at that school will need to make changes and/or publish the drawing.</p>
+		<p>If this does not look the way you expected, <a href="<?= $_SERVER['PHP_SELF'] ?>">go back</a>, edit your Excel file, save it again as an .xml file, and re-upload.</p>
+		<p>NOTE: You can make content and layout (row and column) changes to your drawings after they have been imported.</p>
+		<ol>
+			<li>Use the checkbox ("Include this drawing?") to the right of each section name to select whether or not you want to import that section.</li>
+			<li>Give each drawing section a name.</li>
+			<li>Assign each drawing to a school. Once you assign a drawing to a school that is not your own, you will not be able to edit it. A user at that school will need to make changes and/or publish the drawing. </li>
+		</ol>
 	</div>
 
 	<div style="margin: 10px 0; position: relative;">
