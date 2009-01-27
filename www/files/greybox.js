@@ -21,9 +21,7 @@ var chGreybox = {
 	'  <div id="greybox_inset" style="margin-top:' + (document.documentElement.scrollTop+40) + 'px; margin-left: ' + (document.documentElement.scrollLeft+40) + 'px; width:' + (content_width+30) + 'px">' +
 	' 	<div id="greybox_container">' + 
 	'		<div id="greybox_xbutton"><a href="javascript:chGreybox.close();">x</a></div>' +
-	'		<div id="greybox_content">' +
-			content + 
-	'		</div>' +
+	'		<div id="greybox_content">' + ((typeof jQuery != "function") ? content : '') + '</div>' +
 	'	</div>' +
 	'	<table id="greybox_bottom"><tr>' +
 	'		<td id="greybox_bottomleft" width="' + (content_width) + '">&nbsp;</td>' +
@@ -31,9 +29,15 @@ var chGreybox = {
 	'	</tr></table>' +
 	'  </div>' +
 	'</div>';
-	
+
 		overlay.innerHTML = contents;
-		document.body.appendChild(overlay);
+		if (typeof jQuery == "function")
+		{
+			$("body").append(overlay);
+			$("#greybox_content").html(content);
+		}
+		else
+			document.body.appendChild(overlay);
 	},
 
 	close: function() {

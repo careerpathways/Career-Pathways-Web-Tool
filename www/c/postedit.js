@@ -32,7 +32,7 @@ function bindEditableCells()
 			{mode: "prompt", type: "head", id: headID},
 			function(data){
 			chGreybox.create(data, 450, 300);
-		});
+		}, "html");
 	});
 
 	// Make the footer editable
@@ -45,7 +45,7 @@ function bindEditableCells()
 			{mode: "prompt", type: "footer", id: footerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-		});
+		}, "html");
 	});
 	
 }//end function bindEditableCells
@@ -77,7 +77,7 @@ function bindPostCells()
 						$(document).keypress( function(e) {} );
 					}
 				});
-		});
+		}, "html");
 		
 		return true;
 	});

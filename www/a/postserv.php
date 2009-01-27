@@ -163,17 +163,17 @@ require_once("inc.php");
 			});
 
 			if($("#postTopRadio").attr("checked"))
-				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
+				$("#postFormContent, #postFormURL").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
 			else
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
 
 			$("#postTopRadio").click(function(){
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", false);
-				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", false).css({"background" : "#FFFFFF"});
+				$("#postFormContent, #postFormURL").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
 			});
 			$("#postBottomRadio").click(function(){
-				$("#postFormContent, #postFormURL").attr("disabled", false);
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#postFormContent, #postFormURL").attr("disabled", false).css({"background" : "#FFFFFF"});
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
 			});
 
 			$("#postFormSave").click(function(){
@@ -397,13 +397,17 @@ require_once("inc.php");
 						<input type="radio" class="radio" name="postModeSelector" id="postTopRadio"<?=(($cell['course_subject'] != '' || !$cell['content'])?' checked="checked"':'')?> />
 					</td>
 					<td id="postTopHalf" style="padding-left: 20px;" valign="top">
-						<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
-						<div style="float: left; width: 50px; height: 20px;">
-							<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" />
+						<div>
+							<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
+							<div style="float: left; width: 50px; height: 20px;">
+								<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" />
+							</div>
 						</div>
-						<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
-						<div style="float: left; width: 50px; height: 20px;">
-							<input id="postFormNumber" maxlength="4" value="<?=$cell['course_number']?>" />
+						<div>
+							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
+							<div style="float: left; width: 50px; height: 20px;">
+								<input id="postFormNumber" maxlength="4" value="<?=$cell['course_number']?>" />
+							</div>
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>
 							<input id="postFormTitle" maxlength="255" style="width: 340px;" value="<?=$cell['course_title']?>" />
