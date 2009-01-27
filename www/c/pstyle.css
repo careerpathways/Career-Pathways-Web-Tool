@@ -45,9 +45,10 @@ table.post_chart, table.post_chart td, table.post_chart th {
 	text-align: center;
 	vertical-align: middle;
 	width: 120px;
+	padding: 12px 0;
 }
 .post_cell_hover {
-	background: #FFFFAA;
+	background-color: #FFFFAA !important;
 }
 .post_cell_dragHover {
 	border: 2px #FF7777 solid;

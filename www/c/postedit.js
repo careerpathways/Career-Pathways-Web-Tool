@@ -98,11 +98,13 @@ function bindPostCells()
 			$.post("/a/postserv.php?mode=commit&type=swap", {"fromID": fromID, "toID": toID}, function(){
 				var fromHTML = $("#post_cell_" + fromID).html();
 				var toHTML = $("#post_cell_" + toID).html();
+				var fromBG = $("#post_cell_" + fromID).parent().css("background");
+				var toBG = $("#post_cell_" + toID).parent().css("background");
 
 				// If I were to animate these cells swapping, it would totally be here.
-				$("#post_cell_" + toID).parent().empty().html('<div id="post_cell_' + fromID + '" class="post_draggable">' + fromHTML + '</div>');
-				$(ui.draggable).parent().empty().html('<div id="post_cell_' + toID + '" class="post_draggable">' + toHTML + '</div>');
-		
+				$("#post_cell_" + toID).parent().empty().html('<div id="post_cell_' + fromID + '" class="post_draggable">' + fromHTML + '</div>').css({"background" : fromBG });
+				$(ui.draggable).parent().empty().html('<div id="post_cell_' + toID + '" class="post_draggable">' + toHTML + '</div>').css({"background" : toBG });
+
 				bindPostCells();
 			});
 		}
@@ -113,13 +115,13 @@ function bindPostCells()
 		start : function() {
 			$(".post_cell").unbind('mouseup');
 			$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").hover(function(){},function(){});
-			$(this).css({ background: "#FFFFFF", border: "1px #777777 solid" })
+			$(this).css({ border: "1px #777777 solid" })
 		},
 		helper : 'original',
 		opacity : 0.5,
 		revert : "invalid",
 		stop: function(){
-			$(this).css({ background: "none", border: "none" });
+			$(this).css({ border: "none" });
 			bindPostCells();
 		}
 	});
@@ -131,26 +133,5 @@ function bindPostCells()
 		$(this).removeClass("post_cell_hover");
 	});
 
-	// Reset the heights of all the draggable DIVs and fill the parent element
-	$.each($(".post_draggable"), function()
-	{
-		// Reset each element's size so we can get an accurate read
-		$(this).css({
-			"padding-top" : 0,
-			height : "auto"
-		});
 
-		// Scan the cell for its width and its parent's width
-		var eleHeight = $(this).height();
-		var parHeight = $(this).parent().height();
-
-		// Calculate our top padding
-		var padTop = Math.round((parHeight/2) - (eleHeight/2));
-
-		$(this).css({
-			height : ($(this).parent().height() - padTop),
-			"padding-top" : padTop,
-			"vertical-align" : "middle"
-		});
-	});
 }//end function bindPostCells

@@ -22,7 +22,7 @@ require_once("inc.php");
 			elseif($_GET['type'] == 'swap')
 				die('<div class="greyboxError">Cannot Prompt to Swap, must Commit to Swap</div>');
 			else
-				die('<div class="greyboxError">Misunderstood Action Type</div>');
+				die('<div class="greyboxError">Misunderstood Prompting</div>');
 ?>
 	</div>
 </div>
@@ -78,7 +78,7 @@ require_once("inc.php");
 
 		break;
 		default:
-			echo '<div style="greyboxError">This mode is not supported</div>';
+			echo '<div style="greyboxError">You can only Prompt or Commit - Nothing Else.</div>';
 		break;
 	}//switch
 
@@ -90,7 +90,7 @@ require_once("inc.php");
 	{
 		global $DB;
 
-		$cell = $DB->SingleQuery("SELECT `post_drawing_main`.`type`, `content`, `href`, `course_subject`, `course_number`, `course_title`
+		$cell = $DB->SingleQuery("SELECT `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`
 			FROM `post_cell`
 			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
 			LEFT JOIN `post_drawing_main` ON (`post_drawings`.`parent_id` = `post_drawing_main`.`id`)
@@ -110,12 +110,21 @@ require_once("inc.php");
 			});
 
 			$("#postFormSave").click(function(){
+				var legendData = ''
+				$.each($(".post_legend_input"), function() {
+					var id = $(this).attr("id").split("_");
+					id = id[2];
+					legendData += '&legend[' + id + ']=' + $(this).val()
+				});
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val(),
+					data: "content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val() + legendData,
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
+						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
+						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
+						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
 						chGreybox.close();
 					}
 				});
@@ -154,12 +163,22 @@ require_once("inc.php");
 				else
 					$("#postFormSubject, #postFormNumber, #postFormTitle").val("");
 
+				var legendData = ''
+				$.each($(".post_legend_input"), function() {
+					var id = $(this).attr("id").split("_");
+					id = id[2];
+					legendData += '&legend[' + id + ']=' + $(this).val()
+				});
+
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + $("#postFormTitle").val() + "&content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val(),
+					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + $("#postFormTitle").val() + "&content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val() + legendData,
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
+						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
+						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
+						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
 						chGreybox.close();
 					}
 				});
@@ -258,19 +277,28 @@ require_once("inc.php");
 		$number = (isset($_POST['number']))?$_POST['number']:'';
 		$title = (isset($_POST['title']))?$_POST['title']:'';
 
+		$legendData = serialize($_POST['legend']);
+
 		// Update the database
 		$DB->Update('post_cell', array(
+			'legend'=>$legendData,
 			'course_subject'=>$subject,
 			'course_number'=>$number,
 			'course_title'=>$title,
 			'content'=>$_POST['content'],
 			'href' => $href), intval($id));
 
+		$background = '';
+		foreach($_POST['legend'] as $id=>$toggle)
+			if($toggle == 1)
+				$background .= $id . '-';
+		$background = ($background != '') ? 'url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : 'none;';
+
 		// Decide what we should draw back to the page
 		if($subject != '' && $number != '')
-			echo '<a href="javascript:void(0);">' . $subject . ' ' . $number . '<br />' . $title . '</a>';
+			echo '<a href="javascript:void(0);" style="background: ' . $background . '">' . $subject . ' ' . $number . '<br />' . $title . '</a>';
 		else
-			echo ($link?'<a href="javascript:void(0);">':'') . $_POST['content'] . ($link?'</a>':'');
+			echo ($link?'<a href="javascript:void(0);" style="background: ' . $background . '">':'<span style="background: ' . $background . '">') . $_POST['content'] . ($link?'</a>':'</span>');
 	}//end function commitCell
 	
 	function commitHead($id)
@@ -313,7 +341,10 @@ require_once("inc.php");
 	function getHSFormHTML(&$cell = NULL)
 	{
 		if(!$cell)
-			$cell = array('content'=>'', 'href'=>'');
+			$cell = array('content'=>'', 'href'=>'', 'legend'=>'');
+
+		$legend = @unserialize($cell['legend']);
+		getLegendHTML($legend);
 
 		ob_start();
 ?>
@@ -335,6 +366,12 @@ require_once("inc.php");
 	function getCCFormHTML(&$cell = NULL)
 	{
 		ob_start();
+
+		if(!$cell)
+			$cell = array('content'=>'', 'href'=>'', 'legend'=>'', 'course_subject'=>'', 'course_number'=>'', 'course_title'=>'');
+
+		$legend = @unserialize($cell['legend']);
+		getLegendHTML($legend);
 ?>
 		<form action="javascript:void(0);">
 			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
@@ -407,4 +444,60 @@ require_once("inc.php");
 		return ob_get_clean();
 	}//end function getFooterHTML
 
+	/**
+	 * This takes a legend array and prints the HTML/javascript for the Legend
+	 * This assumes that a <form> tag exists.. although with AJAX it doesn't really matter
+	 */
+	function getLegendHTML($legend)
+	{
+		global $DB;
+		
+		if(!is_array($legend))
+			$legend = array('1'=>'0', '2'=>'0', '3'=>'0', '4'=>'0', '5'=>'0', '6'=>'0', '7'=>'0', '8'=>'0');
+
+		echo '<div style="margin-bottom: 5px;">Legend Symbols:</div>', "\n";
+		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
+		foreach($legendList as $item)
+		{
+			$checked = ($legend[$item['id']] == 1) ? 'c' : 'b';
+?>
+<img style="margin-right: 20px; cursor: pointer;" class="post_legend_icon" id="legend_icon_<?=$item['id']?>" src="/c/images/legend/<?=$checked . $item['id']?>.png" alt="<?=$item['text']?>" />
+<input type="text" class="post_legend_input" id="legend_input_<?=$item['id']?>" style="display: none;" value="<?=$legend[$item['id']]?>" />
+<?php
+		}
+?>
+		<div style="clear: both; margin-top: 5px;" id="post_legend_help">Accrediation Articulation</div>
+		<div style="clear: both; height: 15px;"></div>
+		<script language="JavaScript" type="text/javascript">
+
+	var legendText = {<?php
+	$array = '';
+	foreach($legendList as $item)
+		$array .= '"' . $item['id'] . '" : "' . str_replace('"', '\"', $item['text']) . '", ';
+	echo substr($array, 0 ,-2) . '};', "\n";
+	?>
+
+	$(".post_legend_icon").hover(function(){
+		var id = $(this).attr("id").split("_");
+		id = id[2];
+		$("#post_legend_help").html(legendText[id]);
+	}, function() {
+		$("#post_legend_help").html("&nbsp;");
+	});
+
+	$(".post_legend_icon").click(function(){
+		var id = $(this).attr("id").split("_");
+		id = id[2];
+
+		var newValue = ($("#legend_input_" + id).val() == "0") ? "1" : "0";
+		$("#legend_input_" + id).val(newValue);
+		if(newValue == "1")
+			$("#legend_icon_" + id).attr("src", "/c/images/legend/c" + id + ".png");
+		else
+			$("#legend_icon_" + id).attr("src", "/c/images/legend/b" + id + ".png");
+	});
+
+		</script>
+<?php
+	}//end function getLegendHTML
 ?>

@@ -1,3 +1,2 @@
 RewriteEngine on
 RewriteRule ^(.+).png$ img.php?ids=$1
-

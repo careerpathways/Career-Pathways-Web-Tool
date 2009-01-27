@@ -167,7 +167,10 @@ abstract class POSTChart
 			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
-				echo '<td class="post_cell"><div id="post_cell_' . $cell->id . '" class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
+				list($titleTag, $background) = $this->_gatherLegend($cell->legend);
+
+				// Write the cell to the page
+				echo '<td class="post_cell" style="' . $background . '"><div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
 			}
 			echo '</tr>', "\n";
 		}
@@ -180,6 +183,28 @@ abstract class POSTChart
 			. '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '</table>', "\n";
+	}
+
+	private function _gatherLegend($legend)
+	{
+		global $DB;
+		$legendText = $DB->MultiQuery("SELECT `text` FROM `post_legend` ORDER BY `id` ASC");
+
+		// Figure out our legend code
+		$legend = @unserialize($legend);
+		if(!$legend)
+			$legend = array('1'=>'0', '2'=>'0', '3'=>'0', '4'=>'0', '5'=>'0', '6'=>'0', '7'=>'0', '8'=>'0');
+		$background = $titleTag = '';
+		foreach($legend as $id=>$toggle)
+			if($toggle == 1)
+			{
+				$background .= $id . '-';
+				$titleTag .= $legendText[($id - 1)]['text'] . ', ';
+			}
+		$titleTag = (strlen($titleTag) > 0) ? ' title="' . substr($titleTag, 0, -2) . '"' : '';
+		$background = (strlen($background) > 0) ? 'background: url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : '';	
+		// Return our information
+		return array($titleTag, $background);
 	}
 
 	public function displayMini()
