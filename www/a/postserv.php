@@ -476,7 +476,7 @@ require_once("inc.php");
 		if(!is_array($legend))
 			$legend = array('1'=>'0', '2'=>'0', '3'=>'0', '4'=>'0', '5'=>'0', '6'=>'0', '7'=>'0', '8'=>'0');
 
-		echo '<div style="margin-bottom: 5px;">Legend Symbols:</div>', "\n";
+		echo '<div style="margin-bottom: 5px;">Legend Symbols: (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)
 		{
