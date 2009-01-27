@@ -63,6 +63,11 @@ require_once("inc.php");
 				case 'swap':
 					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_POST['toID']));
 					break;
+				case 'legend':
+					if(IsAdmin())
+						commitLegend($_GET['id']);
+					else
+						$version_id = -1;
 				default:
 					die('<div class="greyboxError">Misunderstood Commit Type</div>');
 			}
@@ -352,6 +357,13 @@ require_once("inc.php");
 		$DB->Update('post_cell', array('row_num'=>$rows[0]['row_num'], 'col_id'=>$rows[0]['col_id']), $rows[1]['id']);
 		$DB->Update('post_cell', array('row_num'=>$rows[1]['row_num'], 'col_id'=>$rows[1]['col_id']), $rows[0]['id']);
 	}//end function commitSwap
+
+	function commitLegend($id)
+	{
+		global $DB;
+		$DB->Update('post_legend', array('text'=>$_POST['text']), $id);
+		die($_POST['text']);
+	}
 
 	/*****************************/
 	/******* FORM PRINTERS *******/
