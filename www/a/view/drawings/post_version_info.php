@@ -157,6 +157,10 @@ if( $drawing['published'] ) {
 <br />
 <table class="post_drawing_structure">
 <tr>
+	<th>&nbsp;</th>
+	<td>The diagram below represents your drawing. Shaded (grey) cells indicate where content has been added; white cells are empty.</td>
+</tr>
+<tr>
 	<th width="80">Block Diagram</th>
 	<td>
 		<?php
@@ -166,8 +170,8 @@ if( $drawing['published'] ) {
 	</td>
 </tr>
 <tr>
-	<th>Help</th>
-	<td>The diagram above represents your drawing. Shaded cells have content entered in them, white cells are empty. Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you remove 3 columns, the contents of those columns will be permanently erased.</td>
+	<th><span class="red">Warning</span></th>
+	<td>Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you change 7 columns down to 6 columns, the contents of the far-right (seventh) column will be permanently erased.</td>
 </tr>
 <?php
 if( $post->type == 'CC' )
@@ -179,7 +183,7 @@ if( $post->type == 'CC' )
 			<div class="current"><span class="post_large_number"><?= $post->numRows ?></span> <a href="javascript:changeTerms()">change</a></div>
 			<div class="editing" style="display:none">
 				<?php
-					$range = array(0,3,6,9,12);
+					$range = array(3,6,9,12);
 					$options = array();
 					foreach( $range as $i )
 						$options[$i] = $i;
