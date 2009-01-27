@@ -473,6 +473,7 @@ class POSTChart_CC extends POSTChart
 	{
 		if( $cell->course_subject )
 		{
+			return $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title;
 			return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title . '</a>';
 		}
 		else
