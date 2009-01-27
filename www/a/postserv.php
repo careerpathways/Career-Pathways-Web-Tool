@@ -169,7 +169,7 @@ require_once("inc.php");
 		}//if (community college)
 		else
 		{
-			echo 'There is a problem with this cell';
+			echo 'This cell does not exist in the database';
 		}
 
 		echo ob_get_clean();

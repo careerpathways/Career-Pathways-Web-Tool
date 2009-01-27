@@ -62,8 +62,8 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th>Actions</th>
 	<td>
-		<a href="/a/post_drawings.php?action=draw&version_id=<?= $drawing['id'] ?>">Draw</a> &nbsp;
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)">Preview</a>
+		<a href="/a/post_drawings.php?action=draw&version_id=<?= $drawing['id'] ?>"><?= CanEditVersion($drawing['id']) ? 'draw' : 'view' ?></a> &nbsp;
+		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)">preview</a>
 	</td>
 </tr>
 <tr>

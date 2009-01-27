@@ -258,15 +258,12 @@ function showVersion() {
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 
 
-
-	if(
-	   (CanEditOtherSchools() || $_SESSION['school_id'] == $drawing['school_id'])   // check for matching schools
-	   
-	   ) {
+	if(CanEditVersion($drawing['id'])) {
 		$readonly = false;
 	} else {
 		$readonly = true;
 	}
+
 
 
 	if( $readonly == false ) 
@@ -275,7 +272,6 @@ function showVersion() {
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
 	}
-
 
 	if( !($drawing['published']==1 || $drawing['frozen']==1) ) {
 		$TEMPLATE->toolbar_function = "ShowToolbar";
@@ -448,6 +444,7 @@ function ShowFrozenHelp() {
 }
 
 function ShowReadonlyHelp() {
+	ShowInfobar();
 	showToolbarAndHelp(false, 'read_only');
 }
 

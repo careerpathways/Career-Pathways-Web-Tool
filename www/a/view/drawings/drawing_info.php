@@ -229,7 +229,7 @@ function showTitleChange() {
 	getLayer('title_fixed').style.display = 'none';
 }
 
-<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
+<?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
 function deleteConfirm() {
 	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
 }

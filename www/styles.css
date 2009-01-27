@@ -739,6 +739,11 @@ a.chart_header {
 	text-decoration: none;
 }
 
+.fwfont {
+  font-family: courier, monospace;
+  font-size: 8pt;
+  white-space: pre;
+}
 
 
 #greybox {
@@ -952,6 +957,14 @@ a.chart_header {
   font-size: 11pt;
 }
 
+.post_import_preview input {
+  margin-bottom: 6px;
+}
+.post_import_preview .hr {
+  margin-bottom: 20px;
+  padding-top: 10px;
+  border-bottom: 1px #<?= $BLUE ?> solid;
+}
 ul.import_instructions 
 {
   list-style-type: none;
