@@ -293,11 +293,6 @@ global $DB;
 			FROM drawing_main, drawings
 			WHERE drawings.parent_id=drawing_main.id
 			AND drawings.id=".$drawing_id);
-	} elseif( $type == 'ccti' ) {
-		$drawing = $DB->SingleQuery("SELECT ccti_drawing_main.*, ccti_drawings.*, ccti_drawings.id drawings_id
-			FROM ccti_drawing_main, ccti_drawings
-			WHERE ccti_drawings.parent_id=ccti_drawing_main.id
-			AND ccti_drawings.id=".$drawing_id);
 	} elseif( $type == 'post' ) {
 		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id
 			FROM post_drawing_main, post_drawings
@@ -314,6 +309,15 @@ function GetSchoolName($school_id)
 }
 
 
+function GetAssociatedDrawings($drawing_id)
+{
+	global $DB;
+	
+	$drawing_id = intval($drawing_id);
+	$type = $DB->GetValue('type', 'post_drawing_main', $drawing_id);
+	
+	return $DB->VerticalQuery('SELECT * FROM post_conn WHERE '.($type=='HS'?'hs':'cc').'_id='.$drawing_id, ($type=='HS'?'cc':'hs').'_id');
+}
 
 
 function ShowDrawingList(&$mains, $type='pathways') {
@@ -400,6 +404,33 @@ function ShowDrawingList(&$mains, $type='pathways') {
 	}
 
 }
+
+function ShowSmallDrawingConnectionList($drawing_id)
+{
+	global $DB;
+	
+	$connections = GetAssociatedDrawings($drawing_id);
+	echo '<table>';
+	foreach( $connections as $c )
+	{
+		$d = $DB->SingleQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by
+			FROM post_drawing_main M
+			JOIN post_drawings D ON D.parent_id=M.id
+			LEFT JOIN users U ON M.last_modified_by=U.id
+			WHERE M.id='.intval($c).'
+			ORDER BY name');
+
+		echo '<tr>';
+			echo '<td width="20"><a href="javascript:remove_connection('.$d['id'].')">' . SilkIcon('cross.png') . '</a></td>';
+			echo '<td><a href="post_drawings.php?action=drawing_info&id='.$d['id'].'">' . $d['name'] . '</a></td>';
+			echo '<td width="155"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span></td>';
+			echo '<td width="130">' . $d['modified_by'] . '</td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+	
+}
+
 
 function drawing_sort_by_version($a,$b) {
 	return $a['version_num'] > $b['version_num'];

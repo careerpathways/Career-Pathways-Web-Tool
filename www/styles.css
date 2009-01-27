@@ -94,8 +94,7 @@ hr
   margin-top: 5px;
 }
 
-img
-{
+img {
   border-width:0px;
 }
 
@@ -802,6 +801,12 @@ a.chart_header {
 	text-decoration: none;
 }
 
+#greybox_contents {
+  margin-left: 15px;
+  margin-right: 15px;
+  background-color: white;
+}
+
 
 
 #search_form {
@@ -991,8 +996,23 @@ ol.import_instructions > li
   background: url(/images/numbers/04.png) left no-repeat;
 }
 
+.drawing_select_hover {
+  background-color: #FFFFAA;
+}
 
-
+#connectionForm #submit_btn {
+  border: 1px #999999 solid;
+  background-color: #<?= $D_GOLD ?>;
+  font-size: 13pt;
+  width: 70px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: 0;
+  margin-top: 4px;
+}
+#connectionForm #submit_btn:hover {
+  cursor: pointer;
+}
 
 #drawing_form #num_columns, #drawing_form #num_terms, #drawing_form #num_extra_rows
 {

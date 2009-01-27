@@ -32,24 +32,31 @@ if( Request('page') == 'published' ) {
 	}
 }
 
-if( $drawing_id == 0 ) {
-	die();
-}
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<title><?=$page_title?></title>
+	<title><?= ($drawing_id==0?'Not Found':$page_title) ?></title>
 	<link rel="stylesheet" href="/c/pstyle.css" />
 </head>
 <body>
+
+<?php
+if( $drawing_id == 0 )
+{
+	echo 'No published versions of this drawing are available.';
+}
+else
+{
+	?>
 	<div id="post_title">
 		<img src="/files/titles/post/<?=base64_encode($drawing['school_abbr'])?>/<?=base64_encode($page_title)?>.png" alt="Career POST" />
 	</div>
-<?php
-	$post = POSTChart::create($drawing_id);
-	$post->display();
+	<?php
+		$post = POSTChart::create($drawing_id);
+		$post->display();
+}
 ?>
+
 </body>
 </html>

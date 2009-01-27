@@ -33,8 +33,8 @@ var chGreybox = {
 		overlay.innerHTML = contents;
 		if (typeof jQuery == "function")
 		{
-			$("body").append(overlay);
-			$("#greybox_content").html(content);
+			jQuery("body").append(overlay);
+			jQuery("#greybox_content").html(content);
 		}
 		else
 			document.body.appendChild(overlay);
