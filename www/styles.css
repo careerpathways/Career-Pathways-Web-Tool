@@ -740,7 +740,7 @@ a.chart_header {
 }
 
 .fwfont {
-  font-family: courier, monospace;
+  font-family: lucida console, monaco;
   font-size: 8pt;
   white-space: pre;
 }
