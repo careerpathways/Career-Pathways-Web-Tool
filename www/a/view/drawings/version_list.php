@@ -19,7 +19,7 @@
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
-					echo '<td><span class="version_title">'.$v['version_num'].' '.($v['published']?' (Published)':'').'</span> <a href="/a/drawings.php?action=version_info&version_id='.$v['id'].'">settings</a></td>';
+					echo '<td><span class="version_title">'.$v['version_num'].' '.($v['published']?' (Published)':'').'</span> <a href="/a/drawings.php?action=version_info&version_id='.$v['id'].'" title="Version Settings">'.SilkIcon('wrench.png').'</a></td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
@@ -37,9 +37,10 @@
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
 					$action = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? 'draw' : 'view';
-						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'">'.($v['published']?'view':$action).'</a>';
+					$link = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? SilkIcon('pencil.png') : SilkIcon('picture.png');
+						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">preview</a>';
+						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="copy_popup.php?mode='.$MODE.'&version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
 					echo '</td>';

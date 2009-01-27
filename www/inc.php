@@ -356,12 +356,12 @@ function ShowDrawingList(&$mains, $type='pathways') {
 				echo '<tr class="'.($dr['published']==1?'published':'row1').'">';
 					if( CanEditVersion($dr['id']) ) {
 						if( $dr['published'] == 1 || $dr['frozen'] == 1 ) {
-							$linktext = 'view';
+							$linktext = SilkIcon('picture.png');
 						} else {
-							$linktext = 'draw';
+							$linktext = SilkIcon('pencil.png');
 						}
 					} else {
-						$linktext = 'view';
+						$linktext = SilkIcon('picture.png');
 					}
 
 					echo '<td width="30">&nbsp;</td>';
@@ -372,7 +372,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '</td>';
 
 					echo '<td width="70">';
-						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit">settings</a>';
+						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit" title="Version Settings">'.SilkIcon('wrench.png').'</a>';
 					echo '</td>';
 
 					echo '<td width="70">';

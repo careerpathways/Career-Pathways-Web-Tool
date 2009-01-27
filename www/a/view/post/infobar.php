@@ -12,7 +12,7 @@ $num_siblings = $DB->GetValue("COUNT(*)", 'post_drawings', $drawing['parent_id']
 		</a>
 		<b><?= $parent['name'] ?></b><br /><br />
 
-		<a href="<?= $_SERVER['PHP_SELF'] . '?action=version_info&amp;version_id=' . Request('version_id') ?>" style="float:right" title="Version Settings">settings</a>
+		<a href="<?= $_SERVER['PHP_SELF'] . '?action=version_info&amp;version_id=' . Request('version_id') ?>" style="float:left; margin-right: 4px;" title="Version Settings"><?=SilkIcon('wrench.png')?></a>
 
 		Version <?= $drawing['version_num'] ?>:
 		<?php
