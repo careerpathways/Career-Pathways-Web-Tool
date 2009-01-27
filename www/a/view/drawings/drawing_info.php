@@ -146,7 +146,7 @@ if( $id != "" ) {
 		</form>
 	<?php } else { ?>
 		You can't delete this drawing because it was created by <a href="/a/users.php?id=<?= $drawing['created_by'] ?>"><?= $DB->GetValue('CONCAT(first_name," ",last_name)','users',$drawing['created_by']) ?></a>. Contact the creator of the drawing or any <a href="/a/users.php#SchoolAdmin">School Admin</a> user within your school to delete this drawing.<br><br>
-		Note: Most of the time, what you really want to do is delete a version. There is no need to delete versions, as the Web Tool is designed to maintain archival records of your roadmap designs.
+		Note: Most of the time, you're trying to delete a version. However, there is no need to delete versions, as the Web Tool is designed to maintain archival records of your roadmap designs.
 	<?php } ?>
 	</td>
 </tr>

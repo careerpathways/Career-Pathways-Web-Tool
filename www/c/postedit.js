@@ -54,8 +54,8 @@ function bindPostCells()
 {
 	// The event is on 'mouseup', not 'click', so we can also overload each cell to be draggable
 	$(".post_cell").unbind('mouseup').bind('mouseup', function(e) {
-	
-		if( e.button != 0 )
+
+		if( e.button == 2 )
 		{
 			// prevent right-clicks from triggering this
 			return false;

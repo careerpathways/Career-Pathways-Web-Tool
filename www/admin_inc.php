@@ -103,7 +103,7 @@ function CanDeleteDrawing($drawing_id) {
 	
 	$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
 
-	if( $drawing['published'] == 1 || $drawing['frozen'] == 1 )
+	if( @$drawing['published'] == 1 || @$drawing['frozen'] == 1 )
 		return false;
 
 	if( IsAdmin() ) return true;
