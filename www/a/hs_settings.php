@@ -122,8 +122,10 @@ else
 				border-top: 1px #999999 solid;
 				border-left: 1px #999999 solid;
 				border-right: 1px #999999 solid;
+				border-bottom: 1px #999999 solid;
 				cursor: hand;
 				cursor: pointer;
+				clear: both;
 			}
 			ul.sortable_header li a {
 				float: right;
