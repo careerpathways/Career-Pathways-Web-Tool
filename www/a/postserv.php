@@ -1,4 +1,23 @@
 <?php
+
+/**
+ * How this file works:
+ * 
+ * Each AJAX call is categorized as either a "prompt" or "commit" mode. Prompts are for displaying inside
+ * of a greybox, while commits are for doing silent actions (like a swap).
+ * 
+ * Moste often, a prompt will immediately be followed by a commit.
+ * 
+ * The types are: cell, head, footer, swap.  These represent the different actions this AJAX handler is
+ * capable of handing.
+ * 
+ * The file is split into 4 sections:
+ *   Very Top: Decide how to act
+ *   Middle Top: Write all our prompt (HTML/Javascript)
+ *   Middle Bottom: Write all the commit code (SQL)
+ *   Bottom: Write all the helper code (HTML/Javascript) for the prompts
+ */
+
 chdir("..");
 require_once("inc.php");
 
@@ -119,7 +138,7 @@ require_once("inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val() + legendData,
+					data: "content=" + URLEncode($("#postFormContent").val()) + "&href=" + $("#postFormURL").val() + legendData,
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
@@ -173,7 +192,7 @@ require_once("inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + $("#postFormTitle").val() + "&content=" + $("#postFormContent").val() + "&href=" + $("#postFormURL").val() + legendData,
+					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + URLEncode($("#postFormTitle").val()) + "&content=" + URLEncode($("#postFormContent").val()) + "&href=" + $("#postFormURL").val() + legendData,
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
@@ -343,9 +362,6 @@ require_once("inc.php");
 		if(!$cell)
 			$cell = array('content'=>'', 'href'=>'', 'legend'=>'');
 
-		$legend = @unserialize($cell['legend']);
-		getLegendHTML($legend);
-
 		ob_start();
 ?>
 		<form action="javascript:void(0);">
@@ -355,6 +371,10 @@ require_once("inc.php");
 			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
 			<br /><br />
+<?php
+		$legend = @unserialize($cell['legend']);
+		getLegendHTML($legend);
+?>
 			<div style="text-align: right;">
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
@@ -369,15 +389,12 @@ require_once("inc.php");
 
 		if(!$cell)
 			$cell = array('content'=>'', 'href'=>'', 'legend'=>'', 'course_subject'=>'', 'course_number'=>'', 'course_title'=>'');
-
-		$legend = @unserialize($cell['legend']);
-		getLegendHTML($legend);
 ?>
 		<form action="javascript:void(0);">
 			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
 				<tr>
 					<td valign="top">
-						<input type="radio" name="postModeSelector" id="postTopRadio"<?=(($cell['course_subject'] != '' || !$cell['content'])?' checked="checked"':'')?> />
+						<input type="radio" class="radio" name="postModeSelector" id="postTopRadio"<?=(($cell['course_subject'] != '' || !$cell['content'])?' checked="checked"':'')?> />
 					</td>
 					<td id="postTopHalf" style="padding-left: 20px;" valign="top">
 						<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
@@ -402,7 +419,7 @@ require_once("inc.php");
 				</tr>
 				<tr>
 					<td valign="top">
-						<input type="radio" name="postModeSelector" id="postBottomRadio"<?=(($cell['course_subject'] == '' && $cell['content'])?' checked="checked"':'')?> />
+						<input type="radio" class="radio" name="postModeSelector" id="postBottomRadio"<?=(($cell['course_subject'] == '' && $cell['content'])?' checked="checked"':'')?> />
 					</td>
 					<td id="postBottomHalf" valign="top" style="padding-left: 20px;">
 						<div style="font-weight: bold;">Course Content:</div>
@@ -414,6 +431,10 @@ require_once("inc.php");
 				</tr>
 			</table>
 			<br />
+<?php
+		$legend = @unserialize($cell['legend']);
+		getLegendHTML($legend);
+?>
 			<div style="text-align: right;">
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
@@ -466,8 +487,7 @@ require_once("inc.php");
 <?php
 		}
 ?>
-		<div style="clear: both; margin-top: 5px;" id="post_legend_help">Accrediation Articulation</div>
-		<div style="clear: both; height: 15px;"></div>
+		<div style="clear: both; margin-top: 5px;" id="post_legend_help">&nbsp;</div>
 		<script language="JavaScript" type="text/javascript">
 
 	var legendText = {<?php

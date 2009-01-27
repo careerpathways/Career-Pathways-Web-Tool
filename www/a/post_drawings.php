@@ -256,6 +256,7 @@ function showVersion() {
 
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
+	$TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
 
 
 	if(CanEditVersion($drawing['id'])) {
