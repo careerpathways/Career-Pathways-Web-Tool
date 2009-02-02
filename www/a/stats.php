@@ -10,18 +10,88 @@ if( Request('from_date') ) {
 	$from = date('y-m-d', strtotime(Request('from_date')));
 	$to = date('y-m-d', strtotime(Request('to_date')));
 
-	$d = $DB->SingleQuery('SELECT COUNT(DISTINCT(user_id)) num FROM login_history WHERE date>"'.$from.'" AND date<"'.$to.'"');
-	echo $d['num']."\n";
 
-	$d = $DB->SingleQuery('SELECT COUNT(*) num FROM users WHERE date_created>"'.$from.'" AND date_created<"'.$to.'"');
-	echo $d['num']."\n";
 
-	$d = $DB->MultiQuery('SELECT * FROM schools WHERE date_created>"'.$from.'" AND date_created<"'.$to.'"');
-	echo count($d)."<br />";
-
+	$d = $DB->MultiQuery('
+		SELECT COUNT(*) AS num, school_name
+		FROM (
+			SELECT DISTINCT(user_id) AS user_id, school_id, school_name
+			FROM login_history AS lh
+			LEFT JOIN users u ON lh.user_id=u.id
+			LEFT JOIN schools s ON u.school_id=s.id
+			WHERE date >= "'.$from.'" AND date <= "'.$to.' 23:59:59"
+				AND school_name IS NOT NULL
+		) temp
+		GROUP BY school_id
+		ORDER BY num DESC');
+	$total = 0;
+	echo '<table width="300">';
 	foreach( $d as $org ) {
-		echo $org['school_name']."<br />";
+		$total += $org['num'];
+		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
 	}
+	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	echo '</table>';
+	echo "\n";
+
+
+
+	$d = $DB->MultiQuery('
+		SELECT COUNT(*) AS num, school_name
+		FROM (
+			SELECT DISTINCT(u.id) AS user_id, school_id, school_name
+			FROM users u
+			LEFT JOIN schools s ON u.school_id=s.id
+			WHERE u.date_created >= "'.$from.'" AND u.date_created <= "'.$to.' 23:59:59"
+		) temp
+		GROUP BY school_id
+		ORDER BY num DESC');
+	$total = 0;
+	echo '<table width="300">';
+	foreach( $d as $org ) {
+		$total += $org['num'];
+		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	}
+	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	echo '</table>';
+	echo "\n";
+
+
+
+	$d = $DB->MultiQuery('SELECT * FROM schools WHERE date_created>="'.$from.'" AND date_created<="'.$to.' 23:59:59"');
+	echo '<table width="300">';
+	foreach( $d as $org ) {
+		echo '<tr><td>&nbsp;</td><td>' .$org['school_name'].'</td></tr>';
+	}
+	echo '<tr><td width="30">'.count($d).'</td><td><b>Total</b></td></tr>';
+	echo '</table>';
+	echo "\n";
+
+
+
+	$d = $DB->MultiQuery('
+		SELECT COUNT(*) AS num, school_name
+		FROM (
+			SELECT DISTINCT(dm.id), school_id, school_name
+			FROM drawing_main AS dm
+			LEFT JOIN schools s ON dm.school_id=s.id
+			WHERE dm.date_created >= "'.$from.'" AND dm.date_created <= "'.$to.' 23:59:59"
+				AND school_name IS NOT NULL
+		) temp
+		GROUP BY school_id
+		ORDER BY num DESC');
+	$total = 0;
+	echo '<table width="300">';
+	foreach( $d as $org ) {
+		$total += $org['num'];
+		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	}
+	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	echo '</table>';
+	echo "\n";
+	
+	
+	
 	
 	die();
 }
@@ -47,6 +117,7 @@ PrintHeader();
 		getLayer('total_active_users').innerHTML = 'loading...';
 		getLayer('total_users_added').innerHTML = 'loading...';
 		getLayer('total_orgs_added').innerHTML = 'loading...';
+		getLayer('total_rdmp_added').innerHTML = 'loading...';
 		ajaxCallback(user_cb, 'stats.php?from_date='+getLayer('from_date').value+'&to_date='+getLayer('to_date').value);
 	}
 	function user_cb(data) {
@@ -54,6 +125,7 @@ PrintHeader();
 		getLayer('total_active_users').innerHTML = data[0];
 		getLayer('total_users_added').innerHTML = data[1];
 		getLayer('total_orgs_added').innerHTML = data[2];
+		getLayer('total_rdmp_added').innerHTML = data[3];
 	}
 </script>
 <?php
@@ -85,19 +157,23 @@ echo '<br>';
 		</td>
 	</tr>
 	<tr>
-		<td>Active Users</td>
+		<th>Active Users</th>
 		<td width="400"><div id="total_active_users"></div></td>
 	</tr>
 	<tr>
-		<td>Users Added</td>
+		<th>Users Added</th>
 		<td><div id="total_users_added"></div></td>
 	</tr>
 	<tr>
-		<td valign="top">Organizations Added</td>
+		<th valign="top">Organizations Added</th>
 		<td><div id="total_orgs_added"></div></td>
 	</tr>
+	<tr>
+		<th valign="top">Roadmaps Added</th>
+		<td><div id="total_rdmp_added"></div></td>
+	</tr>
 </table>
-<p class="tiny">Note: Statistics data available only after Nov 1, 2008</p>
+<p class="tiny">Note: Statistics data available since Nov 1, 2008</p>
 <br />
 <?php
 echo '<br>';
