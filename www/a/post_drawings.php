@@ -608,15 +608,6 @@ function showNewDrawingPreview(&$config)
 {
 	global $DB;
 	
-	/**
-	 * $config['type'] = [HS, CC]
-	 * $config['cols'] = [int, 'default']
-	 * $config['rows'] = [int]
-	 **/
-	
-	
-	
-	
 	
 	
 	

@@ -114,8 +114,9 @@ require_once("inc.php");
 	{
 		global $DB;
 
-		$cell = $DB->SingleQuery("SELECT `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`
+		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`, `row_num`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
 			FROM `post_cell`
+			LEFT JOIN `post_col` ON `post_cell`.`col_id` = `post_col`.`id`
 			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
 			LEFT JOIN `post_drawing_main` ON (`post_drawings`.`parent_id` = `post_drawing_main`.`id`)
 			WHERE `post_cell`.`id` = '" . intval($id) . "'");
@@ -168,17 +169,27 @@ require_once("inc.php");
 			});
 
 			if($("#postTopRadio").attr("checked"))
-				$("#postFormContent, #postFormURL").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
+			{
+				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
+				$("#ccDetailRow").css({background: "#FFECBF"});
+			}
 			else
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
+			{
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#ccFreeRow").css({background: "#FFECBF"});
+			}
 
 			$("#postTopRadio").click(function(){
 				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", false).css({"background" : "#FFFFFF"});
-				$("#postFormContent, #postFormURL").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
+				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
+				$("#ccDetailRow").css({background: "#FFECBF"});
+				$("#ccFreeRow").css({background: "#FFFFFF"});
 			});
 			$("#postBottomRadio").click(function(){
 				$("#postFormContent, #postFormURL").attr("disabled", false).css({"background" : "#FFFFFF"});
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled").css({"background" : "#AAAAAA"});
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#ccDetailRow").css({background: "#FFFFFF"});
+				$("#ccFreeRow").css({background: "#FFECBF"});
 			});
 
 			$("#postFormSave").click(function(){
@@ -371,11 +382,19 @@ require_once("inc.php");
 
 	function getHSFormHTML(&$cell = NULL)
 	{
-		if(!$cell)
-			$cell = array('content'=>'', 'href'=>'', 'legend'=>'');
+		#if(!$cell)
+		#	$cell = array('content'=>'', 'href'=>'', 'legend'=>'');
 
 		ob_start();
+
+		echo '<h3>' .
+			($cell['row_num'] < 100 ? 'Grade ' . ($cell['row_num']+8) : 'Extra Row '.($cell['row_num']-99)) .
+			', ' . 
+			($cell['col_name']) .
+			'</h3>';
+
 ?>
+		<br />
 		<form action="javascript:void(0);">
 			<div style="font-weight: bold;">Course Content:</div>
 			<input type="text" id="postFormContent" style="width: 400px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
@@ -399,26 +418,33 @@ require_once("inc.php");
 	{
 		ob_start();
 
-		if(!$cell)
-			$cell = array('content'=>'', 'href'=>'', 'legend'=>'', 'course_subject'=>'', 'course_number'=>'', 'course_title'=>'');
+		# I don't think we need this anymore, since all cells have database IDs now
+		#if(!$cell)
+		#	$cell = array('content'=>'', 'href'=>'', 'legend'=>'', 'course_subject'=>'', 'course_number'=>'', 'course_title'=>'');
+
+		echo '<h3>' .
+			($cell['row_num'] < 100 ? ucfirst(ordinalize($cell['row_num'])) . ' Term' : 'Extra Row '.($cell['row_num']-99)) .
+			', Column ' . ($cell['col_num']) .
+			'</h3>';
 ?>
+		<br />
 		<form action="javascript:void(0);">
 			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
-				<tr>
+				<tr id="ccDetailRow">
 					<td valign="top">
 						<input type="radio" class="radio" name="postModeSelector" id="postTopRadio"<?=(($cell['course_subject'] != '' || !$cell['content'])?' checked="checked"':'')?> />
 					</td>
-					<td id="postTopHalf" style="padding-left: 20px;" valign="top">
+					<td id="postTopHalf" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;" valign="top">
 						<div>
 							<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
-							<div style="float: left; width: 50px; height: 20px;">
-								<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" />
+							<div style="float: left; height: 20px;">
+								<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" style="width: 50px;" /> (e.g. WR)
 							</div>
 						</div>
 						<div>
 							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
-							<div style="float: left; width: 50px; height: 20px;">
-								<input id="postFormNumber" maxlength="4" value="<?=$cell['course_number']?>" />
+							<div style="float: left; height: 20px;">
+								<input id="postFormNumber" maxlength="4" value="<?=$cell['course_number']?>" style="width: 50px;" /> (e.g. 200)
 							</div>
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>
@@ -433,11 +459,11 @@ require_once("inc.php");
 						<div style="clear: both; height: 10px;"></div>
 					</td>
 				</tr>
-				<tr>
+				<tr id="ccFreeRow">
 					<td valign="top">
 						<input type="radio" class="radio" name="postModeSelector" id="postBottomRadio"<?=(($cell['course_subject'] == '' && $cell['content'])?' checked="checked"':'')?> />
 					</td>
-					<td id="postBottomHalf" valign="top" style="padding-left: 20px;">
+					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
 						<div style="font-weight: bold;">Course Content:</div>
 						<input type="text" id="postFormContent" style="width: 340px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
 						<br /><br />

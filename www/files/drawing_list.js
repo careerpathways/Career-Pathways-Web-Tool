@@ -8,10 +8,6 @@ switch( Request('mode') ) {
 		$module_name = 'post_drawings';
 		$session_key = 'post_drawing_list';
 		break;
-	case 'ccti':
-		$module_name = 'ccti_drawings';
-		$session_key = 'ccti_drawing_list';
-		break;
 	case 'pathways':
 	default:
 		$module_name = 'drawings';
@@ -219,11 +215,12 @@ function csl(arr, sep) {
 }
 
 function preview_drawing(code,version,mode) {
-	if( MODE == 'pathways' ) {
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600);
-
-	} else {	
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600);
-
+	if( MODE == 'pathways' )
+	{
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+	}
+	else
+	{	
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
 	}
 }

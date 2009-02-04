@@ -189,7 +189,7 @@ function showNoteChange() {
 }
 
 function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600);
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600,null,'Preview');
 }
 
 <?php if( $can_delete ) { ?>

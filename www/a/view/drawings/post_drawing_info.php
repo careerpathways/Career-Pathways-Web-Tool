@@ -309,7 +309,7 @@ function showTitleChange() {
 }
 
 function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600);
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
 }
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>

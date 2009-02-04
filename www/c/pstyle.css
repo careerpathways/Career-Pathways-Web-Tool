@@ -33,6 +33,10 @@ table.post_chart, table.post_chart td, table.post_chart th {
 	margin: 0 auto;
 }
 
+table.post_chart th {
+	font-size: 9pt;
+}
+
 .post_head {
 	color: black;
 	font-weight: bold;
