@@ -67,7 +67,7 @@ class ThisSiteTemplate extends SiteTemplate {
 	function Header() {
 		?>
 			<div id="header">
-				<a href="/"><img src="/images/title.gif" width="828" height="61" alt="Career Pathways Web Tool" /></a>
+				<img src="/images/title.gif" width="828" height="61" alt="Career Pathways Web Tool" />
 			</div>
 
 			<div id="topbar"><div id="topbar_inside">
