@@ -42,7 +42,7 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="copy_popup.php?mode='.$MODE.'&version_id=' . $v['id'] . '" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>';
+						echo '<a href="javascript:copyPopup(\'' . $MODE . '\', ' . $v['id'] . ')" class="toolbarButton">copy this version</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

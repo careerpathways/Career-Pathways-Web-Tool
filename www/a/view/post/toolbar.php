@@ -7,7 +7,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 	<div id="toolbar_header"></div>
 	<div id="toolbar_content">
 		<?php if ($publishAllowed) : ?><a href="<?= $_SERVER['PHP_SELF'].'?action=version_info&version_id='.$_REQUEST['version_id'] ?>" class="toolbarButton">publish this version</a><?php endif; ?>
-		<!--<a href="copy_popup.php?version_id=<?=  $_REQUEST['drawing_id'] ?>" class="toolbarButton" onclick="return showCopy(this);">copy this version</a>-->
+		<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="toolbarButton">copy this version</a>
 		<a href="/c/post/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" class="toolbarButton" target="_new">print this version</a>
 	</div>
 </div>

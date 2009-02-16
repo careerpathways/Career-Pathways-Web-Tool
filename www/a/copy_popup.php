@@ -27,10 +27,9 @@ fieldset {
 </style>
 </head>
 <body>
-<h1>Copy Version</h1>
 <h2><?= $version['name'] ?></h2>
 
-<form action="<?= Request('mode')=='ccti'?'ccti_drawings.php':'drawings.php' ?>" method="post">
+<form action="<?= Request('mode')=='post'?'post_drawings.php':'drawings.php' ?>" method="post">
 <input type="hidden" name="from_popup" value="true"/>
 <input type="hidden" name="action" value="copy_version"/>
 <input type="hidden" name="version_id" value="<?= $version['id'] ?>"/>
@@ -90,7 +89,7 @@ $$('#copy_to input').invoke('observe', 'change', updateState);
 updateState(); 
 
 $('cancel').observe('click', function() {
-	window.close();
+	window.parent.chGreybox.close();
 });
 </script>
 </body>

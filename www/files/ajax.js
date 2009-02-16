@@ -77,3 +77,8 @@ function doNoOutput(url) {
 
   
 function n() { }
+
+
+function copyPopup(mode, version_id) {
+	chGreybox.create('<div id="copyPopup"><iframe src="/a/copy_popup.php?mode='+mode+'&version_id='+version_id+'" style="width:400px;height:300px;"></iframe></div>', 400, 300, null, 'Copy This Version');
+}

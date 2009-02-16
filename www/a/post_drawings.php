@@ -312,6 +312,9 @@ function showVersion() {
 function copyVersion($version_id) {
 	global $DB;
 
+	$post = POSTChart::create($version_id);
+	$post->loadDataFromDB();
+
 	$drawing = GetDrawingInfo($version_id, 'post');
 
 	// first get the title information
@@ -319,6 +322,7 @@ function copyVersion($version_id) {
 
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') :'same_school';
+
 	if( IsAdmin() ) {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
 			if ($copy_to !== 'same_school') {
@@ -339,35 +343,19 @@ function copyVersion($version_id) {
 	if( $create == 'new_drawing' ) {
 		if ($copy_to !== 'same_school') {
 			$newdrawing['school_id'] = $_SESSION['school_id'];
+			$post->setSchoolID($_SESSION['school_id']);
 		}
 		else {
 			$newdrawing['school_id'] = $drawing['school_id'];
+			$post->setSchoolID($drawing['school_id']);
 		}
+		$post->setDrawingName(Request('drawing_name') ? Request('drawing_name') : $drawing_main['name']);
 
-		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
-		// tack on a random number at the end. it will only last until they change the name of the drawing
-		$newdrawing['code'] = CreateDrawingCodeFromTitle($newdrawing['name'],$newdrawing['school_id'],0,'ccti');
-		$newdrawing['date_created'] = $DB->SQLDate();
-		$newdrawing['last_modified'] = $DB->SQLDate();
-		$newdrawing['created_by'] = $_SESSION['user_id'];
-		$newdrawing['last_modified_by'] = $_SESSION['user_id'];
-		$new_id = $DB->Insert('post_drawing_main',$newdrawing);
-		$drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$new_id);
-		$version['next_num'] = 1;
+		$new_version_id = $post->saveToDB();
 	} else {
 		// find the greatest version number for this drawing
-		$version = $DB->SingleQuery("SELECT (MAX(version_num)+1) AS next_num FROM post_drawings WHERE parent_id=".$drawing_main['id']);
+		$new_version_id = $post->saveToDB($drawing_main['id']);
 	}
-
-	$content = array();
-	$content['version_num'] = $version['next_num'];
-	$content['date_created'] = $DB->SQLDate();
-	$content['created_by'] = $_SESSION['user_id'];
-	$content['last_modified'] = $DB->SQLDate();
-	$content['last_modified_by'] = $_SESSION['user_id'];
-	$content['parent_id'] = $drawing_main['id'];
-
-	$new_version_id = $DB->Insert('post_drawings',$content);
 
 	if (Request('from_popup') == 'true') {
 		header("Location: /a/copy_success_popup.php?mode=post&version_id=$new_version_id&copy_to=$copy_to&create=$create");

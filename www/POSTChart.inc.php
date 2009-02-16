@@ -148,6 +148,13 @@ abstract class POSTChart
 			$tempArray[] = new POSTCol($col);
 		$this->_cols = $tempArray;
 	}
+	
+	// Used by the copying function
+	public function loadDataFromDB()
+	{
+		$this->_initCells();
+		$this->_loadData();
+	}
 
 	public function display()
 	{
@@ -252,25 +259,37 @@ abstract class POSTChart
 		$this->_drawing['school_abbr'] = $school['school_abbr'];
 	}
 
-	public function saveToDB()
+	public function saveToDB($parent_id=0)
 	{
 		global $DB;
 
-		// create post_drawing_main record
-		$post_drawing_main = array();
-		$post_drawing_main['school_id'] = $this->_drawing['school_id'];
-		$post_drawing_main['name'] = $this->_drawing['name'];
-		$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_drawing['name'], $this->_drawing['school_id'], 0, 'post');
-		$post_drawing_main['date_created'] = $DB->SQLDate();
-		$post_drawing_main['last_modified'] = $DB->SQLDate();
-		$post_drawing_main['created_by'] = $_SESSION['user_id'];
-		$post_drawing_main['last_modified_by'] = $_SESSION['user_id'];
-		$post_drawing_main['type'] = $this->_type;
-		$post_drawing_main_id = $DB->Insert('post_drawing_main', $post_drawing_main);
-
 		$post_drawing = array();
+
+		// create post_drawing_main record
+		if( $parent_id == 0 )
+		{
+			$post_drawing_main = array();
+			$post_drawing_main['school_id'] = $this->_drawing['school_id'];
+			$post_drawing_main['name'] = $this->_drawing['name'];
+			$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_drawing['name'], $this->_drawing['school_id'], 0, 'post');
+			$post_drawing_main['date_created'] = $DB->SQLDate();
+			$post_drawing_main['last_modified'] = $DB->SQLDate();
+			$post_drawing_main['created_by'] = $_SESSION['user_id'];
+			$post_drawing_main['last_modified_by'] = $_SESSION['user_id'];
+			$post_drawing_main['type'] = $this->_type;
+			$post_drawing_main_id = $DB->Insert('post_drawing_main', $post_drawing_main);
+			$post_drawing['version_num'] = 1;
+		}
+		else
+		{
+			$post_drawing_main_id = $parent_id;
+			$nvn = $DB->SingleQuery('SELECT MAX(version_num)+1 AS next_version_num
+				FROM post_drawings 
+				WHERE parent_id='.$parent_id);
+			$post_drawing['version_num'] = $nvn['next_version_num'];
+		}
+
 		$post_drawing['parent_id'] = $post_drawing_main_id;
-		$post_drawing['version_num'] = 1;
 		$post_drawing['footer_text'] = $this->_drawing['footer_text'];
 		$post_drawing['footer_link'] = $this->_drawing['footer_link'];
 		$post_drawing['published'] = 0;
@@ -292,9 +311,9 @@ abstract class POSTChart
 			$post_col = array();
 			$post_col['drawing_id'] = $post_drawing_id;
 			$post_col['title'] = dv($col->title);
-			$post_col['num'] = $i+1;
+			$post_col['num'] = $i;
 			$post_col_id = $DB->Insert('post_col', $post_col);
-			$colmap[$i+1] = $post_col_id;
+			$colmap[$i] = $post_col_id;
 		}
 
 		foreach( $this->_content as $row_num=>$row )

@@ -12,12 +12,11 @@ body {
 </style>
 </head>
 <body>
-<h1>Copy Version</h1>
 <?php if ($_REQUEST['create'] === 'new_version') : ?>
 <p>A new version of this drawing has been created.</p>
 <?php else : ?>
 <p>This version has been copied to a new drawing<?php if ($_REQUEST['copy_to']  === 'user_school') :?> at your organization<?php endif; ?>.</p>
 <?php endif; ?>
-<p><input type="submit" value="OK" onclick="opener.location.href='/a/<?= $_REQUEST['mode']=='ccti'?'ccti_drawings.php':'drawings.php' ?>?action=draw&amp;version_id=<?= $_REQUEST['version_id'] ?>';window.close();return false;"/></p>
+<p><input type="submit" value="OK" onclick="window.parent.location.href='/a/<?= $_REQUEST['mode']=='post'?'post_drawings.php':'drawings.php' ?>?action=draw&amp;version_id=<?= $_REQUEST['version_id'] ?>';window.close();return false;"/></p>
 </body>
 </html>

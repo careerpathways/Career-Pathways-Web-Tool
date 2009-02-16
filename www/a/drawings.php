@@ -366,7 +366,7 @@ function copyVersion($version_id) {
 	}
 
 	if (Request('from_popup') == 'true') {
-		header("Location: /a/copy_success_popup.php?version_id=$new_version_id&copy_to=$copy_to&create=$create");
+		header("Location: /a/copy_success_popup.php?mode=pathways&version_id=$new_version_id&copy_to=$copy_to&create=$create");
 	}
 	else {
 		header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$new_version_id);
