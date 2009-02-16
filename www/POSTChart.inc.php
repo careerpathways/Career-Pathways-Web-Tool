@@ -290,8 +290,8 @@ abstract class POSTChart
 		}
 
 		$post_drawing['parent_id'] = $post_drawing_main_id;
-		$post_drawing['footer_text'] = $this->_drawing['footer_text'];
-		$post_drawing['footer_link'] = $this->_drawing['footer_link'];
+		$post_drawing['footer_text'] = "".$this->_drawing['footer_text'];
+		$post_drawing['footer_link'] = "".$this->_drawing['footer_link'];
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
 		$post_drawing['deleted'] = 0;
