@@ -410,21 +410,28 @@ function ShowSmallDrawingConnectionList($drawing_id)
 	global $DB;
 	
 	$connections = GetAssociatedDrawings($drawing_id);
-	echo '<table>';
+	echo '<table width="100%">';
+	echo '<tr>';
+		echo '<th>&nbsp;</th>';
+		echo '<th>Drawing Title</th>';
+		echo '<th>Organization</th>';
+		echo '<th>Last Modified</th>';
+	echo '</tr>';
 	foreach( $connections as $c )
 	{
-		$d = $DB->SingleQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by
+		$d = $DB->SingleQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by, schools.school_name
 			FROM post_drawing_main M
 			JOIN post_drawings D ON D.parent_id=M.id
 			LEFT JOIN users U ON M.last_modified_by=U.id
+			LEFT JOIN schools ON M.school_id=schools.id
 			WHERE M.id='.intval($c).'
 			ORDER BY name');
 
 		echo '<tr>';
 			echo '<td width="20"><a href="javascript:remove_connection('.$d['id'].')">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td><a href="post_drawings.php?action=drawing_info&id='.$d['id'].'">' . $d['name'] . '</a></td>';
-			echo '<td width="155"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span></td>';
-			echo '<td width="130">' . $d['modified_by'] . '</td>';
+			echo '<td>' . $d['school_name'] . '</td>';
+			echo '<td width="285"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';
 	}
 	echo '</table>';
