@@ -69,9 +69,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	?></td>
 </tr>
 <tr>
-	<th>Preview</th>
+	<th>Actions</th>
 	<td>
-		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="Draw"><?=SilkIcon('pencil.png')?></a> &nbsp;
+		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw' : 'View'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
 		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)"><?=SilkIcon('magnifier.png')?></a>
 	</td>
 </tr>
@@ -82,6 +82,18 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 		<div id="note_edit" style="display:none">
 			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
 			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savenote()">
+		</div>
+	</td>
+</tr>
+<tr>
+	<th style="vertical-align:bottom">Editable</th>
+	<td>
+		<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
+		<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
+			<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#999999">This version is currently editable. Click "lock" to prevent further edits.</span>
+		</div>
+		<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
+			<span style="color:#999999">This version is locked. Copy it to a new version to make changes.</span>
 		</div>
 	</td>
 </tr>
@@ -190,6 +202,14 @@ function showNoteChange() {
 
 function preview_drawing(code,version) {
 	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600,null,'Preview');
+}
+
+function lock_drawing(version) {
+	ajaxCallback(function() {
+			getLayer('lock_icon').src = '/common/silk/lock.png';
+			getLayer('drawing_locked_msg').style.display = 'inline';
+			getLayer('drawing_unlocked_msg').style.display = 'none';
+		}, '/a/drawings_post.php?mode=<?= $MODE ?>&action=lock&drawing_id=<?= $version_id ?>')
 }
 
 <?php if( $can_delete ) { ?>

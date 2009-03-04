@@ -60,6 +60,11 @@ if( Request('drawing_id') ) {
 			$DB->Update($version_table, $content, intval($_REQUEST['drawing_id']));
 	}
 
+	if( Request('action') == 'lock' )
+	{
+		$DB->Update($version_table, array('frozen'=>1), intval(Request('drawing_id')));
+	}
+	
 }
 
 ?>

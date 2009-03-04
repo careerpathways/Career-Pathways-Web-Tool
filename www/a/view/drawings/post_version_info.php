@@ -77,6 +77,18 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	</td>
 </tr>
 <tr>
+	<th style="vertical-align:bottom">Editable</th>
+	<td>
+		<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
+		<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
+			<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#999999">This version is currently editable. Click "lock" to prevent further edits.</span>
+		</div>
+		<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
+			<span style="color:#999999">This version is locked. Copy it to a new version to make changes.</span>
+		</div>
+	</td>
+</tr>
+<tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
 	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
@@ -288,6 +300,14 @@ function showNoteChange() {
 
 function preview_drawing(code,version) {
 	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+}
+
+function lock_drawing(version) {
+	ajaxCallback(function() {
+			getLayer('lock_icon').src = '/common/silk/lock.png';
+			getLayer('drawing_locked_msg').style.display = 'inline';
+			getLayer('drawing_unlocked_msg').style.display = 'none';
+		}, '/a/drawings_post.php?mode=<?= $MODE ?>&action=lock&drawing_id=<?= $version_id ?>')
 }
 
 <?php if( $can_delete ) { ?>

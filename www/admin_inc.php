@@ -117,10 +117,15 @@ function CanDeleteDrawing($drawing_id) {
 	// anyone else can delete drawings created by them
 }
 
-function CanEditVersion($drawing) {
+function CanEditVersion($drawing, $mode='post') {
 	global $DB;
 	
-	$drawing = $DB->SingleQuery('SELECT *, M.school_id FROM post_drawings D, post_drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
+	if( $mode == 'post' )
+		$tp = 'post_';
+	else
+		$tp = '';
+	
+	$drawing = $DB->SingleQuery('SELECT *, M.school_id FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
 
 	if( $drawing['published'] == 1 || $drawing['frozen'] == 1 )
 		return false;

@@ -5,8 +5,8 @@
 	<?php
 		$versions = $DB->MultiQuery("
 			SELECT *
-			FROM ".$drawings_table."
-			WHERE ".$drawings_table.".parent_id=".$drawing['id']."
+			FROM drawings
+			WHERE drawings.parent_id=".$drawing['id']."
 				AND deleted=0
 			ORDER BY version_num");
 		foreach( $versions as $v ) {
@@ -42,7 +42,7 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:copyPopup(\'' . $MODE . '\', ' . $v['id'] . ')" class="toolbarButton">copy this version</a>';
+						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton">copy this version</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';
