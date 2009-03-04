@@ -325,9 +325,13 @@ abstract class POSTChart
 				$post_cell['row_num'] = $row_num;
 				$post_cell['col_id'] = (array_key_exists($cell->col_num, $colmap) ? $colmap[$cell->col_num] : -1);
 				$post_cell['content'] = dv($cell->content);
+				$post_cell['href'] = dv($cell->href);
+				$post_cell['legend'] = dv($cell->legend);
 				$post_cell['course_subject'] = dv($cell->course_subject);
 				$post_cell['course_number'] = dv($cell->course_number);
 				$post_cell['course_title'] = dv($cell->course_title);
+				$post_cell['course_description'] = dv($cell->course_description);
+				$post_cell['course_description_cachedate'] = dv($cell->course_description_cachedate);
 				$DB->Insert('post_cell', $post_cell);
 			}
 		}
