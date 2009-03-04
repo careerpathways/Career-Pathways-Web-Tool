@@ -410,6 +410,11 @@ function ShowSmallDrawingConnectionList($drawing_id)
 	global $DB;
 	
 	$connections = GetAssociatedDrawings($drawing_id);
+	if( count($connections) == 0 )
+	{
+		echo '(none)';
+		return;
+	}
 	echo '<table width="100%">';
 	echo '<tr>';
 		echo '<th>&nbsp;</th>';

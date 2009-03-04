@@ -2,7 +2,7 @@
 chdir("..");
 include("inc.php");
 
-ModuleInit('drawings');
+ModuleInit('post_drawings');
 
 
 if( Request('mode') )
