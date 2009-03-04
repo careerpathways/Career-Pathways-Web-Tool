@@ -27,6 +27,10 @@ if( $id != "" ) {
 }
 
 ?>
+<script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<script type="text/javascript">
+var $j = jQuery.noConflict();
+</script>
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript" src="/files/drawing_list.js"></script>
 <script type="text/javascript" src="/c/drawings.js"></script>
@@ -45,7 +49,7 @@ if( $id != "" ) {
 	</td>
 </tr>
 <tr>
-	<th width="80">School</th>
+	<th width="80">Organization</th>
 	<td>
 	<?php
 	if( IsAdmin() ) {
@@ -55,6 +59,12 @@ if( $id != "" ) {
 	}
 	?>
 	</td>
+</tr>
+<tr>
+	<th>Oregon Skillset</th>
+	<td><div id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+	?></div></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
@@ -80,6 +90,12 @@ if( $id != "" ) {
 <tr>
 	<th width="80">Organization</th>
 	<td><b><?= $schools[$school_id] ?></b></td>
+</tr>
+<tr>
+	<th>Oregon Skillset</th>
+	<td><div id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
+	?></div></td>
 </tr>
 <tr>
 	<th>Preview</th>
@@ -228,6 +244,23 @@ function showTitleChange() {
 	getLayer('title_edit').style.display = 'block';
 	getLayer('title_fixed').style.display = 'none';
 }
+
+$j(document).ready(function(){
+	$j('#skillset select').bind('change', function() {
+		$j('#skillset select').css({backgroundColor: '#99FF99'});
+		setTimeout(function() {
+			$j('#skillset select').css({backgroundColor: '#FFFFFF'}) }, 150);
+		$j.post('drawings_post.php',
+			{action: 'skillset',
+			 mode: 'pathways',
+			 id: <?= intval($drawing['id']) ?>,
+			 skillset_id: $j('#skillset select').val()
+			},
+			function() {
+			}
+		);
+	});
+});
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
 function deleteConfirm() {

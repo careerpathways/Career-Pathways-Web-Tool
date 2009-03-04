@@ -22,7 +22,6 @@ else
 }
 
 if( Request('id') ) {
-	// version
 
 	$drawing = $DB->SingleQuery("SELECT *
 			FROM $version_table AS v, $main_table AS m
@@ -31,6 +30,12 @@ if( Request('id') ) {
 	if( !(Request('id') == "" || is_array($drawing) && (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id'])) ) {
 			// permissions error
 			die();
+	}
+
+	if( Request('action') == 'skillset' )
+	{
+		$DB->Update($main_table, array('skillset_id'=>Request('skillset_id')), Request('id'));
+		die();
 	}
 
 	$school_id = $DB->GetValue('school_id', $main_table, intval($_REQUEST['id']));
@@ -64,7 +69,6 @@ if( Request('drawing_id') ) {
 	{
 		$DB->Update($version_table, array('frozen'=>1), intval(Request('drawing_id')));
 	}
-	
 }
 
 ?>

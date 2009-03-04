@@ -50,7 +50,7 @@ var $j = jQuery.noConflict();
 	</td>
 </tr>
 <tr>
-	<th width="80">School</th>
+	<th width="80">Organization</th>
 	<td>
 	<?php
 	if( IsAdmin() ) {
@@ -68,6 +68,12 @@ var $j = jQuery.noConflict();
 	}
 	?>
 	</td>
+</tr>
+<tr>
+	<th>Oregon Skillset</th>
+	<td><div id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+	?></div></td>
 </tr>
 <?php
 if( Request('type') == 'cc' ) {
@@ -146,6 +152,12 @@ if( Request('type') == 'cc' ) {
 	<tr>
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$school_id] ?></b></td>
+	</tr>
+	<tr>
+		<th>Oregon Skillset</th>
+		<td height="34"><div id="skillset"><?php
+			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
+		?></div></td>
 	</tr>
 	<tr>
 		<th>Preview</th>
@@ -417,6 +429,25 @@ function remove_connection(id)
 				$j('#connected_drawing_list').html(data);
 			});
 }
+
+$j(document).ready(function(){
+	$j('#skillset select').bind('change', function() {
+		$j('#skillset select').css({backgroundColor: '#99FF99'});
+		setTimeout(function() {
+			$j('#skillset select').css({backgroundColor: '#FFFFFF'}) }, 150);
+		$j.post('drawings_post.php',
+			{action: 'skillset',
+			 mode: 'post',
+			 id: <?= intval($drawing['id']) ?>,
+			 skillset_id: $j('#skillset select').val()
+			},
+			function() {
+			}
+		);
+	});
+});
+					
+
 
 <?php } ?>
 

@@ -136,6 +136,7 @@ if( KeyInRequest('drawing_id') ) {
 			$content['date_created'] = $DB->SQLDate();
 			$content['created_by'] = $_SESSION['user_id'];
 			$content['school_id'] = $school_id;
+			$content['skillset_id'] = Request('skillset_id');
 
 			$parent_id = $DB->Insert('drawing_main',$content);
 
