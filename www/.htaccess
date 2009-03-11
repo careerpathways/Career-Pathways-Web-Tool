@@ -1,3 +1,5 @@
 Options +FollowSymLinks
 AddHandler php5-script .php .js .htm .html .rss .xml .css
+AddType text/css .css
+AddType text/javascript .js
 

@@ -7,4 +7,6 @@ RewriteRule ^text/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=text [nc,qsa
 RewriteRule ^post/(.+)/(\d+)(?:\.(.+))?$ post_view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
 RewriteRule ^post/([^\.]+)(?:\.(.+))?$ post_view.php?d=$1&format=$2&page=published [nc,qsa]
 
+RewriteRule ^view_post/([a-z0-9]+).html vpost_view.php?code=$1 [nc,qsa]
+
 RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]

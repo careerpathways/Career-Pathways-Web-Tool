@@ -665,7 +665,9 @@ function processDrawingListRequest()
 			$DB->Query('DELETE FROM post_conn WHERE '.$col.'='.$drawing_id.' AND '.$oth.'='.$link_id);
 		}
 		
-		ShowSmallDrawingConnectionList($drawing_id);
+		ShowSmallDrawingConnectionList($drawing_id, 'connections', null, array(
+			'delete'=>'javascript:remove_connection(%%)'
+		));
 	}
 	else
 	{

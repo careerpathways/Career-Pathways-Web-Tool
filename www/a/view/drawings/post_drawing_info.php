@@ -136,7 +136,7 @@ if( Request('type') == 'cc' ) {
 
 /** begin drawing edit form **/
 	?>
-	<table>
+	<table width="100%">
 	<tr>
 		<th>Title</th>
 		<td>
@@ -233,7 +233,9 @@ if( Request('type') == 'cc' ) {
 		<td>This drawing connects to the following <?= ($drawing['type'] == 'HS' ? 'Community College Pathways' : 'High School Programs') ?>:<br /><br />
 		<div id="connected_drawing_list">
 		<?php
-			ShowSmallDrawingConnectionList($drawing['id']);
+			ShowSmallDrawingConnectionList($drawing['id'], 'connections', null, array(
+				'delete'=>'javascript:remove_connection(%%)',
+			));
 		?>
 		</div>
 		</td>

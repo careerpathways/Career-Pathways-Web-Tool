@@ -309,14 +309,20 @@ function GetSchoolName($school_id)
 }
 
 
-function GetAssociatedDrawings($drawing_id)
+function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 {
 	global $DB;
-	
 	$drawing_id = intval($drawing_id);
-	$type = $DB->GetValue('type', 'post_drawing_main', $drawing_id);
-	
-	return $DB->VerticalQuery('SELECT * FROM post_conn WHERE '.($type=='HS'?'hs':'cc').'_id='.$drawing_id, ($type=='HS'?'cc':'hs').'_id');
+
+	if( $mode == 'connections' )
+	{
+		$type = $DB->GetValue('type', 'post_drawing_main', $drawing_id);
+		return $DB->VerticalQuery('SELECT * FROM post_conn WHERE '.($type=='HS'?'hs':'cc').'_id='.$drawing_id, ($type=='HS'?'cc':'hs').'_id');
+	}
+	else
+	{
+		return $DB->VerticalQuery('SELECT post_id FROM vpost_links AS v JOIN post_drawing_main AS d ON v.post_id=d.id WHERE type="'.$type.'"', 'post_id');
+	}
 }
 
 
@@ -405,22 +411,23 @@ function ShowDrawingList(&$mains, $type='pathways') {
 
 }
 
-function ShowSmallDrawingConnectionList($drawing_id)
+function ShowSmallDrawingConnectionList($drawing_id, $mode='connections', $type=null, $links=array())
 {
 	global $DB;
 	
-	$connections = GetAssociatedDrawings($drawing_id);
+	$connections = GetAssociatedDrawings($drawing_id, $mode, $type);
 	if( count($connections) == 0 )
 	{
 		echo '(none)';
 		return;
 	}
-	echo '<table width="100%">';
+	echo '<table>';
 	echo '<tr>';
-		echo '<th>&nbsp;</th>';
-		echo '<th>Drawing Title</th>';
-		echo '<th>Organization</th>';
-		echo '<th>Last Modified</th>';
+		echo '<th width="20">&nbsp;</th>';
+		echo '<th width="280">Drawing Title</th>';
+		echo '<th width="20">&nbsp;</th>';
+		echo '<th width="200">Organization</th>';
+		echo '<th width="285">Last Modified</th>';
 	echo '</tr>';
 	foreach( $connections as $c )
 	{
@@ -433,10 +440,11 @@ function ShowSmallDrawingConnectionList($drawing_id)
 			ORDER BY name');
 
 		echo '<tr>';
-			echo '<td width="20"><a href="javascript:remove_connection('.$d['id'].')">' . SilkIcon('cross.png') . '</a></td>';
-			echo '<td><a href="post_drawings.php?action=drawing_info&id='.$d['id'].'">' . $d['name'] . '</a></td>';
+			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
+			echo '<td>' . $d['name'] . '</td>';
+			echo '<td><a href="javascript:previewDrawing('.$d['id'].')">' . SilkIcon('magnifier.png') . '</a></td>';
 			echo '<td>' . $d['school_name'] . '</td>';
-			echo '<td width="285"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
+			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';
 	}
 	echo '</table>';
