@@ -442,7 +442,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $mode='connections', $type=
 		echo '<tr>';
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
-			echo '<td><a href="javascript:previewDrawing('.$d['id'].')">' . SilkIcon('magnifier.png') . '</a></td>';
+			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')">' . SilkIcon('magnifier.png') . '</a></td>';
 			echo '<td>' . $d['school_name'] . '</td>';
 			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';

@@ -37,6 +37,7 @@ if( $id )
 	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
 
 	?>	
+	<script type="text/javascript" src="/files/greybox.js"></script>
 	<table width="100%">
 	<tr>
 		<th>Title</th>
@@ -95,10 +96,14 @@ if( $id )
 		</td>
 	</tr>
 
-
-
 	</table>
+	<script type="text/javascript">
+
+	function preview_drawing(code) {
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
+	}
 	
+	</script>
 	<?php
 }
 else

@@ -323,7 +323,10 @@ function showTitleChange() {
 }
 
 function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+	if( version == null )
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
+	else
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
 }
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
