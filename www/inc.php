@@ -321,7 +321,10 @@ function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 	}
 	else
 	{
-		return $DB->VerticalQuery('SELECT post_id FROM vpost_links AS v JOIN post_drawing_main AS d ON v.post_id=d.id WHERE type="'.$type.'"', 'post_id');
+		return $DB->VerticalQuery('SELECT post_id
+									FROM vpost_links AS v
+									JOIN post_drawing_main AS d ON v.post_id=d.id
+									WHERE type="'.$type.'" AND vid='.$drawing_id, 'post_id');
 	}
 }
 
