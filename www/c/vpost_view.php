@@ -3,10 +3,11 @@ chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
 
-$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name
+$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id
 	FROM vpost_views AS v
 	JOIN vpost_links AS vl ON v.id = vl.vid
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
+	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
 	WHERE v.code = "'.Request('code').'"');
 
@@ -62,7 +63,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 		{
 			echo '<div id="tabs'.$type.'-'.($i+1).'">';
 			//echo $d['name'];
-			$p = POSTChart::create($d['id']);
+			$p = POSTChart::create($d['version_id']);
 			$p->display();
 			echo '</div>';
 		}

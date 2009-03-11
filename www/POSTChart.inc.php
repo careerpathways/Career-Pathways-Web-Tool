@@ -36,7 +36,11 @@ abstract class POSTChart
 				default:
 					throw new Exception('No drawing type was found in the record.');
 			}
-		}	
+		}
+		else
+		{
+			throw new Exception('Published drawing not found');
+		}
 	}
 
 	public static function createFromArray($chartType, &$array)
