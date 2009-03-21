@@ -9,7 +9,8 @@ $drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS vie
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
 	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
-	WHERE v.code = "'.Request('code').'"');
+	WHERE v.code = "'.Request('code').'"
+		AND published = 1');
 
 $page_title = 'Not Found';
 
@@ -48,13 +49,25 @@ foreach( $drawings as $d )
 <?php
 foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 {
+	if( count($ds) == 0 )
+	{
+		
+	}
+	elseif( count($ds) == 1 )
+	{
+		$p = POSTChart::create($d['version_id']);
+		$p->display();
+	}
+	else
+	{
 	?>
 	<div id="tabs<?=$type?>">
 		<ul>
 			<?php
 			foreach( $ds as $i=>$d )
 			{
-				echo '<li><a href="#tabs'.$type.'-'.($i+1).'">' . $d['school_abbr'] . '</a></li>';
+				$school_name = str_replace(array(' High School', ' Community College'), '', $d['school_name']);
+				echo '<li><a href="#tabs'.$type.'-'.($i+1).'">' . $school_name . '</a></li>';
 			}
 			?>
 		</ul>
@@ -62,7 +75,6 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 		foreach( $ds as $i=>$d )
 		{
 			echo '<div id="tabs'.$type.'-'.($i+1).'">';
-			//echo $d['name'];
 			$p = POSTChart::create($d['version_id']);
 			$p->display();
 			echo '</div>';
@@ -71,6 +83,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 
 	</div>
 	<?php
+	}
 }
 ?>
 

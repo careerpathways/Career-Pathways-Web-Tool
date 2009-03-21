@@ -110,6 +110,7 @@ if( KeyInRequest('id') ) {
 					foreach( $colors as $c ) {
 						$str .= '<div title="#'.$c['hex'].'" style="background-color:#'.$c['hex'].'" class="school_color_box_mini"></div>';
 					}
+					$str .= '<div title="#FFFFFF" style="background-color:#FFFFFF" class="school_color_box_mini"></div>';
 					$str .= '<div title="#333333" style="background-color:#333333" class="school_color_box_mini"></div>';
 					echo $str;
 					echo '</td>';

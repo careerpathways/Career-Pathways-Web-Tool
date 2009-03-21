@@ -44,6 +44,7 @@ Charts = {
 	Charts.setData({
 		versionId: versionId,
 		titleImg: chTitleImg,
+		skillset: chSkillset,
 		widgets: chData,
 		connections: connections,
 		drawing_status: drawing_status
@@ -113,6 +114,17 @@ Charts = {
 		title.style.top = 0;
 		title.style.left = 0;
 		Charts.element.appendChild(title);
+
+		if(data.skillset) {
+		  var skillset = document.createElement('div');
+		  skillset.className = 'chSkillset';
+		  skillset.innerHTML = data.skillset;
+		  skillset.style.zIndex = 101;
+		  skillset.style.position = 'absolute';
+		  skillset.style.top = "19px";
+		  skillset.style.left = 0;
+		  Charts.element.appendChild(skillset);
+		}
 	
 		// add all the widgets
 		data.widgets.each(function(properties) {   

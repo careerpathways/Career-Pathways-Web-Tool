@@ -70,7 +70,7 @@ var $j = jQuery.noConflict();
 	</td>
 </tr>
 <tr>
-	<th>Oregon Skillset</th>
+	<th>Oregon Skill Set</th>
 	<td><div id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
 	?></div></td>
@@ -154,10 +154,10 @@ if( Request('type') == 'cc' ) {
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>
 	<tr>
-		<th>Oregon Skillset</th>
-		<td height="34"><div id="skillset"><?php
+		<th>Oregon Skill Set</th>
+		<td height="34"><div id="skillset" style="float:left"><?php
 			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
-		?></div></td>
+		?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
 	</tr>
 	<tr>
 		<th>Preview</th>
@@ -228,18 +228,6 @@ if( Request('type') == 'cc' ) {
 		<?php } ?>
 		</td>
 	</tr>
-	<tr>
-		<th>Connections<br /><a href="javascript:createConnection(<?= $drawing['id'] ?>)"><img src="/common/silk/add.png" width="16" height="16" /></a></th>
-		<td>This drawing connects to the following <?= ($drawing['type'] == 'HS' ? 'Community College Pathways' : 'High School Programs') ?>:<br /><br />
-		<div id="connected_drawing_list">
-		<?php
-			ShowSmallDrawingConnectionList($drawing['id'], 'connections', null, array(
-				'delete'=>'javascript:remove_connection(%%)',
-			));
-		?>
-		</div>
-		</td>
-	</tr>
 	</table>
 	
 	<?php
@@ -258,8 +246,6 @@ var drawing_code = '<?= $drawing['code'] ?>';
 var published_link = "<?= $published_link ?>";
 var xml_link = "<?= $xml_link ?>";
 var accessible_link = "<?= $accessible_link ?>";
-
-var selected_drawings = Array();
 
 Array.prototype.remove = function(s) {
 	var i = this.indexOf(s);
@@ -340,106 +326,14 @@ function doDelete() {
 
 <?php if( $drawing['id'] ) { ?>
 
-function createConnection(drawing_id)
-{
-	$j.get("post_drawings.php",
-		{drawing_id: <?= intval($drawing['id']) ?>, action: 'drawing_list', showForm: 1},
-		function(data) {
-			chGreybox.create(data, 700,500);
-		}
-	);
-}
-
-function loadDrawingPreview(code)
-{
-	$j('#drawing_preview_box iframe').attr('src', '/c/post/'+code+'.html');
-	$j('#drawing_preview_box').css('display', 'block');
-}
-
-function select_organization(val)
-{
-	$j('#drawing_preview_box').css('display', 'none');
-	$j('#drawing_preview_box iframe').attr('src', '');
-	$j.get("post_drawings.php",
-		{
-		 school_id: $j("#list_schools option:selected").val(),
-		 action: 'drawing_list'
-		},
-		function(data) {
-			$j('#list_of_drawings').html(data);
-			$j('#submit_btn').css({display:'none'});
-			$j('.drawing_select').hover(
-				function() {
-					$j(this).css({'background-color': '#FFFFAA', cursor: 'pointer'});
-				},
-				function() {
-					$j(this).css({'background-color': '#FFFFFF', cursor: 'normal'});
-				}
-			);
-			$j('.drawing_select > td:not(.preview)').click(
-				function(e) {
-					var dr_id = $j(this).parent().attr('id').split('_')[1];
-					if( selected_drawings.indexOf(dr_id) == -1 )
-					{
-						$j(this).parent().children('.icon').children().css({opacity: 0, display: "block"}).animate({opacity:1}, 150);
-						selected_drawings.push(dr_id);
-					}
-					else
-					{
-						$j(this).parent().children('.icon').children().css({opacity: 1, display: "block"}).animate({opacity:0}, 150, function() {
-								$j(this).css({display:'none'});
-							});
-						selected_drawings.remove(dr_id);
-					}
-					if( selected_drawings.length > 0 )
-					{
-						$j('#submit_btn').css({display:'block'});
-					}
-					else
-					{
-						$j('#submit_btn').css({display:'none'});
-					}
-				}
-			);
-		}
-	);
-}
-
-function save_drawing_selection()
-{
-	if( selected_drawings.length > 0 )
-	{
-		$j.post("post_drawings.php",
-			{action: 'drawing_list',
-			 drawing_id: <?= intval($drawing['id']) ?>,
-			 save: 1,
-			 drawings: selected_drawings.join(",")
-			},
-			function(data) {
-				$j('#connected_drawing_list').html(data);
-				chGreybox.close();
-				selected_drawings = Array();
-			});
-	}
-}
-
-function remove_connection(id)
-{
-		$j.post("post_drawings.php",
-			{action: 'drawing_list',
-			 drawing_id: <?= intval($drawing['id']) ?>,
-			 delete: id
-			},
-			function(data) {
-				$j('#connected_drawing_list').html(data);
-			});
-}
-
 $j(document).ready(function(){
 	$j('#skillset select').bind('change', function() {
+		$j('#skillsetConf').html('Saved!');
 		$j('#skillset select').css({backgroundColor: '#99FF99'});
 		setTimeout(function() {
-			$j('#skillset select').css({backgroundColor: '#FFFFFF'}) }, 150);
+			$j('#skillset select').css({backgroundColor: '#FFFFFF'});
+			$j('#skillsetConf').html('');
+		}, 500);
 		$j.post('drawings_post.php',
 			{action: 'skillset',
 			 mode: 'post',

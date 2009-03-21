@@ -65,7 +65,7 @@ if( PostRequest() ) {
 
 			$DB->Insert('users',$user);
 
-			// compose email to send to help@ctepathways.org as well as any school admins of the school they are applying for
+			// compose email to send to helpdesk@ctepathways.org as well as any school admins of the school they are applying for
 
 			$user_info = '';
 			$user_info .= "Name: ".$user['first_name'].' '.$user['last_name']."\n";

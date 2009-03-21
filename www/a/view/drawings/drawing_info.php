@@ -61,10 +61,10 @@ var $j = jQuery.noConflict();
 	</td>
 </tr>
 <tr>
-	<th>Oregon Skillset</th>
-	<td><div id="skillset"><?php
+	<th>Oregon Skill Set</th>
+	<td><div id="skillset"style="float:left"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-	?></div></td>
+	?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
@@ -92,7 +92,7 @@ var $j = jQuery.noConflict();
 	<td><b><?= $schools[$school_id] ?></b></td>
 </tr>
 <tr>
-	<th>Oregon Skillset</th>
+	<th>Oregon Skill Set</th>
 	<td><div id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
 	?></div></td>
@@ -249,7 +249,9 @@ $j(document).ready(function(){
 	$j('#skillset select').bind('change', function() {
 		$j('#skillset select').css({backgroundColor: '#99FF99'});
 		setTimeout(function() {
-			$j('#skillset select').css({backgroundColor: '#FFFFFF'}) }, 150);
+			$j('#skillset select').css({backgroundColor: '#FFFFFF'});
+			$j('#skillsetConf').html('');
+		}, 500);
 		$j.post('drawings_post.php',
 			{action: 'skillset',
 			 mode: 'pathways',

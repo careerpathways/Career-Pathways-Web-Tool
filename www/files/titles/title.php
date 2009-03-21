@@ -5,6 +5,10 @@ require_once "gd_color.inc.php";
 $title_font = 'verdanab.ttf';
 $cp_font = 'TCCB____.TTF';
 
+$font_thick = 'EuropaGroNr2SB-Ult.ttf';
+$font_thin = 'EuropaGroNr2SB-XLig.ttf';
+$font_size = 13;
+
 if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
 	// support for published drawings using old title format
 	preg_match("|t=(.+)&|", substr($_SERVER['REQUEST_URI'],$i+1), $matches);
@@ -18,37 +22,39 @@ if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
 $hash = md5($school.$title.Request('type'));
 $filename = $SITE->cache_path()."titles/".$hash;
 
+if( !is_dir($SITE->cache_path() . "titles") ) mkdir($SITE->cache_path() . "titles", 0777);
+
 $width = 800;
 
 header("Content-type: image/png");
 
-if( !file_exists($filename) ) {
+if( 1 || !file_exists($filename) ) {
 
-	$dst = imagecreatetruecolor($width,17);
+	$dst = imagecreatetruecolor($width,19);
 
-	$c_bkg = imagecolorallocatestr($dst, "649FC2");
+	$c_bkg = imagecolorallocatestr($dst, "295a76");
 	$c_title = imagecolorallocatestr($dst, "FFFFFF");
 
-	$c_cptitle1 = imagecolorallocatestr($dst, "cf9d2b");
-	$c_cptitle2 = imagecolorallocatestr($dst, "295a76");
-	$c_cpbkg    = imagecolorallocatestr($dst, "cccccc");
+	$c_cptitle1 = imagecolorallocatestr($dst, "ffffff");
+	$c_cptitle2 = imagecolorallocatestr($dst, "ffffff");
+	$c_cpbkg    = imagecolorallocatestr($dst, "333333");
 
-	imagefilledrectangle($dst, 0,0, $width,17, $c_cpbkg);
+	imagefilledrectangle($dst, 0,0, $width,imagesy($dst), $c_cpbkg);
 
-	$bbox = imagettftext($dst, 15, 0, 4,15, (Request('type')=='pathways'?$c_cptitle2:$c_cptitle1), $cp_font, $school);
+	$bbox = imagettftext($dst, $font_size, 0, 4,16, (Request('type')=='pathways'?$c_cptitle2:$c_cptitle1), $font_thick, $school);
 	if( Request('type') == 'pathways' )
 	{
-		$bbox = imagettftext($dst, 15, 0, $bbox[2]+2,15, $c_cptitle1, $cp_font, "CAREER");
-		$bbox = imagettftext($dst, 15, 0, $bbox[2]+2,15, $c_cptitle2, $cp_font, "PATHWAYS");
+		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle1, $font_thin, "CAREER");
+		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+2,16, $c_cptitle2, $font_thick, "PATHWAYS");
 	}
 	else
 	{
-		$bbox = imagettftext($dst, 15, 0, $bbox[2]+2,15, $c_cptitle2, $cp_font, "PLAN OF STUDY");
-		#$bbox = imagettftext($dst, 15, 0, $bbox[2]+2+2,15, $c_cptitle2, $cp_font, "STUDY");
+		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle2, $font_thin, "PLAN OF");
+		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+3,16, $c_cptitle2, $font_thick, "STUDY");
 	}
 
-	imagefilledrectangle($dst, $bbox[2]+5,0, $width,17, $c_bkg);
-	imagettftext($dst, 12, 0, $bbox[2]+10,14, $c_title, $title_font, $title);
+	imagefilledrectangle($dst, $bbox[2]+5,0, $width,imagesy($dst), $c_bkg);
+	imagettftext($dst, 12, 0, $bbox[2]+10,15, $c_title, $title_font, $title);
 
 	imagepng($dst, $filename);
 	imagepng($dst);

@@ -142,7 +142,7 @@ function showColorList(colors, container, mode) {
 				cl_color.parentCell = cl_cell;
 			}
 
-		if( mode == 'current' && colors[i] != '333333' ) {
+		if( mode == 'current' && colors[i] != '333333' && colors[i] != 'FFFFFF' ) {
 			cl_xbutton = document.createElement('a');
 			cl_xbutton.className = "school_color_x";
 			cl_xbutton.href = "javascript:deleteColor("+school_id+",'"+colors[i]+"')";

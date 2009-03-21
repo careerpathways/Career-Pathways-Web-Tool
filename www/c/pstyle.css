@@ -18,9 +18,15 @@ td {
 }
 
 #post_title {
-	height: 17px;
-	background-color: #649FC2;
+	height: 19px;
+	background-color: #295a76;
+}
+#post_title_container {
 	margin-bottom: 10px;
+}
+#skillset {
+	margin-left: 5px;
+	font-weight: bold;
 }
 
 table.post_chart {

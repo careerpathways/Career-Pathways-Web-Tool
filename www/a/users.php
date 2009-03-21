@@ -285,7 +285,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 	if( IsWebmaster() ) { 
 	echo '<tr>';
-		echo '<td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"<img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">add user</span></a></td>';
+		echo '<td colspan="4"><a href="'.$_SERVER['PHP_SELF'].'?id" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">add user</span></a></td>';
 	echo '</tr>';
 	}
 

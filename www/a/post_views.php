@@ -12,6 +12,29 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 $MODE = 'pathways';
 ModuleInit('post_views');
 
+
+
+if (KeyInRequest('action')) {
+	$action = $_REQUEST['action'];
+	switch ($action) {
+		case 'drawing_list':
+			// used to select a drawing in the connections chooser
+			processDrawingListRequest();
+			die();
+		case 'change_name':
+			processChangeNameRequest();
+			die();
+		case 'create':
+			processCreateRequest();
+			die();
+		default:
+			die('unknown action');
+	}
+}
+
+$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+$TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
+
 PrintHeader();
 
 
@@ -19,15 +42,15 @@ $id = Request('id')?intval(Request('id')):'';
 
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
 if( IsAdmin() ) {
-	if( $id != "" ) {
-		$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
-		$school_id = $view['school_id'];
+	if( Request('school_id') != "" ) {
+		$school_id = Request('school_id');
 	} else {
 		$school_id = $_SESSION['school_id'];
 	}
 } else {
 	$school_id = $_SESSION['school_id'];
 }
+$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
 
 
 
@@ -36,7 +59,9 @@ if( $id )
 {
 	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
 
-	?>	
+	?>
+	<a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br /><br />
+	
 	<script type="text/javascript" src="/files/greybox.js"></script>
 	<table width="100%">
 	<tr>
@@ -44,7 +69,7 @@ if( $id )
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
-				<input type="text" id="drawing_title" name="name" size="80" value="<?= $view['name'] ?>" onblur="checkName(this)">
+				<input type="text" id="drawing_title" name="name" size="80" value="<?= $view['name'] ?>">
 				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
 				<span id="checkNameResponse" class="error"></span>
 			</div>
@@ -72,23 +97,23 @@ if( $id )
 	<tr>
 		<th>Contents</th>
 		<td>
-			<div style="display:inline"><a href="javascript:addDrawingToView('hs', <?= $id ?>)"><?= SilkIcon('add.png') ?></a></div>
+			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
 			<h3 style="display:inline">High School Templates</h3>
-			<div id="connected_drawing_list_hs">
+			<div id="connected_drawing_list_HS">
 			<?php
 				ShowSmallDrawingConnectionList($id, 'views', 'HS', array(
-					'delete'=>'javascript:deleteDrawingFromView(%%)',
+					'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
 				));
 			?>
 			</div>
 			<br />
 			
-			<div style="display:inline"><a href="javascript:addDrawingToView('cc', <?= $id ?>)"><?= SilkIcon('add.png') ?></a></div>
+			<div style="display:inline"><a href="javascript:addDrawingToView('cc')"><?= SilkIcon('add.png') ?></a></div>
 			<h3 style="display:inline">Community College Pathways</h3>
-			<div id="connected_drawing_list_cc">
+			<div id="connected_drawing_list_CC">
 			<?php
 				ShowSmallDrawingConnectionList($id, 'views', 'CC', array(
-					'delete'=>'javascript:deleteDrawingFromView(%%)',
+					'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
 				));
 			?>
 			</div>
@@ -98,16 +123,197 @@ if( $id )
 
 	</table>
 	<script type="text/javascript">
+	var $j = jQuery.noConflict();
+
+	var selected_drawings = Array();
+
+	Array.prototype.remove = function(s) {
+		var i = this.indexOf(s);
+		if(i != -1) this.splice(i, 1);
+	}
+
+	function showTitleChange() {
+		getLayer('title_edit').style.display = 'block';
+		getLayer('title_fixed').style.display = 'none';
+	}
+
+	function savetitle() {
+		$j.get("post_views.php",
+			{id: <?= $id ?>,
+			 title: URLEncode($j('#drawing_title').val()),
+			 action: "change_name"
+			},
+			function(data) {
+				getLayer('title_value').innerHTML = data;
+				getLayer('title_edit').style.display = 'none';
+				getLayer('title_fixed').style.display = 'block';
+			}
+		);
+	}
 
 	function preview_drawing(code) {
 		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
 	}
 	
+	function addDrawingToView(type)
+	{
+		$j.get("post_views.php",
+			{type: type, drawing_id: <?= $id ?>, action: 'drawing_list', showForm: 1},
+			function(data) {
+				chGreybox.create(data, 700,500);
+			}
+		);
+	}
+	
+	
+	function createConnection(drawing_id)
+	{
+		$j.get("post_views.php",
+			{drawing_id: <?= $id ?>, action: 'drawing_list', showForm: 1},
+			function(data) {
+				chGreybox.create(data, 700,500);
+			}
+		);
+	}
+	
+	function loadDrawingPreview(code)
+	{
+		$j('#drawing_preview_box iframe').attr('src', '/c/post/'+code+'.html');
+		$j('#drawing_preview_box').css('display', 'block');
+	}
+	
+	function select_organization(val)
+	{
+		$j('#drawing_preview_box').css('display', 'none');
+		$j('#drawing_preview_box iframe').attr('src', '');
+		$j.get("post_views.php",
+			{
+			 school_id: $j("#list_schools option:selected").val(),
+			 action: 'drawing_list'
+			},
+			function(data) {
+				$j('#list_of_drawings').html(data);
+				$j('#submit_btn').css({display:'none'});
+				$j('.drawing_select').hover(
+					function() {
+						$j(this).css({'background-color': '#FFFFAA', cursor: 'pointer'});
+					},
+					function() {
+						$j(this).css({'background-color': '#FFFFFF', cursor: 'normal'});
+					}
+				);
+				$j('.drawing_select > td:not(.preview)').click(
+					function(e) {
+						var dr_id = $j(this).parent().attr('id').split('_')[1];
+						if( selected_drawings.indexOf(dr_id) == -1 )
+						{
+							$j(this).parent().children('.icon').children().css({opacity: 0, display: "block"}).animate({opacity:1}, 150);
+							selected_drawings.push(dr_id);
+						}
+						else
+						{
+							$j(this).parent().children('.icon').children().css({opacity: 1, display: "block"}).animate({opacity:0}, 150, function() {
+									$j(this).css({display:'none'});
+								});
+							selected_drawings.remove(dr_id);
+						}
+						if( selected_drawings.length > 0 )
+						{
+							$j('#submit_btn').css({display:'block'});
+						}
+						else
+						{
+							$j('#submit_btn').css({display:'none'});
+						}
+					}
+				);
+			}
+		);
+	}
+	
+	function save_drawing_selection(type)
+	{
+		if( selected_drawings.length > 0 )
+		{
+			$j.post("post_views.php",
+				{action: 'drawing_list',
+				 drawing_id: <?= $id ?>,
+				 save: 1,
+				 type: type,
+				 drawings: selected_drawings.join(",")
+				},
+				function(data) {
+					$j('#connected_drawing_list_'+type).html(data);
+					chGreybox.close();
+					selected_drawings = Array();
+				});
+		}
+	}
+	
+	function deleteDrawingFromView(type, id)
+	{
+			$j.post("post_views.php",
+				{action: 'drawing_list',
+				 drawing_id: <?= $id ?>,
+				 delete: id,
+				 type: type
+				},
+				function(data) {
+					$j('#connected_drawing_list_'+type).html(data);
+				});
+	}
+	
 	</script>
+	<?php
+}
+elseif( KeyInRequest('id') )
+{
+	?>
+	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
+	<table>
+	<tr>
+		<th valign="bottom">Title</th>
+		<td>
+			<input type="text" id="title" name="name" size="60" value="">
+		</td>
+	</tr>
+	<tr>
+		<th width="80">Organization</th>
+		<td>
+		<?php
+		if( IsAdmin() ) {
+			$these_schools = $DB->VerticalQuery('SELECT * FROM schools ORDER BY school_name', 'school_name', 'id');
+			echo GenerateSelectBox($these_schools, 'school_id', $school_id);
+		} else {
+			echo '<b>'.$schools[$school_id].'</b>';
+		}
+		?>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" class="submit" value="Create" id="submitButton"></td>
+	</tr>
+	</table>
+	<input type="hidden" name="action" value="create" />
+	</form>
 	<?php
 }
 else
 {
+	echo '<a href="' . $_SERVER['PHP_SELF'] . '?id&school_id='.$school_id.'" class="edit">' . SilkIcon('add.png') . ' new view</a><br /><br />';
+
+	if( IsAdmin() ) {
+		echo '<h2>' . $school['school_name'] . '</h2>';
+		echo '<div style="margin-top: 4px">';
+		echo 'Switch Organization: ';
+		$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools ORDER BY school_name','school_name','id');
+		$schools = array("-1"=>'') + $schools_;
+		echo GenerateSelectBox($schools,'school_id',-1,'switch_school(this.value)');
+		echo '</div>';
+	}
+	echo '<hr>';
+	
 	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id.' ORDER BY name');
 	echo '<table width="100%">';
 		echo '<tr>';
@@ -116,9 +322,9 @@ else
 			echo '<th width="240">Last Modified</th>';
 			echo '<th width="240">Created</th>';
 		echo '</tr>';
-	foreach( $views as $v )
+	foreach( $views as $i=>$v )
 	{
-		echo '<tr>';
+		echo '<tr class="row' . ($i%2) . '">';
 			echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16"/></a></td>';
 	
 			echo '<td>' . $v['name'] . '</td>';
@@ -129,11 +335,155 @@ else
 			echo '<td><span class="fwfont">'.($v['date_created']==''?'':$DB->Date('Y-m-d f:i a',$v['date_created'])).'</span> <a href="/a/users.php?id='.$v['created_by'].'">'.$created['name'].'</a></td>';
 		echo '</tr>';
 	}
+	if( count($views) == 0 )
+	{
+		echo '<tr class="row0"><td colspan="4">No views exist yet</td></tr>';
+	}
 	echo '</table>';
+	?>	
+	<script type="text/javascript">
+	function switch_school(id) {
+		window.location = "post_views.php?school_id=" + id;
+	}
+	</script>
+	<?php	
 }
 
 
 
 PrintFooter();
+
+
+
+
+function processDrawingListRequest()
+{
+	global $DB;
+
+	if( Request('showForm') == 1 )
+	{
+	?>
+	<div id="connectionForm">
+		<div style="width:700px;margin:0 auto;">
+			<h3>Organizations</h3>
+			<?php
+			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type = "' . (Request('type')=='hs'?'HS':'CC') . '" ORDER BY school_name', 'school_name', 'id');
+
+			echo '<select size="6" id="list_schools" style="width:100%" onchange="select_organization(this.value)">';
+			foreach( $schools as $sid=>$school )
+			{
+				echo '<option value="'.$sid.'">'.$school.'</option>';
+			}
+			echo '</select>';
+			?>
+			<br />
+			
+			<div id="list_of_drawings"></div>
+		
+			<div id="submit_btn" style="display:none" onclick="save_drawing_selection('<?= strtoupper(request('type')) ?>')">Save</div>
+			
+			<div id="drawing_preview_box" style="display:none;margin:0 auto;width:700px;height:400px;"><h3>Preview</h3><iframe style="width:700px;height:400px;background-color:#FFFFFF;"></iframe></div>
+		</div>
+	</div>
+	<?php
+	}
+	elseif( Request('save') == 1 || Request('delete') )
+	{
+		$drawing_id = intval(Request('drawing_id'));
+		$type = $DB->GetValue('type', 'post_drawing_main', $drawing_id);
+
+		if( Request('save') == 1 )
+		{
+			foreach( explode(',', Request('drawings')) as $link_id )
+			{
+				$test = $DB->MultiQuery('SELECT * FROM vpost_links WHERE vid='.$drawing_id.' AND post_id='.$link_id);
+				if( count($test) == 0 )
+					$DB->Insert('vpost_links', array('vid'=>$drawing_id, 'post_id'=>$link_id));
+			}
+		}
+		elseif( Request('delete') )
+		{
+			$link_id = intval(Request('delete'));
+			$DB->Query('DELETE FROM vpost_links WHERE vid='.$drawing_id.' AND post_id='.$link_id);
+		}
+
+		$view = array();
+		$view['last_modified'] = $DB->SQLDate();
+		$view['last_modified_by'] = $_SESSION['user_id'];
+		$DB->Update('vpost_views', $view, $drawing_id);
+		
+		ShowSmallDrawingConnectionList($drawing_id, 'views', strtoupper(request('type')), array(
+			'delete'=>'javascript:deleteDrawingFromView(\''.strtoupper(request('type')).'\', %%)'
+		));
+	}
+	else
+	{
+		// return a formatted list of drawings
+		$drawings = $DB->MultiQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by
+			FROM post_drawing_main M
+			JOIN post_drawings D ON D.parent_id=M.id
+			LEFT JOIN users U ON M.last_modified_by=U.id
+			WHERE M.school_id='.intval(Request('school_id')).'
+				AND D.published=1
+			ORDER BY name');
+		echo '<h3>Drawings</h3>';
+		echo '<div style="background-color:#ffffff; border: 1px #999999 solid; padding:4px"><table width="100%">';
+		foreach( $drawings as $d )
+		{
+			echo '<tr class="drawing_select" id="d_'.$d['id'].'">';
+				echo '<td width="20" class="icon"><img src="/common/silk/tick.png" width="16" height="16" style="display:none" /></td>';
+				echo '<td>' . $d['name'] . '</td>';
+				echo '<td width="40" class="preview"><a href="javascript:loadDrawingPreview(\''.$d['code'].'\')"><img src="/common/silk/magnifier.png" width="16" height="16" /></a></td>';
+				echo '<td width="155"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span></td>';
+				echo '<td width="130">' . $d['modified_by'] . '</td>';
+			echo '</tr>';
+		}
+		echo '</table>';
+		if( count($drawings) == 0 )
+		{
+			echo 'No published drawings were found for this school.';
+		}
+		echo '</div>';
+	}	
+	
+}
+
+function processChangeNameRequest()
+{
+	global $DB;
+	
+	$view = array();
+	$view['name'] = Request('title');
+	$view['last_modified'] = $DB->SQLDate();
+	$view['last_modified_by'] = $_SESSION['user_id'];
+	$DB->Update('vpost_views', $view, Request('id'));
+	
+	echo Request('title');
+}
+
+function processCreateRequest()
+{
+	global $DB;
+	
+	$last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
+	$code = base_convert($last['id']*16, 10, 26);
+
+	$newCode = '';
+	for( $i=0; $i<strlen($code); $i++ )
+		$newCode .= chr(ord('a')+base_convert(substr($code, $i, 1), 26, 10));
+
+	$view = array();
+	$view['name'] = Request('name');
+	$view['school_id'] = (IsAdmin() ? Request('school_id') : $_SESSION['school_id']);
+	$view['date_created'] = $DB->SQLDate();
+	$view['last_modified'] = $DB->SQLDate();
+	$view['created_by'] = $_SESSION['user_id'];
+	$view['last_modified_by'] = $_SESSION['user_id'];
+	$view['`code`'] = $newCode;
+	$view_id = $DB->Insert('vpost_views', $view);
+	
+	header('Location: post_views.php?id='.$view_id);
+}
+
 
 ?>

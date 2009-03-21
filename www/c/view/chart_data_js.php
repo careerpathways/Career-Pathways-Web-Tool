@@ -38,7 +38,7 @@ $drawing_status = "";
 
 if( is_array($drawing) ) {
 
-	$colors = $DB->VerticalQuery("SELECT id, hex FROM color_schemes WHERE school_id=".$drawing['school_id'], 'hex', 'id');
+	$colors = $DB->VerticalQuery('SELECT id, hex FROM color_schemes WHERE school_id IN ('.$drawing['school_id'].', 0)', 'hex', 'id');
 	$title = $drawing['name'];
 	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=".$drawing['school_id']);
 
@@ -68,7 +68,18 @@ global $SITE;
 
 var base_url = 'http://<?= $SITE->base_url() ?>';
 
-var chTitleImg = '<div class="title_img" style="height:17px;font-size:0px;overflow:hidden;background-color:#649fc2"><img src="'+base_url+'/files/titles/<?= base64_encode($school['school_abbr']).'/'.base64_encode($title) ?>.png" height="17" width="800"></div>';
+var chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><img src="'+base_url+'/files/titles/<?= base64_encode($school['school_abbr']).'/'.base64_encode($title) ?>.png" height="19" width="800"></div>';
+<?php
+if( $drawing['skillset'] ) {
+	?>
+	var chSkillset = '<div class="title_skillset" style="font-size:8pt;font-weight:bold;">Oregon Skill Set: <?= $drawing['skillset'] ?></div>';
+	<?php
+} else {
+	?>
+	var chSkillset = '';
+	<?php
+}
+?>
 
 var chColor = ['<?= implode("','",$colors) ?>'];
 

@@ -7,10 +7,11 @@ $_REQUEST['d'] = CleanDrawingCode($_REQUEST['d']);
 if( KeyInRequest('v') ) {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.name, school_id, published, frozen
-		FROM drawing_main,drawings
-		WHERE drawings.parent_id=drawing_main.id
-			AND code='".$DB->Safe($_REQUEST['d'])."'
+			drawing_main.name, school_id, published, frozen, sk.title AS skillset
+		FROM drawing_main
+		JOIN drawings ON drawings.parent_id=drawing_main.id
+		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
+		WHERE code='".$DB->Safe($_REQUEST['d'])."'
 			AND drawings.version_num=".intval($_REQUEST['v']));
 
 	if( !is_array($drawing) ) {
@@ -20,9 +21,11 @@ if( KeyInRequest('v') ) {
 	}
 
 } else if (KeyInRequest('id')) {
-	$drawing = $DB->SingleQuery("SELECT * FROM drawing_main,drawings
-		WHERE drawings.parent_id=drawing_main.id
-			AND drawings.id=".intval($_REQUEST['id']));
+	$drawing = $DB->SingleQuery("SELECT drawing_main.*, sk.title AS skillset
+		FROM drawing_main
+		JOIN drawings ON drawings.parent_id=drawing_main.id
+		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
+		WHERE drawings.id=".intval($_REQUEST['id']));
 
 	if( !is_array($drawing) ) {
 		header("HTTP/1.0 404 Not Found");
@@ -32,11 +35,12 @@ if( KeyInRequest('v') ) {
 } else {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.name, school_id, published, frozen
-		FROM drawing_main, drawings
+			drawing_main.name, school_id, published, frozen, sk.title AS skillset
+		FROM drawing_main
+		JOIN drawings ON drawings.parent_id=drawing_main.id
+		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
-		AND published=1
-		AND parent_id=drawing_main.id");
+		AND published=1");
 
 	if( !is_array($drawing) ) {
 		header("HTTP/1.0 404 Not Found");

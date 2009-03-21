@@ -14,7 +14,7 @@ class ThisSite extends SiteSettings {
 
 	function name() { return "Career Pathways Web Tool"; }
 	function email_name() { return "Oregon CT Pathways"; }
-	function email() { return "help@ctepathways.org"; }
+	function email() { return "helpdesk@ctepathways.org"; }
 
 	function recipient_email() { return "aaron@ctepathways.org"; }
 
@@ -71,7 +71,7 @@ class ThisSiteTemplate extends SiteTemplate {
 			</div>
 
 			<div id="topbar"><div id="topbar_inside">
-				<?php if( IsLoggedIn() ) echo "User: ".$_SESSION['first_name']." ".$_SESSION['last_name'].' &nbsp;&nbsp;|&nbsp;&nbsp;'; ?>
+				<?php if( IsLoggedIn() ) echo "Welcome ".$_SESSION['first_name']." ".$_SESSION['last_name'].' &nbsp;&nbsp;&bull;&nbsp;&nbsp;'; ?>
 
 				<?php if( IsLoggedIn() ) { ?>
 					<?php
@@ -83,9 +83,10 @@ class ThisSiteTemplate extends SiteTemplate {
 						$b_end = "";
 					}
 					?>
-					<a href="/a/password.php?change">Change Password</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+					<a href="/a/users.php?id=<?= $_SESSION['user_id'] ?>">My Account</a> &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+					<a href="/a/password.php?change">Change Password</a> &nbsp;&nbsp;&bull;&nbsp;&nbsp;
 				<?php } else { ?>
-					<a href="/a/password.php">Reset Password</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+					<a href="/a/password.php">Reset Password</a> &nbsp;&nbsp;&bull;&nbsp;&nbsp;
 				<?php } ?>
 				<a href="/a/login.php<?= (IsLoggedIn()?'?logout':'') ?>">Log <?= (IsLoggedIn()?'Out':'In') ?></a>
 			</div></div>
@@ -97,9 +98,17 @@ class ThisSiteTemplate extends SiteTemplate {
 				<ul>
 				<?php
 				$mods = GetCategoriesForUser($_SESSION['user_id']);
+				if( strpos($_SERVER['REQUEST_URI'], '?') )
+					$p = substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
+				else
+					$p = $_SERVER['REQUEST_URI'];
+				$p = str_replace('.php', '', basename($p));
 				foreach( $mods as $mod ) {
+					$active = '';
+					if( $mod['internal_name'] == $p )  $active = 'active';
+
 					if( $mod['name'] != "--" ) {
-						echo "<li><a href=\"/a/".$mod['internal_name'].".php\">".$mod['name']."</a></li>";
+						echo '<li class="'.$active.'"><a href="/a/'.$mod['internal_name'].'.php">'.$mod['name'].'</a></li>';
 					} else {
 						echo "<li>&nbsp;</li>";
 					}
@@ -191,16 +200,21 @@ class ThisSiteTemplate extends SiteTemplate {
 	}
 
 	function PublicToolbar() {
+		if( strpos($_SERVER['REQUEST_URI'], '?') )
+			$p = substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
+		else
+			$p = $_SERVER['REQUEST_URI'];
+
 		echo '<div id="resourcebar">';
 		if( IsLoggedIn() ) {
 			echo '<div id="resourcebar_header"></div>';
 		}
 		echo '<div id="resourcebar_content" class="links">';
 		echo '<ul>';
-			echo '<li><a href="/p/tutorial">Tutorial</a></li>';
-			echo '<li><a href="/p/release_info">Release Info</a></li>';
-			echo '<li><a href="/p/ada">ADA Compliance</a></li>';
-			echo '<li><a href="/a/help">Help</a></li>';
+			echo '<li' . ( $p == '/p/tutorial' ? ' class="active"' : '' ) . '><a href="/p/tutorial">Tutorial</a></li>';
+			echo '<li' . ( $p == '/p/release_info' ? ' class="active"' : '' ) . '><a href="/p/release_info">Release Info</a></li>';
+			echo '<li' . ( $p == '/p/ada' ? ' class="active"' : '' ) . '><a href="/p/ada">ADA Compliance</a></li>';
+			echo '<li' . ( $p == '/a/help' ? ' class="active"' : '' ) . '><a href="/a/help">Help Desk</a></li>';
 		echo '</ul>';
 		echo '</div><br /></div>';
 	}
@@ -289,10 +303,11 @@ global $DB;
 function GetDrawingInfo($drawing_id, $type='pathways') {
 global $DB;
 	if( $type == 'pathways' ) {
-		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id
-			FROM drawing_main, drawings
-			WHERE drawings.parent_id=drawing_main.id
-			AND drawings.id=".$drawing_id);
+		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id, sk.title AS skillset
+			FROM drawing_main
+			JOIN drawings ON drawings.parent_id=drawing_main.id
+			LEFT JOIN oregon_skillsets AS sk ON sk.id = drawing_main.skillset_id
+			WHERE drawings.id=".$drawing_id);
 	} elseif( $type == 'post' ) {
 		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id
 			FROM post_drawing_main, post_drawings
@@ -465,7 +480,6 @@ function drawing_sort_by_version($a,$b) {
 include("general.inc.php");
 include("admin_inc.php");
 include("json_encode.php");
-include("ccti_drawing.inc.php");
 
 
 function logmsg($message) {

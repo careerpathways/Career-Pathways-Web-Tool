@@ -3,3 +3,5 @@ Options +FollowSymLinks
 RewriteEngine on
 RewriteCond %{REQUEST_URI} !.php$
 RewriteRule ^(.*)$ $1.php [nc]
+
+RewriteRule ^dashboard.php /index.php

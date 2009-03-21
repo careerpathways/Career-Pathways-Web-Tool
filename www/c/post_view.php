@@ -6,11 +6,12 @@ require_once("POSTChart.inc.php");
 $drawing_id = 0;
 
 if( Request('page') == 'published' ) {
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id
-		FROM post_drawing_main AS main, post_drawings AS d, schools 
-		WHERE d.parent_id = main.id
-			AND main.school_id = schools.id
-			AND published = 1
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+		FROM post_drawing_main AS main
+		JOIN post_drawings AS d ON d.parent_id = main.id
+		JOIN schools ON main.school_id = schools.id
+		LEFT JOIN oregon_skillsets AS sk ON main.skillset_id = sk.id
+		WHERE published = 1
 			AND deleted = 0
 			AND code="'.Request('d').'"');
 	if( is_array($drawing) ) {
@@ -19,11 +20,12 @@ if( Request('page') == 'published' ) {
 	}
 } elseif( Request('page') == 'version') {
 
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id
-		FROM post_drawing_main AS main, post_drawings AS d, schools
-		WHERE d.parent_id = main.id
-			AND main.school_id = schools.id
-			AND version_num = '.Request('v').'
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+		FROM post_drawing_main AS main
+		JOIN post_drawings AS d ON d.parent_id = main.id
+		JOIN schools ON main.school_id = schools.id
+		LEFT JOIN oregon_skillsets AS sk ON main.skillset_id = sk.id
+		WHERE version_num = '.Request('v').'
 			AND deleted = 0
 			AND code="'.Request('d').'"');
 	if( is_array($drawing) ) {
@@ -48,13 +50,19 @@ if( $drawing_id == 0 )
 }
 else
 {
-	?>
-	<div id="post_title">
-		<img src="/files/titles/post/<?=base64_encode($drawing['school_abbr'])?>/<?=base64_encode($page_title)?>.png" alt="Career POST" />
-	</div>
-	<?php
-		$post = POSTChart::create($drawing_id);
-		$post->display();
+	echo '<div id="post_title_container">';
+		echo '<div id="post_title">';
+			echo '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
+		echo '</div>';
+		if( $drawing['skillset'] ) {
+			echo '<div id="skillset">';
+				echo 'Oregon Skill Set: ' . $drawing['skillset'];
+			echo '</div>';
+		}
+	echo '</div>';
+
+	$post = POSTChart::create($drawing_id);
+	$post->display();
 }
 ?>
 

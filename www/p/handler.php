@@ -3,7 +3,6 @@ chdir("..");
 include("inc.php");
 require_once "Text/Wiki.php";
 
-
 $valid_categories = $TEMPLATE->resource_categories();
 
 parse_str($_SERVER['REDIRECT_QUERY_STRING'], $_REQUEST);
@@ -19,8 +18,6 @@ if( !array_key_exists($category, $valid_categories) ) {
 $TEMPLATE->AddCrumb('/p/'.$category, $valid_categories[$category]);
 
 PrintHeader();
-
-
 
 $orderby = ($category == 'release_info' ? 'date DESC' : 'sort_index DESC'); 
 

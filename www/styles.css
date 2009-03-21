@@ -333,18 +333,16 @@ a.edit:hover, a.edit:visited:hover {
 
 #header {
 	height:61px;
-	background: url("/images/head-right.gif") top right;
-	background-repeat: no-repeat;	
-	background-color: #<?= $LT_GREY ?>;
+	background-color: white;
 }
 
 #topbar {
-	background-color: #<?= $GREY ?>;
+	background-color: #444444;
 	width: 100%;
 	text-align: right;
 }
 #topbar_inside {
-	color: black;
+	color: white;
 	padding-right: 30px;
 
 }
@@ -395,6 +393,9 @@ a.edit:hover, a.edit:visited:hover {
 .links a:visited:hover {
 	background-color: white;
 	color: black;
+}
+.links li.active a {
+	background-color: #<?= $L_GOLD ?>;
 }
 
 #sideboxes {
@@ -903,6 +904,14 @@ a.chart_header {
 	border: 1px #cf9d2b solid;
 }
 
+
+#browserNotice {
+    width: 350px;
+	float: right;
+	margin-bottom: 20px;
+	padding: 6px;
+	border: 4px #CC6666 solid;
+}
 
 
 #dash_links {

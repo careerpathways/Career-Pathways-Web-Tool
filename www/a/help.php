@@ -74,10 +74,10 @@ if( PostRequest() ) {
 
 	$message = '';
 	$subject = '';
-	$page_title = 'Help';
+	$page_title = 'Help Desk';
 	if( IsGuestUser() ) {
 		$helptext = '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-		$helptext .='<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink('help@ctepathways.org').'. We will get back to you within one business day.</p>';
+		$helptext .='<p>Please use this form to send us your questions or problems, or write to us at '.EmailEncrypt::EmailLink($SITE->email()).'. We will get back to you within one business day.</p>';
 	} else {
 		$helptext = '<p>Please use this form to send us your questions or problems with the Web Tool. We will get back to you within one business day.</p>';
 	}
@@ -120,7 +120,7 @@ http://oregon.ctepathways.org/....
 
 	case 'outside':
 		$helptext = '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-		$helptext .= '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink('help@ctepathways.org').'.</p>';
+		$helptext .= '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink($SITE->email()).'.</p>';
 
 	}
 
@@ -128,7 +128,7 @@ http://oregon.ctepathways.org/....
 	PrintHeader();
 
 	if( KeyInRequest('submitted') ) {
-		echo '<p>Thank you, your message has been sent to help@ctepathways.org. We will respond to your inquiry within one business day.<br><br>Pathways Web Tool User Support</p>';
+		echo '<p>Thank you, your message has been sent to ' . $SITE->email() . '. We will respond to your inquiry within one business day.<br><br>Pathways Web Tool User Support</p>';
 	} else {
 		?>
 		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">

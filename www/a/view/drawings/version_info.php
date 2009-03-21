@@ -57,6 +57,15 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td><b><?= $school_name ?></b></td>
 </tr>
 <tr>
+	<th>Note</th>
+	<td>
+		<div id="note_edit">
+			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
+			<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
+		</div>
+	</td>
+</tr>
+<tr>
 	<th>Created</th>
 	<td><?php
 		echo ($drawing['date_created']==''?'':$DB->Date("m/d/Y g:ia",$drawing['date_created'])).' <a href="/a/users.php?id='.$drawing['created_by'].'">'.$created['name'].'</a>';
@@ -73,16 +82,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td>
 		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw' : 'View'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
 		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)"><?=SilkIcon('magnifier.png')?></a>
-	</td>
-</tr>
-<tr>
-	<th>Note</th>
-	<td>
-		<div id="note_fixed"><span id="note_value"><?= $drawing['note'] ?></span> <a href="javascript:showNoteChange()" class="tiny">edit</a></div>
-		<div id="note_edit" style="display:none">
-			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
-			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savenote()">
-		</div>
 	</td>
 </tr>
 <tr>
@@ -177,6 +176,7 @@ if( $drawing['published'] ) {
 </form>
 
 <script type="text/javascript" src="/files/greybox.js"></script>
+<script type="text/javascript" src="/common/URLfunctions1.js"></script>
 <script type="text/javascript">
 
 function publishVersion() {
@@ -186,18 +186,17 @@ function publishVersion() {
 
 function savenote() {
 	var note = getLayer('version_note');
-	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note='+note.value);
+	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note='+URLEncode(note.value));
 }
 
 function cbNoteChanged() {
-	getLayer('note_value').innerHTML = getLayer('version_note').value;
-	getLayer('note_edit').style.display = 'none';
-	getLayer('note_fixed').style.display = 'block';
-}
-
-function showNoteChange() {
-	getLayer('note_edit').style.display = 'block';
-	getLayer('note_fixed').style.display = 'none';
+	var btn = getLayer('noteButton');
+	btn.value = 'Saved!';
+	btn.style.backgroundColor = '#393';
+	setTimeout(function(){
+		getLayer('noteButton').value = "Save";
+		getLayer('noteButton').style.backgroundColor = '';
+	}, 500);
 }
 
 function preview_drawing(code,version) {

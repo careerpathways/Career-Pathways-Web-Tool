@@ -74,6 +74,7 @@ if( Request('sid') ) {
 	foreach( $colors_ as $c ) {
 		$colors[] = $c['hex'];
 	}
+	$colors[] = 'FFFFFF';
 	$colors[] = '333333';
 	echo '({"request_mode":"request","colors":["'.implode('","',$colors).'"]})';
 }
