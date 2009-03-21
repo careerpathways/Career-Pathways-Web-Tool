@@ -55,7 +55,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 	}
 	elseif( count($ds) == 1 )
 	{
-		$p = POSTChart::create($d['version_id']);
+		$p = POSTChart::create($ds[0]['version_id']);
 		$p->display();
 	}
 	else

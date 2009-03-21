@@ -68,3 +68,13 @@ insert into `types` (`id`,`description`,`family`) values (2,'Vocational','progra
 insert into `types` (`id`,`description`,`family`) values (3,'Associates','program');
 insert into `types` (`id`,`description`,`family`) values (4,'High School','program');
 insert into `types` (`id`,`description`,`family`) values (5,'Transfer','program');
+
+
+insert  into `oregon_skillsets`(`id`,`title`) values
+	(1,'Agriculture, Food and Natural Resources'),
+	(2,'Arts, Information and Communications'),
+	(3,'Business and Management'),
+	(4,'Health Services'),
+	(5,'Human Resources'),
+	(6,'Industrial and Engineering Systems');
+
