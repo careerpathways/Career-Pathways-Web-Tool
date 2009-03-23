@@ -429,11 +429,14 @@ function ShowDrawingList(&$mains, $type='pathways') {
 
 }
 
-function ShowSmallDrawingConnectionList($drawing_id, $mode='connections', $type=null, $links=array())
+function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 {
 	global $DB;
 	
-	$connections = GetAssociatedDrawings($drawing_id, $mode, $type);
+	$connections = $DB->MultiQuery('SELECT post_id, tab_name
+		FROM vpost_links AS v
+		JOIN post_drawing_main AS d ON v.post_id=d.id
+		WHERE type="'.$type.'" AND vid='.$drawing_id);
 	if( count($connections) == 0 )
 	{
 		echo '(none)';
@@ -444,7 +447,8 @@ function ShowSmallDrawingConnectionList($drawing_id, $mode='connections', $type=
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="280">Drawing Title</th>';
 		echo '<th width="20">&nbsp;</th>';
-		echo '<th width="200">Organization</th>';
+		echo '<th width="130">Tab Name</th>';
+		echo '<th width="180">Organization</th>';
 		echo '<th width="285">Last Modified</th>';
 	echo '</tr>';
 	foreach( $connections as $c )
@@ -454,13 +458,14 @@ function ShowSmallDrawingConnectionList($drawing_id, $mode='connections', $type=
 			JOIN post_drawings D ON D.parent_id=M.id
 			LEFT JOIN users U ON M.last_modified_by=U.id
 			LEFT JOIN schools ON M.school_id=schools.id
-			WHERE M.id='.intval($c).'
+			WHERE M.id='.intval($c['post_id']).'
 			ORDER BY name');
 
 		echo '<tr>';
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')">' . SilkIcon('magnifier.png') . '</a></td>';
+			echo '<td><input type="text" id="tabName_'.$c['post_id'].'" class="tabName" value="' . $c['tab_name'] . '" style="width:90px" /><input type="button" class="tabNameBtn" id="tabNameBtn_'.$c['post_id'].'" style="width:30px;font-size:9px;margin-left:2px;" value="Save" /></td>';
 			echo '<td>' . $d['school_name'] . '</td>';
 			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';

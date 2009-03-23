@@ -27,6 +27,9 @@ if (KeyInRequest('action')) {
 		case 'create':
 			processCreateRequest();
 			die();
+		case 'save_tab_name':
+			processTabNameRequest();
+			die();
 		default:
 			die('unknown action');
 	}
@@ -95,13 +98,12 @@ if( $id )
 		</td>
 	</tr>
 	<tr>
-		<th>Contents</th>
-		<td>
+		<td colspan="2">
 			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
 			<h3 style="display:inline">High School Templates</h3>
 			<div id="connected_drawing_list_HS">
 			<?php
-				ShowSmallDrawingConnectionList($id, 'views', 'HS', array(
+				ShowSmallDrawingConnectionList($id, 'HS', array(
 					'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
 				));
 			?>
@@ -112,7 +114,7 @@ if( $id )
 			<h3 style="display:inline">Community College Pathways</h3>
 			<div id="connected_drawing_list_CC">
 			<?php
-				ShowSmallDrawingConnectionList($id, 'views', 'CC', array(
+				ShowSmallDrawingConnectionList($id, 'CC', array(
 					'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
 				));
 			?>
@@ -131,6 +133,10 @@ if( $id )
 		var i = this.indexOf(s);
 		if(i != -1) this.splice(i, 1);
 	}
+
+	$j(document).ready(function(){
+		bindTabNameBoxes();
+	});
 
 	function showTitleChange() {
 		getLayer('title_edit').style.display = 'block';
@@ -246,6 +252,7 @@ if( $id )
 					$j('#connected_drawing_list_'+type).html(data);
 					chGreybox.close();
 					selected_drawings = Array();
+					bindTabNameBoxes();
 				});
 		}
 	}
@@ -260,7 +267,32 @@ if( $id )
 				},
 				function(data) {
 					$j('#connected_drawing_list_'+type).html(data);
+					bindTabNameBoxes();
 				});
+	}
+	
+	function bindTabNameBoxes()
+	{
+		$j(".tabName").bind("change", function(){
+			$j("#tabNameBtn_"+$j(this).attr("id").split("_")[1]).click();
+		});
+		$j(".tabNameBtn").click(function(){
+			var postID = $j(this).attr("id").split("_")[1];
+			if( $j("#tabName_"+postID).val() != "" ) {
+				$j.post("<?=$_SERVER['PHP_SELF']?>",
+						{action: "save_tab_name",
+						 vid: <?=request('id')?>,
+						 post_id: postID,
+						 tab_name: $j("#tabName_"+postID).val()},
+						function(data){
+							$j("#tabName_"+postID).val(data);
+							$j("#tabName_"+postID).css('background-color', '#99FF99');
+							setTimeout(function(){
+								$j("#tabName_"+postID).css('background-color', '');
+							}, 400);
+						});
+			}
+		});
 	}
 	
 	</script>
@@ -397,8 +429,16 @@ function processDrawingListRequest()
 			foreach( explode(',', Request('drawings')) as $link_id )
 			{
 				$test = $DB->MultiQuery('SELECT * FROM vpost_links WHERE vid='.$drawing_id.' AND post_id='.$link_id);
+
 				if( count($test) == 0 )
-					$DB->Insert('vpost_links', array('vid'=>$drawing_id, 'post_id'=>$link_id));
+				{
+					$info = $DB->SingleQuery('SELECT school_name
+											 FROM post_drawing_main AS pdm
+											 JOIN schools ON school_id=schools.id
+											 WHERE pdm.id = '.$link_id);
+					$tab_name = str_replace(array(' High School', ' Community College'), '', $info['school_name']);
+					$DB->Insert('vpost_links', array('vid'=>$drawing_id, 'post_id'=>$link_id, 'tab_name'=>$tab_name));
+				}
 			}
 		}
 		elseif( Request('delete') )
@@ -412,7 +452,7 @@ function processDrawingListRequest()
 		$view['last_modified_by'] = $_SESSION['user_id'];
 		$DB->Update('vpost_views', $view, $drawing_id);
 		
-		ShowSmallDrawingConnectionList($drawing_id, 'views', strtoupper(request('type')), array(
+		ShowSmallDrawingConnectionList($drawing_id, strtoupper(request('type')), array(
 			'delete'=>'javascript:deleteDrawingFromView(\''.strtoupper(request('type')).'\', %%)'
 		));
 	}
@@ -483,6 +523,15 @@ function processCreateRequest()
 	$view_id = $DB->Insert('vpost_views', $view);
 	
 	header('Location: post_views.php?id='.$view_id);
+}
+
+function processTabNameRequest()
+{
+	global $DB;
+	
+	$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
+	$DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
+	echo $tab_name;
 }
 
 

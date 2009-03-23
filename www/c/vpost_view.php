@@ -3,7 +3,7 @@ chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
 
-$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id
+$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name
 	FROM vpost_views AS v
 	JOIN vpost_links AS vl ON v.id = vl.vid
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
@@ -73,7 +73,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 			foreach( $ds as $i=>$d )
 			{
 				$school_name = str_replace(array(' High School', ' Community College'), '', $d['school_name']);
-				echo '<li><a href="#tabs'.$type.'-'.($i+1).'">' . $school_name . '</a></li>';
+				echo '<li><a href="#tabs'.$type.'-'.($i+1).'">' . $d['tab_name'] . '</a></li>';
 			}
 			?>
 		</ul>
