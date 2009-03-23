@@ -245,11 +245,12 @@ function showVersion() {
 	global $DB, $TEMPLATE;
 
 
-	$drawing = $DB->SingleQuery('SELECT main.*, d.published, d.frozen, schools.school_abbr, d.id
-		FROM post_drawing_main AS main, post_drawings AS d, schools
-		WHERE d.parent_id = main.id
-			AND main.school_id = schools.id
-			AND d.id = '.intval(Request('version_id')).'
+	$drawing = $DB->SingleQuery('SELECT main.*, d.published, d.frozen, schools.school_abbr, d.id, os.title AS skillset
+		FROM post_drawing_main AS main
+		JOIN post_drawings AS d ON d.parent_id = main.id
+		JOIN schools ON main.school_id = schools.id
+		LEFT JOIN oregon_skillsets AS os ON skillset_id = os.id
+		WHERE d.id = '.intval(Request('version_id')).'
 			AND deleted = 0');
 	if( !is_array($drawing) ) {
 		echo "The record does not exist";
@@ -300,7 +301,15 @@ function showVersion() {
 	
 	$post = POSTChart::Create($drawing['id']);
 
+	echo '<div style="margin-bottom: 10px">';
 	echo '<div id="post_title"><img src="/files/titles/post/'.base64_encode($post->school_abbr).'/'.base64_encode($post->name).'.png" alt="' . $post->school_abbr . ' Career Pathways - ' . $post->name . '" /></div>';
+	if( $drawing['skillset'] )
+	{
+		echo '<div id="skillset">';
+			echo 'Oregon Skill Set: ' . $drawing['skillset'];
+		echo '</div>';
+	}
+	echo '</div>';
 	
 	echo '<div id="canvas">';
 	$post->display();
