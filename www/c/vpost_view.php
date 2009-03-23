@@ -47,8 +47,14 @@ foreach( $drawings as $d )
 <body>
 
 <?php
+
+echo '<div id="post_title" style="margin-bottom: 10px">';
+	echo '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
+echo '</div>';
+
 foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 {
+	echo '<div style="margin-bottom:10px;">';
 	if( count($ds) == 0 )
 	{
 		
@@ -84,6 +90,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 	</div>
 	<?php
 	}
+	echo '</div>';
 }
 ?>
 

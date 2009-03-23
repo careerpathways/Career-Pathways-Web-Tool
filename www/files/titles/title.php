@@ -19,6 +19,8 @@ if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
 	$title  = base64_decode(Request('title'));
 }
 
+if( $school == '-' ) $school = '';
+
 $hash = md5($school.$title.Request('type'));
 $filename = $SITE->cache_path()."titles/".$hash;
 

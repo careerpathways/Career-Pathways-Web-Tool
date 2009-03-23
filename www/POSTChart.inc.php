@@ -424,13 +424,17 @@ class POSTChart_HS extends POSTChart
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>', "\n";
+			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows+1) . '"></td>', "\n";
+			echo '<th class="post_head"></th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->schoolName . '</th>', "\n";
+			echo '<td class="post_sidebar_right" rowspan="' . ($this->totalRows+1) . '">' . $this->verticalText('High School Diploma') . '</td>', "\n";
+		echo '</tr>', "\n";
+		echo '<tr>', "\n";
 			echo '<th class="post_head_xy post_head">Grade</th>', "\n";
 			foreach( $this->_cols as $col )
 			{
 				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head">' . $col->title . '</th>', "\n";
 			}
-			echo '<td  class="post_sidebar_right" rowspan="' . $this->totalRows . '">' . $this->verticalText('High School Diploma') . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
 
@@ -468,7 +472,7 @@ class POSTChart_CC extends POSTChart
 
 	protected function _rowName($num)
 	{
-		return ($num < 100 ? ucfirst(ordinalize($num)) . ' Term' : '<br/><br/>');
+		return ($num < 100 ? ''.$num.substr(ordinalize($num),-2) . ' Term' : '<br/><br/>');
 	}
 
 	protected function _rowNameMini($num)
@@ -479,9 +483,9 @@ class POSTChart_CC extends POSTChart
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->schoolName). '</td>', "\n";
-			echo '<th class="post_head_xy post_head" style="width:40px;">Term</th>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->drawingName . '</th>', "\n";
+			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<th class="post_head_xy post_head" style="width:40px;"></th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->schoolName . '</th>', "\n";
 			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
