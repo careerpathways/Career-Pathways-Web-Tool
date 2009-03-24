@@ -230,6 +230,7 @@ abstract class POSTChart
 		echo '<table border="1" class="post_chart_mini">', "\n";
 		$this->_printHeaderRowMini();
 
+		if( is_array($this->_content) )
 		foreach( $this->_content as $rowNum=>$row )
 		{
 			echo '<tr>', "\n";

@@ -371,7 +371,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 			//echo '<th width="40">SVG</th>';
 
 		foreach( $mains as $mparent ) {
-			echo '<tr class="row0">';
+			echo '<tr class="drawing_main">';
 
 			echo '<td><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16"/></a></td>';
 			echo '<td colspan="3" class="drawinglist_name">'.$mparent['name'].'</td>';
@@ -381,8 +381,8 @@ function ShowDrawingList(&$mains, $type='pathways') {
 			echo '<td><span class="fwfont">'.($mparent['date_created']==''?'':$DB->Date('Y-m-d f:i a',$mparent['date_created'])).'</span> <a href="/a/users.php?id='.$mparent['created_by'].'">'.$created['name'].'</a></td>';
 
 			foreach( $mparent['drawings'] as $dr ) {
-				echo '<tr class="'.($dr['published']==1?'published':'row1').'">';
-					if( CanEditVersion($dr['id']) ) {
+				echo '<tr class="'.($dr['published']==1?'published':'').'">';
+					if( CanEditVersion($dr['id'], $type) ) {
 						if( $dr['published'] == 1 || $dr['frozen'] == 1 ) {
 							$linktext = SilkIcon('picture.png');
 						} else {
@@ -395,7 +395,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '<td width="30">&nbsp;</td>';
 
 					echo '<td width="160">';
-						echo 'Version '.$dr['version_num'].' '.($dr['published']?'(published)':'');
+						echo 'Version '.$dr['version_num'].' ';
 						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 

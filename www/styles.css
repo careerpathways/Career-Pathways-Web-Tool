@@ -265,8 +265,11 @@ textarea.code
 	background-color: #FFFFFF;
 }
 
+tr.drawing_main {
+    background-color: #<?= $GOLD ?>;
+}
 tr.published {
-	background-color: #<?= $GOLD ?>;
+	background-color: #<?= $L_GOLD ?>;
 }
 
 

@@ -23,7 +23,11 @@
 
 	header('Content-Type: image/png');
 
-	$finalPath = $SITE->cache_path() . "legend/" . $_GET['ids'] . '.png';
+	$folder = $SITE->cache_path() . "legend";
+	if( !is_dir($folder) )
+		mkdir($folder, 0755, TRUE);
+
+	$finalPath = $folder . "/" . $_GET['ids'] . '.png';
 
 	if(file_exists($finalPath) && !$checked && !$largeMode)
 		die(file_get_contents($finalPath));

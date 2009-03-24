@@ -168,6 +168,7 @@ h4
   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/images/outdated-overlay.png',sizingMethod='image');
   !background: none;
 }
+
 .overlay_draft {
   background: url('/images/draft-overlay.png');
   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+base_url+"/images/draft-overlay.png',sizingMethod='image');

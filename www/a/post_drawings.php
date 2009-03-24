@@ -74,7 +74,8 @@ if( KeyInRequest('drawing_id') ) {
 			}
 		}
 
-		header("Location: ".$_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing['parent_id']);
+		header('Location: '.$_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing['parent_id']);
+		die();
 
 	} else {
 		// support for old-school urls

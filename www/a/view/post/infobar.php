@@ -19,7 +19,7 @@ $num_siblings = $DB->GetValue("COUNT(*)", 'post_drawings', $drawing['parent_id']
 		if( $drawing['published'] ) {
 			echo 'Published';
 		} elseif( $drawing['frozen'] ) {
-			echo 'Outdated';
+			echo 'Locked';
 		} else {
 			echo 'Draft';
 		}?><br />

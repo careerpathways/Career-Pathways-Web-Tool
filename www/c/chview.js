@@ -97,7 +97,7 @@ Charts = {
 		Charts.connections = new Hash();
 		Charts.drawingStatus = data.drawing_status;
 
-		if(Charts.drawingStatus == 'outdated' || Charts.drawingStatus == 'draft') {
+		if(Charts.drawingStatus == 'draft') {
 			Charts.backgroundImageUrl = '/images/' + Charts.drawingStatus + '-overlay.png';
 			// firefox crashes with this backgroung image
 			if (!(Charts.printing && Prototype.Browser.Gecko)) {

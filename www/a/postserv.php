@@ -164,6 +164,10 @@ require_once("inc.php");
 		<script language="JavaScript" type="text/javascript">
 			$("#postFormSubject").focus();
 
+			$("#postFormSubject").keyup(function(){
+				$(this).val($(this).val().toUpperCase());
+			});
+
 			$(".postGreyboxContent input").keydown(function(e) {
 				if( e.keyCode == 13 ) $("#postFormSave").click();
 			});
@@ -280,7 +284,7 @@ require_once("inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=footer&id=<?=$id?>",
-					data: "text=" + $("#postFormContent").val() + "&link=" + $("#postFormURL").val(),
+					data: {text: $("#postFormContent").val(), link: $("#postFormURL").val()},
 					success: function(data){
 						$("#post_footer_<?=$id?>").html(data);
 						chGreybox.close();
@@ -438,13 +442,13 @@ require_once("inc.php");
 						<div>
 							<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
 							<div style="float: left; height: 20px;">
-								<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" style="width: 50px;" /> (e.g. WR)
+								<input id="postFormSubject" maxlength="7" value="<?=$cell['course_subject']?>" style="width: 50px;" /> (e.g. WR)
 							</div>
 						</div>
 						<div>
 							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
 							<div style="float: left; height: 20px;">
-								<input id="postFormNumber" maxlength="4" value="<?=$cell['course_number']?>" style="width: 50px;" /> (e.g. 200)
+								<input id="postFormNumber" maxlength="7" value="<?=$cell['course_number']?>" style="width: 50px;" /> (e.g. 200)
 							</div>
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>

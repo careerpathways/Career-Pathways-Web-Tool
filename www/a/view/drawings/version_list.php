@@ -36,8 +36,20 @@
 				echo '<tr>';
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
-					$action = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? 'draw' : 'view';
-					$link = (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id']) ? SilkIcon('pencil.png') : SilkIcon('picture.png');
+
+						if( CanEditVersion($v['id']) ) {
+							if( $v['published'] == 1 || $v['frozen'] == 1 ) {
+								$link = SilkIcon('picture.png');
+								$action = 'view';
+							} else {
+								$link = SilkIcon('pencil.png');
+								$action = 'draw';
+							}
+						} else {
+							$link = SilkIcon('picture.png');
+							$action = 'view';
+						}
+
 						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';

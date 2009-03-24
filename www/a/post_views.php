@@ -30,6 +30,9 @@ if (KeyInRequest('action')) {
 		case 'save_tab_name':
 			processTabNameRequest();
 			die();
+		case 'delete':
+			processDeleteRequest();
+			die();
 		default:
 			die('unknown action');
 	}
@@ -98,6 +101,15 @@ if( $id )
 		</td>
 	</tr>
 	<tr>
+		<th>Delete</th>
+		<td>
+			Deleting this "view" will not delete the drawings associated with it. Click the link below to delete this view.<br />
+			<a href="javascript:void(0);" id="deleteLink">Delete this view</a> &nbsp;&nbsp;
+			<a href="javascript:void(0);" id="deleteConfirm" style="display:none">Click to confirm</a><br />
+			<br />
+		</td>
+	</tr>
+	<tr>
 		<td colspan="2">
 			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
 			<h3 style="display:inline">High School Templates</h3>
@@ -122,7 +134,6 @@ if( $id )
 			
 		</td>
 	</tr>
-
 	</table>
 	<script type="text/javascript">
 	var $j = jQuery.noConflict();
@@ -136,6 +147,19 @@ if( $id )
 
 	$j(document).ready(function(){
 		bindTabNameBoxes();
+		
+		$j("#deleteLink").click(function(){
+			$j("#deleteConfirm").css("display", "inline").click(function(){
+				$j.post("post_views.php",
+						{id: <?= $id ?>,
+						 action: "delete"
+						},
+						function(data) {
+							window.location = "post_views.php";
+						});
+			});
+		});
+		
 	});
 
 	function showTitleChange() {
@@ -534,5 +558,12 @@ function processTabNameRequest()
 	echo $tab_name;
 }
 
+
+function processDeleteRequest()
+{
+	global $DB;
+	
+	$DB->Query('DELETE FROM vpost_views WHERE id = '.intval(Request('id')));	
+}
 
 ?>
