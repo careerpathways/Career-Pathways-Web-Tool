@@ -8,23 +8,27 @@ $topics = array(
 	'grid'
 );
 
-if ($topic === 'all' || in_array($_REQUEST['topic'], $topics)) {
+if( array_key_exists('topic', $_REQUEST) )
+{
 	$topic = $_REQUEST['topic'];
 }
-else {
+else 
+{
 	$topic = 'all';
 }
 
 function requireTopic($topic) {
-?>
-<!-- <?= $topic ?> -->
-<div id="<?= $topic ?>">
-<?php
-	require('view/drawings/help/topics/' . $topic . '.php');
-?>
-</div>
-<?php
+	?>
+	<!-- <?= $topic ?> -->
+	<div id="<?= $topic ?>">
+	<?php
+		require('view/drawings/help/topics/' . $topic . '.php');
+	?>
+	</div>
+	<?php
 }
+
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 

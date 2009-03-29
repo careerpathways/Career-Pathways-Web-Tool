@@ -442,7 +442,7 @@ require_once("inc.php");
 						<div>
 							<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
 							<div style="float: left; height: 20px;">
-								<input id="postFormSubject" maxlength="7" value="<?=$cell['course_subject']?>" style="width: 50px;" /> (e.g. WR)
+								<input id="postFormSubject" maxlength="4" value="<?=$cell['course_subject']?>" style="width: 50px;" /> (e.g. WR)
 							</div>
 						</div>
 						<div>

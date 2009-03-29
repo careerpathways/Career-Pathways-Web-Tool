@@ -51,8 +51,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<th>Note</th>
 	<td>
 		<div id="note_edit">
-			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
-			<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
+			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>" />
+			<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()" />
+			<input type="button" class="submit tiny" value="Clear" id="noteClearButton" onclick="deletenote()" />
 		</div>
 	</td>
 </tr>
@@ -247,6 +248,10 @@ if( $post->type == 'CC' )
 
 var $j = jQuery.noConflict();
 
+$j(document).ready(function(){
+	$j('#version_note').change(savenote);
+});
+
 function changeTerms() {
 	$j('#num_terms .current').css({display: 'none'});
 	$j('#num_terms .editing').css({display: 'block'});
@@ -285,6 +290,19 @@ function publishVersion() {
 function savenote() {
 	var note = getLayer('version_note');
 	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note='+URLEncode(note.value));
+}
+
+function deletenote() {
+	$j('#version_note').val('');
+	ajaxCallback(function() {
+		var btn = getLayer('noteClearButton');
+		btn.value = 'Cleared!';
+		btn.style.backgroundColor = '#393';
+		setTimeout(function(){
+			getLayer('noteClearButton').value = "Clear";
+			getLayer('noteClearButton').style.backgroundColor = '';
+		}, 500);
+	}, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note=');
 }
 
 function cbNoteChanged() {

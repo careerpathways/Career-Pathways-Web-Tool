@@ -125,12 +125,14 @@ function CanEditVersion($drawing, $mode='post') {
 	else
 		$tp = '';
 	
-	$drawing = $DB->SingleQuery('SELECT *, M.school_id FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
+	$drawing = $DB->SingleQuery('SELECT *, M.school_id'.($mode=='post'?', M.type':'').' FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
 
 	if( $drawing['published'] == 1 || $drawing['frozen'] == 1 )
 		return false;
 
 	if( IsAdmin() ) return true;
+
+	if( $mode == 'post' && IsStaff() && $drawing['type'] == 'HS' ) return true;
 
 	return $_SESSION['school_id'] == $drawing['school_id'];
 }

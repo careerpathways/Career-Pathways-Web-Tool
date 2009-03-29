@@ -94,13 +94,14 @@ document.observe('chart:drawn', function(e) {
   
   Charts.toolbarContainer.appendChild(toolbar);
 
-  // greybox overlay for fckeditor
+  // greybox overlay for tinymce (replaced fckeditor)
 
   Charts.editor = document.createElement('div');
   Charts.editor.className = "editorWindow";
 
-  Charts.editor.myfck = document.createElement('div');
-  Charts.editor.myfck.id = "myFCKeditor";
+  Charts.editor.myfck = document.createElement('textarea');
+  Charts.editor.myfck.id = "mceBox";
+  Charts.editor.myfck.name = "mceBox";
   Charts.editor.appendChild(Charts.editor.myfck);
 
   var okbtn = document.createElement('div');
@@ -110,7 +111,9 @@ document.observe('chart:drawn', function(e) {
   var self = this;
   Event.observe(okbtn, 'mousedown', function() {Charts.insertFCKcontent(Charts);});
 
-  Charts.fck = new FCKeditor("PathwaysEditor");
+  
+
+  Charts.fck = {Config: {}}; //new FCKeditor("PathwaysEditor");
   Charts.fck.BasePath = "/common/fckeditor/";
   Charts.fck.Height = 400;
   Charts.fck.Config["CustomConfigurationsPath"] = "/files/myfckconfig.js";
@@ -593,6 +596,7 @@ ChartBox.addMethods({
       this.titleElement.innerHTML = '';
       this.titleElement.appendChild(input);
       input.focus();
+	  input.select();
 	  document.editingTitle = true;
     },
     saveTitle: function(input) {
@@ -798,19 +802,47 @@ chUtil.toPost = function(obj,path,new_path) {
 
 Charts.showEditor = function(mychUtil) {
     this.mychUtil = mychUtil;
-	this.fck.Value = mychUtil.config.content;
-	this.editor.myfck.innerHTML = this.fck.CreateHtml();
+	//this.editor.myfck.innerHTML = mychUtil.config.content;
+
+	//this.fck.Value = mychUtil.config.content;
+	//this.editor.myfck.innerHTML = this.fck.CreateHtml();
+
+	// Load tinyMCE in place of the object
+	tinyMCE.init({
+		mode : "none",
+		theme : "advanced",
+		plugins : "spellchecker,style,table,fullscreen",
+		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
+		theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,|,image,|,cleanup,styleprops,code",
+		theme_advanced_buttons3 : "tablecontrols,|,spellchecker",
+		theme_advanced_buttons4 : "",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_statusbar_location : false,
+		theme_advanced_advanced_resizing : false,
+		spellchecker_languages : "+English=en",
+		spellchecker_rpc_url : "/common/tinymce/plugins/spellchecker/rpc.php",
+		init_instance_callback : function(){
+			var ed = tinyMCE.get('mceBox');
+			ed.setContent(mychUtil.config.content);
+		}
+	});
 
 	chGreybox.create('',620,300);
 	document.getElementById('greybox_content').appendChild(this.editor);
 
-	chGreybox.onClose = function() { document.editingBox = false; };
+	document.getElementById('greybox_content').style.paddingLeft = '15px';
+	tinyMCE.execCommand('mceAddControl', true, 'mceBox');
+
+	chGreybox.preClose = function() {
+		tinyMCE.execCommand('mceRemoveControl', false, 'mceBox');
+		document.editingBox = false;
+	};
 }
 
 Charts.insertFCKcontent = function() {
 
-	var oe = FCKeditorAPI.GetInstance("PathwaysEditor");
-	var thexhtml = oe.GetXHTML();
+	var thexhtml = tinyMCE.activeEditor.getContent();
 	this.mychUtil.contentElement.innerHTML = thexhtml;
 	this.mychUtil.config.content_html = thexhtml;
 	this.mychUtil.config.content = thexhtml;
@@ -823,8 +855,9 @@ Charts.insertFCKcontent = function() {
 	this.mychUtil._onContentChange();
 	this.mychUtil.reposition();
 	this.mychUtil = null;
-	chGreybox.close();
+	tinyMCE.execCommand('mceRemoveControl', false, 'mceBox');
 	document.editingBox = false;
+	chGreybox.close();
 	Charts.redraw();
 }
 
@@ -1181,7 +1214,9 @@ var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: 
 // create the box context menu
 ChartBox.contextMenu = new YAHOO.widget.ContextMenu('ChartBox.contextMenu');
 ChartBox.contextMenu.addItems([[
-	{text: 'Edit', submenu: editBoxMenu},
+	// {text: 'Edit', submenu: editBoxMenu},
+	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
+	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
 	{text: 'Color', submenu: boxColorMenu},
 	{text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
@@ -1234,12 +1269,10 @@ sourceAxisMenu.subscribe('show', function() {
 // create number of connection segments menu
 var numSegmentsMenu = new YAHOO.widget.Menu('numSegmentsMenu');
 numSegmentsMenu.addItems([[
-	{text: '1 (Direct Line)', onclick: {fn: onNumSegmentsSelect, obj: 0}}
-],
-[
-	{text: '1 (Straight Line)', onclick: {fn: onNumSegmentsSelect, obj: 1}},
-	{text: '2', onclick: {fn: onNumSegmentsSelect, obj: 2}},
-	{text: '3', onclick: {fn: onNumSegmentsSelect, obj: 3}}
+	{text: '1-Seg Line (Straight)', onclick: {fn: onNumSegmentsSelect, obj: 1}},
+	{text: '1-Seg Line (Diagonal)', onclick: {fn: onNumSegmentsSelect, obj: 0}},
+	{text: '2-Seg Line ("L")', onclick: {fn: onNumSegmentsSelect, obj: 2}},
+	{text: '3-Seg Line', onclick: {fn: onNumSegmentsSelect, obj: 3}}
 ]]);
 
 numSegmentsMenu.subscribe('show', function() {
@@ -1341,4 +1374,5 @@ document.observe('chart:drawn', function() {
 	ChartBox.contextMenu.render(Charts.element);
 	Connection.contextMenu.render(Charts.element);
 	widgetContextMenu.render(Charts.element);
+	onDrawGridSelect();
 });

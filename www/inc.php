@@ -176,7 +176,8 @@ class ThisSiteTemplate extends SiteTemplate {
 
 		<?php
 		if( $this->is_chart_page ) {
-			echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
+			//echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
+			echo '<script type="text/javascript" src="/common/tinymce/tiny_mce.js"></script>'."\n";
 		}
 		
 		foreach( $this->addl_styles as $css )
@@ -240,7 +241,7 @@ function IsLoggedIn() {
 }
 
 function IsGuestUser() {
-	return $_SESSION['email'] == 'guest';
+	return array_key_exists('email', $_SESSION) && $_SESSION['email'] == 'guest';
 }
 
 function RandPass($len = 8){

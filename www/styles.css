@@ -653,8 +653,9 @@ a.chart_header {
 	}
 }
 
-.editorWindow #myFCKeditor {
-	width: 620px;
+.editorWindow #mceBox {
+	width: 600px;
+	height: 300px;
 	margin-left: auto;
 	margin-right: auto;
 }

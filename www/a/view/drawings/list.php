@@ -19,8 +19,8 @@ PrintHeader();
 		$my_type = $DB->GetValue('organization_type', 'schools', intval($_SESSION['school_id']));
 		if( IsAdmin() ) {
 			?>
-			<a href="/a/post_drawings.php?action=new_drawing_form&type=hs" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new hs program</span></a>
-			&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new cc pathway</span></a>
+			<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new cc pathway</span></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_drawings.php?action=new_drawing_form&type=hs" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new hs program</span></a>
 			<?php
 		}
 		elseif( $my_type == 'HS' )
@@ -32,7 +32,8 @@ PrintHeader();
 		else
 		{
 			?>
-			<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
+			<a href="/a/post_drawings.php?action=new_drawing_form&type=cc" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new cc pathway</span></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a href="/a/post_drawings.php?action=new_drawing_form&type=hs" class="edit"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new hs program</span></a>
 			<?php
 		}
 		?>

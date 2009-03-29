@@ -53,7 +53,7 @@ var $j = jQuery.noConflict();
 	<th width="80">Organization</th>
 	<td>
 	<?php
-	if( IsAdmin() ) {
+	if( IsAdmin() || (IsStaff() && Request('type') == 'hs') ) {
 		if( Request('type') == 'cc' )
 		{
 			$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');

@@ -2,6 +2,7 @@
 var chGreybox = {
 
 	onClose: null,
+	preClose: null,
 
 	create: function(content, content_width, content_height, cbfunc, headerText) {
 
@@ -43,6 +44,10 @@ var chGreybox = {
 	},
 
 	close: function() {
+		if( this.preClose != null ) {
+			this.preClose();
+		}
+
 		var gb = document.getElementById('greybox');
 		if( gb ) document.body.removeChild(gb);
 

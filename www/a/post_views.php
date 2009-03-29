@@ -441,6 +441,11 @@ function processDrawingListRequest()
 			<div id="drawing_preview_box" style="display:none;margin:0 auto;width:700px;height:400px;"><h3>Preview</h3><iframe style="width:700px;height:400px;background-color:#FFFFFF;"></iframe></div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$j(document).ready(function(){
+			$j('#list_schools option[value=<?= $_SESSION['school_id'] ?>]').attr('selected','selected').trigger('change');
+		});
+	</script>
 	<?php
 	}
 	elseif( Request('save') == 1 || Request('delete') )

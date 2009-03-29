@@ -7,6 +7,16 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 <div id="toolbar">
 	<div id="toolbar_header"></div>
 	<div id="toolbar_content">
+		<div style="margin-bottom:4px">
+			<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
+			<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
+				<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#555555">This version is currently editable. Click "lock" to prevent further edits.</span>
+			</div>
+			<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
+				<span style="color:#555555">This version is locked. Copy it to a new version to make changes.</span>
+			</div>
+		</div>
+
 		<?php if ($drawing['published'] == 0) : ?>
 			<form action="/a/drawings.php" method="post" id="publishForm">
 				<input type="hidden" name="drawing_id" value="<?=$drawing['id']?>" />
@@ -17,16 +27,6 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 		<?php endif; ?>
 		<a href="javascript:copyPopup('pathways', '<?=  $_REQUEST['drawing_id'] ?>')" class="toolbarButton">copy this version</a>
 		<a href="/c/version/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" target="_new" class="toolbarButton">print this version</a>
-
-		<div style="margin-top:4px">
-			<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
-			<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
-				<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#555555">This version is currently editable. Click "lock" to prevent further edits.</span>
-			</div>
-			<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
-				<span style="color:#555555">This version is locked. Copy it to a new version to make changes.</span>
-			</div>
-		</div>
 
 		<script type="text/javascript">
 			function lock_drawing(version) {
