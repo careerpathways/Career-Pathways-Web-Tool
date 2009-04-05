@@ -43,7 +43,7 @@ var $j = jQuery.noConflict();
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <table>
 <tr>
-	<th valign="bottom">Title</th>
+	<th valign="bottom">Occupation/Program</th>
 	<td>
 		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 		<span id="checkNameResponse" class="error"></span>
@@ -138,7 +138,7 @@ if( Request('type') == 'cc' ) {
 	?>
 	<table width="100%">
 	<tr>
-		<th>Title</th>
+		<th>Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $drawing['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">

@@ -15,7 +15,6 @@
 
 			echo '<tr'.($v['published']?' class="version_list_published"':'').'>';
 
-
 			echo '<td class="border" width="400" valign="top"><table height="80">';
 				echo '<tr>';
 					echo '<td width="60"><b>Version</b></td>';
@@ -54,7 +53,7 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton">copy this version</a>';
+						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton">'.SilkIcon('page_copy.png').'</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

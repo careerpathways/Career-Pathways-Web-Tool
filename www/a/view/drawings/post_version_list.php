@@ -22,7 +22,7 @@
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Note</b></td>';
-					echo '<td>'.$v['note'].'</td>';
+					echo '<td>'.($v['frozen']?SilkIcon('lock.png'):'').' '.$v['note'].'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
@@ -53,8 +53,7 @@
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:copyPopup(\''.$MODE.'\', ' . $v['id'] . ')" class="toolbarButton">copy this version</a>';
-						#echo '<span style="color:#999999">copy this version</span>';
+						echo '<a href="javascript:copyPopup(\''.$MODE.'\', ' . $v['id'] . ')" class="toolbarButton">'.SilkIcon('page_copy.png').'</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

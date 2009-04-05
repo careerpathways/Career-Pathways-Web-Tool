@@ -366,7 +366,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 	} else {
 		echo '<table width="100%">';
 		echo '<tr>';
-			echo '<th colspan="4">Title</th>';
+			echo '<th colspan="4">Occupation/Program</th>';
 			echo '<th width="240">Last Modified</th>';
 			echo '<th width="240">Created</th>';
 			//echo '<th width="40">SVG</th>';
@@ -446,9 +446,9 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	echo '<table>';
 	echo '<tr>';
 		echo '<th width="20">&nbsp;</th>';
-		echo '<th width="280">Drawing Title</th>';
+		echo '<th width="280">Occupation/Program</th>';
 		echo '<th width="20">&nbsp;</th>';
-		echo '<th width="130">Tab Name</th>';
+		echo '<th>Tab Name</th>';
 		echo '<th width="180">Organization</th>';
 		echo '<th width="285">Last Modified</th>';
 	echo '</tr>';
@@ -466,7 +466,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')">' . SilkIcon('magnifier.png') . '</a></td>';
-			echo '<td><input type="text" id="tabName_'.$c['post_id'].'" class="tabName" value="' . $c['tab_name'] . '" style="width:90px" /><input type="button" class="tabNameBtn" id="tabNameBtn_'.$c['post_id'].'" style="width:30px;font-size:9px;margin-left:2px;" value="Save" /></td>';
+			echo '<td width="140"><input type="text" id="tabName_'.$c['post_id'].'" class="tabName" value="' . $c['tab_name'] . '" style="width:90px" /><input type="button" class="tabNameBtn" id="tabNameBtn_'.$c['post_id'].'" style="width:30px;font-size:9px;margin-left:2px;" value="Save" /></td>';
 			echo '<td>' . $d['school_name'] . '</td>';
 			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';

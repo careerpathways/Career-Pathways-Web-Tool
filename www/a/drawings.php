@@ -385,6 +385,7 @@ function showDrawingInfo() {
 global $DB, $TEMPLATE;
 
 	$TEMPLATE->AddCrumb('', 'Roadmap Drawing Properties');
+	$TEMPLATE->toolbar_function = "ShowSymbolLegend";
 	
 	PrintHeader();
 
@@ -404,6 +405,12 @@ global $DB, $TEMPLATE;
 	PrintFooter();
 }
 
+function ShowInfoAndLegend() {
+	ShowInfobar();
+	require('view/drawings/toolbar.php');
+	ShowSymbolLegend();
+}
+
 function ShowDrawingForm($id) {
 	global $DB, $MODE;
 	require('view/drawings/drawing_info.php');
@@ -412,9 +419,16 @@ function ShowDrawingForm($id) {
 function showVersionInfo() {
 	global $DB, $version_id, $MODE, $TEMPLATE;
 	$TEMPLATE->AddCrumb('', 'Roadmap Version Settings');
+	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
 	PrintHeader();
 	require('view/drawings/version_info.php');
 	PrintFooter();
+}
+
+function ShowSymbolLegend() {
+	$helpFile = 'drawing_list';
+	$onlyLegend = TRUE;
+	require('view/drawings/helpbar.php');
 }
 
 function ShowInfobar() {

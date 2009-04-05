@@ -241,7 +241,7 @@ if( KeyInRequest('drawing_id') ) {
 
 
 
-
+die('lskjdf');
 
 
 
@@ -384,6 +384,7 @@ function showDrawingInfo() {
 global $DB, $TEMPLATE;
 
 	$TEMPLATE->AddCrumb('', 'POST Drawing Properties');
+	$TEMPLATE->toolbar_function = "ShowSymbolLegend";
 	
 	PrintHeader();
 
@@ -420,11 +421,24 @@ function showVersionInfo() {
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
+	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
 
 	PrintHeader();
 	$version_id = Request('version_id');
 	require('view/drawings/post_version_info.php');
 	PrintFooter();
+}
+
+function ShowInfoAndLegend() {
+	ShowInfobar();
+	require('view/post/toolbar.php');
+	ShowSymbolLegend();
+}
+
+function ShowSymbolLegend() {
+	$helpFile = 'drawing_list';
+	$onlyLegend = TRUE;
+	require('view/drawings/helpbar.php');
 }
 
 function ShowInfobar() {

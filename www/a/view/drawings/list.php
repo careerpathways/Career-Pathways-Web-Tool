@@ -75,7 +75,7 @@ PrintHeader();
 </td>
 <td width="33%">
 	<div class="live_list">
-		<div class="title">Titles</div>
+		<div class="title">Occupations/Programs</div>
 		<select size="13" id="list_categories" multiple onchange="queue_change(this)">
 		</select>
 	</div>

@@ -35,7 +35,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <p>
 <table>
 <tr>
-	<th width="80">Drawing</th>
+	<th width="80">Occupation/Program</th>
 	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
 		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>"><img src="/common/silk/cog.png" width="16" height="16" /></a></td>
 </tr>
@@ -73,7 +73,8 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<th>Actions</th>
 	<td>
 		<a href="/a/post_drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id']) ? 'Draw' : 'View'?>"><?= CanEditVersion($drawing['id']) ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)"><?=SilkIcon('magnifier.png')?></a>
+		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)"><?=SilkIcon('magnifier.png')?></a> &nbsp;
+		<a href="javascript:copyPopup('post', '<?=$drawing['id']?>')" class="toolbarButton"><?= SilkIcon('page_copy.png') ?></a>
 	</td>
 </tr>
 <tr>

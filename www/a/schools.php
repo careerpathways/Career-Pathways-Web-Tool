@@ -63,6 +63,25 @@ if( KeyInRequest('id') ) {
 		switch( $type )
 		{
 			case 'CC':
+				$typetext = 'community college';
+				break;
+			case 'Other':
+				$typetext = 'other organization';
+				break;
+			case 'HS':
+				$typetext = 'high school';
+				break;
+		}
+		echo '<a href="'.$_SERVER['PHP_SELF'].'?id&type=' . $type . '" class="edit"><img src="/common/silk/add.png" width="16" height="16">	add ' . $typetext . '</a>';
+		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+	}
+	echo '<br /><br />';
+
+	foreach( array('CC', 'HS', 'Other') as $type )
+	{
+		switch( $type )
+		{
+			case 'CC':
 				$header = 'Community Colleges';
 				break;
 			case 'Other':
@@ -75,12 +94,11 @@ if( KeyInRequest('id') ) {
 	
 		$schools = $DB->MultiQuery('SELECT * FROM schools WHERE organization_type="' . $type . '" ORDER BY school_name');
 
-		echo '<h3 style="margin-bottom:0">' . $header . '</h3>';
-	
-		echo '<table>';
+		echo '<h3 style="margin-top:0;margin-bottom:0">' . $header . '</h3>';
+		echo '<table style="margin-bottom:10px">';
 
 		echo '<tr>';
-			echo '<th width="30"><a href="'.$_SERVER['PHP_SELF'].'?id&type=' . $type . '" class="edit"><img src="/common/silk/add.png" width="16" height="16"></a></th>';
+			echo '<th width="30">&nbsp;</th>';
 			echo '<th width="80">Abbr.</th>';
 			echo '<th width="290">Organization Name</th>';
 			echo '<th width="50">Users</th>';

@@ -5,7 +5,8 @@ $WHITE = "FFFFFF";
 $BLACK = "000000";
 $GREY = "999999";
 $LT_GREY = "CCCCCC";
-$BLUE = "003366";
+$D_GREY = "333333";
+$BLUE = '333333'; //"003366";
 $D_BLUE = "001133";
 
 $GOLD = "e6d09e";
@@ -37,7 +38,7 @@ h1
 {
   font-family: verdana, tahoma, arial, sans-serif;
   font-size: 13pt;
-  color:#<?= $D_BLUE; ?>;
+  color:#<?= $D_GREY; ?>;
   margin: 0px;
 }
 
@@ -295,7 +296,7 @@ a.linksubhead
 
 a.linksubhead:hover
 {
-  color:#<?= $D_BLUE; ?>;
+  color:#<?= $D_GREY; ?>;
 }
 
 

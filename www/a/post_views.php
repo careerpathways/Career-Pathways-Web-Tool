@@ -40,6 +40,13 @@ if (KeyInRequest('action')) {
 
 $TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 $TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
+$TEMPLATE->toolbar_function = 'ShowSymbolLegend';
+
+function ShowSymbolLegend() {
+	$helpFile = 'drawing_list';
+	$onlyLegend = TRUE;
+	require('view/drawings/helpbar.php');
+}
 
 PrintHeader();
 
@@ -71,7 +78,7 @@ if( $id )
 	<script type="text/javascript" src="/files/greybox.js"></script>
 	<table width="100%">
 	<tr>
-		<th>Title</th>
+		<th>Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
@@ -328,7 +335,7 @@ elseif( KeyInRequest('id') )
 	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 	<table>
 	<tr>
-		<th valign="bottom">Title</th>
+		<th valign="bottom">Occupation/Program</th>
 		<td>
 			<input type="text" id="title" name="name" size="60" value="">
 		</td>
@@ -374,7 +381,7 @@ else
 	echo '<table width="100%">';
 		echo '<tr>';
 			echo '<th width="20">&nbsp;</th>';
-			echo '<th>Title</th>';
+			echo '<th>Occupation/Program</th>';
 			echo '<th width="240">Last Modified</th>';
 			echo '<th width="240">Created</th>';
 		echo '</tr>';
