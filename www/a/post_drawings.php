@@ -234,17 +234,6 @@ if( KeyInRequest('drawing_id') ) {
 
 
 
-
-
-
-
-
-
-
-die('lskjdf');
-
-
-
 function showVersion() {
 	global $DB, $TEMPLATE;
 
