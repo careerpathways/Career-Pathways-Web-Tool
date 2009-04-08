@@ -33,33 +33,7 @@ echo '</div>';
 
 if( IsLoggedIn() ) {
 
-	$browser = $_SERVER['HTTP_USER_AGENT'];
-	$notice = '';
-
-	if( preg_match('~Firefox/(1|2)~', $browser) )
-		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the latest version of Firefox in order to have full access to the web tool.";
-
-	if( preg_match('~Firefox~', $browser) == 0 )
-		$notice = "We recommend using Firefox for the best experience with the web tool.";
-
-	if( preg_match('~MSIE (6|5)~', $browser) )
-		$notice = "You appear to be using an old version of Internet Explorer. We recommend you upgrade to the latest version of Firefox in order to have full access to the web tool.";
-
-	if( preg_match('~MSIE 7~', $browser) )
-		$notice = "You appear to be using Internet Explorer. We recommend you use Firefox for the best experience with the web tool.";
-
-	if( $notice != '' )
-	{
-	?>
-	<div id="browserNotice">
-		<div style="float:left"><img src="/images/firefox-logo.png" /></div>
-		<div><?= $notice ?>
-			<div style="margin-top: 10px"><a href="http://www.mozilla.com/firefox/">Download Firefox</a></div>
-		</div>
-	</div>
-	<div style="clear:right"></div>
-	<?php
-	}
+	ShowBrowserNotice();
 
 	echo '<div id="dash_links">';
 	echo '<div id="dash_links_title">Quick Links</div>';

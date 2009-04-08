@@ -398,6 +398,8 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '<td width="160">';
 						echo 'Version '.$dr['version_num'].' ';
 						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
+						if( $dr['published'] == 1 )
+							echo SilkIcon('layout.png');
 					echo '</td>';
 
 					echo '<td width="70">';
@@ -480,6 +482,36 @@ function drawing_sort_by_version($a,$b) {
 	return $a['version_num'] > $b['version_num'];
 }
 
+function ShowBrowserNotice()
+{
+	$browser = $_SERVER['HTTP_USER_AGENT'];
+	$notice = '';
+
+	if( preg_match('~Firefox/(1|2)~', $browser) )
+		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the latest version of Firefox in order to have full access to the web tool.";
+
+	if( preg_match('~Firefox~', $browser) == 0 )
+		$notice = "We recommend using Firefox for the best experience with the web tool.";
+
+	if( preg_match('~MSIE (6|5)~', $browser) )
+		$notice = "Internet Explorer 6 is not supported by this website. Most features should work, but you may experience glitches. To avoid this, we recommend using the <a href=\"http://www.mozilla.com/firefox/\">latest version of FireFox</a> or <a href=\"http://www.microsoft.com/windows/Internet-explorer/default.aspx\">Internet Explorer</a>";
+
+	if( preg_match('~MSIE 7~', $browser) )
+		$notice = "You appear to be using Internet Explorer. We recommend you use Firefox for the best experience with the web tool.";
+
+	if( $notice != '' )
+	{
+	?>
+	<div id="browserNotice">
+		<div style="float:left;"><img src="/images/firefox-logo.png" /></div>
+		<div style="margin-left:100px;"><?= $notice ?>
+			<div style="margin-top: 10px"><a href="http://www.mozilla.com/firefox/">Download Firefox</a></div>
+		</div>
+	</div>
+	<div style="clear:right"></div>
+	<?php
+	}
+}
 
 
 
@@ -543,12 +575,8 @@ global $SITE;
 		$form_action = "/a/login.php";
 	}
 
-	if( IsIE() && !strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0') ) {
-		echo '<div style="font-size:19pt; font-weight: bold; color: #cf9d2b">Notice for Internet Explorer 6 Users</div>';
-		echo '<p>IE 6 is not yet fully supported by this website. Most things will work, but you may experience slight glitches.</p>';
-		echo '<p>We recommend using <a href="http://www.mozilla.com/en-US/firefox/">Firefox</a> or Internet Explorer 7 instead. Or you can continue logging in below.</p>';
-	}
-
+	ShowBrowserNotice();
+	
 	?>
 
 	<br /><br />
