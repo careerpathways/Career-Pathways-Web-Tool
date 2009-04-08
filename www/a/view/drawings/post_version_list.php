@@ -22,7 +22,7 @@
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Note</b></td>';
-					echo '<td>'.($v['frozen']?SilkIcon('lock.png'):'').' '.$v['note'].'</td>';
+					echo '<td>'.($v['published']?SilkIcon('layout.png').' ':'').($v['frozen']?SilkIcon('lock.png'):'').' '.$v['note'].'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';

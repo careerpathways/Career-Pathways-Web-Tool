@@ -397,9 +397,9 @@ function ShowDrawingList(&$mains, $type='pathways') {
 
 					echo '<td width="160">';
 						echo 'Version '.$dr['version_num'].' ';
-						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 						if( $dr['published'] == 1 )
 							echo SilkIcon('layout.png');
+						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 
 					echo '<td width="70">';
@@ -488,25 +488,23 @@ function ShowBrowserNotice()
 	$notice = '';
 
 	if( preg_match('~Firefox/(1|2)~', $browser) )
-		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the latest version of Firefox in order to have full access to the web tool.";
+		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the <a href=\"http://www.mozilla.com/firefox/\">latest version of Firefox</a> in order to have full access to the web tool.";
 
 	if( preg_match('~Firefox~', $browser) == 0 )
-		$notice = "We recommend using Firefox for the best experience with the web tool.";
+		$notice = "We recommend using <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> for the best experience with the web tool.";
 
 	if( preg_match('~MSIE (6|5)~', $browser) )
-		$notice = "Internet Explorer 6 is not supported by this website. Most features should work, but you may experience glitches. To avoid this, we recommend using the <a href=\"http://www.mozilla.com/firefox/\">latest version of FireFox</a> or <a href=\"http://www.microsoft.com/windows/Internet-explorer/default.aspx\">Internet Explorer</a>";
+		$notice = "Internet Explorer 6 is not supported by this website. Most features should work, but you may experience glitches. To avoid this, we recommend using the latest version of <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> or <a href=\"http://www.microsoft.com/windows/Internet-explorer/default.aspx\">Internet Explorer</a>";
 
 	if( preg_match('~MSIE 7~', $browser) )
-		$notice = "You appear to be using Internet Explorer. We recommend you use Firefox for the best experience with the web tool.";
+		$notice = "You appear to be using Internet Explorer. We recommend you use <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> for the best experience with the web tool.";
 
 	if( $notice != '' )
 	{
 	?>
 	<div id="browserNotice">
-		<div style="float:left;"><img src="/images/firefox-logo.png" /></div>
-		<div style="margin-left:100px;"><?= $notice ?>
-			<div style="margin-top: 10px"><a href="http://www.mozilla.com/firefox/">Download Firefox</a></div>
-		</div>
+		<div style="float:left;"><a href="http://www.mozilla.com/firefox/"><img src="/images/firefox-logo.png" /></a></div>
+		<div style="margin-left:100px;"><?= $notice ?></div>
 	</div>
 	<div style="clear:right"></div>
 	<?php
@@ -575,9 +573,10 @@ global $SITE;
 		$form_action = "/a/login.php";
 	}
 
-	ShowBrowserNotice();
-	
 	?>
+	<div style="margin-right:20px">
+	<?php ShowBrowserNotice(); ?>
+	</div>
 
 	<br /><br />
 	<form action="<?= $form_action; ?>" method="post">

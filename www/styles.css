@@ -557,6 +557,10 @@ a.chart_header {
 	width: 1600px;
 }
 
+#search_box {
+  background: url(/common/silk/find.png) left no-repeat;
+  padding-left: 16px;
+}
 
 .school_color_box {
 	height:40px;

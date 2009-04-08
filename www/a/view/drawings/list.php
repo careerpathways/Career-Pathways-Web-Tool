@@ -51,9 +51,8 @@ PrintHeader();
 </td>
 <td width="290">
 	<div id="search_form" align="right">
-		Keyword Search
 		<input type="text" size="20" name="search_box" id="search_box" value="<?= Request('search') ?>">
-		<input type="button" class="submit" value="Go" onclick="do_search()">
+		<input type="button" class="submit" value="Search" onclick="do_search()">
 	</div>
 </td>
 </tr></table>
