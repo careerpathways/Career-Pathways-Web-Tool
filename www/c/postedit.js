@@ -1,3 +1,7 @@
+<?php
+header("Content-type: text/javascript");
+?>
+
 /**
  * Do not bind or act on any DOM elements until the page has sufficiently loaded
  */

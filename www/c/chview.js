@@ -279,9 +279,10 @@ Charts = {
 			context.clearRect(0, 0, Charts.canvas.width, Charts.canvas.height);
 		}
 		
-		if (Charts.drawGrid) {
+		if (Charts.drawGrid && Charts.drawingArea) {
 			context.strokeStyle = Charts.gridColor;
 			context.lineWidth = 1;
+
 			for (var x = .5; x < Charts.drawingArea.bottomRight.x; x += Charts.gridSize) {
 				context.beginPath();
 				context.moveTo(x, 0);

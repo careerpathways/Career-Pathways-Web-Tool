@@ -1,3 +1,6 @@
+<?php
+header("Content-type: text/javascript");
+?>
 
 function ajaxFunction() {
   var xmlHttp;
