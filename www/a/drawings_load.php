@@ -30,7 +30,7 @@ ModuleInit($module_name);
 if( Request('mode') != 'drawing_list' ) {
 	// save state of selections
 	if( !array_key_exists($session_key,$_SESSION) || KeyInRequest('userdefaults') ) {
-		$_SESSION[$session_key] = array('school_id'=>$_SESSION['school_id'],
+		$_SESSION[$session_key] = array('school_id'=>'',
 			'people_id'=>$_SESSION['user_id'],
 			'categories'=>'');
 	}
@@ -278,7 +278,6 @@ switch( Request('mode') ) {
 				}
 	
 				$where = "";
-				$where2 = "";
 				if( count($search) > 0 ) {
 					foreach( $search as $field=>$items ) {
 						switch( $field ) {
@@ -300,21 +299,17 @@ switch( Request('mode') ) {
 								break;
 							case 'people':
 								$where .= "AND ".$main_table.".id IN (SELECT parent_id FROM ".$version_table." WHERE (";
-								$where2 .= " AND (";
 								$i=0;
 								foreach( $items as $s ) {
 									foreach( $field_sql[$field] as $sfield ) {
 										if( $i > 0 ) {
 											$where .= ' OR ';
-											$where2 .= ' OR ';
 										}
 										$where .= $sfield.'="'.$s.'" ';
-										$where2 .= $sfield.'="'.$s.'" ';
 										$i++;
 									}
 								}
 								$where .= "))";
-								$where2 .= ")";
 								break;
 						}
 					}
@@ -344,7 +339,6 @@ switch( Request('mode') ) {
 						FROM ".$version_table."
 						WHERE ".$version_table.".parent_id=".$parent['id']."
 							AND deleted=0
-							$where2
 						ORDER BY version_num");
 					$parent['drawings'] = $drawings;
 				}
@@ -391,6 +385,7 @@ switch( Request('mode') ) {
 					ORDER BY version_num");
 	
 				foreach( $mains as &$parent ) {
+					/*
 					foreach( explode(',',$parent['drawing_list']) as $d_id ) {
 						$drawing = $DB->SingleQuery("
 							SELECT *
@@ -398,6 +393,13 @@ switch( Request('mode') ) {
 							WHERE id=".$d_id);
 						$parent['drawings'][] = $drawing;
 					}
+					*/
+					$drawings = $DB->MultiQuery("
+						SELECT *
+						FROM ".$version_table."
+						WHERE parent_id=".$parent['id']." AND deleted=0");
+					$parent['drawings'] = $drawings;
+					
 					usort($parent['drawings'],'drawing_sort_by_version');
 				}
 	
