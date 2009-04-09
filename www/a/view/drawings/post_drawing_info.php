@@ -60,7 +60,8 @@ var $j = jQuery.noConflict();
 		}
 		else
 		{
-			$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" ORDER BY school_name', 'school_name', 'id');
+			$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
+			$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" '.(IsAdmin()?'':'AND id IN (0,'.$hsids['hs'].')').' ORDER BY school_name', 'school_name', 'id');
 		}
 		echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
 	} else {

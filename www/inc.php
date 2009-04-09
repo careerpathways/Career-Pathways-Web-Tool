@@ -104,6 +104,11 @@ class ThisSiteTemplate extends SiteTemplate {
 					$p = $_SERVER['REQUEST_URI'];
 				$p = str_replace('.php', '', basename($p));
 				foreach( $mods as $mod ) {
+					
+					// TODO: this is a total hack until permissions work better
+					if( $mod['internal_name'] == 'hs_settings' && $_SESSION['user_level'] >= 16 && $_SESSION['user_level'] < 127 )
+						continue;
+					
 					$active = '';
 					if( $mod['internal_name'] == $p )  $active = 'active';
 
