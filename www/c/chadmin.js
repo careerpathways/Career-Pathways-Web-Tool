@@ -114,10 +114,6 @@ document.observe('chart:drawn', function(e) {
   
 
   Charts.fck = {Config: {}}; //new FCKeditor("PathwaysEditor");
-  Charts.fck.BasePath = "/common/fckeditor/";
-  Charts.fck.Height = 400;
-  Charts.fck.Config["CustomConfigurationsPath"] = "/files/myfckconfig.js";
-  Charts.fck.ToolbarSet = "PathwaysEditor";
   
 	Charts.element.observe('contextmenu', function(e) {
 		var pointer = e.pointer();
@@ -812,7 +808,7 @@ Charts.showEditor = function(mychUtil) {
 		mode : "none",
 		theme : "advanced",
 		plugins : "spellchecker,style,table,fullscreen",
-		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect",
+		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontsizeselect",
 		theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,|,image,|,cleanup,styleprops,code",
 		theme_advanced_buttons3 : "tablecontrols,|,spellchecker",
 		theme_advanced_buttons4 : "",
