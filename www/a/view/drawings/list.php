@@ -48,7 +48,9 @@ PrintHeader();
 	}
 	?>
 	<a href="javascript:selectDefaults()" class="edit dlist_link"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
-	<a href="javascript:selectDefaultsGrp()" class="edit dlist_link"><img src="/common/silk/group.png" width="16" height="16"> <span class="imglinkadjust">affiliated drawings</span></a>
+	<?php if( $MODE == 'post' ) { ?>
+		<a href="javascript:selectDefaultsGrp()" class="edit dlist_link"><img src="/common/silk/group.png" width="16" height="16"> <span class="imglinkadjust">affiliated drawings</span></a>
+	<?php } ?>
 </nobr></td>
 <td width="240">
 	<div id="search_form" align="right"><nobr>
