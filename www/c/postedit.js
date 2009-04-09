@@ -121,8 +121,7 @@ function bindPostCells()
 		}
 	
 		// Split apart the id into meaningful components
-		var cellID = $(this).children().attr("id").split("_");
-		cellID = cellID[2];
+		var cellID = $(this).children().attr("id").split("_")[2];
 
 		// Make the call to Greybox in and prompt
 		$.get("/a/postserv.php",
@@ -134,6 +133,7 @@ function bindPostCells()
 					{
 						chGreybox.close();
 						$(document).keypress( function(e) {} );
+						bindPostCells();
 					}
 				});
 		}, "html");
