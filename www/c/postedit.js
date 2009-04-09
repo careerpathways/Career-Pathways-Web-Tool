@@ -91,7 +91,8 @@ function bindEditableCells()
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "head", id: headID},
 			function(data){
-			chGreybox.create(data, 450, 300);
+				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
 		}, "html");
 	});
 
@@ -104,6 +105,7 @@ function bindEditableCells()
 			{mode: "prompt", type: "footer", id: footerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
 		}, "html");
 	});
 	
@@ -128,12 +130,12 @@ function bindPostCells()
 			{mode: "prompt", type: "cell", id: cellID},
 			function(data){
 				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
 				$(document).keydown( function(e) {
 					if( e.which == 27 )
 					{
 						chGreybox.close();
 						$(document).keypress( function(e) {} );
-						bindPostCells();
 					}
 				});
 		}, "html");

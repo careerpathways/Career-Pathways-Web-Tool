@@ -49,6 +49,7 @@ var chGreybox = {
 	close: function() {
 		if( this.preClose != null ) {
 			this.preClose();
+			this.preClose = null;
 		}
 
 		var gb = document.getElementById('greybox');
@@ -56,6 +57,7 @@ var chGreybox = {
 
 		if( this.onClose != null ) {
 			this.onClose();
+			this.onClose = null;
 		}
 	}
 

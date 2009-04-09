@@ -173,7 +173,6 @@ require_once("inc.php");
 						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
 						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
 						chGreybox.close();
-						bindPostCells();
 					}
 				});
 			});
@@ -249,7 +248,6 @@ require_once("inc.php");
 						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
 						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
 						chGreybox.close();
-						bindPostCells();
 					}
 				});
 			});
