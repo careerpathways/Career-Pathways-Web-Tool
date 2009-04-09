@@ -135,6 +135,14 @@ CREATE TABLE `email_variables` (
   `description` text
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `hs_affiliations`;
+CREATE TABLE `hs_affiliations` (                          
+	`id` int(10) unsigned NOT NULL auto_increment,          
+	`cc_id` int(10) unsigned NOT NULL default '0',          
+	`hs_id` int(10) unsigned NOT NULL default '0',          
+	PRIMARY KEY  (`id`)                                     
+);
+
 --
 -- Table structure for table `news`
 --

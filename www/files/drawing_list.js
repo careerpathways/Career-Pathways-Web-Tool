@@ -84,6 +84,23 @@ function selectDefaults2() {
 	init();
 }
 
+function selectDefaultsGrp() {
+	<?php
+	$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
+	echo 'var hss = ['.$hsids['hs'].']'."\n";
+	?>
+	var list_schools = getLayer('list_schools');
+	for( var i=0; i<list_schools.options.length; i++ ) {
+		list_schools.options[i].selected = '';
+		for( var j=0; j<hss.length; j++ ) {
+			if( list_schools.options[i].value == hss[j] ) {
+				list_schools.options[i].selected = "1";
+			}
+		}
+	}
+	do_change('list_schools');
+}
+
 function init() {
 	var url = "/a/drawings_load.php?mode=list_schools&selectdefault&type="+MODE;
 	ajaxCallback(init2, url);

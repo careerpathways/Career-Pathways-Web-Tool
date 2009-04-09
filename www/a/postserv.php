@@ -464,7 +464,7 @@ require_once("inc.php");
 			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
 			<br /><br />
 <?php
-		$legend = @unserialize($cell['legend']);
+		$legend = explode('-', $cell['legend']);
 		getLegendHTML($legend);
 ?>
 			<div style="text-align: right;">
@@ -478,10 +478,6 @@ require_once("inc.php");
 	function getCCFormHTML(&$cell = NULL)
 	{
 		ob_start();
-
-		# I don't think we need this anymore, since all cells have database IDs now
-		#if(!$cell)
-		#	$cell = array('content'=>'', 'href'=>'', 'legend'=>'', 'course_subject'=>'', 'course_number'=>'', 'course_title'=>'');
 
 		echo '<h3>' .
 			($cell['row_num'] < 100 ? ucfirst(ordinalize($cell['row_num'])) . ' Term' : 'Extra Row '.($cell['row_num']-99)) .
@@ -535,7 +531,7 @@ require_once("inc.php");
 			</table>
 			<br />
 <?php
-		$legend = @unserialize($cell['legend']);
+		$legend = explode("-",$cell['legend']);
 		getLegendHTML($legend);
 ?>
 			<div style="text-align: right;">
@@ -575,18 +571,15 @@ require_once("inc.php");
 	function getLegendHTML($legend)
 	{
 		global $DB;
-		
-		if(!is_array($legend))
-			$legend = array('1'=>'0', '2'=>'0', '3'=>'0', '4'=>'0', '5'=>'0', '6'=>'0', '7'=>'0', '8'=>'0');
 
 		echo '<div style="margin-bottom: 5px;">Legend Symbols: (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)
 		{
-			$checked = ($legend[$item['id']] == 1) ? 'c' : 'b';
+			$checked = (in_array($item['id'], $legend)) ? 'c' : 'b';
 ?>
 <img style="margin-right: 20px; cursor: pointer;" class="post_legend_icon" id="legend_icon_<?=$item['id']?>" src="/c/images/legend/<?=$checked . $item['id']?>.png" alt="<?=$item['text']?>" />
-<input type="text" class="post_legend_input" id="legend_input_<?=$item['id']?>" style="display: none;" value="<?=$legend[$item['id']]?>" />
+<input type="text" class="post_legend_input" id="legend_input_<?=$item['id']?>" style="display: none;" value="<?=in_array($item['id'], $legend)?1:0?>" />
 <?php
 		}
 ?>
@@ -601,16 +594,14 @@ require_once("inc.php");
 	?>
 
 	$(".post_legend_icon").hover(function(){
-		var id = $(this).attr("id").split("_");
-		id = id[2];
+		var id = $(this).attr("id").split("_")[2];
 		$("#post_legend_help").html(legendText[id]);
 	}, function() {
 		$("#post_legend_help").html("&nbsp;");
 	});
 
 	$(".post_legend_icon").click(function(){
-		var id = $(this).attr("id").split("_");
-		id = id[2];
+		var id = $(this).attr("id").split("_")[2];
 
 		var newValue = ($("#legend_input_" + id).val() == "0") ? "1" : "0";
 		$("#legend_input_" + id).val(newValue);
