@@ -152,6 +152,12 @@ class ThisSiteTemplate extends SiteTemplate {
 			}
 			?>
 
+		<ul id="contextMenu" class="contextMenu" style="display:none">
+			<li class="cut"><a href="#cut">Cut</a></li>
+			<li class="copy"><a href="#copy">Copy</a></li>
+			<li class="paste"><a href="#paste">Paste</a></li>
+			<li class="delete"><a href="#clear">Clear</a></li>
+		</div>
 
 		<?php
 	}

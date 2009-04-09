@@ -270,7 +270,9 @@ function showVersion() {
 	{
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
+		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.contextMenu.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
+		$TEMPLATE->addl_styles[]  = '/common/jquery/jquery.contextMenu.css';
 	}
 
 	if( !($drawing['published']==1 || $drawing['frozen']==1) ) {

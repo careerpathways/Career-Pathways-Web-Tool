@@ -101,6 +101,24 @@ require_once("inc.php");
 			}
 
 		break;
+		case "fetch":
+			switch( $_GET['type'] )
+			{
+				case 'cell':
+					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_GET['id']));
+					break;
+			}
+			if( !CanEditVersion($version_id) )
+			{
+				die('Cannot edit this drawing due to a permissions error');
+			}
+			switch( $_GET['type'] )
+			{
+				case 'cell':
+					fetchCell($_GET['id']);
+					break;
+			}
+		break;
 		default:
 			echo '<div style="greyboxError">You can only Prompt or Commit - Nothing Else.</div>';
 		break;
@@ -137,14 +155,18 @@ require_once("inc.php");
 			$("#postFormSave").click(function(){
 				var legendData = ''
 				$.each($(".post_legend_input"), function() {
-					var id = $(this).attr("id").split("_");
-					id = id[2];
-					legendData += '&legend[' + id + ']=' + $(this).val()
+					if( $(this).val() == 1 ) {
+						var id = $(this).attr("id").split("_")[2];
+						legendData += id + "-";
+					}
 				});
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "content=" + URLEncode($("#postFormContent").val()) + "&href=" + $("#postFormURL").val() + legendData,
+					data: { content: ($("#postFormContent").val()),
+							href: $("#postFormURL").val(),
+							legend: legendData
+					},
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
@@ -204,15 +226,22 @@ require_once("inc.php");
 
 				var legendData = ''
 				$.each($(".post_legend_input"), function() {
-					var id = $(this).attr("id").split("_");
-					id = id[2];
-					legendData += '&legend[' + id + ']=' + $(this).val()
+					if( $(this).val() == 1 ) {
+						var id = $(this).attr("id").split("_")[2];
+						legendData += id + "-";
+					}
 				});
 
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: "subject=" + $("#postFormSubject").val() + "&number=" + $("#postFormNumber").val() + "&title=" + URLEncode($("#postFormTitle").val()) + "&content=" + URLEncode($("#postFormContent").val()) + "&href=" + $("#postFormURL").val() + legendData,
+					data: {	subject: $("#postFormSubject").val(),
+							number: $("#postFormNumber").val(),
+							title: ($("#postFormTitle").val()),
+							content: ($("#postFormContent").val()),
+							href: $("#postFormURL").val(),
+							legend: legendData
+					},
 					success: function(data){
 						$("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
@@ -316,29 +345,57 @@ require_once("inc.php");
 		$number = (isset($_POST['number']))?$_POST['number']:'';
 		$title = (isset($_POST['title']))?$_POST['title']:'';
 
-		$legendData = serialize($_POST['legend']);
-
 		// Update the database
 		$DB->Update('post_cell', array(
-			'legend'=>$legendData,
+			'legend'=>$_POST['legend'],
 			'course_subject'=>$subject,
 			'course_number'=>$number,
 			'course_title'=>$title,
 			'content'=>$_POST['content'],
 			'href' => $href), intval($id));
 
-		$background = '';
-		foreach($_POST['legend'] as $id=>$toggle)
-			if($toggle == 1)
-				$background .= $id . '-';
-		$background = ($background != '') ? 'url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : 'none;';
+		if($_POST['legend'])
+			$background = 'url(/c/images/legend/' . trim($_POST['legend'],'-') . '.png) top left no-repeat;';
+		else
+			$background = 'none;';
 
 		// Decide what we should draw back to the page
 		if($subject != '' && $number != '')
-			echo '<a href="javascript:void(0);" style="background: ' . $background . '">' . $subject . ' ' . $number . '<br />' . $title . '</a>';
+		{
+			echo '<span style="background: ' . $background . '">' . $subject . ' ' . $number . '<br />' . $title . '</span>';
+		}
 		else
+		{
 			echo ($link?'<a href="javascript:void(0);" style="background: ' . $background . '">':'<span style="background: ' . $background . '">') . $_POST['content'] . ($link?'</a>':'</span>');
+		}
 	}//end function commitCell
+	
+	/**
+	 * Print the data for the cell as a json object.
+	 * Used by the copy/paste feature
+	 */
+	function fetchCell($id)
+	{
+		global $DB;
+		$data = $DB->SingleQuery('SELECT * FROM post_cell WHERE id='.$id);
+		$return = array();
+		$return['content'] = $data['content'];
+		$return['href'] = $data['href'];
+		$return['legend'] = $data['legend'];
+		$return['course_subject'] = $data['course_subject'];
+		$return['course_number'] = $data['course_number'];
+		$return['course_title'] = $data['course_title'];
+		echo json_encode($return);
+	}// end function fetchCell
+
+	class PostCell {
+		public $content;
+		public $href;
+		public $legend;
+		public $course_subject;
+		public $course_number;
+		public $course_title;
+	}
 	
 	function commitHead($id)
 	{

@@ -1,14 +1,71 @@
 <?php
 header("Content-type: text/javascript");
+
 ?>
 
-/**
- * Do not bind or act on any DOM elements until the page has sufficiently loaded
- */
+var clipboard = {
+	clear: function(id){
+		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
+			{content: "", href:"", legend: ""},
+			function(data){
+				$("#post_cell_"+id).html(data);
+				$("#post_cell_"+id).parent().css("background", "none");
+				bindPostCells();
+			}
+		);
+	},
+	copy: function(id){
+		$.get("/a/postserv.php?mode=fetch&type=cell&id="+id,
+			  {},
+			  function(cell){
+				clipboard.data = cell;
+			  },
+			  "json");
+	},
+	paste: function(id){
+		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
+			{content: clipboard.data.content, href: clipboard.data.href, legend: clipboard.data.legend,
+			 number: clipboard.data.course_number, title: clipboard.data.course_title, subject: clipboard.data.course_subject},
+			function(data){
+				$("#post_cell_"+id).html(data);
+				var bgSwap = $("#post_cell_"+id).children().css("background");
+				$("#post_cell_"+id).parent().css({"background" : bgSwap});
+				$("#post_cell_"+id).children().css({"background" : "none"});
+				bindPostCells();
+			}
+		);
+	},
+	data: {content: '', href: '', legend: '', course_number: '', course_title: '', course_subject:''}
+};
+
 $(document).ready(function()
 {
 	// Bind all of our interactive elements
 	bindEditableCells();
+
+	$(".post_cell").contextMenu({
+			menu: "contextMenu"
+		},
+		function(action, el, pos) {
+			var cellID = $(el).find("div").attr("id").split("_")[2];
+			switch(action) {
+				case "copy":
+					clipboard.copy(cellID);
+					break;
+				case "cut":
+					clipboard.copy(cellID);
+					clipboard.clear(cellID);
+					break;
+				case "paste":
+					clipboard.paste(cellID);
+					break;
+				case "clear":
+					clipboard.clear(cellID);
+					break;				
+			}
+			bindEditableCells();
+		}
+	);
 
 	// Add a cursor icon to all editable elements
 	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").css({cursor: "pointer"});
@@ -29,8 +86,7 @@ function bindEditableCells()
 	// Make the headers editable
 	$(".post_head_main:not(.post_head_noClick)").click(function(){
 		// Split apart the id into meaningful components
-		var headID = $(this).attr("id").split("_");
-		headID = headID[2];
+		var headID = $(this).attr("id").split("_")[2];
 
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "head", id: headID},
@@ -42,8 +98,7 @@ function bindEditableCells()
 	// Make the footer editable
 	$(".post_footer").click(function(){
 		// Split apart the id into meaningful components
-		var footerID = $(this).attr("id").split("_");
-		footerID = footerID[2];
+		var footerID = $(this).attr("id").split("_")[2];
 
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "footer", id: footerID},
@@ -137,5 +192,7 @@ function bindPostCells()
 		$(this).removeClass("post_cell_hover");
 	});
 
+	// clear out any lingering hovers
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").removeClass("post_cell_hover");
 
 }//end function bindPostCells

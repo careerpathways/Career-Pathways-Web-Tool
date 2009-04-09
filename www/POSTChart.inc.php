@@ -202,12 +202,9 @@ abstract class POSTChart
 		$legendText = $DB->MultiQuery("SELECT `text` FROM `post_legend` ORDER BY `id` ASC");
 
 		// Figure out our legend code
-		$legend = @unserialize($legend);
-		if(!$legend)
-			$legend = array('1'=>'0', '2'=>'0', '3'=>'0', '4'=>'0', '5'=>'0', '6'=>'0', '7'=>'0', '8'=>'0');
 		$background = $titleTag = '';
-		foreach($legend as $id=>$toggle)
-			if($toggle == 1)
+		foreach(explode('-', $legend) as $id)
+			if( $id )
 			{
 				$background .= $id . '-';
 				$titleTag .= $legendText[($id - 1)]['text'] . ', ';
