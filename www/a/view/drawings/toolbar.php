@@ -25,8 +25,8 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 			</form>
 			<a href="javascript:document.getElementById('publishForm').submit();" id="publishLink" class="toolbarButton">publish this version</a>
 		<?php endif; ?>
-		<a href="javascript:copyPopup('pathways', '<?=  $_REQUEST['drawing_id'] ?>')" class="toolbarButton">copy this version</a>
-		<a href="/c/version/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" target="_new" class="toolbarButton">print this version</a>
+		<a href="javascript:copyPopup('pathways', '<?=  $_REQUEST['drawing_id'] ?>')" class="toolbarButton"><?= SilkIcon('page_copy.png') ?> copy this version</a>
+		<a href="/c/version/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" target="_new" class="toolbarButton"><?= SilkIcon('printer.png') ?> print this version</a>
 
 		<script type="text/javascript">
 			function lock_drawing(version) {

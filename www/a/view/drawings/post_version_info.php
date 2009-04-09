@@ -150,8 +150,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 </table>
 
 <?php
-/*
+
 // replaced by publish link in sidebar
+/*
 if( $version_id != "" && $drawing['published'] == 0 && (IsAdmin() || $_SESSION['school_id'] == $drawing_main['school_id']) ) {
 	?>
 	<p><input type="button" name="publish" class="publish_link" onclick="publishVersion()" value="Publish this version"></p>
