@@ -975,6 +975,10 @@ a.chart_header {
 {
   width: 300px;
 }
+.post_chart_mini td, .post_chart_mini th
+{
+  border: 1px #999999 solid;
+}
 .post_chart_mini .post_head_row
 {
   width: 14px;

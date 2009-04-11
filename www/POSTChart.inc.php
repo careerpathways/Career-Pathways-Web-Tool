@@ -224,7 +224,7 @@ abstract class POSTChart
 			$this->_loadData();
 		}
 
-		echo '<table border="1" class="post_chart_mini">', "\n";
+		echo '<table class="post_chart_mini">', "\n";
 		$this->_printHeaderRowMini();
 
 		if( is_array($this->_content) )
