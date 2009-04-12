@@ -24,8 +24,10 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 			</form>
 			<a href="javascript:getLayer('publishForm').submit();" id="publishLink" class="toolbarButton" style="margin-bottom:10px">publish this version</a>
 		<?php endif; ?>
-		<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br />
-		<a href="/c/post/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a>
+		<div style="margin-bottom:10px">
+			<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br />
+			<a href="/c/post/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a>
+		</div>
 
 		<script type="text/javascript">
 			function lock_drawing(version) {
