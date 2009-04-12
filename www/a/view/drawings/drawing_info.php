@@ -45,7 +45,7 @@ var $j = jQuery.noConflict();
 	<th valign="bottom">Occupation/Program</th>
 	<td>
 		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
-		<span id="checkNameResponse" class="error"></span>
+		<div id="checkNameResponse" class="error"></div>
 	</td>
 </tr>
 <tr>
@@ -89,7 +89,7 @@ var $j = jQuery.noConflict();
 </tr>
 <tr>
 	<th width="80">Organization</th>
-	<td><b><?= $schools[$school_id] ?></b></td>
+	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
 </tr>
 <tr>
 	<th>Oregon Skill Set</th>
@@ -190,8 +190,16 @@ var xml_link = "<?= $xml_link ?>";
 var accessible_link = "<?= $accessible_link ?>";
 
 function checkName(title) {
-	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'pathways',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyName);
 }
+
 
 function verifyName(result) {
 	if( result == 0 ) {
@@ -203,13 +211,28 @@ function verifyName(result) {
 
 function savetitle() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'pathways',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyNameSubmit);
 }
 
 function submitform() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'pathways',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyNameSubmitNew);
 }
+
 
 function verifyNameSubmitNew(result) {
 	if( result == 0 ) {

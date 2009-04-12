@@ -3,14 +3,14 @@ chdir("..");
 include("inc.php");
 
 switch( Request('mode') ) {
-	case 'ccti':
-		$module_name = 'ccti_drawings';
-		$table_name = 'ccti_drawing_main';
+	case 'post':
+		$module_name = 'post_drawings';
+		$table_name = 'post_drawing_main';
 		break;
 	case 'pathways':
 	default:
 		$module_name = 'drawings';
-		$table_name = 'drawing_name';
+		$table_name = 'drawing_main';
 		break;
 }
 

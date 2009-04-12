@@ -12,11 +12,9 @@ document.observe('chart:drawn', function(e) {
 	Charts.toolbar = toolbar;
 	toolbar.className = 'toolbar';
   
-	Charts.addToolbarButton('line', ChartLine);
-
-	Charts.addToolbarButton('arrow', ChartLine, {arrowheadAtEnd: true});
-
-	Charts.addToolbarButton('box', ChartBox);
+	//Charts.addToolbarButton('line', ChartLine);
+	//Charts.addToolbarButton('arrow', ChartLine, {arrowheadAtEnd: true});
+	//Charts.addToolbarButton('box', ChartBox);
 	
 	// firefox needs the 'return false' to cancel the delete
 	document.onkeydown = function(e) {

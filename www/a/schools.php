@@ -39,7 +39,17 @@ if( KeyInRequest('id') ) {
 				$school_id = $_REQUEST['id'];
 			} else {
 				$content['date_created'] = $DB->SQLDate();
-				$school_id = $DB->Insert('schools',$content);
+				$school_id = $DB->Insert('schools', $content);
+				
+				// Insert default HS headers
+				foreach( array('English', 'Math', 'Science', 'Social Studies', 'Electives', 'Career and Technical Courses') as $num=>$title )
+				{
+					$data = array();
+					$data['school_id'] = $school_id;
+					$data['title'] = $title;
+					$data['num'] = $num;
+					$DB->Insert('post_default_col', $data);
+				}
 			}
 
 		}

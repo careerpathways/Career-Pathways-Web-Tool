@@ -46,7 +46,7 @@ var $j = jQuery.noConflict();
 	<th valign="bottom">Occupation/Program</th>
 	<td>
 		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
-		<span id="checkNameResponse" class="error"></span>
+		<div id="checkNameResponse" class="error"></div>
 	</td>
 </tr>
 <tr>
@@ -72,9 +72,9 @@ var $j = jQuery.noConflict();
 </tr>
 <tr>
 	<th>Oregon Skill Set</th>
-	<td><div id="skillset"><?php
+	<td valign="top"><span id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-	?></div></td>
+	?></span>(optional)</td>
 </tr>
 <?php
 if( Request('type') == 'cc' ) {
@@ -145,14 +145,14 @@ if( Request('type') == 'cc' ) {
 			<div id="title_edit" style="display:none">
 				<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
-				<span id="checkNameResponse" class="error"></span>
+				<div id="checkNameResponse" class="error"></div>
 			<div class="tiny error">Warning: changing the drawing title will break any external web pages that link to this drawing.</div>
 			</div>
 		</td>
 	</tr>
 	<tr>
 		<th width="80">Organization</th>
-		<td><b><?= $schools[$school_id] ?></b></td>
+		<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
 	</tr>
 	<tr>
 		<th>Oregon Skill Set</th>
@@ -254,25 +254,48 @@ Array.prototype.remove = function(s) {
 }
 
 function checkName(title) {
-	ajaxCallback(verifyName, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'post',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyName);
 }
 
 function verifyName(result) {
 	if( result == 0 ) {
 		getLayer('checkNameResponse').innerHTML = 'There is already a drawing by that name. Choose a different name.';
+		$j('#submitButton').css('color', '#666666');
 	} else {
 		getLayer('checkNameResponse').innerHTML = '';
+		$j('#submitButton').css('color', '');
 	}
 }
 
 function savetitle() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmit, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'post',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyNameSubmit);
 }
 
 function submitform() {
 	var title = getLayer('drawing_title');
-	ajaxCallback(verifyNameSubmitNew, '/a/drawings_checkname.php?id=<?= $drawing['id'] ?>&title='+URLEncode(title.value)<?= (IsAdmin()?"+'&school_id=".$school_id."'":'') ?>);
+	$j.get('/a/drawings_checkname.php',
+		  {mode: 'post',
+		   id: '<?= $drawing['id'] ?>',
+		   title: title.value<?php if(IsAdmin()) { ?>,
+		   school_id: $j("#school_id").val()
+		   <?php } ?>
+		  },
+		  verifyNameSubmitNew);
 }
 
 function verifyNameSubmitNew(result) {
