@@ -447,10 +447,10 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 {
 	global $DB;
 	
-	$connections = $DB->MultiQuery('SELECT post_id, tab_name
+	$connections = $DB->MultiQuery('SELECT post_id, tab_name, sort
 		FROM vpost_links AS v
 		JOIN post_drawing_main AS d ON v.post_id=d.id
-		WHERE type="'.$type.'" AND vid='.$drawing_id);
+		WHERE type="'.$type.'" AND vid='.$drawing_id.' ORDER BY sort');
 	if( count($connections) == 0 )
 	{
 		echo '(none)';
@@ -462,6 +462,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 		echo '<th width="280">Occupation/Program</th>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th>Tab Name</th>';
+		echo '<th>Sort</th>';
 		echo '<th width="180">Organization</th>';
 		echo '<th width="285">Last Modified</th>';
 	echo '</tr>';
@@ -479,7 +480,13 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')">' . SilkIcon('magnifier.png') . '</a></td>';
-			echo '<td width="140"><input type="text" id="tabName_'.$c['post_id'].'" class="tabName" value="' . $c['tab_name'] . '" style="width:90px" /><input type="button" class="tabNameBtn" id="tabNameBtn_'.$c['post_id'].'" style="width:30px;font-size:9px;margin-left:2px;" value="Save" /></td>';
+			echo '<td width="90">';
+				echo '<input type="text" id="tabName_'.$c['post_id'].'" class="tabName tabID_'.$c['post_id'].'" value="' . $c['tab_name'] . '" style="width:90px" />';
+			echo '</td>';
+			echo '<td width="60">';
+				echo '<input type="text" id="tabSort_'.$c['post_id'].'" class="tabSort tabID_'.$c['post_id'].'" value="' . $c['sort'] . '" style="width:20px" />';
+				echo '<input type="button" class="tabNameBtn" id="tabNameBtn_'.$c['post_id'].'" style="width:30px;font-size:9px;margin-left:2px;" value="Save" />';
+			echo '</td>';
 			echo '<td>' . $d['school_name'] . '</td>';
 			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
 		echo '</tr>';

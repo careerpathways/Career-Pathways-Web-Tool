@@ -10,7 +10,8 @@ $drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS vie
 	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
 	WHERE v.code = "'.Request('code').'"
-		AND published = 1');
+		AND published = 1
+	ORDER BY vl.sort, vl.tab_name');
 
 $page_title = 'Not Found';
 

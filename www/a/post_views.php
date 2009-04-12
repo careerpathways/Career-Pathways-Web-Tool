@@ -93,11 +93,20 @@ if( $id )
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>	
 	<tr>
+		<th>Preview</th>
+		<td>
+			<?php
+			$url = str_replace('%%',$view['code'],$published_link);
+			echo '<a href="'.$url.'" target="_blank">'.$url.'</a>';
+			?>
+		</td>
+	</tr>
+	<tr>
 		<th>Link</th>
 		<td>
 			<div id="drawing_link"><?php
 			$url = str_replace('%%',$view['code'],$published_link);
-			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
+			echo '<input type="text" style="width:540px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>
 	</tr>
@@ -119,7 +128,7 @@ if( $id )
 	<tr>
 		<td colspan="2">
 			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
-			<h3 style="display:inline">High School Templates</h3>
+			<h3 style="display:inline">High School Programs</h3>
 			<div id="connected_drawing_list_HS">
 			<?php
 				ShowSmallDrawingConnectionList($id, 'HS', array(
@@ -315,14 +324,16 @@ if( $id )
 						{action: "save_tab_name",
 						 vid: <?=request('id')?>,
 						 post_id: postID,
-						 tab_name: $j("#tabName_"+postID).val()},
+						 tab_name: $j("#tabName_"+postID).val(),
+						 tab_sort: $j("#tabSort_"+postID).val()},
 						function(data){
-							$j("#tabName_"+postID).val(data);
-							$j("#tabName_"+postID).css('background-color', '#99FF99');
+							$j("#tabName_"+postID).val(data.name);
+							$j("#tabSort_"+postID).val(data.sort);
+							$j(".tabID_"+postID).css('background-color', '#99FF99');
 							setTimeout(function(){
-								$j("#tabName_"+postID).css('background-color', '');
+								$j(".tabID_"+postID).css('background-color', '');
 							}, 400);
-						});
+						}, 'json');
 			}
 		});
 	}
@@ -567,8 +578,9 @@ function processTabNameRequest()
 	global $DB;
 	
 	$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
-	$DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
-	echo $tab_name;
+	$tab_sort = intval(Request('tab_sort'));
+	$DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
+	echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
 }
 
 
