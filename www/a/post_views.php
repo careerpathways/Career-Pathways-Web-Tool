@@ -143,6 +143,7 @@ if( $id )
 	</tr>
 	</table>
 	<script type="text/javascript">
+
 	var $j = jQuery.noConflict();
 
 	var selected_drawings = Array();
@@ -218,7 +219,7 @@ if( $id )
 		$j('#drawing_preview_box iframe').attr('src', '/c/post/'+code+'.html');
 		$j('#drawing_preview_box').css('display', 'block');
 	}
-	
+
 	function select_organization(val)
 	{
 		$j('#drawing_preview_box').css('display', 'none');
@@ -267,7 +268,7 @@ if( $id )
 			}
 		);
 	}
-	
+
 	function save_drawing_selection(type)
 	{
 		if( selected_drawings.length > 0 )
@@ -287,21 +288,21 @@ if( $id )
 				});
 		}
 	}
-	
+
 	function deleteDrawingFromView(type, id)
 	{
 			$j.post("post_views.php",
-				{action: 'drawing_list',
-				 drawing_id: <?= $id ?>,
-				 delete: id,
-				 type: type
+				{'action': 'drawing_list',
+				 'drawing_id': <?= $id ?>,
+				 'delete': id,
+				 'type': type
 				},
 				function(data) {
 					$j('#connected_drawing_list_'+type).html(data);
 					bindTabNameBoxes();
 				});
 	}
-	
+
 	function bindTabNameBoxes()
 	{
 		$j(".tabName").bind("change", function(){
@@ -325,7 +326,7 @@ if( $id )
 			}
 		});
 	}
-	
+
 	</script>
 	<?php
 }

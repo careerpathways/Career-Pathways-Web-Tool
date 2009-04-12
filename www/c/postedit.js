@@ -161,6 +161,10 @@ function bindPostCells()
 				var toHTML = $("#post_cell_" + toID).html();
 				var fromBG = $("#post_cell_" + fromID).parent().css("background");
 				var toBG = $("#post_cell_" + toID).parent().css("background");
+				
+				// IE didn't like fromBG being undefined, but as an empty string it will clear out the background
+				if( !fromBG ) fromBG = '';
+				if( !toBG ) toBG = '';
 
 				// If I were to animate these cells swapping, it would totally be here.
 				$("#post_cell_" + toID).parent().empty().html('<div id="post_cell_' + fromID + '" class="post_draggable">' + fromHTML + '</div>').css({"background" : fromBG });
