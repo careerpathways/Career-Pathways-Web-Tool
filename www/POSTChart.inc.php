@@ -6,6 +6,8 @@ abstract class POSTChart
 	protected $_drawing;
 	protected $_type;
 
+	protected $_knownLegend = array();
+
 	// 2D array [row][col]
 	protected $_content;
 
@@ -194,6 +196,15 @@ abstract class POSTChart
 			. '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '</table>', "\n";
+
+		if(count($this->_knownLegend) > 0)
+		{
+			echo '<div style="width: 800px; margin: 0 auto;">', "\n";
+			foreach($this->_knownLegend as $id=>$text)
+				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 4px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
+			echo '<div style="clear: both;"></div>', "\n";
+			echo '</div>', "\n";
+		}//if (drawing a legend of characters)
 	}
 
 	private function _gatherLegend($legend)
@@ -208,6 +219,7 @@ abstract class POSTChart
 			{
 				$background .= $id . '-';
 				$titleTag .= $legendText[($id - 1)]['text'] . ', ';
+				@$this->_knownLegend[$id] = $legendText[($id - 1)]['text'];
 			}
 		$titleTag = (strlen($titleTag) > 0) ? ' title="' . substr($titleTag, 0, -2) . '"' : '';
 		$background = (strlen($background) > 0) ? 'background: url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : '';	
@@ -455,7 +467,7 @@ class POSTChart_HS extends POSTChart
 		$link = ($cell->href != '');
 
 		// Draw the item inside the post_cell
-		return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+		return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 	}
 	
 	protected function _cellHasContent(&$cell)
@@ -511,7 +523,7 @@ class POSTChart_CC extends POSTChart
 			$link = ($cell->href != '');
 	
 			// Draw the item inside the post_cell
-			return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 
 		}
 	}
