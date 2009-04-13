@@ -22,7 +22,7 @@
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Note</b></td>';
-					echo '<td>'.($v['published']?SilkIcon('layout.png').' ':'').($v['frozen']?SilkIcon('lock.png'):'').' '.$v['note'].'</td>';
+					echo '<td>'.($v['published']?'<img src="/common/silk/layout.png" title="Published Version" alt="" />':'').($v['frozen']?'<img src="/common/silk/lock.png" title="Version Locked" alt="" />':'').' '.$v['note'].'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
@@ -35,11 +35,12 @@
 				echo '<tr>';
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
-
+						$drawViewText = 'Draw/Edit Version';
 						if( CanEditVersion($v['id']) ) {
 							if( $v['published'] == 1 || $v['frozen'] == 1 ) {
 								$link = SilkIcon('picture.png');
 								$action = 'view';
+								$drawViewText = 'View Version';
 							} else {
 								$link = SilkIcon('pencil.png');
 								$action = 'draw';
@@ -47,13 +48,14 @@
 						} else {
 							$link = SilkIcon('picture.png');
 							$action = 'view';
+							$drawViewText = 'View Version';
 						}
 
-						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
+						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'" title="' . $drawViewText . '">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')">'.SilkIcon('magnifier.png').'</a>';
+						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')" title="Preview Version">'.SilkIcon('magnifier.png').'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton">'.SilkIcon('page_copy.png').'</a>';
+						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton" title="Copy Version">'.SilkIcon('page_copy.png').'</a>';
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

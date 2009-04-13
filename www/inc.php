@@ -385,7 +385,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 		foreach( $mains as $mparent ) {
 			echo '<tr class="drawing_main">';
 
-			echo '<td><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16"/></a></td>';
+			echo '<td><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
 			echo '<td colspan="3" class="drawinglist_name">'.$mparent['name'].'</td>';
 			$created = ($mparent['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['created_by']));
 			$modified = ($mparent['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['last_modified_by']));
@@ -394,6 +394,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 
 			foreach( $mparent['drawings'] as $dr ) {
 				echo '<tr class="'.($dr['published']==1?'published':'').'">';
+					$drawViewText = 'Draw/Edit Version';
 					if( CanEditVersion($dr['id'], $type) ) {
 						if( $dr['published'] == 1 || $dr['frozen'] == 1 ) {
 							$linktext = SilkIcon('picture.png');
@@ -402,6 +403,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 						}
 					} else {
 						$linktext = SilkIcon('picture.png');
+						$drawViewText = 'View Version';
 					}
 
 					echo '<td width="30">&nbsp;</td>';
@@ -409,7 +411,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '<td width="160">';
 						echo 'Version '.$dr['version_num'].' ';
 						if( $dr['published'] == 1 )
-							echo SilkIcon('layout.png');
+							echo '<img src="/common/silk/layout.png" width="16" height="16" title="Published Version" />';
 						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 
@@ -418,7 +420,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '</td>';
 
 					echo '<td width="70">';
-						echo '<a href="'.$draw_page.'?action=draw&amp;version_id='.$dr['id'].'" class="edit">'.$linktext.'</a>';
+						echo '<a href="'.$draw_page.'?action=draw&amp;version_id='.$dr['id'].'" class="edit" title="'.$drawViewText.'">'.$linktext.'</a>';
 					echo '</td>';
 
 
@@ -479,7 +481,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 		echo '<tr>';
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
-			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')">' . SilkIcon('magnifier.png') . '</a></td>';
+			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')" title="View Version">' . SilkIcon('magnifier.png') . '</a></td>';
 			echo '<td width="90">';
 				echo '<input type="text" id="tabName_'.$c['post_id'].'" class="tabName tabID_'.$c['post_id'].'" value="' . $c['tab_name'] . '" style="width:90px" />';
 			echo '</td>';

@@ -46,7 +46,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th width="80">Occupation/Program</th>
 	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
-		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>"><img src="/common/silk/cog.png" height="16" width="16" /></a></td>
+		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>" title="Drawing Properties"><img src="/common/silk/cog.png" height="16" width="16" /></a></td>
 </tr>
 <tr>
 	<th>Version</th>
@@ -80,9 +80,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th>Actions</th>
 	<td>
-		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw' : 'View'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)"><?=SilkIcon('magnifier.png')?></a> &nbsp;
-		<a href="javascript:copyPopup('pathways', '<?=$drawing['id']?>')" class="toolbarButton"><?= SilkIcon('page_copy.png') ?></a>
+		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw/Edit Version' : 'View Version'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
+		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
+		<a href="javascript:copyPopup('pathways', '<?=$drawing['id']?>')" class="toolbarButton" title="Copy Version"><?= SilkIcon('page_copy.png') ?></a>
 	</td>
 </tr>
 <tr>

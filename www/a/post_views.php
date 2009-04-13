@@ -400,7 +400,7 @@ else
 	foreach( $views as $i=>$v )
 	{
 		echo '<tr class="row' . ($i%2) . '">';
-			echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16"/></a></td>';
+			echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
 	
 			echo '<td>' . $v['name'] . '</td>';
 	
