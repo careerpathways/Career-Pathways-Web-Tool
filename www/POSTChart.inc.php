@@ -200,7 +200,7 @@ abstract class POSTChart
 		if(count($this->_knownLegend) > 0)
 		{
 			echo '<tr>', "\n";
-			echo '<td width="100%" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
+			echo '<td width="' . ((($this->footerCols - 1) * 120) + 18) . '" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
 
 			foreach($this->_knownLegend as $id=>$text)
 				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 4px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
