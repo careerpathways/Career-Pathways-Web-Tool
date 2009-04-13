@@ -203,7 +203,7 @@ abstract class POSTChart
 			echo '<td width="' . ((($this->footerCols - 1) * 120) + 18) . '" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
 
 			foreach($this->_knownLegend as $id=>$text)
-				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 4px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
+				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 3px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
 			echo '<div style="clear: both;"></div>', "\n";
 
 			echo '</td>', "\n";
