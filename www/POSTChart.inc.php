@@ -195,16 +195,22 @@ abstract class POSTChart
 			. ($this->_drawing['footer_link']?'</a>':'')
 			. '</td>', "\n";
 		echo '</tr>', "\n";
-		echo '</table>', "\n";
 
+		// Draw the legend if it exists
 		if(count($this->_knownLegend) > 0)
 		{
-			echo '<div style="width: 800px; margin: 0 auto;">', "\n";
+			echo '<tr>', "\n";
+			echo '<td width="100%" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
+
 			foreach($this->_knownLegend as $id=>$text)
 				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 4px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
 			echo '<div style="clear: both;"></div>', "\n";
-			echo '</div>', "\n";
+
+			echo '</td>', "\n";
+			echo '</tr>', "\n";
 		}//if (drawing a legend of characters)
+
+		echo '</table>', "\n";
 	}
 
 	private function _gatherLegend($legend)
