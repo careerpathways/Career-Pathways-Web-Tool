@@ -1,14 +1,20 @@
-<p>Right-click an object for a menu of customizing options.</p>
-
-<p>Delete objects with the <kbd>DELETE</kbd> key or the object's menu.</p>
-
-<p>Duplicate objects with <kbd>CTRL+C</kbd>, <kbd>CTRL+V</kbd> or the object's menu.</p>
-
-<p>Connect two boxes by choosing <var>Start Connection Here</var> from one object's menu and <var>End Connection Here</var> from another's.</p>
+<a href="javascript:void(0);" onclick="return showHelp('GeneralFeatures');">General Features</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('AddingObjects');">Adding Objects</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('EditingBoxContents');">Editing Box Content</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('DeletingObjects');">Deleting Objects</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('DuplicatingObjects');">Duplicating Objects</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('ConnectingBoxes');">Connecting Boxes</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('PositioningObjects');">Positioning Objects</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('ResizingBoxes');">Resizing Boxes</a><br />
+<br />
+<a href="javascript:void(0);" onclick="return showHelp('LockingVersions');">Locking Versions</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('CopyingVersions');">Copying Versions</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('PrintingVersions');">Printing Versions</a><br />
+<a href="javascript:void(0);" onclick="return showHelp('PublishingDrawings');">Publishing Drawings</a><br />
 
 <script type="text/javascript">
-var showHelp = function() {
-	window.open('/a/help_popup.php', 'Help', 'menubar=no,scrollbars=yes,width=300,height=600,screenX=100,screenY=100');
+var showHelp = function(anchor) {
+	window.open('/a/help_popup.php' + ((typeof anchor != "undefined") ? "#" + anchor : ""), 'Help', 'menubar=no,scrollbars=yes,width=350,height=600,screenX=100,screenY=100');
 	return false;
 	
 };
