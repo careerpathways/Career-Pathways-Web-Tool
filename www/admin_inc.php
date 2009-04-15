@@ -137,4 +137,11 @@ function CanEditVersion($drawing, $mode='post') {
 	return $_SESSION['school_id'] == $drawing['school_id'];
 }
 
+function GetAffiliatedSchools() {
+	global $DB;
+	
+	$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
+	return $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" '.(IsAdmin()?'':'AND id IN (0,'.$hsids['hs'].')').' ORDER BY school_name', 'school_name', 'id');
+}
+
 ?>

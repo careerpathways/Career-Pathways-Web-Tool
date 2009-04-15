@@ -3,25 +3,34 @@
 abstract class POSTChart
 {
 	protected $_id;
-	protected $_drawing;
 	protected $_type;
+	protected $_school_id;
+	protected $_parent_id;
+	
+	protected $_name;
+	protected $_code;
+	protected $_skillset_id;
+	protected $_school_name;
+	protected $_school_abbr;
+	protected $_footer_link;
+	protected $_footer_text;
+
+	// 2D array [row#][col#]
+	protected $_cells;
+
+	protected $_cols;
+	protected $_rows;
 
 	protected $_knownLegend = array();
 
-	// 2D array [row][col]
-	protected $_content;
 
-	protected $_cols;
-
-	// Should we draw from an import array?
-	protected $_drawFromArray = FALSE;
-
+	// Create from the a database record
 	// factory method to create an object of the correct type
 	public static function create($id)
 	{
 		global $DB;
 
-		$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.school_name, d.num_rows, d.num_extra_rows, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -32,187 +41,88 @@ abstract class POSTChart
 			switch( $drawing['type'] )
 			{
 				case 'HS':
-					return new POSTChart_HS($drawing);
+					$post = new POSTChart_HS();
+					break;
 				case 'CC':
-					return new POSTChart_CC($drawing);
+					$post = new POSTChart_CC();
+					break;
 				default:
 					throw new Exception('No drawing type was found in the record.');
 			}
+			$post->loadDataFromDB($id);
+			$post->name = $drawing['name'];
+			$post->school_id = $drawing['school_id'];
+			$post->footer_link = $drawing['footer_link'];
+			$post->footer_text = $drawing['footer_text'];
+			
+			return $post;
 		}
 		else
 		{
-			throw new Exception('Published drawing not found');
+			throw new Exception('Drawing not found or it has been deleted');
 		}
-	}
-
-	public static function createFromArray($chartType, &$array)
-	{
-		//sanity checking
-		if($chartType != 'HS' && $chartType != 'CC')
-			throw new Exception('Invalid Chart Type Initialized.');
-
-		// Create the appropriate POSTChart type
-		if($chartType == 'HS')
-		{
-			$post = new POSTChart_HS(array('id'=>'temp1234'), $array);
-		}
-		else
-		{
-			$post = new POSTChart_CC(array('id'=>'temp1234'), $array);
-		}
-
-		return $post;
-	}
-
-	public function __construct($drawing, $array = null)
-	{
-		global $DB;
-
-		$this->_id = $drawing['id'];
-
-		if(is_array($array))
-		{
-			$this->_drawFromArray = TRUE;
-			$this->_drawing = $array['drawing'];
-			$this->_content = $array['content'];
-			$this->_cols = $array['headers'];
-			$this->_loadDataFromArray();
-		}
-		else
-		{
-			$this->_drawing = $drawing;
-		}
-	}
-
-	// create an empty $_cells array of the appropriate size
-	private function _initCells()
-	{
-		global $DB;
-
-		$num_rows = $this->_drawing['num_rows'];
-		$num_extra_rows = $this->_drawing['num_extra_rows'];
-
-		$cols = $DB->MultiQuery('SELECT * FROM post_col WHERE drawing_id=' . $this->_id . ' ORDER BY num');
-
-		// store the column names for later
-		foreach( $cols as $col )
-		{
-			$this->_cols[$col['num']] = new POSTCol($col);
-		}
-
-		// create the empty 2D array
-		for( $row = 1; $row <= $num_rows; $row++ )
-		{
-			$this->_content[$row] = array();
-			foreach( $cols as $col )
-			{
-				$this->_content[$row][$col['num']] = new POSTCell();
-			}
-		}
-		for( $row = 100; $row <= $num_extra_rows+99; $row++ )
-		{
-			$this->_content[$row] = array();
-			foreach( $cols as $col )
-			{
-				$this->_content[$row][$col['num']] = new POSTCell();
-			}
-		}
-	}
-
-
-	// populate the $_content array from the DB
-	private function _loadData()
-	{
-		global $DB;
-
-		// load cell data
-		$cells = $DB->MultiQuery('
-			SELECT cell.*, col.num AS col_num
-			FROM post_cell AS cell
-			JOIN post_col AS col ON cell.col_id=col.id
-			WHERE cell.drawing_id = ' . $this->_id . '
-		');
-		foreach( $cells as $cell )
-		{
-			$this->_content[$cell['row_num']][$cell['col_num']] = new POSTCell($cell);
-		}
-	}
-
-	// populate the $_content from an array
-	private function _loadDataFromArray()
-	{
-		$tempArray = array();
-
-		foreach($this->_content as $row)
-			foreach($row as $cell)
-				$tempArray[$cell['row_num']][$cell['col_num']] = new POSTCell($cell);
-
-		$this->_content = $tempArray;
-		$tempArray = array();
-
-		foreach($this->_cols as $col)
-			$tempArray[] = new POSTCol($col);
-		$this->_cols = $tempArray;
 	}
 	
-	// Used by the copying function
-	public function loadDataFromDB()
+	public function __construct()
 	{
-		$this->_initCells();
-		$this->_loadData();
+		
+		
+	}
+	
+	public function loadDataFromDB($version_id)
+	{
+		global $DB;
+		
+		$this->_cols = $DB->MultiQuery('SELECT id, title, num FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num');
+		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term');
+		
+		$colmap = array();
+		foreach( $this->_cols as $i=>$a )
+			$colmap[$a['id']] = $i;
+
+		$rowmap = array();
+		foreach( $this->_rows as $i=>$a )
+			$rowmap[$a['id']] = $i;
+		
+		$cells = $DB->MultiQuery('SELECT id, row_id, col_id, content, href, legend, course_subject, course_number, course_title FROM post_cell WHERE drawing_id='.$version_id);
+		foreach( $cells as $c )
+		{
+			$row = $rowmap[$c['row_id']];
+			$col = $colmap[$c['col_id']];
+			$this->_cells[$row][$col] = new POSTCell($c);
+		}
+		foreach( $this->_cells as $k=>$v )
+		{
+			ksort($this->_cells[$k]);
+		}
+		ksort($this->_cells);
+		
 	}
 
-	public function display()
+	/**
+	 * Fill up the rows/cols/cells arrays with empty values, so that when we call saveToDB there is some stuff to save
+	 */
+	public function createEmptyChart()
 	{
-		// Groom our database information if we're not previewing an import
-		if(!$this->_drawFromArray)
-		{
-			$this->_initCells();
-			$this->_loadData();
-		}
+		$this->_createEmptyChart();
 
-		echo '<table border="1" class="post_chart">', "\n";
-		$this->_printHeaderRow();
-
-		foreach( $this->_content as $rowNum=>$row )
+		// now create all the empty cells for the drawing
+		for( $x=0; $x<count($this->_cols); $x++ )
 		{
-			echo '<tr>', "\n";
-			echo '<td class="post_head_row post_head">' . $this->_rowName($rowNum) . '</td>', "\n";
-			foreach( $row as $cell )
+			for( $y=0; $y<count($this->_rows); $y++ )
 			{
-				list($titleTag, $background) = $this->_gatherLegend($cell->legend);
-
-				// Write the cell to the page
-				echo '<td class="post_cell" style="' . $background . '"><div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
+				$this->_cells[$y][$x] = new POSTCell();
 			}
-			echo '</tr>', "\n";
 		}
-		echo '<tr>', "\n";
-
-		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-			. ($this->_drawing['footer_link']?'<a href="javascript:void(0);">':'')
-			. $this->_drawing['footer_text']
-			. ($this->_drawing['footer_link']?'</a>':'')
-			. '</td>', "\n";
-		echo '</tr>', "\n";
-
-		// Draw the legend if it exists
-		if(count($this->_knownLegend) > 0)
-		{
-			echo '<tr>', "\n";
-			echo '<td width="' . ((($this->footerCols - 1) * 120) + 18) . '" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
-
-			foreach($this->_knownLegend as $id=>$text)
-				echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 3px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
-			echo '<div style="clear: both;"></div>', "\n";
-
-			echo '</td>', "\n";
-			echo '</tr>', "\n";
-		}//if (drawing a legend of characters)
-
-		echo '</table>', "\n";
+		
 	}
 
+	// Used to import drawings from excel files
+	public function loadDataFromArray($data)
+	{
+		// not actually used now...
+	}
+	
 	private function _gatherLegend($legend)
 	{
 		global $DB;
@@ -232,51 +142,18 @@ abstract class POSTChart
 		// Return our information
 		return array($titleTag, $background);
 	}
-
-	public function displayMini()
+	
+	protected function _rowName($num)
 	{
-		// Groom our database information if we're not previewing an import
-		if(!$this->_drawFromArray)
-		{
-			$this->_initCells();
-			$this->_loadData();
-		}
-
-		echo '<table class="post_chart_mini">', "\n";
-		$this->_printHeaderRowMini();
-
-		if( is_array($this->_content) )
-		foreach( $this->_content as $rowNum=>$row )
-		{
-			echo '<tr>', "\n";
-			echo '<td class="post_head_row post_mini_full">'. $this->_rowNameMini($rowNum) . '</td>', "\n";
-			foreach( $row as $cell )
-			{
-				echo '<td class="post_cell'.($this->_cellHasContent($cell)?' post_mini_full':'').'"><div id="post_cell_' . $cell->id . '"></div></td>', "\n";
-			}
-			echo '</tr>', "\n";
-		}
-		echo '<tr>', "\n";
-
-		echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_drawing['footer_text']?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
-		echo '</tr>', "\n";
-		echo '</table>', "\n";
+		return $this->rowNameFromData($this->_rows[$num]);
 	}
 
-	// For copying drawings, to give the copy a different name
-	public function setDrawingName($name)
-	{
-		$this->_drawing['name'] = $name;
-	}
+	protected function _printHeaderRow() {}
+	protected function _printHeaderRowMini() {}
 
-	// For copying drawings, to change the school
-	public function setSchoolID($id)
+	public function verticalText($text)
 	{
-		global $DB;
-		$this->_drawing['school_id'] = $id;
-		$school = $DB->SingleQuery('SELECT * FROM schools WHERE id='.intval($id));
-		$this->_drawing['school_name'] = $school['school_name'];
-		$this->_drawing['school_abbr'] = $school['school_abbr'];
+		return '<img src="/files/postv/' . base64_encode($text) . '.png" alt="' . $text . '" />';	
 	}
 
 	public function saveToDB($parent_id=0)
@@ -289,9 +166,10 @@ abstract class POSTChart
 		if( $parent_id == 0 )
 		{
 			$post_drawing_main = array();
-			$post_drawing_main['school_id'] = $this->_drawing['school_id'];
-			$post_drawing_main['name'] = $this->_drawing['name'];
-			$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_drawing['name'], $this->_drawing['school_id'], 0, 'post');
+			$post_drawing_main['school_id'] = $this->_school_id;
+			$post_drawing_main['skillset_id'] = dv($this->_skillset_id);
+			$post_drawing_main['name'] = $this->_name;
+			$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_name, $this->_school_id, 0, 'post');
 			$post_drawing_main['date_created'] = $DB->SQLDate();
 			$post_drawing_main['last_modified'] = $DB->SQLDate();
 			$post_drawing_main['created_by'] = $_SESSION['user_id'];
@@ -310,8 +188,8 @@ abstract class POSTChart
 		}
 
 		$post_drawing['parent_id'] = $post_drawing_main_id;
-		$post_drawing['footer_text'] = "".$this->_drawing['footer_text'];
-		$post_drawing['footer_link'] = "".$this->_drawing['footer_link'];
+		$post_drawing['footer_text'] = "".$this->_footer_text;
+		$post_drawing['footer_link'] = "".$this->_footer_link;
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
 		$post_drawing['deleted'] = 0;
@@ -320,9 +198,6 @@ abstract class POSTChart
 		$post_drawing['created_by'] = $_SESSION['user_id'];
 		$post_drawing['last_modified_by'] = $_SESSION['user_id'];
 
-		$post_drawing['num_rows'] = $this->_drawing['num_rows'];
-		$post_drawing['num_extra_rows'] = $this->_drawing['num_extra_rows'];
-
 		$post_drawing_id = $DB->Insert('post_drawings', $post_drawing);
 
 		$colmap = array();
@@ -330,28 +205,38 @@ abstract class POSTChart
 		{
 			$post_col = array();
 			$post_col['drawing_id'] = $post_drawing_id;
-			$post_col['title'] = dv($col->title);
+			$post_col['title'] = dv($col['title']);
 			$post_col['num'] = $i;
 			$post_col_id = $DB->Insert('post_col', $post_col);
 			$colmap[$i] = $post_col_id;
 		}
 
-		foreach( $this->_content as $row_num=>$row )
+		$rowmap = array();
+		foreach( $this->_rows as $i=>$row )
 		{
-			foreach( $row as $cell )
+			$post_row = array();
+			$post_row['drawing_id'] = $post_drawing_id;
+			$post_row['row_type'] = $row['row_type'];
+			$post_row['row_year'] = $row['row_year'];
+			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
+			$post_row_id = $DB->Insert('post_row', $post_row);
+			$rowmap[$i] = $post_row_id;
+		}
+
+		foreach( $this->_cells as $row_num=>$row )
+		{
+			foreach( $row as $col_num=>$cell )
 			{
 				$post_cell = array();
 				$post_cell['drawing_id'] = $post_drawing_id;
-				$post_cell['row_num'] = $row_num;
-				$post_cell['col_id'] = (array_key_exists($cell->col_num, $colmap) ? $colmap[$cell->col_num] : -1);
+				$post_cell['row_id'] = (array_key_exists($row_num, $rowmap) ? $rowmap[$row_num] : -1);
+				$post_cell['col_id'] = (array_key_exists($col_num, $colmap) ? $colmap[$col_num] : -1);
 				$post_cell['content'] = dv($cell->content);
 				$post_cell['href'] = dv($cell->href);
 				$post_cell['legend'] = dv($cell->legend);
 				$post_cell['course_subject'] = dv($cell->course_subject);
 				$post_cell['course_number'] = dv($cell->course_number);
 				$post_cell['course_title'] = dv($cell->course_title);
-				$post_cell['course_description'] = dv($cell->course_description);
-				$post_cell['course_description_cachedate'] = dv($cell->course_description_cachedate);
 				$DB->Insert('post_cell', $post_cell);
 			}
 		}
@@ -359,34 +244,16 @@ abstract class POSTChart
 		return $post_drawing_id;
 	}
 
-	protected abstract function _printHeaderRow();
-	protected abstract function _printHeaderRowMini();
-	protected abstract function _rowName($num);
-	protected abstract function _rowNameMini($num);
-	protected abstract function _cellContent(&$cell);
-	protected abstract function _cellHasContent(&$cell);
-	
-	public function verticalText($text)
-	{
-		return '<img src="/files/postv/' . base64_encode($text) . '.png" alt="' . $text . '" />';	
-	}
-	
 	public function __get($key)
 	{
 		// some predefined variables
 		switch( $key )
 		{
-			case 'numRows':
-				return $this->_drawing['num_rows'];
-			
-			case 'numExtraRows':
-				return $this->_drawing['num_extra_rows'];
-				
 			case 'numCols':
 				return count($this->_cols);
 
 			case 'totalRows':
-				return count($this->_content) + 2;
+				return count($this->_rows) + 2;
 				
 			case 'totalCols':
 				return count($this->_cols) + 3;
@@ -395,20 +262,149 @@ abstract class POSTChart
 				return $this->totalCols - 2;
 			
 			case 'schoolName':
-				return $this->_drawing['school_name'];
+				return $this->_school_name;
+			
+			case 'school_id':
+				return $this->_school_id;
+			
+			case 'school_abbr':
+				return $this->_school_abbr;
 				
 			case 'drawingName':
 				return $this->_drawing['name'];
 			
 			case 'type':
 				return $this->_type;
-		}
+		
+			case 'name':
+				return $this->_name;
+	
+			case 'rows':
+				$rows = $this->_rows;
+				foreach( $rows as $i=>$r )
+				{
+					$rows[$i]['rowName'] = $this->_rowName($i);
+					$cellCount = 0;
+					foreach( $this->_cells[$i] as $cell )
+					{
+						if( $this->_cellHasContent($cell) ) $cellCount++;
+					}
+					$rows[$i]['cellCount'] = $cellCount;
+				}
+				return $rows;
 
-		// lastly, check for any keys in the drawing record
-		if( array_key_exists($key, $this->_drawing) )
-			return $this->_drawing[$key];
-		else
-			return null;		
+			default:
+				throw new Exception('Invalid key: '.$key);
+		}
+	}
+	
+	public function __set($key, $val)
+	{
+		global $DB;
+
+		switch( $key )
+		{
+			case 'school_id':
+				$this->_school_id = $val;
+				$this->_school_name = $DB->GetValue('school_name', 'schools', $val);
+				$this->_school_abbr = $DB->GetValue('school_abbr', 'schools', $val);
+				break;
+
+			case 'footer_link':
+				$this->_footer_link = $val;
+				break;
+			
+			case 'footer_text':
+				$this->_footer_text = $val;
+				break;
+
+			case 'type':
+				$this->_type = $val;
+				break;
+
+			case 'name':
+				$this->_name = $val;
+				break;
+			
+			case 'code':
+				$this->_code = $val;
+				break;
+			
+			case 'skillset_id':
+				$this->_skillset_id = $val;
+				break;
+
+			default:
+				echo '<pre>';
+				throw new Exception('Invalid key: '.$key);
+		}
+	}
+
+	public function display()
+	{
+		echo '<table border="1" class="post_chart">', "\n";
+		$this->_printHeaderRow();
+
+		foreach( $this->_cells as $rowNum=>$row )
+		{
+			echo '<tr>', "\n";
+			echo '<td class="post_head_row post_head" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
+			foreach( $row as $cell )
+			{
+				list($titleTag, $background) = $this->_gatherLegend($cell->legend);
+
+				// Write the cell to the page
+				echo '<td class="post_cell" style="' . $background . '"><div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
+			}
+			echo '</tr>', "\n";
+		}
+		echo '<tr>', "\n";
+
+		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
+			. ($this->_footer_link?'<a href="javascript:void(0);">':'')
+			. $this->_footer_text
+			. ($this->_footer_link?'</a>':'')
+			. '</td>', "\n";
+		echo '</tr>', "\n";
+
+		// Draw the legend if it exists
+		if(count($this->_knownLegend) > 0)
+		{
+				echo '<tr>', "\n";
+				echo '<td width="' . ((($this->footerCols - 1) * 120) + 18) . '" colspan="' . ($this->footerCols + 2) . '" style="padding: 4px 0;">', "\n";
+
+				foreach($this->_knownLegend as $id=>$text)
+						echo '<div style="float: left;"><img src="/c/images/legend/b' . $id . '.png" alt="' . $text . '" style="float: left;" /><div style="float: left; padding-top: 3px;"> = ' . $text . ' &nbsp;&nbsp;</div></div>', "\n";
+				echo '<div style="clear: both;"></div>', "\n";
+
+				echo '</td>', "\n";
+				echo '</tr>', "\n";
+		}//if (drawing a legend of characters)
+
+		echo '</table>', "\n";
+	}
+
+	public function displayMini()
+	{
+		echo '<table class="post_chart_mini">', "\n";
+		$this->_printHeaderRowMini();
+
+		if( is_array($this->_cells) )
+		foreach( $this->_cells as $rowNum=>$row )
+		{
+			echo '<tr>', "\n";
+			echo '<td class="post_head_row post_mini_full">'. $this->_rowNameMini($rowNum) . '</td>', "\n";
+			foreach( $row as $cell )
+			{
+				echo '<td class="post_cell'.($this->_cellHasContent($cell)?' post_mini_full':'').'"><div id="post_cell_' . $cell->id . '"></div></td>', "\n";
+			}
+			echo '</tr>', "\n";
+		}
+		echo '<tr>', "\n";
+
+		echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_footer_text?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
+		echo '</tr>', "\n";
+		echo '</table>', "\n";
 	}
 	
 }
@@ -418,38 +414,32 @@ class POSTChart_HS extends POSTChart
 {
 	protected $_type = "HS";
 
-	protected function _rowName($num)
+	protected function _cellContent(&$cell)
 	{
-		switch( $num )
-		{
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-				return '' . $num+8;
-			default:
-				return '<br/><br/>';
-		}
-	}
+		// Is there a link?
+		$link = ($cell->href != '');
 
-	protected function _rowNameMini($num)
+		// Draw the item inside the post_cell
+		return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+	}
+	
+	protected function _cellHasContent(&$cell)
 	{
-		return $this->_rowName($num);
+		return ($cell->content != '');
 	}
-
+	
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows+1) . '"></td>', "\n";
-			echo '<th class="post_head"></th>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->schoolName . '</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
 			echo '<td class="post_sidebar_right" rowspan="' . ($this->totalRows+1) . '">' . $this->verticalText('High School Diploma') . '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '<tr>', "\n";
 			echo '<th class="post_head_xy post_head">Grade</th>', "\n";
 			foreach( $this->_cols as $col )
 			{
-				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head">' . $col->title . '</th>', "\n";
+				echo '<th id="post_header_' . $col['id'] . '" class="post_head_main post_head">' . $col['title'] . '</th>', "\n";
 			}
 		echo '</tr>', "\n";
 	}
@@ -461,60 +451,59 @@ class POSTChart_HS extends POSTChart
 			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
 			foreach( $this->_cols as $col )
 			{
-				echo '<th id="post_header_' . $col->id . '" class="post_head_main post_head'.($col->title?' post_mini_full':'').'"></th>', "\n";
+				echo '<th id="post_header_' . $col['id'] . '" class="post_head_main post_head'.($col['title']?' post_mini_full':'').'"></th>', "\n";
 			}
 			echo '<td  class="post_sidebar_right post_mini_full" rowspan="' . $this->totalRows . '"></td>', "\n";
 		echo '</tr>', "\n";
 	}
-
-	protected function _cellContent(&$cell)
-	{
-		// Is there a link?
-		$link = ($cell->href != '');
-
-		// Draw the item inside the post_cell
-		return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
-	}
 	
-	protected function _cellHasContent(&$cell)
+	public function rowNameFromData(&$row)
 	{
-		return ($cell->content != '');
-	}
-}
-
-class POSTChart_CC extends POSTChart
-{
-	protected $_type = "CC";
-
-	protected function _rowName($num)
-	{
-		return ($num < 100 ? ''.$num.substr(ordinalize($num),-2) . ' Term' : '<br/><br/>');
+		switch( $row['row_type'] )
+		{
+			case 'term':
+				return $row['row_year'];
+			case 'electives':
+				return 'Electives';
+			default:
+				return '';
+		}
 	}
 
 	protected function _rowNameMini($num)
 	{
-		return ($num < 100 ? $num : '');
+		return $this->_rowName($num);
 	}
 
-	protected function _printHeaderRow()
+	protected function _createEmptyChart()
 	{
-		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
-			echo '<th class="post_head_xy post_head" style="width:40px;"></th>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . count($this->_cols) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
-		echo '</tr>', "\n";
-	}
+		global $DB;
 
-	protected function _printHeaderRowMini()
-	{
-		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
-			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
-			echo '<th class="post_head_main post_head post_mini_full" colspan="' . count($this->_cols) . '"></th>', "\n";
-			echo '<td class="post_sidebar_right post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
-		echo '</tr>', "\n";
+		for( $i=9; $i<=12; $i++ )
+		{
+			$row = array();
+			$row['row_type'] = 'term';
+			$row['row_year'] = $i;
+			$row['row_term'] = '';
+			$this->_rows[] = $row;
+		}
+
+		// copy the default columns to this drawing
+		$cols = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$this->_school_id.' ORDER BY num');
+		foreach( $cols as $c )
+		{
+			$col = array();
+			$col['title'] = $c['title'];
+			$col['num'] = $c['num'];
+			$this->_cols[] = $col;
+		}
 	}
+}
+
+
+class POSTChart_CC extends POSTChart
+{
+	protected $_type = "CC";
 
 	protected function _cellContent(&$cell)
 	{
@@ -529,8 +518,7 @@ class POSTChart_CC extends POSTChart
 			$link = ($cell->href != '');
 	
 			// Draw the item inside the post_cell
-			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
-
+			return ($link?'<a href="' . $cell->href . '">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 		}
 	}
 	
@@ -538,28 +526,97 @@ class POSTChart_CC extends POSTChart
 	{
 		return $cell->content != '' || $cell->course_subject != '';		
 	}
+
+	protected function _printHeaderRow()
+	{
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
+			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
+		echo '</tr>', "\n";
+	}
+
+	protected function _printHeaderRowMini()
+	{
+		echo '<tr>', "\n";
+			echo '<td class="post_sidebar_left post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
+			echo '<th class="post_head_main post_head post_mini_full" colspan="' . count($this->_cols) . '"></th>', "\n";
+			echo '<td class="post_sidebar_right post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+		echo '</tr>', "\n";
+	}
+
+
+	public function rowNameFromData(&$row)
+	{
+		$terms['F'] = 'Fall';
+		$terms['W'] = 'Winter';
+		$terms['S'] = 'Spring';
+		$terms['U'] = 'Summer';
+		$terms['M'] = 'Summer';
+
+		switch( $row['row_type'] )
+		{
+			case 'term':
+				return '<nobr>' . ordinalize($row['row_year'], true) . ' Yr</nobr><br />' . $terms[$row['row_term']];
+
+			case 'prereq':
+				return 'Prereqs';
+			
+			case 'electives':
+				return 'Electives';
+			
+			case 'unlabeled':
+				return '';
+
+			default:
+				return '';
+		}
+	}
+
+	protected function _rowNameMini($num)
+	{
+		$row = $this->_rows[$num];
+		switch( $row['row_type'] )
+		{
+			case 'term':
+				return ($row['row_year']) . $row['row_term'];
+
+			case 'prereq':
+				return 'P';
+			
+			case 'electives':
+				return 'E';
+			
+			case 'unlabeled':
+				return '';
+
+			default:
+				return '';
+		}
+	}
+	
+	protected function _createEmptyChart()
+	{
+		for( $i=1; $i<=6; $i++ )
+		{
+			$row = array();
+			$row['row_type'] = 'term';
+			$row['row_year'] = floor(($i-1) / 3) + 1;
+			$row['row_term'] = (($i-1) % 3) + 1;
+			$this->_rows[] = $row;
+			
+			$col = array();
+			$col['title'] = '';
+			$col['num'] = $i;
+			$this->_cols[] = $col;
+		}
+	}
+
 }
 
 
 class POSTCell
-{
-	private $_data;
-	
-	public function __construct($data=array())
-	{
-		$this->_data = $data;
-	}
-
-	public function __get($key)
-	{
-		if( is_array($this->_data) && array_key_exists($key, $this->_data) )
-			return $this->_data[$key];
-		else
-			return NULL;
-	}
-}
-
-class POSTCol
 {
 	private $_data;
 	

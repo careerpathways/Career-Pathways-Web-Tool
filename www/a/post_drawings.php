@@ -13,28 +13,31 @@ if (KeyInRequest('action')) {
 		case 'copy_version':
 			copyVersion(intval($_REQUEST['version_id']));
 			die();
-			break;
 		case 'view':
 		case 'draw':
 			showVersion();
 			die();
-			break;
 		case 'version_info':
 			showVersionInfo();
 			die();
-			break;
 		case 'drawing_info':
 			showDrawingInfo();
 			die();
-			break;
 		case 'new_drawing_form':
 			showNewDrawingForm();
 			die();
-			break;
+		case 'configure_rowscols':
+			showConfigureRowColForm(intval($_REQUEST['id']));
+			die();
+		case 'delete_row':
+			configureDeleteRow();
+			die();
+		case 'add_row':
+			configureAddRow();
+			die();
 		case 'config':
 			processConfigRequest();
 			die();
-			break;
 		case 'drawing_list':
 			// used to select a drawing in the connections chooser
 			processDrawingListRequest();
@@ -133,84 +136,18 @@ if( KeyInRequest('drawing_id') ) {
 		if( Request('id') ) {
 			// update requests are only handled through drawings_post.php now.
 		} else {
-			$content['date_created'] = $DB->SQLDate();
-			$content['created_by'] = $_SESSION['user_id'];
-			$content['school_id'] = $school_id;
-			$content['skillset_id'] = Request('skillset_id');
-			$content['type'] = Request('type');
-			$parent_id = $DB->Insert('post_drawing_main',$content);
-
-			// create the first default drawing
-			$content = array();
-			$content['version_num'] = 1;
-			$content['date_created'] = $DB->SQLDate();
-			$content['created_by'] = $_SESSION['user_id'];
-			$content['last_modified'] = $DB->SQLDate();
-			$content['last_modified_by'] = $_SESSION['user_id'];
-			$content['parent_id'] = $parent_id;
-
 			if( Request('type') == 'cc' )
-			{
-				$content['num_rows'] = intval(Request('num_terms'));
-				$content['num_extra_rows'] = intval(Request('num_extra_rows'));
-			}
+				$post = new POSTChart_CC();
 			else
-			{
-				$content['num_rows'] = 4;
-				$content['num_extra_rows'] = 1;
-			}
+				$post = new POSTChart_HS();
 
-			$drawing_id = $DB->Insert('post_drawings',$content);
-
-			if( Request('type') == 'cc' )
-			{
-				// create n empty column headers
-				for( $i=0; $i<intval(Request('num_columns')); $i++ )
-				{
-					$col = array();
-					$col['drawing_id'] = $drawing_id;
-					$col['title'] = '';
-					$col['num'] = $i+1;
-					$colmap[$i+1] = $DB->Insert('post_col', $col);
-				}
-				$num_cols = intval(Request('num_columns'));
-			}
-			else
-			{
-				// copy the default columns to this drawing
-				$cols = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$school_id.' ORDER BY num');
-				foreach( $cols as $c )
-				{
-					$col = array();
-					$col['drawing_id'] = $drawing_id;
-					$col['title'] = $c['title'];
-					$col['num'] = $c['num'];
-					$colmap[$c['num']] = $DB->Insert('post_col', $col);
-				}
-				$num_cols = count($cols);
-			}
-
-			// now create all the empty cells for the drawing
-			for( $x=1; $x<=$num_cols; $x++ )
-			{
-				for( $y=1; $y<=$content['num_rows']; $y++ )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['row_num'] = $y;
-					$cell['col_id'] = $colmap[$x];
-					$DB->Insert('post_cell', $cell);
-				}
-				for( $y=100; $y<$content['num_extra_rows']+100; $y++ )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['row_num'] = $y;
-					$cell['col_id'] = $colmap[$x];
-					$DB->Insert('post_cell', $cell);
-				}
-				
-			}
+			$post->type = Request('type');
+			$post->school_id = $school_id;
+			$post->skillset_id = Request('skillset_id');
+			$post->name = Request('name');
+			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
+			$post->createEmptyChart();
+			$drawing_id = $post->saveToDB();
 
 			// start drawing it
 			header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id);
@@ -318,7 +255,6 @@ function copyVersion($version_id) {
 	global $DB;
 
 	$post = POSTChart::create($version_id);
-	$post->loadDataFromDB();
 
 	$drawing = GetDrawingInfo($version_id, 'post');
 
@@ -326,9 +262,9 @@ function copyVersion($version_id) {
 	$drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=" . $drawing['parent_id']);
 
 	$create = Request('create') ? Request('create') : 'new_version';
-	$copy_to = Request('copy_to') ? Request('copy_to') :'same_school';
+	$copy_to = Request('copy_to') ? Request('copy_to') : 'same_school';
 
-	if( IsAdmin() ) {
+	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) ) {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
 			if ($copy_to !== 'same_school') {
 				$different_school = false;
@@ -346,15 +282,18 @@ function copyVersion($version_id) {
 	}
 
 	if( $create == 'new_drawing' ) {
-		if ($copy_to !== 'same_school') {
-			$newdrawing['school_id'] = $_SESSION['school_id'];
-			$post->setSchoolID($_SESSION['school_id']);
+		if( $copy_to == 'othr_school' && (IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff())) ) {
+			$newdrawing['school_id'] = Request('target_org_id');
+			$post->school_id = $newdrawing['school_id'];
+		} elseif ($copy_to == 'same_school') {
+			$newdrawing['school_id'] = $drawing['school_id'];
+			$post->school_id = $drawing['school_id'];
 		}
 		else {
-			$newdrawing['school_id'] = $drawing['school_id'];
-			$post->setSchoolID($drawing['school_id']);
+			$newdrawing['school_id'] = $_SESSION['school_id'];
+			$post->school_id = $_SESSION['school_id'];
 		}
-		$post->setDrawingName(Request('drawing_name') ? Request('drawing_name') : $drawing_main['name']);
+		$post->name = (Request('drawing_name') ? Request('drawing_name') : $drawing_main['name']);
 
 		$new_version_id = $post->saveToDB();
 	} else {
@@ -405,6 +344,220 @@ function ShowDrawingForm($id) {
 	global $DB, $MODE;
 	require('view/drawings/post_drawing_info.php');
 }
+
+function showConfigureRowColForm($version_id) {
+	global $DB;
+
+	$post = POSTChart::create($version_id);
+
+	if(	$post->type == 'CC' )
+	{
+		$years = array(1=>1, 2, 3, 4, 5, 6);
+		$terms = array('F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer (after Spring)', 'M'=>'Summer (before Fall)');
+	}
+	
+	?>
+	<div style="margin-left:25px; margin-right:25px; background-color: white; border: 1px #777777 solid"><div class="postGreyboxContent">
+	<style type="text/css">
+		#rowList {
+			border-top: 1px #999999 solid;
+			margin-top: 10px;
+		}
+		.rowName {
+			font-size: 1.3em;
+			padding: 2px;
+			border-bottom: 1px #999999 solid;
+		}
+		.rowConfigHead {
+			font-weight:bold;
+			font-size: 1.5em;
+		}
+		.addRowText {
+			font-size: 1.3em;
+			margin-left: 10px;
+		}
+		#addRowTable td {
+			vertical-align: middle;
+			height: 30px;
+		}
+	</style>
+	<script type="text/javascript">
+		jQuery(document).ready(function(){
+			bindDeleteButtons();
+			
+			jQuery(".addRowLink").click(function(){
+				var type = jQuery(this).attr("id").split("_")[1];
+				var data = {action: "add_row", id: <?= $version_id ?>};
+
+				switch( type ) {
+					case "prereq":
+					case "unlabeled":
+					case "electives":
+						data.type = type;
+						break;
+					case "term":
+						data.type = type;
+						data.year = jQuery("#addYear").val();
+						data.term = jQuery("#addTerm").val();
+						break;
+					default:
+						return false;
+				}
+				
+				jQuery.post("/a/post_drawings.php", data,
+					function(data){
+						jQuery("#rowList").html(data);
+						bindDeleteButtons();
+					}, "HTML");
+			});
+		});
+
+		function bindDeleteButtons() {
+			jQuery(".deleteBtn").click(function(){
+				jQuery.post("/a/post_drawings.php", {
+					action: "delete_row",
+					row_id: jQuery(this).attr("id").split("_")[1]
+				},
+				function(data){
+					jQuery("#rowList").html(data);
+					bindDeleteButtons();
+				}, "HTML");
+			})
+		}
+	</script>
+	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+	<table><tr>
+	<td valign="top" style="padding-left:10px">
+		<div class="rowConfigHead">Rows in your Drawing</div>
+		<div id="rowList">
+		<?php
+		showRowsInDrawing($post);
+		?>
+		</div>
+	</td>
+	<td valign="top" style="padding-left:30px">
+		<div class="rowConfigHead">Add Row</div>
+		<table id="addRowTable">
+		<?php if( $post->type == 'CC' ) { ?>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Prereq</div></div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Year: <?= GenerateSelectBox($years, 'addYear') ?> Term: <?= GenerateSelectBox($terms, 'addTerm') ?> </div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_electives" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Electives</div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Blank</div></td>
+			</tr>
+		<?php } else { ?>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Year: <?= GenerateSelectBox(array(9=>9, 10, 11, 12), 'addYear') ?></div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_electives" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Electives</div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Blank</div></td>
+			</tr>
+		
+		<?php } ?>
+		</table>
+	</td>
+	</tr></table>
+
+	<div style="text-align:right; margin-right: 10px;">
+		<input type="button" onclick="chGreybox.close()" value="Close" class="submit" />
+	</div>
+
+	<div style="color:#666666; margin-top:10px;"><span class="red">Warning:</span> Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you change your drawing from 7 columns to 6 columns, the contents of the far-right (seventh) column will be permanently erased.</div>
+
+	</form>
+	</div></div>
+	<?php
+}
+
+function showRowsInDrawing(&$post)
+{
+	foreach( $post->rows as $r )
+	{
+		echo '<div class="rowName">';
+			echo '<a href="javascript:void(0);" id="deleteRow_'.$r['id'].'" class="deleteBtn">' . SilkIcon('cross.png') . '</a> ';
+			if( $r['row_type'] == 'unlabeled' )
+				echo '(blank)';
+			else
+				echo str_replace('<br />', ' ', $r['rowName']);
+			echo ' <span style="color:#999999">(' . $r['cellCount'] . ')</span>';
+		echo '</div>';
+	}
+}
+
+function configureDeleteRow()
+{
+	global $DB;
+	
+	$row_id = intval(Request('row_id'));
+	$version_id = $DB->GetValue('drawing_id', 'post_row', Request('row_id'));
+	if( CanEditVersion($version_id) )
+	{
+		$DB->Query('DELETE FROM post_cell WHERE row_id='.$row_id);
+		$DB->Query('DELETE FROM post_row WHERE id='.$row_id);
+		$post = POSTChart::create($version_id);
+		showRowsInDrawing($post);
+	}
+}
+
+function configureAddRow()
+{
+	global $DB;
+
+	$id = intval(Request('id'));
+	if( CanEditVersion($id) )
+	{
+		switch(Request('type'))
+		{
+			case 'prereq':
+			case 'electives':
+			case 'unlabeled':
+				// find the last row of this type
+				$last_row = $DB->SingleQuery('SELECT * FROM post_row WHERE drawing_id='.$id.' AND row_type="'.Request('type').'" ORDER BY row_year DESC LIMIT 1');
+				$next_row = $last_row['row_year']+1;
+				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'), 'row_year'=>$next_row);
+				break;
+
+			case 'term':
+				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'), 'row_year'=>Request('year'), 'row_term'=>Request('term'));
+				break;
+
+			default:
+				return FALSE;
+		}
+
+		// create the row record and all the blank cells
+		$row_id = $DB->Insert('post_row', $row_data);
+		
+		$cols = $DB->MultiQuery('SELECT id FROM post_col WHERE drawing_id='.$id);
+		foreach( $cols as $c )
+		{
+			$DB->Insert('post_cell', array('drawing_id'=>$id, 'row_id'=>$row_id, 'col_id'=>$c['id']));
+		}
+		
+		$post = POSTChart::create($id);
+		showRowsInDrawing($post);
+	}
+}
+
+
+
+
 
 function showVersionInfo() {
 	global $DB, $MODE, $TEMPLATE;
@@ -560,6 +713,7 @@ function processConfigRequest()
 		break;
 	case 'columns':
 		$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
+		$rows = $DB->VerticalQuery('SELECT * FROM post_rows WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id');
 		$drawing = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$drawing_id);
 
 		$old_cols = count($cols);

@@ -88,9 +88,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th style="vertical-align:bottom">Editable</th>
 	<td>
-		<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
+		<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)" title="Lock Version"><img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" /></a>
 		<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
-			<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#999999">This version is currently editable. Click "lock" to prevent further edits.</span>
+			<span style="color:#999999">This version is currently editable. Click the lock icon to prevent further edits.</span>
 		</div>
 		<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
 			<span style="color:#999999">This version is locked. Copy it to a new version to make changes.</span>

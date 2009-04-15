@@ -6,7 +6,7 @@ $BLACK = "000000";
 $GREY = "999999";
 $LT_GREY = "CCCCCC";
 $D_GREY = "333333";
-$BLUE = '333333'; //"003366";
+$BLUE = "003366";
 $D_BLUE = "001133";
 
 $GOLD = "e6d09e";
@@ -61,7 +61,7 @@ h3
 {
   font-family: verdana, tahoma, arial, sans-serif;
   font-size: 10pt;
-  color:#<?= $BLUE; ?>;
+  color:#<?= $D_GREY; ?>;
   margin-bottom: 2px;
 }
 
@@ -86,7 +86,7 @@ a.noline {
 
 hr
 {
-  border-top: 1px #<?= $BLUE ?> solid;
+  border-top: 1px #<?= $D_GREY ?> solid;
   border-left: 0px;
   border-right: 0px;
   border-bottom: 0px;
@@ -107,7 +107,7 @@ input
 }
 input.submit
 {
-  background-color:#<?= $BLUE ?>;
+  background-color:#<?= $D_GREY ?>;
   color:#FFFFFF;
 }
 input.submit_disabled
@@ -303,12 +303,12 @@ a.linksubhead:hover
 
 a.edit, a.edit:visited {
   font-weight:normal;
-  color:#<?= $BLUE; ?>;
+  color:#<?= $D_GREY; ?>;
   text-decoration: none;
 }
 
 a.edit:hover, a.edit:visited:hover {
-	color: #<?= $GREY ?>;
+	color: #777777;
 }
 
 
@@ -452,7 +452,7 @@ a.edit:hover, a.edit:visited:hover {
 #title_value, .drawing_title
 {
   font-size: 14pt;
-  color: #<?= $BLUE ?>;
+  color: #<?= $D_GREY ?>;
 }
 .version_title
 {
@@ -548,6 +548,10 @@ a.chart_header {
 	margin-bottom: 6px;
 }
 
+#helpbar a {
+	text-decoration: none;
+}
+
 #drawing_canvas {
 	background: url('/c/grid.png');
 	position: absolute;
@@ -606,7 +610,7 @@ a.chart_header {
 	font-weight: bold;
 	color: #<?= $D_GOLD ?>;
 	letter-spacing: 2px;
-	border-bottom: 1px #<?= $BLUE ?> solid;
+	border-bottom: 1px #<?= $D_GREY ?> solid;
 }
 
 .red {
@@ -880,7 +884,7 @@ a.chart_header {
 	padding-right: 8px;
 	padding-left: 8px;
 	border: 1px #<?= $GREY ?> solid;
-	background-color: #<?= $BLUE ?>;
+	background-color: #<?= $D_GREY ?>;
 }
 .button_link a, .button_link a:hover {
 	color: white;
@@ -1009,7 +1013,7 @@ a.chart_header {
 .post_import_preview .hr {
   margin-bottom: 20px;
   padding-top: 10px;
-  border-bottom: 1px #<?= $BLUE ?> solid;
+  border-bottom: 1px #<?= $D_GREY ?> solid;
 }
 ol.import_instructions 
 {

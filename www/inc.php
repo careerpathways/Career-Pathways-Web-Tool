@@ -237,7 +237,8 @@ class ThisSiteTemplate extends SiteTemplate {
 			'welcome' => "Welcome",
 			'tutorial' => "Tutorial",
 			'release_info' => "Release Info",
-			'ada' => "ADA Compliance"
+			'ada' => "ADA Compliance",
+			'help' => "Internal Help Text"
 		);
 	}
 
@@ -315,15 +316,17 @@ global $DB;
 function GetDrawingInfo($drawing_id, $type='pathways') {
 global $DB;
 	if( $type == 'pathways' ) {
-		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id, sk.title AS skillset
+		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id, sk.title AS skillset, school_name
 			FROM drawing_main
 			JOIN drawings ON drawings.parent_id=drawing_main.id
 			LEFT JOIN oregon_skillsets AS sk ON sk.id = drawing_main.skillset_id
+			LEFT JOIN schools ON drawing_main.school_id=schools.id
 			WHERE drawings.id=".$drawing_id);
 	} elseif( $type == 'post' ) {
-		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id
-			FROM post_drawing_main, post_drawings
+		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id, school_name
+			FROM post_drawing_main, post_drawings, schools
 			WHERE post_drawings.parent_id=post_drawing_main.id
+			AND post_drawing_main.school_id=schools.id
 			AND post_drawings.id=".$drawing_id);
 	}
 	return $drawing;
@@ -411,7 +414,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 					echo '<td width="160">';
 						echo 'Version '.$dr['version_num'].' ';
 						if( $dr['published'] == 1 )
-							echo '<img src="/common/silk/layout.png" width="16" height="16" title="Published Version" />';
+							echo '<img src="/common/silk/report.png" width="16" height="16" title="Published Version" />';
 						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 

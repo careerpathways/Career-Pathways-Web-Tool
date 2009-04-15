@@ -4,6 +4,8 @@ include("inc.php");
 
 $version = GetDrawingInfo($_REQUEST['version_id'], $_REQUEST['mode']);
 
+$POST = Request('mode') == 'post';
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -29,50 +31,95 @@ fieldset {
 <body>
 <h2><?= $version['name'] ?></h2>
 
-<form action="<?= Request('mode')=='post'?'post_drawings.php':'drawings.php' ?>" method="post">
+<form action="<?= $POST?'post_drawings.php':'drawings.php' ?>" method="post">
 <input type="hidden" name="from_popup" value="true"/>
 <input type="hidden" name="action" value="copy_version"/>
 <input type="hidden" name="version_id" value="<?= $version['id'] ?>"/>
 
-<?php if (IsAdmin() && $_SESSION['school_id'] !== $version['school_id']) : ?>
+<?php if (IsAdmin() || (IsStaff() && $POST)) { ?>
 <fieldset id="copy_to">
-<legend>Copy To</legend>
-<input type="radio" name="copy_to" value="user_school" id="copy_to_user_school" checked="true"/> <label for="copy_to_user_school">Your Organization</label><br/>
-<input type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school">This Organization</label><br/>
+	<legend>Copy To</legend>
+	<?php if( ! (($POST && $version['type'] == 'HS' && IsStaff())
+			 || ($POST && $version['type'] == 'CC' && !IsStaff()) )
+			&& $version['school_id'] != $_SESSION['school_id'] ) { ?>
+		<input class="radio" type="radio" name="copy_to" value="user_school" id="copy_to_user_school" /> <label for="copy_to_user_school">Your Organization</label><br/>
+	<?php } ?>
+	<?php if( IsAdmin() ) { ?>
+		<input class="radio" type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school"><?=$version["school_name"]?></label><br/>
+	<?php } ?>
+	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS' ) ) { ?>
+		<input class="radio" type="radio" name="copy_to" value="othr_school" id="copy_to_othr_school"/> <label for="copy_to_othr_school">Select Organization</label><br/>
+	<?php } ?>
 </fieldset>
-<?php endif;
 
-if (IsAdmin() || $_SESSION['school_id'] === $version['school_id']) : ?>
-<fieldset id="create">
-<legend>Create</legend>
-<input type="radio" name="create" value="new_version" id="create_new_version" checked="true"/> <label for="create_new_version">New Version</label><br/>
-<input type="radio" name="create" value="new_drawing" id="create_new_drawing"/> <label for="create_new_drawing">New Drawing</label><br/>
+<fieldset id="organization">
+	<legend>Organization</legend>
+	<?php
+	if( $POST ) {
+		if( $version['type'] == 'HS' ) {
+			if( IsAdmin() )
+				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type = "HS" ORDER BY school_name', 'school_name', 'id');
+			else
+				$schools = GetAffiliatedSchools();
+		} else {
+			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+		}
+	} else {
+		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+	}
+	echo GenerateSelectBox($schools, 'target_org_id');
+	?>
 </fieldset>
-<?php else : ?>
-<p>A new drawing will be created in your organization.</p>
-<?php endif; ?>
+<?php }
+
+if (IsAdmin() || $_SESSION['school_id'] === $version['school_id']) { ?>
+<fieldset id="create">
+	<legend>Create</legend>
+	<input class="radio" type="radio" name="create" value="new_version" id="create_new_version" checked="true"/> <label for="create_new_version">New Version</label><br/>
+	<input class="radio" type="radio" name="create" value="new_drawing" id="create_new_drawing"/> <label for="create_new_drawing">New Drawing</label><br/>
+</fieldset>
+<?php } else { ?>
+<p>A new drawing will be created</p>
+<?php } ?>
 
 <fieldset id="drawingName">
-<legend><label for="drawing_title">New Drawing Name</label></legend>
-<input type="text" name="drawing_name" id="drawing_name" value="<?= $version['name'] ?> Copy">
+	<legend><label for="drawing_title">New Drawing Name</label></legend>
+	<input type="text" name="drawing_name" id="drawing_name" value="<?= $version['name'] ?> Copy">
 </fieldset>
 
 <p><input type="submit" value="OK" id="ok"/> <input type="reset" id="cancel" value="Cancel"/>
 </form>
 <script type="text/javascript">
 var create = $('create');
+var organization = $('organization');
 var drawingName = $('drawingName');
 var createNewDrawing = $('create_new_drawing');
+var copyToSameSchool = $('copy_to_same_school');
 var copyToUserSchool = $('copy_to_user_school');
+var copyToOthrSchool = $('copy_to_othr_school');
+
+if( copyToUserSchool ) { copyToUserSchool.checked = true; }
+else if( copyToSameSchool ) { copyToSameSchool.checked = true; }
+else if( copyToOthrSchool ) { copyToOthrSchool.checked = true; }
+
+if( createNewDrawing == null ) {
+	createNewDrawing = {checked: false};
+}
+if( create == null ) {
+	create = {hide: function(){}};
+}
+
 var updateState = function() {
 	if (copyToUserSchool && copyToUserSchool.checked) {
 		createNewDrawing.checked = true;
 		drawingName.show();
 		create.hide();
+		organization.hide();
 	}
-	else {
+	else if (copyToSameSchool && copyToSameSchool.checked) {
 		if (create) {
 			create.show();
+			organization.hide();
 		}
 		if (!createNewDrawing || createNewDrawing.checked) {
 			drawingName.show();
@@ -81,10 +128,21 @@ var updateState = function() {
 			drawingName.hide();
 		}
 	}
+	else if (copyToOthrSchool && copyToOthrSchool.checked) {
+		createNewDrawing.checked = true;
+		drawingName.show();
+		create.hide();
+		organization.show();
+	}
+	if( createNewDrawing && createNewDrawing.checked ) {
+		drawingName.show();
+	} else {
+		drawingName.hide();
+	}
 };
-$$('#create input').invoke('observe', 'change', updateState);
+$$('#create input').invoke('observe', 'click', updateState);
 
-$$('#copy_to input').invoke('observe', 'change', updateState);
+$$('#copy_to input').invoke('observe', 'click', updateState);
 
 updateState(); 
 

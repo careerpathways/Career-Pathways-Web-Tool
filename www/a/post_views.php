@@ -121,7 +121,7 @@ if( $id )
 		<td>
 			Deleting this "view" will not delete the drawings associated with it. Click the link below to delete this view.<br />
 			<a href="javascript:void(0);" id="deleteLink">Delete this view</a> &nbsp;&nbsp;
-			<a href="javascript:void(0);" id="deleteConfirm" style="display:none">Click to confirm</a><br />
+			<span id="deleteConfirm" style="display:none">Are you sure? <a href="javascript:void(0);">yes</a></span><br />
 			<br />
 		</td>
 	</tr>
@@ -166,7 +166,8 @@ if( $id )
 		bindTabNameBoxes();
 		
 		$j("#deleteLink").click(function(){
-			$j("#deleteConfirm").css("display", "inline").click(function(){
+			$j("#deleteConfirm").css("display", "inline");
+			$j("#deleteConfirm a").click(function(){
 				$j.post("post_views.php",
 						{id: <?= $id ?>,
 						 action: "delete"

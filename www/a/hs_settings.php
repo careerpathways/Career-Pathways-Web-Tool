@@ -59,6 +59,7 @@ else
 		<script type="text/javascript">
 
 			$(document).ready(function() {
+				$("#new_title").focus();
 				$(".sortable_header").sortable({
 					items: 'li:not(.addnew)',
 					placeholder: "ui-selected",
@@ -182,7 +183,7 @@ global $DB;
 	<?php
 	}
 	?>
-	<li class="addnew"><a href="javascript:save_header()"><img src="/common/silk/add.png" width="16" height="16"></a><input type="textbox" size="30" name="new_title" /></li>
+	<li class="addnew"><a href="javascript:save_header()"><img src="/common/silk/add.png" width="16" height="16"></a><input type="textbox" size="30" name="new_title" id="new_title" /></li>
 	</ul>
 	</div>
 	<input type="hidden" name="school_id" value="<?= $id ?>" />

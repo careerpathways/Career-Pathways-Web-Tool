@@ -80,11 +80,11 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th style="vertical-align:bottom">Editable</th>
 	<td>
-		<img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" />
-		<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
-			<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)">lock</a> <span style="color:#999999">This version is currently editable. Click "lock" to prevent further edits.</span>
+		<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)"><img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon2" /></a>
+		<div id="drawing_unlocked_msg2" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
+			<span style="color:#999999">This version is currently editable. Click the lock icon to prevent further edits.</span>
 		</div>
-		<div id="drawing_locked_msg" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
+		<div id="drawing_locked_msg2" style="display:<?= $drawing['frozen']?'inline':'none' ?>">
 			<span style="color:#999999">This version is locked. Copy it to a new version to make changes.</span>
 		</div>
 	</td>
@@ -169,7 +169,9 @@ if( $drawing['published'] ) {
 </form>
 
 <br /><br />
-
+<?php
+/*
+?>
 <h3>Drawing Structure</h3>
 <br />
 <table class="post_drawing_structure">
@@ -247,6 +249,8 @@ if( $post->type == 'CC' )
 </tr>
 </table>
 
+<?php */ ?>
+
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
 
 <script type="text/javascript">
@@ -256,7 +260,7 @@ var $j = jQuery.noConflict();
 $j(document).ready(function(){
 	$j('#version_note').change(savenote);
 });
-
+<?php /* ?>
 function changeTerms() {
 	$j('#num_terms .current').css({display: 'none'});
 	$j('#num_terms .editing').css({display: 'block'});
@@ -285,6 +289,7 @@ function saveConfig(change, did) {
 	);
 }
 
+<?php */ ?>
 
 
 function publishVersion() {
@@ -327,8 +332,11 @@ function preview_drawing(code,version) {
 function lock_drawing(version) {
 	ajaxCallback(function() {
 			getLayer('lock_icon').src = '/common/silk/lock.png';
+			getLayer('lock_icon2').src = '/common/silk/lock.png';
 			getLayer('drawing_locked_msg').style.display = 'inline';
 			getLayer('drawing_unlocked_msg').style.display = 'none';
+			getLayer('drawing_locked_msg2').style.display = 'inline';
+			getLayer('drawing_unlocked_msg2').style.display = 'none';
 		}, '/a/drawings_post.php?mode=<?= $MODE ?>&action=lock&drawing_id=<?= $version_id ?>')
 }
 

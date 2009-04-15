@@ -20,7 +20,7 @@
 
 chdir("..");
 require_once("inc.php");
-
+require_once("POSTChart.inc.php");
 
 	/**
 	 * AJAX Handler for POST Drawings
@@ -132,7 +132,7 @@ require_once("inc.php");
 	{
 		global $DB;
 
-		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`, `row_num`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
+		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_cell`.`drawing_id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`, `row_id`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
 			FROM `post_cell`
 			LEFT JOIN `post_col` ON `post_cell`.`col_id` = `post_col`.`id`
 			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
@@ -388,14 +388,6 @@ require_once("inc.php");
 		echo json_encode($return);
 	}// end function fetchCell
 
-	class PostCell {
-		public $content;
-		public $href;
-		public $legend;
-		public $course_subject;
-		public $course_number;
-		public $course_title;
-	}
 	
 	function commitHead($id)
 	{
@@ -424,10 +416,10 @@ require_once("inc.php");
 	function commitSwap($fromID, $toID)
 	{
 		global $DB;
-		$rows = $DB->MultiQuery("SELECT `id`, `row_num`, `col_id` FROM `post_cell` WHERE `id` = '" . intval($fromID) . "' OR `id` = '" . intval($toID) . "'");
+		$rows = $DB->MultiQuery("SELECT `id`, `row_id`, `col_id` FROM `post_cell` WHERE `id` = '" . intval($fromID) . "' OR `id` = '" . intval($toID) . "'");
 
-		$DB->Update('post_cell', array('row_num'=>$rows[0]['row_num'], 'col_id'=>$rows[0]['col_id']), $rows[1]['id']);
-		$DB->Update('post_cell', array('row_num'=>$rows[1]['row_num'], 'col_id'=>$rows[1]['col_id']), $rows[0]['id']);
+		$DB->Update('post_cell', array('row_id'=>$rows[0]['row_id'], 'col_id'=>$rows[0]['col_id']), $rows[1]['id']);
+		$DB->Update('post_cell', array('row_id'=>$rows[1]['row_id'], 'col_id'=>$rows[1]['col_id']), $rows[0]['id']);
 	}//end function commitSwap
 
 	function commitLegend($id)
@@ -443,14 +435,17 @@ require_once("inc.php");
 
 	function getHSFormHTML(&$cell = NULL)
 	{
-		#if(!$cell)
-		#	$cell = array('content'=>'', 'href'=>'', 'legend'=>'');
+		global $DB;
 
 		ob_start();
 
+		$drawing = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$cell['drawing_id']);
+		$post = POSTChart::create($cell['drawing_id']);
+		$row = $DB->SingleQuery('SELECT * FROM post_row WHERE id='.$cell['row_id']);
+		$rowName = str_replace('<br />', ' ', $post->rowNameFromData($row));
+
 		echo '<h3>' .
-			($cell['row_num'] < 100 ? 'Grade ' . ($cell['row_num']+8) : 'Extra Row '.($cell['row_num']-99)) .
-			', ' . 
+			( $rowName ? (is_numeric($rowName)?'Grade ' . $rowName:$rowName) . ', ' : '') .
 			($cell['col_name']) .
 			'</h3>';
 
@@ -477,11 +472,17 @@ require_once("inc.php");
 
 	function getCCFormHTML(&$cell = NULL)
 	{
+		global $DB;
+		
 		ob_start();
 
+		$drawing = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$cell['drawing_id']);
+		$post = POSTChart::create($cell['drawing_id']);
+		$row = $DB->SingleQuery('SELECT * FROM post_row WHERE id='.$cell['row_id']);
+
 		echo '<h3>' .
-			($cell['row_num'] < 100 ? ucfirst(ordinalize($cell['row_num'])) . ' Term' : 'Extra Row '.($cell['row_num']-99)) .
-			', Column ' . ($cell['col_num']) .
+			str_replace('<br />', ' ', $post->rowNameFromData($row)) .
+			', Column ' . ($cell['col_num']+1) .
 			'</h3>';
 ?>
 		<br />

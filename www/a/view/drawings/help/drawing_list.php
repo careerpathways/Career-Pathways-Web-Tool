@@ -8,5 +8,5 @@ if( !isset($onlyLegend) )
 <img src="/common/silk/picture.png" width="16" height="16" /> View Version<br />
 <img src="/common/silk/magnifier.png" width="16" height="16" /> Preview Version<br />
 <img src="/common/silk/page_copy.png" width="16" height="16" /> Copy Version<br />
-<img src="/common/silk/layout.png" width="16" height="16" /> Published Version<br />
+<img src="/common/silk/report.png" width="16" height="16" /> Published Version<br />
 <img src="/common/silk/lock.png" width="16" height="16" /> Version Locked<br />

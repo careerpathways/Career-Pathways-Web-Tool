@@ -60,8 +60,7 @@ var $j = jQuery.noConflict();
 		}
 		else
 		{
-			$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
-			$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" '.(IsAdmin()?'':'AND id IN (0,'.$hsids['hs'].')').' ORDER BY school_name', 'school_name', 'id');
+			$these_schools = GetAffiliatedSchools();
 		}
 		echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
 	} else {
@@ -76,52 +75,6 @@ var $j = jQuery.noConflict();
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
 	?></span>(optional)</td>
 </tr>
-<?php
-if( Request('type') == 'cc' ) {
-	?>
-	<tr>
-		<th>&nbsp;</th>
-		<td><br />Choose the initial size of your drawing. You will be able to change this later.</td>
-	</tr>
-	<tr>
-		<th>Terms</th>
-		<td>
-			<?php
-				$range = array(3,6,9,12);
-				$options = array();
-				foreach( $range as $i )
-					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'num_terms', 3);
-			?>
-		</td>
-	</tr>
-	<tr>
-		<th>Empty Rows</th>
-		<td>
-			<?php
-				$range = range(0, 9);
-				$options = array();
-				foreach( $range as $i )
-					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'num_extra_rows', 0);
-			?>
-		</td>
-	</tr>
-	<tr>
-		<th>Columns</th>
-		<td>
-			<?php
-				$range = range(3, 9);
-				$options = array();
-				foreach( $range as $i )
-					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'num_columns', 6);
-			?>
-		</td>
-	</tr>
-<?php
-}
-?>
 <tr>
 	<td>&nbsp;</td>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>

@@ -22,7 +22,7 @@
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Note</b></td>';
-					echo '<td>'.($v['published']?'<img src="/common/silk/layout.png" title="Published Version" alt="" />':'').($v['frozen']?'<img src="/common/silk/lock.png" title="Version Locked" alt="" />':'').' '.$v['note'].'</td>';
+					echo '<td>'.($v['published']?'<img src="/common/silk/report.png" title="Published Version" alt="" />':'').($v['frozen']?'<img src="/common/silk/lock.png" title="Version Locked" alt="" />':'').' '.$v['note'].'</td>';
 				echo '</tr>';
 				echo '<tr>';
 					echo '<td><b>Created</b></td>';
