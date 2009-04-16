@@ -293,7 +293,7 @@ $colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="
 
 	</table>
 
-	<div style="text-align: center">
+	<div style="margin-left:300px">
 		<span style="font: normal 20px Arial, Helvetica, sans-serif;">To import these drawings, click</span>
 		<input name="submit" type="submit" value="Continue" style="font: normal 18px Arial, Helvetica, sans-serif;" />
 	</div>
