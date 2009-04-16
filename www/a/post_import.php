@@ -129,7 +129,7 @@ try
 catch( Exception $e )
 {
 	echo '<p>There was a problem trying to read the file:<br />"'.$e->getMessage().'"</p>';
-	echo '<p>Make sure you first export the Excel file in the "Excel 2004 XML" format before uploading. You cannot upload a .xls file.</p>';
+	echo '<p>Make sure you first export the Excel file in the "Excel 2004 XML" format before uploading. <b>You cannot upload a .xls file.</b></p>';
 	echo '<p><a href="'.$_SERVER['PHP_SELF'].'" class="edit">go back</a></p>';
 	PrintFooter();
 	die();
@@ -317,6 +317,11 @@ function parseXML(&$xmlData)
 	
 	@$xml = new SimpleXMLElement($xmlData);
 	@$excelXml = ($xml->Worksheet->Table);
+
+	if( !is_object($excelXml) ) {
+		throw new Exception('Could not parse file.');
+		return false;
+	}
 	
 	d('Beginning import process');
 	
