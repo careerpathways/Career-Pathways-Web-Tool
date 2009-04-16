@@ -428,8 +428,8 @@ function showConfigureRowColForm($version_id) {
 				jQuery.post("/a/post_drawings.php", {
 					action: mode,
 					id: <?= $version_id ?>
-				}, function(){
-					chGreybox.close();
+				}, function(data){
+					jQuery("#miniBlockDiagram").html(data);
 				}, "HTML");
 			
 			});
@@ -458,6 +458,21 @@ function showConfigureRowColForm($version_id) {
 		showRowsInDrawing($post);
 		?>
 		</div>
+
+		<div style="margin-top:20px; margin-bottom:10px">
+		<div class="rowConfigHead" style="margin-bottom:3px;">Columns</div>
+			<table width="300"><tr>
+				<input type="button" class="colButton" value="Delete Last Column" id="delete_col" />
+				<input type="button" class="colButton" value="Add Column" id="add_col" />
+			</tr></table>
+		</div>
+		
+		<div style="margin-top:20px; margin-bottom:10px">
+		<div class="rowConfigHead" style="margin-bottom:3px">Block Diagram</div>
+			<div id="miniBlockDiagram"><?php $post->displayMini(); ?></div>
+		</div>
+		
+
 	</td>
 	<td valign="top" style="padding-left:30px">
 		<div class="rowConfigHead">Add Row</div>
@@ -495,21 +510,6 @@ function showConfigureRowColForm($version_id) {
 		<?php } ?>
 		</table>
 
-		<div style="margin-top:10px; margin-bottom:10px">
-		<div class="rowConfigHead" style="margin-bottom:3px">Columns</div>
-			<table width="300"><tr>
-				<input type="button" class="colButton" value="Delete Last Column" id="delete_col" />
-				<input type="button" class="colButton" value="Add Column" id="add_col" />
-			</tr></table>
-		</div>
-		
-		<div style="margin-top:10px; margin-bottom:10px">
-		<div class="rowConfigHead" style="margin-bottom:3px">Block Diagram</div>
-		<?php
-		$post->displayMini();
-		?>
-		</div>
-		
 	</td>
 	</tr></table>
 
@@ -550,6 +550,9 @@ function configureDeleteCol()
 		$DB->Query('DELETE FROM post_cell WHERE col_id='.$col['id']);
 		$DB->Query('DELETE FROM post_col WHERE id='.$col['id']);
 	}
+
+	$post = POSTChart::create($version_id);
+	$post->displayMini();
 }
 
 function configureAddCol()
@@ -568,7 +571,9 @@ function configureAddCol()
 			$DB->Insert('post_cell', array('drawing_id'=>$version_id, 'row_id'=>$r['id'], 'col_id'=>$col_id));
 		}
 	}
-	die();
+	
+	$post = POSTChart::create($version_id);
+	$post->displayMini();
 }
 
 
