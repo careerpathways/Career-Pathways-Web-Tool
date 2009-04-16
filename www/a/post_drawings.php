@@ -35,6 +35,12 @@ if (KeyInRequest('action')) {
 		case 'add_row':
 			configureAddRow();
 			die();
+		case 'delete_col':
+			configureDeleteCol();
+			die();
+		case 'add_col':
+			configureAddCol();
+			die();
 		case 'config':
 			processConfigRequest();
 			die();
@@ -380,6 +386,12 @@ function showConfigureRowColForm($version_id) {
 			vertical-align: middle;
 			height: 30px;
 		}
+		.colButton {
+			background-color: #888888;
+			color: white;
+			margin-right: 10px;
+			font-size: 13px;
+		}
 	</style>
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
@@ -410,6 +422,18 @@ function showConfigureRowColForm($version_id) {
 						bindDeleteButtons();
 					}, "HTML");
 			});
+			
+			jQuery(".colButton").click(function(){
+				var mode = jQuery(this).attr("id");
+				jQuery.post("/a/post_drawings.php", {
+					action: mode,
+					id: <?= $version_id ?>
+				}, function(){
+					chGreybox.close();
+				}, "HTML");
+			
+			});
+			
 		});
 
 		function bindDeleteButtons() {
@@ -468,9 +492,24 @@ function showConfigureRowColForm($version_id) {
 				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
 				<td><div class="addRowText">Blank</div></td>
 			</tr>
-		
 		<?php } ?>
 		</table>
+
+		<div style="margin-top:10px; margin-bottom:10px">
+		<div class="rowConfigHead" style="margin-bottom:3px">Columns</div>
+			<table width="300"><tr>
+				<input type="button" class="colButton" value="Delete Last Column" id="delete_col" />
+				<input type="button" class="colButton" value="Add Column" id="add_col" />
+			</tr></table>
+		</div>
+		
+		<div style="margin-top:10px; margin-bottom:10px">
+		<div class="rowConfigHead" style="margin-bottom:3px">Block Diagram</div>
+		<?php
+		$post->displayMini();
+		?>
+		</div>
+		
 	</td>
 	</tr></table>
 
@@ -499,6 +538,39 @@ function showRowsInDrawing(&$post)
 		echo '</div>';
 	}
 }
+
+function configureDeleteCol()
+{
+	global $DB;
+	
+	$version_id = Request('id');
+	if( CanEditVersion($version_id) )
+	{
+		$col = $DB->SingleQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num DESC LIMIT 1');
+		$DB->Query('DELETE FROM post_cell WHERE col_id='.$col['id']);
+		$DB->Query('DELETE FROM post_col WHERE id='.$col['id']);
+	}
+}
+
+function configureAddCol()
+{
+	global $DB;
+	
+	$version_id = Request('id');
+	if( CanEditVersion($version_id) )
+	{
+		$last_col = $DB->SingleQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num DESC LIMIT 1');
+		$col_id = $DB->Insert('post_col', array('drawing_id'=>$version_id, 'title'=>'', 'num'=>$last_col['num']+1));
+
+		$rows = $DB->MultiQuery('SELECT id FROM post_row WHERE drawing_id='.$version_id);
+		foreach( $rows as $r )
+		{
+			$DB->Insert('post_cell', array('drawing_id'=>$version_id, 'row_id'=>$r['id'], 'col_id'=>$col_id));
+		}
+	}
+	die();
+}
+
 
 function configureDeleteRow()
 {

@@ -981,7 +981,7 @@ a.chart_header {
 }
 .post_chart_mini td, .post_chart_mini th
 {
-  border: 1px #999999 solid;
+  border: 1px #999999 solid !important;
 }
 .post_chart_mini .post_head_row
 {
