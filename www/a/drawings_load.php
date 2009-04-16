@@ -10,12 +10,6 @@ switch( Request('type') ) {
 		$main_table = 'post_drawing_main';
 		$version_table = 'post_drawings';
 		break;
-	case 'ccti':
-		$module_name = 'ccti_drawings';
-		$session_key = 'ccti_drawing_list';
-		$main_table = 'ccti_drawing_main';
-		$version_table = 'ccti_drawings';
-		break;
 	case 'pathways':
 	default:
 		$module_name = 'drawings';
@@ -53,16 +47,30 @@ switch( Request('mode') ) {
 		// only need to filter by categories, not by people
 
 		if( Request('categories') ) {
+			$where = '';
+			// don't show high schools when looking at roadmaps
+			if( Request('type') == 'pathways' ) {
+				$where = 'AND organization_type != "HS"';
+			}
+			
 			$schools = $DB->VerticalQuery('
 				SELECT schools.id, school_name
 				FROM '.$main_table.'
 				LEFT JOIN schools ON school_id=schools.id
-				WHERE '.$main_table.'.name IN ("'.str_replace(',','","',Request('categories')).'")',
+				WHERE '.$main_table.'.name IN ("'.str_replace(',','","',Request('categories')).'")
+				'.$where,
 			'school_name','id');
 		} else {
+			$where = '';
+			// don't show high schools when looking at roadmaps
+			if( Request('type') == 'pathways' ) {
+				$where = 'WHERE organization_type != "HS"';
+			}
+			
 			$schools = $DB->VerticalQuery("
 				SELECT id, school_name
 				FROM schools
+				$where
 				ORDER BY school_name",
 			'school_name','id');
 		}
