@@ -6,7 +6,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 <div id="toolbar">
 	<div id="toolbar_header"></div>
 	<div id="toolbar_content">
-		<?php if( CanEditVersion($drawing['id'], 'post') ) { ?>
+		<?php if( CanEditVersion($drawing['id'], 'post', false) ) { ?>
 		<div style="margin-bottom:4px">
 			<a href="javascript:lock_drawing(<?= $drawing['version_num'] ?>)" title="Lock Version"><img src="/common/silk/lock<?= ($drawing['frozen']?'':'_open') ?>.png" width="16" height="16" id="lock_icon" /></a>
 			<div id="drawing_unlocked_msg" style="display: <?= $drawing['frozen']?'none':'inline' ?>">
@@ -27,7 +27,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 			<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br />
 			<?php } ?>
 			<a href="/c/post/<?= $drawing_main['code'] . '/' . $drawing['version_num'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a><br />
-			<?php if (CanEditVersion($drawing['id'], 'post') && $drawing['published'] == 0) : ?>
+			<?php if (CanEditVersion($drawing['id'], 'post', false) && $drawing['published'] == 0) : ?>
 				<form action="/a/post_drawings.php" method="post" id="publishForm">
 					<input type="hidden" name="drawing_id" value="<?=$drawing['id']?>" />
 					<input type="hidden" name="action" value="publish" />
