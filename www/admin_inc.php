@@ -103,10 +103,17 @@ function CanDeleteDrawing($drawing_id) {
 	
 	$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
 
-	if( @$drawing['published'] == 1 || @$drawing['frozen'] == 1 )
-		return false;
+	#if( @$drawing['published'] == 1 || @$drawing['frozen'] == 1 )
+	#	return false;
 
 	if( IsAdmin() ) return true;
+
+	if( IsStaff() && $drawing['type'] == 'HS' ) 
+	{
+		$affl = GetAffiliatedSchools();
+		if( array_key_exists($drawing['school_id'], $affl) )
+			return true;
+	}
 
 	if( IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] ) return true;
 
@@ -114,6 +121,7 @@ function CanDeleteDrawing($drawing_id) {
 
 	// state admins can delete anything
 	// school admins can delete any drawing at their school
+	// all staff can delete HS drawings in their affiliated list
 	// anyone else can delete drawings created by them
 }
 

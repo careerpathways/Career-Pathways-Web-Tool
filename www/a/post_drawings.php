@@ -58,8 +58,7 @@ if( KeyInRequest('drawing_id') ) {
 	if( PostRequest() ) {
 
 		// permissions check
-		$drawing = GetDrawingInfo($drawing_id, 'post');
-		if( !is_array($drawing) || (!IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) ) {
+		if( !CanEditVersion($drawing_id, 'post', false) ) {
 			header("Location: ".$_SERVER['PHP_SELF']);
 			die();
 		}
@@ -103,18 +102,9 @@ if( KeyInRequest('drawing_id') ) {
 
 	if( PostRequest() ) {
 
-		$drawing = $DB->SingleQuery("SELECT *
-			FROM post_drawings, post_drawing_main
-			WHERE post_drawings.parent_id=post_drawing_main.id
-			AND post_drawing_main.id=".intval(Request('id')));
-		if( !(Request('id') == "" || is_array($drawing) && (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id'])) ) {
-			// permissions error
-			header("Location: ".$_SERVER['PHP_SELF']);
-			die();
-		}
-
 		if( Request('delete') == 'delete' ) {
 			$drawing_id = intval($_REQUEST['id']);
+			
 			if( CanDeleteDrawing($drawing_id) ) {
 				// when deleting the entire drawing (from drawing_main) actually remove the records
 						
@@ -124,6 +114,16 @@ if( KeyInRequest('drawing_id') ) {
 				$DB->Query("DELETE FROM post_col WHERE drawing_id=".$drawing_id);
 				header("Location: ".$_SERVER['PHP_SELF']);
 			}
+			die();
+		}
+
+		$drawing = $DB->SingleQuery("SELECT *
+			FROM post_drawings, post_drawing_main
+			WHERE post_drawings.parent_id=post_drawing_main.id
+			AND post_drawing_main.id=".intval(Request('id')));
+		if( !(Request('id') == "" || is_array($drawing)) ) {
+			// permissions error
+			header("Location: ".$_SERVER['PHP_SELF']);
 			die();
 		}
 
