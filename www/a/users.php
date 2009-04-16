@@ -337,7 +337,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			WHERE school_id=".$s['id']."
 				AND lev.level = users.user_level
 				AND user_active = 1
-			ORDER BY user_level, last_name
+			ORDER BY user_level DESC, last_name
 			");
 		if( count($users) == 0 ) {
 			echo '<tr>';
