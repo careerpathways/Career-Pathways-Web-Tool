@@ -1,7 +1,7 @@
 <?php
 chdir("..");
 require_once("inc.php");
-require_once('POSTChart.inc.php');
+require_once('POSTChart.old.php');
 
 ModuleInit('post_drawings');
 
@@ -36,6 +36,7 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setSchoolID($school_id);
 
 		$HS_id = $post->saveToDB();
+		convert_row_format($HS_id);
 
 		echo '<p>"<a href="/a/post_drawings.php?action=draw&version_id='.$HS_id.'">' . $_POST['postHSName'] . '</a>" was successfully imported for "'.GetSchoolName($school_id).'"</p>';
 	}
@@ -52,6 +53,7 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setSchoolID($school_id);
 
 		$CC1_id = $post->saveToDB();
+		convert_row_format($CC1_id);
 
 		echo '<p>"<a href="/a/post_drawings.php?action=draw&version_id='.$CC1_id.'">' . $_POST['postCC1Name'] . '</a>" was successfully imported for "'.GetSchoolName($school_id).'"</p>';
 	}
@@ -68,6 +70,7 @@ if(isset($_POST['xmlLocation']) && isset($_POST['submit']) && $_POST['submit'] =
 		$post->setSchoolID($school_id);
 
 		$CC2_id = $post->saveToDB();
+		convert_row_format($CC2_id);
 
 		echo '<p>"<a href="/a/post_drawings.php?action=draw&version_id='.$CC2_id.'">' . $_POST['postCC2Name'] . '</a>" was successfully imported for "'.GetSchoolName($school_id).'"</p>';
 	}
@@ -510,7 +513,7 @@ function parseXML(&$xmlData)
 				if( !preg_match('/([a-z]+)\s+term/i', $cell) )
 				{
 					// try to parse a class subject/number out of it
-					if( $prg = preg_match('/^([a-z]{2,4}) ([0-9]{3}[a-z]{0,2}) (.+)$/i', $cell, $match) )
+					if( $prg = preg_match('/^([a-z]{2,4})\s*([0-9]{3}[a-z]{0,2})\s+(.+)$/i', $cell, $match) )
 					{
 						$goodCell = array(
 							'id' => ++$rollingIDs,
@@ -667,4 +670,108 @@ function d($msg)
 	// print debugging messages
 	// echo date('Y-m-d H:i:s') . ' ' . $msg . "<br />\n";
 }
+
+
+// This is a total hack... instead of fixing the import script to add row_ids, we'll
+// just use this to add the row_ids after the drawing is imported
+function convert_row_format($version_id)
+{
+	global $DB;
+	
+	$version = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$version_id);
+	$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$version['parent_id']);
+
+	$check = $DB->SingleQuery('SELECT COUNT(*) AS num FROM post_row WHERE drawing_id='.$version_id);
+		
+	if( $check['num'] == 0 )
+	{
+		// insert the row records
+		if( $drawing['type'] == 'HS' )
+		{
+			for( $y=9; $y<=12; $y++ )
+			{
+				$row = array();
+				$row['drawing_id'] = $version_id;
+				$row['row_type'] = 'term';
+				$row['row_year'] = $y;
+				$row_id = $DB->Insert('post_row', $row);
+				
+				// find the cells that are for this row and assign them
+				$cells = $DB->MultiQuery('SELECT * FROM post_cell WHERE drawing_id='.$version_id.' AND row_num='.($y-8));
+				foreach( $cells as $c )
+				{
+					$DB->Query('UPDATE post_cell SET row_id='.$row_id.' WHERE id='.$c['id']);				
+				}
+			}
+			for( $i=0; $i<$version['num_extra_rows']; $i++ )
+			{
+				$row = array();
+				$row['drawing_id'] = $version_id;
+				$row['row_type'] = 'unlabeled';
+				$row['row_year'] = ($i+1);
+				$row_id = $DB->Insert('post_row', $row);
+				
+				// find the cells that are for this row and assign them
+				$cells = $DB->MultiQuery('SELECT * FROM post_cell WHERE drawing_id='.$version_id.' AND row_num='.($i+100));
+				foreach( $cells as $c )
+				{
+					$DB->Query('UPDATE post_cell SET row_id='.$row_id.' WHERE id='.$c['id']);				
+				}
+			}
+		}
+		else
+		{
+			for( $i=1; $i<=$version['num_rows']; $i++ )
+			{
+				$row = array();
+				$row['drawing_id'] = $version_id;
+				$row['row_type'] = 'term';
+				$row['row_year'] = floor(($i-1) / 3) + 1;
+				$row['row_term'] = (($i-1) % 3) + 1;
+				$row_id = $DB->Insert('post_row', $row);
+	
+				// find the cells that are for this row and assign them
+				$cells = $DB->MultiQuery('SELECT * FROM post_cell WHERE drawing_id='.$version_id.' AND row_num='.$i);
+				foreach( $cells as $c )
+				{
+					$DB->Query('UPDATE post_cell SET row_id='.$row_id.' WHERE id='.$c['id']);				
+				}
+			}
+			for( $i=0; $i<$version['num_extra_rows']; $i++ )
+			{
+				$row = array();
+				$row['drawing_id'] = $version_id;
+				$row['row_type'] = 'unlabeled';
+				$row['row_year'] = ($i+1);
+				$row_id = $DB->Insert('post_row', $row);
+	
+				// find the cells that are for this row and assign them
+				$cells = $DB->MultiQuery('SELECT * FROM post_cell WHERE drawing_id='.$version_id.' AND row_num='.($i+100));
+				foreach( $cells as $c )
+				{
+					$DB->Query('UPDATE post_cell SET row_id='.$row_id.' WHERE id='.$c['id']);				
+				}
+			}
+		}
+	}
+
+	// patch holes left by the import script
+	$rows = $DB->MultiQuery('SELECT * FROM post_row WHERE drawing_id='.$version_id);
+	$cols = $DB->MultiQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id);
+
+	foreach( $rows as $r ) {
+		foreach( $cols as $c ) {
+			$check = $DB->MultiQuery('SELECT * FROM post_cell WHERE row_id='.$r['id'].' AND col_id='.$c['id']);
+			if( count($check) == 0 ) {
+				$newcell = array();
+				$newcell['drawing_id'] = $version_id;
+				$newcell['row_id'] = $r['id'];
+				$newcell['col_id'] = $c['id'];
+				$DB->Insert('post_cell', $newcell);
+			}	
+		}
+	}
+
+}
+
 ?>
