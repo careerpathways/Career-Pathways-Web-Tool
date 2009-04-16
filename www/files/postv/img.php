@@ -9,9 +9,7 @@ $hash = md5($text);
 
 $title_font = 'verdanab.ttf';
 $font_size = 6;
-$filename = $SITE->cache_path() . "post_vertical/".$hash;
-
-if( !is_dir($SITE->cache_path() . "post_vertical") ) mkdir($SITE->cache_path() . "post_vertical", 0777);
+$filename = $SITE->cache_path('post_vertical') . $hash;
 
 header("Content-type: image/png");
 

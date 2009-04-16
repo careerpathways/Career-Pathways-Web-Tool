@@ -22,15 +22,13 @@ if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
 if( $school == '-' ) $school = '';
 
 $hash = md5($school.$title.Request('type'));
-$filename = $SITE->cache_path()."titles/".$hash;
-
-if( !is_dir($SITE->cache_path() . "titles") ) mkdir($SITE->cache_path() . "titles", 0777);
+$filename = $SITE->cache_path("titles")."/".$hash;
 
 $width = 800;
 
 header("Content-type: image/png");
 
-if( 1 || !file_exists($filename) ) {
+if( !file_exists($filename) ) {
 
 	$dst = imagecreatetruecolor($width,19);
 

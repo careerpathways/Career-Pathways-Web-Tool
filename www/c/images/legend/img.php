@@ -23,9 +23,7 @@
 
 	header('Content-Type: image/png');
 
-	$folder = $SITE->cache_path() . "legend";
-	if( !is_dir($folder) )
-		mkdir($folder, 0755, TRUE);
+	$folder = $SITE->cache_path("legend");
 
 	$finalPath = $folder . "/" . $_GET['ids'] . '.png';
 

@@ -13,7 +13,7 @@ class ThisSite extends SiteSettings {
 	var $debug = true;
 
 	function name() { return "Career Pathways Web Tool"; }
-	function email_name() { return "Oregon CT Pathways"; }
+	function email_name() { return "Oregon CTE Pathways"; }
 	function email() { return "helpdesk@ctepathways.org"; }
 
 	function recipient_email() { return "aaron@ctepathways.org"; }
@@ -24,12 +24,18 @@ class ThisSite extends SiteSettings {
 		$this->DBpass = 'pathways';
 
 		$this->ConnectDB();
-
-		$this->add_local_name('pathways','ccti.ctepathways.org');
 	}
 
 	function base_url() { return $_SERVER['SERVER_NAME']; }
-	function cache_path() { return '/tmp/pathways/'; }
+	function cache_path($folder="") { 
+		$base_dir = '/web/oregon.ctepathways.org/cache/';
+		
+		if( $folder ) {
+			if( !is_dir($base_dir . $folder) ) mkdir($base_dir . $folder, 0777);
+		}
+	
+		return '/web/oregon.ctepathways.org/cache/' . $folder . '/';
+	}
 
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }

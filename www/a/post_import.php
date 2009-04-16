@@ -116,7 +116,7 @@ if(!isset($_FILES['post_excel_file']) && !isset($_POST['xmlLocation']))
 
 // Handle our uploaded file, if it exists
 $newName = time() . md5($_FILES['post_excel_file']['name']);
-$cachePath = $SITE->cache_path() . 'post/';
+$cachePath = $SITE->cache_path('post') . '/';
 if(!move_uploaded_file($_FILES['post_excel_file']['tmp_name'], $cachePath . $newName))
 	die('Could not move uploaded file!');
 
