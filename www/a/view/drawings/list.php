@@ -42,13 +42,18 @@ PrintHeader();
 	}
 	else
 	{
+		if( IsStaff() ) {
 		?>
 		<a href="/a/drawings.php?action=new_drawing_form" class="edit dlist_link"><img src="/common/silk/add.png" width="16" height="16"> <span class="imglinkadjust">new drawing</span></a>
 		<?php
+		}
 	}
+	if( $MODE == 'post' || ($MODE != 'post' && IsStaff()) ) {
 	?>
 	<a href="javascript:selectDefaults()" class="edit dlist_link"><img src="/common/silk/user.png" width="16" height="16"> <span class="imglinkadjust">my drawings</span></a>
-	<?php if( $MODE == 'post' ) { ?>
+	<?php 
+	}
+	      if( $MODE == 'post' ) { ?>
 		<a href="javascript:selectDefaultsGrp()" class="edit dlist_link"><img src="/common/silk/group.png" width="16" height="16"> <span class="imglinkadjust">affiliated drawings</span></a>
 	<?php } ?>
 </nobr></td>
