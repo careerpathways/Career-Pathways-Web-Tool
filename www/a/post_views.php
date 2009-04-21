@@ -120,7 +120,7 @@ if( $id )
 		<th>Delete</th>
 		<td>
 			Deleting this "view" will not delete the drawings associated with it. Click the link below to delete this view.<br />
-			<a href="javascript:void(0);" id="deleteLink">Delete this view</a> &nbsp;&nbsp;
+			<a href="javascript:void(0);" id="deleteLink" class="noline"><?=SilkIcon('cross.png')?> Delete this view</a> &nbsp;&nbsp;
 			<span id="deleteConfirm" style="display:none">Are you sure? <a href="javascript:void(0);">yes</a></span><br />
 			<br />
 		</td>
