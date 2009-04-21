@@ -44,7 +44,7 @@ fieldset {
 			&& $version['school_id'] != $_SESSION['school_id'] ) { ?>
 		<input class="radio" type="radio" name="copy_to" value="user_school" id="copy_to_user_school" /> <label for="copy_to_user_school">Your Organization</label><br/>
 	<?php } ?>
-	<?php if( IsAdmin() ) { ?>
+	<?php if( IsAdmin() || $version['school_id'] == $_SESSION['school_id'] ) { ?>
 		<input class="radio" type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school"><?=$version["school_name"]?></label><br/>
 	<?php } ?>
 	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS' ) ) { ?>
