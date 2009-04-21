@@ -526,9 +526,9 @@ global $DB;
 		</td>
 	</tr>
 	<tr>
-		<td>From:</td>
+		<td>From IP Address:</td>
 		<td>
-			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip']) ?>
+			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip'] . ' (' . gethostbyaddr($user['last_logon_ip']) . ')') ?>
 		</td>
 	</tr>
 	<tr>
@@ -564,7 +564,7 @@ global $DB;
 		</tr>
 		<tr>
 			<td valign="top" class="noborder">Delete User:</td>
-			<td><span id="delete_link"><a href="javascript:deleteConfirm()">Click to delete</a></span> &nbsp; <span id="delete_confirm"></span><br>
+			<td><span id="delete_link"><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Click to delete</a></span> &nbsp; <span id="delete_confirm"></span><br>
 			Note: It is generally not a good idea to delete users if there are drawings associated with them.
 			</td>
 		</tr>
@@ -661,9 +661,9 @@ if( $tried_to_add ) {
 		</td>
 	</tr>
 	<tr>
-		<td>From:</td>
+		<td>From IP Address:</td>
 		<td>
-			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip']) ?>
+			<?= ($user['last_logon_ip']==''?'':$user['last_logon_ip'] . ' (' . gethostbyaddr($user['last_logon_ip']) . ')') ?>
 		</td>
 	</tr>
 	<?php } ?>

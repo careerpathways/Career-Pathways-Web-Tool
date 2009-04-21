@@ -28,7 +28,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 					<input type="hidden" name="action" value="publish" />
 					<input type="submit" value="Publish" style="display:none" />
 				</form>
-				<a href="javascript:document.getElementById('publishForm').submit();" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> publish this version</a>
+				<a href="javascript:publishPopup('pathways', <?=$_REQUEST['drawing_id']?>)" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> publish this version</a>
 			<?php endif; ?>
 		</div>
 

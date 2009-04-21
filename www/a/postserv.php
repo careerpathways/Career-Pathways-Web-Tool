@@ -34,12 +34,19 @@ require_once("POSTChart.inc.php");
 <?php
 			if($_GET['type'] == 'cell')
 				printCellForm($_GET['id']);
+
 			elseif($_GET['type'] == 'head')
 				printHeadForm($_GET['id']);
+
 			elseif($_GET['type'] == 'footer')
 				printFooterForm($_GET['id']);
+
+			elseif($_GET['type'] == 'sidebar_right')
+				printSidebarRightForm($_GET['id']);
+
 			elseif($_GET['type'] == 'swap')
 				die('<div class="greyboxError">Cannot Prompt to Swap, must Commit to Swap</div>');
+
 			else
 				die('<div class="greyboxError">Misunderstood Prompting</div>');
 ?>
@@ -58,7 +65,14 @@ require_once("POSTChart.inc.php");
 					$version_id = $DB->GetValue('drawing_id', 'post_col', intval($_GET['id']));
 					break;
 				case 'footer':
-					$version_id = intval($_GET['id']);
+				case 'sidebar_right':
+					if( array_key_exists('action', $_POST) )
+					{
+						commitConfigSidebar();
+						die();
+					}
+					else
+						$version_id = intval($_GET['id']);
 					break;
 				case 'swap':
 					$version_id = $DB->GetValue('drawing_id', 'post_cell', intval($_POST['toID']));
@@ -94,6 +108,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'footer':
 					commitFooter($_GET['id']);
+					break;
+				case 'sidebar_right':
+					commitSidebarRight($_GET['id']);
 					break;
 				case 'swap':
 					commitSwap($_POST['fromID'], $_POST['toID']);
@@ -309,6 +326,10 @@ require_once("POSTChart.inc.php");
 		echo getFooterHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
+			$(".postGreyboxContent input").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#postFormSave").click();
+			});
+
 			$("#postFormSave").click(function(){
 				$.ajax({
 					type: "POST",
@@ -323,6 +344,46 @@ require_once("POSTChart.inc.php");
 		</script>
 <?php
 	}//end function printFooterForm
+
+	function printSidebarRightForm($id)
+	{
+		global $DB;
+
+		$cell = $DB->SingleQuery("SELECT d.`sidebar_text_right`, m.`type`
+			FROM `post_drawings` d
+			JOIN `post_drawing_main` m ON m.id = d.parent_id
+			WHERE d.`id` = '" . intval($id) . "'");
+
+		$options = $DB->VerticalQuery('SELECT text FROM post_sidebar_options WHERE type="'.$cell['type'].'" ORDER BY text', 'text', 'text');
+		$options = array_merge(array(''=>''), $options);
+
+		// Draw the Footer form
+		ob_start();
+?>
+		<form action="javascript:void(0);">
+			<div style="font-weight: bold;">Degree Option:</div>
+			<?= GenerateSelectBox($options, 'sidebar_text', $cell['sidebar_text_right']) ?>
+			<br /><br />
+			<div style="text-align: right;">
+				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
+			</div>
+		</form>
+
+		<script language="JavaScript" type="text/javascript">
+			$("#postFormSave").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/a/postserv.php?mode=commit&type=sidebar_right&id=<?=$id?>",
+					data: {text: $("#sidebar_text").val()},
+					success: function(data){
+						$("#postsidebarright_<?=$id?>").html(data);
+						chGreybox.close();
+					}
+				});
+			});
+		</script>
+<?php
+	}//end function printSidebarRightForm
 
 	/**************************/
 	/****** COMMIT CODE *******/
@@ -428,6 +489,40 @@ require_once("POSTChart.inc.php");
 		$DB->Update('post_legend', array('text'=>$_POST['text']), $id);
 		die($_POST['text']);
 	}
+
+	function commitSidebarRight($id)
+	{
+		global $DB;
+
+		// updating text in a POST drawing
+		$text = $_POST['text'];
+		$DB->Update('post_drawings', array('sidebar_text_right' => $text), intval($id));
+		$post = POSTChart::create($id);
+		echo $post->verticalText($text);
+	}//end function commitFooter
+
+	function commitConfigSidebar()
+	{
+		global $DB;
+		if( IsAdmin() )
+		{
+			// editing the list of options
+			switch( $_POST['action'] )
+			{
+				case "add":
+					$data = array('type'=>$_POST['post_type'], 'text'=>$_POST['text']);
+					$data['id'] = $DB->Insert('post_sidebar_options', $data);
+					echo json_encode($data);
+					break;
+				case "delete":
+					$data = array('id'=>$_POST['id']);
+					$DB->Query("DELETE FROM post_sidebar_options WHERE id=".$_POST['id']);
+					echo json_encode($data);
+					break;
+			}
+		}		
+	}
+	
 
 	/*****************************/
 	/******* FORM PRINTERS *******/
@@ -546,7 +641,7 @@ require_once("POSTChart.inc.php");
 	function getFooterHTML(&$footer = NULL)
 	{
 		if(!$footer)
-			$footer = array('text'=>'', 'link'=>'');
+			$footer = array('footer_text'=>'', 'footer_link'=>'');
 
 		ob_start();
 ?>

@@ -819,7 +819,8 @@ Charts.showEditor = function(mychUtil) {
 		init_instance_callback : function(){
 			var ed = tinyMCE.get('mceBox');
 			ed.setContent(mychUtil.config.content);
-		}
+		},
+		convert_urls : false
 	});
 
 	chGreybox.create('',620,300);

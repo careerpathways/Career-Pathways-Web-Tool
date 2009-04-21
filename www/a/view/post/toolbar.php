@@ -33,7 +33,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 					<input type="hidden" name="action" value="publish" />
 					<input type="submit" value="Publish" style="display:none" />
 				</form>
-				<a href="javascript:getLayer('publishForm').submit();" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> publish this version</a>
+				<a href="javascript:publishPopup('post', <?=$_REQUEST['version_id']?>)" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> publish this version</a>
 			<?php endif; ?>
 		</div>
 

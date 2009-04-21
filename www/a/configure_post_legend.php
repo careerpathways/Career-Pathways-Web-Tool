@@ -44,6 +44,38 @@
 ?>
 	</table>
 
+	<br /><br />
+	
+	<div style="color: #555555; font-size: 18px;">Configure the options for the right sidebar</div>
+	<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
+		<td valign="top" width="50%"><div style="color: #333333; font-size: 15px; margin-bottom: 5px;">High School</div>
+			<div id="sbr_container_HS">
+			<?php
+			$options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="HS" ORDER BY text');
+			foreach( $options as $o )
+			{
+				echo '<div><a href="javascript:void(0);" id="sbr_delete_' . $o['id'] . '" class="sbr_delete">' . SilkIcon('cross.png') . '</a> ' . $o['text'] . '</div>';
+			}
+			?>
+			</div>
+			<a href="javascript:void(0);" class="sbr_add" id="new_HS"><?=SilkIcon('add.png')?></a> <input type="text" id="sbr_add_text_HS" value="" style="width:300px" />
+		</td>
+		<td valign="top" width="50%"><div style="color: #333333; font-size: 15px; margin-bottom: 5px;">Community College</div>
+			<div id="sbr_container_CC">
+			<?php
+			$options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="CC" ORDER BY text');
+			foreach( $options as $o )
+			{
+				echo '<div><a href="javascript:void(0);" id="sbr_delete_' . $o['id'] . '" class="sbr_delete">' . SilkIcon('cross.png') . '</a> ' . $o['text'] . '</div>';
+			}
+			?>
+			</div>
+			<a href="javascript:void(0);" class="sbr_add" id="new_CC"><?=SilkIcon('add.png')?></a> <input type="text" id="sbr_add_text_CC" value="" style="width:300px" />
+		</td>
+	</tr></table>
+	<br />
+	<div style="color: #999999">Note: Deleting the options will not affect any drawings. It will only remove the option from being added to any future drawings</div>
+
 	<script type="text/javascript">
 		$(".legend_transfer").click(function(){
 			var id = parseID($(this).attr("id"));
@@ -128,6 +160,40 @@
 				}
 			});
 		});
+
+		bindSidebarButtons();
+
+		function bindSidebarButtons() {
+			$("#sbr_add_text_CC").unbind("keydown").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#new_CC").click();
+			});
+			$("#sbr_add_text_HS").unbind("keydown").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#new_HS").click();
+			});
+
+			$(".sbr_delete").unbind("click").click(function(){
+				var container = $(this).parent();
+				$.post("postserv.php?mode=commit&type=sidebar_right", {
+					action: "delete",
+					id: $(this).attr("id").split("_")[2],
+				}, function(data){
+					$("#sbr_delete_"+data.id).parent().remove();
+					bindSidebarButtons();
+				}, "json");
+			});
+			$(".sbr_add").unbind("click").click(function(){
+				var post_type = $(this).attr("id").split("_")[1];
+				$.post("postserv.php?mode=commit&type=sidebar_right", {
+					action: "add",
+					text: $("#sbr_add_text_"+post_type).val(),
+					post_type: post_type
+				}, function(data){
+				$("#sbr_container_"+post_type).append('<div><a href="javascript:void(0);" id="sbr_delete_' + data.id + '" class="sbr_delete"><?=SilkIcon('cross.png')?></a> ' + data.text + '</div>');
+					$("#sbr_add_text_"+post_type).val("")
+					bindSidebarButtons();
+				}, "json");
+			});
+		}
 
 		function parseID(id)
 		{

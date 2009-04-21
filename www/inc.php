@@ -636,4 +636,36 @@ global $SITE;
 }
 
 
+
+
+function showPublishForm($mode)
+{
+	global $DB;
+	$version_id = intval($_REQUEST['version_id']);
+	if( $mode == 'post' )
+		$version = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$version_id);
+	else
+		$version = $DB->SingleQuery('SELECT * FROM drawings WHERE id='.$version_id);
+	
+	?>
+	<div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
+	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+		<p>Are you sure you want to publish this version? Any web pages that are embedding this drawing will automatically be updated.</p>
+		<input type="submit" class="submit" value="Yes" />
+		<input type="button" class="submit" value="No" onclick="chGreybox.close()" />
+
+		<input type="hidden" name="action" value="publish" />
+		<input type="hidden" name="drawing_id" value="<?=$version_id?>" />
+
+		<?php
+		if( $version['frozen'] == 0 ) {
+			echo '<br /><br /><p>Note: You can lock this version instead. This will prevent anyone from making changes to this version, but will not update websites that have embedded this drawing.</p>';
+		}
+		?>
+
+	</form>
+	</div>
+	<?php
+}
+
 ?>

@@ -23,24 +23,25 @@ if (KeyInRequest('action')) {
 		case 'copy_version':
 			copyVersion(intval($_REQUEST['version_id']));
 			die();
-			break;
 		case 'view':
 		case 'draw':
 			showVersion();
 			die();
-			break;
 		case 'version_info':
 			showVersionInfo();
 			die();
-			break;
 		case 'drawing_info':
 			showDrawingInfo();
 			die();
-			break;
 		case 'new_drawing_form':
 			showNewDrawingForm();
 			die();
-			break;
+		case 'publish_form':
+			showPublishForm('pathways');
+			die();
+		case 'publish_version':
+			processPublishVersion('pathways');
+			die();
 	}
 }
 

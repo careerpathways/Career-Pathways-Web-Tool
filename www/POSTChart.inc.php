@@ -14,6 +14,7 @@ abstract class POSTChart
 	protected $_school_abbr;
 	protected $_footer_link;
 	protected $_footer_text;
+	protected $_sidebar_right;
 
 	// 2D array [row#][col#]
 	protected $_cells;
@@ -30,7 +31,7 @@ abstract class POSTChart
 	{
 		global $DB;
 
-		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_text`, `d`.`footer_link`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_text`, `d`.`footer_link`, `d`.`sidebar_text_right`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -54,6 +55,7 @@ abstract class POSTChart
 			$post->school_id = $drawing['school_id'];
 			$post->footer_link = $drawing['footer_link'];
 			$post->footer_text = $drawing['footer_text'];
+			$post->sidebar_right = $drawing['sidebar_text_right'];
 			
 			return $post;
 		}
@@ -97,7 +99,8 @@ abstract class POSTChart
 			ksort($this->_cells[$k]);
 		}
 		ksort($this->_cells);
-		
+	
+		$this->_id = $version_id;
 	}
 
 	/**
@@ -191,6 +194,7 @@ abstract class POSTChart
 		$post_drawing['parent_id'] = $post_drawing_main_id;
 		$post_drawing['footer_text'] = "".$this->_footer_text;
 		$post_drawing['footer_link'] = "".$this->_footer_link;
+		$post_drawing['sidebar_text_right'] = "".$this->_sidebar_right;
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
 		$post_drawing['deleted'] = 0;
@@ -319,6 +323,10 @@ abstract class POSTChart
 				$this->_footer_text = $val;
 				break;
 
+			case 'sidebar_right':
+				$this->_sidebar_right = $val;
+				break;
+
 			case 'type':
 				$this->_type = $val;
 				break;
@@ -434,7 +442,7 @@ class POSTChart_HS extends POSTChart
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows+1) . '"></td>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td class="post_sidebar_right" rowspan="' . ($this->totalRows+1) . '">' . $this->verticalText('High School Diploma') . '</td>', "\n";
+			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" rowspan="' . ($this->totalRows+1) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '<tr>', "\n";
 			echo '<th class="post_head_xy post_head">Grade</th>', "\n";
@@ -533,7 +541,7 @@ class POSTChart_CC extends POSTChart
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
+			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
 

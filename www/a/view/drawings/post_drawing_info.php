@@ -170,7 +170,7 @@ var $j = jQuery.noConflict();
 			Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
 			<p><b>There is no way to recover deleted drawings!</b></p>
 			<p>If you are sure you want to delete the entire drawing, click the link below:</p>
-			<p><a href="javascript:deleteConfirm()">Delete drawing and all versions</a></p>
+			<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete drawing and all versions</a></p>
 			<div id="deleteConfirm"></div>
 			<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="delete_form">
 				<input type="hidden" name="id" value="<?= $drawing['id'] ?>">

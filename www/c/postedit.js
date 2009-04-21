@@ -68,7 +68,7 @@ $(document).ready(function()
 	);
 
 	// Add a cursor icon to all editable elements
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").css({cursor: "pointer"});
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").css({cursor: "pointer"});
 
 	// Suppress link following
 	$(".post_cell a").attr("href", "javascript:void(0);");
@@ -103,6 +103,19 @@ function bindEditableCells()
 
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "footer", id: footerID},
+			function(data){
+				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
+		}, "html");
+	});
+	
+	// Make the sidebar editable
+	$(".post_sidebar_right").click(function(){
+		// Split apart the id into meaningful components
+		var versionID = $(this).attr("id").split("_")[1];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "sidebar_right", id: versionID},
 			function(data){
 				chGreybox.create(data, 450, 300);
 				chGreybox.onClose = function() {bindPostCells()};
@@ -192,13 +205,13 @@ function bindPostCells()
 	});
 
 	// Set up the class to update on hover
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").hover(function(){
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").hover(function(){
 		$(this).addClass("post_cell_hover");
 	},function(){
 		$(this).removeClass("post_cell_hover");
 	});
 
 	// clear out any lingering hovers
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").removeClass("post_cell_hover");
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").removeClass("post_cell_hover");
 
 }//end function bindPostCells

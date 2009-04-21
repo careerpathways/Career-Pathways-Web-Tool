@@ -85,3 +85,15 @@ function n() { }
 function copyPopup(mode, version_id) {
 	chGreybox.create('<div id="copyPopup"><iframe src="/a/copy_popup.php?mode='+mode+'&version_id='+version_id+'" style="width:400px;height:300px;"></iframe></div>', 400, 300, null, 'Copy This Version');
 }
+
+function publishPopup(mode, version_id) {
+  var url;
+  if( mode == "post" ) {
+	url = "/a/post_drawings.php?action=publish_form&version_id=" + version_id;
+  } else {
+	url = "/a/drawings.php?action=publish_form&version_id=" + version_id;
+  }
+  ajaxCallback(function(data) {
+    chGreybox.create(data, 400, 300, null, "Publish this Version");
+  }, url);
+}

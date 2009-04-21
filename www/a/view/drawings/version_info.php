@@ -149,7 +149,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td width="545">
 		<b>There is no way to recover deleted drawings!</b><br>
 		If you are sure you want to delete this version, click the link below:<br>
-		<p><a href="javascript:deleteConfirm()">Delete this version</a></p>
+		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete this version</a></p>
 		<div id="deleteConfirm"></div>
 	</td>
 </tr>
@@ -183,10 +183,7 @@ if( $drawing['published'] ) {
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
 <script type="text/javascript">
 
-function publishVersion() {
-	getLayer('action_field').value = "publish";
-	getLayer('version_form').submit();
-}
+var $j = jQuery.noConflict();
 
 function savenote() {
 	var note = getLayer('version_note');

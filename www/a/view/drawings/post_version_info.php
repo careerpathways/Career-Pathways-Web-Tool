@@ -137,7 +137,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td width="545">
 		<b>There is no way to recover deleted drawings!</b><br>
 		If you are sure you want to delete this version, click the link below:<br>
-		<p><a href="javascript:deleteConfirm()">Delete this version</a></p>
+		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete this version</a></p>
 		<div id="deleteConfirm"></div>
 	</td>
 </tr>
@@ -149,107 +149,12 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 ?>
 </table>
 
-<?php
-
-// replaced by publish link in sidebar
-/*
-if( $version_id != "" && $drawing['published'] == 0 && (IsAdmin() || $_SESSION['school_id'] == $drawing_main['school_id']) ) {
-	?>
-	<p><input type="button" name="publish" class="publish_link" onclick="publishVersion()" value="Publish this version"></p>
-	<?php
-}
-if( $drawing['published'] ) {
-	echo '<div class="publish_link_inactive" style="width:100px;text-align:center">Published</div>';
-}
-*/
-?>
-
 <input type="hidden" name="action" id="action_field" value="">
 <input type="hidden" name="drawing_id" value="<?= $drawing['id'] ?>">
 </form>
 
 <br /><br />
-<?php
-/*
-?>
-<h3>Drawing Structure</h3>
-<br />
-<table class="post_drawing_structure">
-<tr>
-	<th>&nbsp;</th>
-	<td>The diagram below represents your drawing. Shaded (grey) cells indicate where content has been added; white cells are empty.</td>
-</tr>
-<tr>
-	<th width="80">Block Diagram</th>
-	<td>
-		<?php
-			$post = POSTChart::create($drawing['id']);
-			$post->displayMini();
-		?>
-	</td>
-</tr>
-<tr>
-	<th><span class="red">Warning</span></th>
-	<td>Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you change 7 columns down to 6 columns, the contents of the far-right (seventh) column will be permanently erased.</td>
-</tr>
-<?php
-if( $post->type == 'CC' )
-{
-	?>
-	<tr>
-		<th>Terms</th>
-		<td id="num_terms">
-			<div class="current"><span class="post_large_number"><?= $post->numRows ?></span> <a href="javascript:changeTerms()">change</a></div>
-			<div class="editing" style="display:none">
-				<?php
-					$range = array(3,6,9,12);
-					$options = array();
-					foreach( $range as $i )
-						$options[$i] = $i;
-					echo GenerateSelectBox($options, 'new_num_terms', $post->numRows);	
-				?>
-				<a href="javascript:saveConfig('terms', 'num_terms')">save</a>
-			</div>
-		</td>
-	</tr>
-<?php
-}
-?>
-<tr>
-	<th>Blank Rows</th>
-	<td id="num_extra_rows">
-		<div class="current"><span class="post_large_number"><?= $post->numExtraRows ?></span> <a href="javascript:changeExtraRows()">change</a></div>
-		<div class="editing" style="display:none">
-			<?php
-				$range = range(0, 9);
-				$options = array();
-				foreach( $range as $i )
-					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'new_num_extra_rows', $post->numExtraRows);			
-			?>
-			<a href="javascript:saveConfig('extra_rows', 'num_extra_rows')">save</a>
-		</div>
-	</td>
-</tr>
-<tr>
-	<th>Columns</th>
-	<td id="num_columns">
-		<div class="current"><span class="post_large_number"><?= $post->numCols ?></span> <a href="javascript:changeColumns()">change</a></div>
-		<div class="editing" style="display:none">
-			<?php
-				$range = range(3, 9);
-				$options = array();
-				foreach( $range as $i )
-					$options[$i] = $i;
-				echo GenerateSelectBox($options, 'new_num_columns', $post->numCols);			
-			?>
-			<a href="javascript:saveConfig('columns', 'num_columns')">save</a>
-		</div>
-	</td>
-</tr>
-</table>
 
-<?php */ ?>
 
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
 

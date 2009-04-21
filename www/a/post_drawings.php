@@ -48,6 +48,9 @@ if (KeyInRequest('action')) {
 			// used to select a drawing in the connections chooser
 			processDrawingListRequest();
 			die();
+		case 'publish_form':
+			showPublishForm('post');
+			die();
 	}
 }
 
@@ -152,6 +155,7 @@ if( KeyInRequest('drawing_id') ) {
 			$post->skillset_id = Request('skillset_id');
 			$post->name = Request('name');
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
+			$post->sidebar_right = (Request('type')=='cc'?'Career Pathway Certificate of Completion':'High School Diploma');
 			$post->createEmptyChart();
 			$drawing_id = $post->saveToDB();
 
@@ -842,13 +846,5 @@ function processConfigRequest()
 }
 
 
-function showNewDrawingPreview(&$config)
-{
-	global $DB;
-	
-	
-	
-	
-}
 
 ?>
