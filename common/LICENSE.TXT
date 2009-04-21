@@ -1,0 +1,44 @@
+Aaron Parecki Productions Source Code Agreement
+
+Definitions:
+For purposes of this Agreement, the following definitions shall apply:
+(a) "Source Code" shall include computer programming code contained in this package, 
+which is not covered by some other agreement, for example, a GNU Lesser General 
+Public License.
+(b) "Licensee" shall mean any individual or entity that uses or installs the Source 
+Code onto any computer under this Agreement.
+(c) "Software License Agreement" shall mean the written instrument governing the 
+relationship between Aaron Parecki Productions and Licensee executed concurrently 
+with this Agreement.
+
+
+Aaron Parecki Productions grants Licensee a nonexclusive, nontransferable, perpetual, 
+worldwide right to use the Source Code on the system on which it is installed.
+
+Licensee may not resell, rent, lease or distribute the Source Code in any way. The 
+Source Code may only be modified by Aaron Parecki Productions.
+
+Aaron Parecki Productions maintains ownership of all copyright interests in the Source 
+Code.
+
+
+
+
+Licensee Information:
+Must be signed by an authorized person of the Licensee's organization.
+
+
+
+Organization Name:_______________________________________
+
+
+Name of Authorized Representative of Organization:
+
+
+____________________________________________
+
+
+Title:___________________________________________________
+
+
+Signature:______________________________ Date:___________
