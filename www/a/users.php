@@ -215,6 +215,21 @@ if( KeyInRequest('id') || Request('key') ) {
 				$email->Send();
 			
 				break;
+			case 'Log In As':
+				if( IsAdmin() ) {
+					$user = $DB->SingleQuery('SELECT * FROM users WHERE id = '.$_REQUEST['id']);
+
+					$_SESSION['user_id'] = $user['id'];
+					$_SESSION['first_name'] = $user['first_name'];
+					$_SESSION['last_name'] = $user['last_name'];
+					$_SESSION['full_name'] = $user['first_name'].' '.$user['last_name'];
+					$_SESSION['email'] = $user['email'];
+					$_SESSION['user_level'] = $user['user_level'];
+					$_SESSION['school_id'] = $user['school_id'];
+				}
+				header('Location: /');
+				die();
+				break;
 			}
 
 		} else {
@@ -543,7 +558,13 @@ global $DB;
 			<?php } else { ?>
 			<input type="submit" name="submit" value="Save Changes" class="submit">
 			<input type="submit" name="submit" value="Send New Password" class="submit">
-			<?php } ?>
+			<?php }
+				if( IsAdmin() ) {
+			?>
+			<input type="submit" name="submit" value="Log In As" class="submit">
+			<?php					
+				}
+			?>
 			</td>
 		<td class="noborder" align="right">&nbsp;</td>
 	</tr>
@@ -654,6 +675,9 @@ if( $tried_to_add ) {
 		</td>
 	</tr>
 	<?php if( IsWebmaster() ) { ?>
+	<tr>
+		<td colspan="2" class="noborder"><hr></td>
+	</tr>
 	<tr>
 		<td>Last Logon:</td>
 		<td>
