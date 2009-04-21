@@ -329,7 +329,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
 				echo '<td width="140">'.$u['phone_number'].'</td>';
 	
-				echo '<td width="180">'.$u['email'].'</td>';
+				echo '<td width="180"><a href="mailto:'.$u['email'].'">'.$u['email'].'</a></td>';
 				echo '<td width="100" colspan="2">'.$u['school_name'].'</td>';
 	
 				echo '</tr>';
@@ -381,7 +381,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '<td width="180">'.$u['first_name'].' '.$u['last_name'].'</td>';
 				echo '<td width="140">'.(!IsGuestUser()?$u['phone_number']:'&nbsp;').'</td>';
 
-				echo '<td width="180">'.(!IsGuestUser()?$u['email']:'&nbsp;').'</td>';
+				echo '<td width="180">'.(!IsGuestUser()?'<a href="mailto:'.$u['email'].'">'.$u['email'].'</a>':'&nbsp;').'</td>';
 				echo '<td width="100">'.$u['user_level_name'].'</td>';
 				echo '<td width="140"><div title="'.($u['last_logon_ip']==''?'':$u['last_logon_ip']).'">'.($u['last_logon_ip']==''?'':$DB->Date("n/j/Y g:ia",$u['last_logon'])).'</div></td>';
 
@@ -497,7 +497,7 @@ global $DB;
 			</td>
 		</tr>
 	<?php }
-	if( $_SESSION['user_level'] > CPUSER_STAFF ) { ?>
+	?>
 	<tr>
 		<td class="noborder">User Level:</td>
 		<td class="noborder">
@@ -511,7 +511,6 @@ global $DB;
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
 	<?php
-	}
 	if( $user['new_user'] == 1 ) {
 	?>
 	<tr>
@@ -637,7 +636,7 @@ if( $tried_to_add ) {
 	</tr>
 	<tr>
 		<td class="noborder">Email:</td>
-		<td class="noborder"><?= $user['email'] ?></td>
+		<td class="noborder"><?= '<a href="mailto:'.$user['email'].'">'.$user['email'].'</a>' ?></td>
 	</tr>
 	<?php if( IsWebmaster() ) { ?>
 	<tr>
