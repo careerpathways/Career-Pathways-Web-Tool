@@ -171,7 +171,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				
 				if( $content['school_id'] == 0 ) {
 					PrintHeader();
-					echo '<p>Error: Before you can send this user a password, you must assign them to a school. You will need to create the school record first.</p>';
+					echo '<p>Error: Before you can send this user a password, you must assign them to an organization. You will need to create the organization record first.</p>';
 					PrintFooter();
 					die();
 				} else {
@@ -472,7 +472,7 @@ global $DB;
 			<?php
 				if( $user['school_id'] == 0 ) {
 					echo 'Other: '.$user['other_school'].'<br>';
-					echo '<p>Before this user will be able to log in, you must create a School record for them and assign them to that school. You can alternatively assign them to an existing school.</p>';
+					echo '<p>Before this user will be able to log in, you must create an organization for them and assign them to that organization. You can alternatively assign them to an existing organization.</p>';
 					$addl[0] = 'Other (Login Disabled)';
 				} else {
 					$addl = array();
@@ -642,7 +642,7 @@ if( $tried_to_add ) {
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
 	<tr>
-		<td class="noborder">School:</td>
+		<td class="noborder">Organization:</td>
 		<td class="noborder">
 		<?= $DB->GetValue('school_name','schools',$user['school_id']) ?>
 		</td>
