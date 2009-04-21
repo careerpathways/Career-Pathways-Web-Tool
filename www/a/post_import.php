@@ -206,7 +206,7 @@ $colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="
 
 	<tr>
 		<td><h3 style="text-align: left">Community College Pathway</h3></td>
-		<td align="right">Include this drawing? <input name="postCC1Include" type="checkbox" checked="checked" /></td>
+		<td align="right">Include this drawing? <input name="postCC1Include" type="checkbox" <?= (IsStaff()?'checked="checked"':'') ?> /></td>
 	</tr>
 	<tr>
 		<td align="right"><b>Enter a name for this drawing:</b></td>
@@ -250,7 +250,7 @@ $colleges = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="
 
 	<tr>
 		<td><h3 style="text-align: left">Community College Pathway</h3></td>
-		<td align="right">Include this drawing? <input name="postCC2Include" type="checkbox" checked="checked" /></td>
+		<td align="right">Include this drawing? <input name="postCC2Include" type="checkbox"  <?= (IsStaff()?'checked="checked"':'') ?> /></td>
 	</tr>
 	<tr>
 		<td align="right"><b>Enter a name for this drawing:</b></td>
