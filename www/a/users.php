@@ -708,10 +708,10 @@ function ShowVersionsForUser($user_id) {
 global $DB;
 	?>
 	<br>
-	<b>Drawings associated with this user:</b><br>
+	<b>Roadmap drawings associated with this user:</b><br>
 	<?php
 
-	$drawings = GetDrawingsForUser($user_id);
+	$drawings = GetDrawingsForUser($user_id, 'pathways');
 	foreach( $drawings as &$parent ) {
 		$versions = $DB->ArrayQuery("
 			SELECT *
@@ -729,18 +729,52 @@ global $DB;
 		echo '<p>none</p>';
 	}
 
+	?>
+	<br /><br />
+	<b>POST drawings associated with this user:</b><br>
+	<?php
+
+	$drawings = GetDrawingsForUser($user_id, 'post');
+	foreach( $drawings as &$parent ) {
+		$versions = $DB->ArrayQuery("
+			SELECT *
+			FROM post_drawings
+			WHERE post_drawings.parent_id=".$parent['id']."
+				AND deleted=0
+				AND (created_by=".$user_id." OR last_modified_by=".$user_id.")
+			ORDER BY version_num");
+		$parent['drawings'] = $versions;
+	}
+
+	if( count($drawings) > 0 ) {
+		ShowDrawingList($drawings, 'post');
+	} else {
+		echo '<p>none</p>';
+	}
 }
 
 
-function GetDrawingsForUser($user_id) {
-global $DB;
-	$drawings = $DB->MultiQuery("
-		SELECT drawing_main.id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
-			created_by, last_modified_by, drawing_main.date_created, last_modified, school_id
-		FROM drawing_main, schools
-		WHERE school_id=schools.id
-			AND drawing_main.id IN (SELECT parent_id FROM drawings WHERE (created_by=".$user_id." OR last_modified_by=".$user_id."))
-		ORDER BY name");
+function GetDrawingsForUser($user_id, $type) {
+	global $DB;
+
+	if( $type == 'pathways' )
+	{
+		$drawings = $DB->MultiQuery("
+			SELECT drawing_main.id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
+				created_by, last_modified_by, drawing_main.date_created, last_modified, school_id
+			FROM drawing_main, schools
+			WHERE school_id=schools.id
+				AND drawing_main.id IN (SELECT parent_id FROM drawings WHERE (created_by=".$user_id." OR last_modified_by=".$user_id."))
+			ORDER BY name");
+	} else {
+		$drawings = $DB->MultiQuery("
+			SELECT post_drawing_main.id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
+				created_by, last_modified_by, post_drawing_main.date_created, last_modified, school_id
+			FROM post_drawing_main, schools
+			WHERE school_id=schools.id
+				AND post_drawing_main.id IN (SELECT parent_id FROM post_drawings WHERE (created_by=".$user_id." OR last_modified_by=".$user_id."))
+			ORDER BY name");
+	}
 	return $drawings;
 }
 
