@@ -54,8 +54,10 @@
 						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'" title="' . $drawViewText . '">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing(drawing_code,'.$v['version_num'].')" title="Preview Version">'.SilkIcon('magnifier.png').'</a>';
-						echo ' &nbsp;&nbsp;&nbsp;';
-						echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton" title="Copy Version">'.SilkIcon('page_copy.png').'</a>';
+						if( IsStaff() ) {
+							echo ' &nbsp;&nbsp;&nbsp;';
+							echo '<a href="javascript:copyPopup(\'pathways\', ' . $v['id'] . ')" class="toolbarButton" title="Copy Version">'.SilkIcon('page_copy.png').'</a>';
+						}
 					echo '</td>';
 				echo '</tr>';
 			echo '</table></td>';

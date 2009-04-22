@@ -59,10 +59,14 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 <tr>
 	<th>Note</th>
 	<td>
-		<div id="note_edit">
-			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
-			<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
-		</div>
+		<?php if( IsStaff() ) { ?>
+			<div id="note_edit">
+				<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
+				<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
+			</div>
+		<?php } else { ?>
+			<?= $drawing['note'] ?>
+		<?php } ?>
 	</td>
 </tr>
 <tr>
@@ -82,9 +86,14 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td>
 		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw/Edit Version' : 'View Version'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
 		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
-		<a href="javascript:copyPopup('pathways', '<?=$drawing['id']?>')" class="toolbarButton" title="Copy Version"><?= SilkIcon('page_copy.png') ?></a>
+		<?php if( IsStaff() ) { ?>
+			<a href="javascript:copyPopup('pathways', '<?=$drawing['id']?>')" class="toolbarButton" title="Copy Version"><?= SilkIcon('page_copy.png') ?></a>
+		<?php } ?>
 	</td>
 </tr>
+<?php
+	if( IsStaff() ) {
+?>
 <tr>
 	<th style="vertical-align:bottom">Editable</th>
 	<td>
@@ -97,13 +106,16 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 		</div>
 	</td>
 </tr>
-<?php if( $drawing['published'] ) {
+<?php
+	if( $drawing['published'] ) {
 	?>
 	<tr>
 	<th>Embed Code</th>
 	<td><textarea style="width:560px;height:50px;" class="code"><?= htmlspecialchars($embed_code) ?></textarea></td>
 	</tr>
-<?php } ?>
+<?php
+	}
+?>
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
@@ -158,6 +170,12 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	} else {
 		$can_delete = false;
 	}
+	
+	} // if IsStaff
+	else
+	{
+		$can_delete = false;
+	}
 ?>
 </table>
 
@@ -183,7 +201,7 @@ if( $drawing['published'] ) {
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
 <script type="text/javascript">
 
-var $j = jQuery.noConflict();
+//var $j = jQuery.noConflict();
 
 function savenote() {
 	var note = getLayer('version_note');

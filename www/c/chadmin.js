@@ -1213,7 +1213,7 @@ ChartBox.contextMenu.addItems([[
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
 	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
 	{text: 'Color', submenu: boxColorMenu},
-	{text: 'Box Type', submenu: typeMenu},
+	// {text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
@@ -1353,6 +1353,7 @@ gridMenu.addItems([
 
 Charts.contextMenu = new YAHOO.widget.ContextMenu('Charts.contextMenu');
 Charts.contextMenu.addItems([[
+	//{text: 'Create Box', onclick: {fn: onNewBoxSelect}},
 	{text: 'New', submenu: newComponentMenu},
 ],[
 	{text: 'Grid', submenu: gridMenu}

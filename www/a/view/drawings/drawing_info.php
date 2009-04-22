@@ -6,6 +6,7 @@ $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%.html';
+$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
 
 $drawing = $DB->LoadRecord($main_table,$id);
 
@@ -19,8 +20,6 @@ if( IsAdmin() ) {
 } else {
 	$school_id = $_SESSION['school_id'];
 }
-
-$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
 
 if( $id != "" ) {
 	$published = $DB->SingleQuery("SELECT * FROM $drawings_table WHERE published=1 AND parent_id=".$drawing['id']);
