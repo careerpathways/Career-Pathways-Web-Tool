@@ -8,13 +8,6 @@ case 'pathways':
 	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/%%/##.xml';
 	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%/##.html';
 	break;
-case 'ccti':
-	$main_table = 'ccti_drawing_main';
-	$drawings_table = 'ccti_drawings';
-	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.html';
-	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.xml';
-	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%/##.html';
-	break;
 }
 
 $drawing = GetDrawingInfo($version_id, $MODE);
@@ -63,6 +56,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 			<div id="note_edit">
 				<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
 				<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
+				<input type="button" class="submit tiny" value="Clear" id="noteClearButton" onclick="deletenote()" />
 			</div>
 		<?php } else { ?>
 			<?= $drawing['note'] ?>
@@ -199,9 +193,10 @@ if( $drawing['published'] ) {
 
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript" src="/common/URLfunctions1.js"></script>
+<script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
 <script type="text/javascript">
 
-//var $j = jQuery.noConflict();
+var $j = jQuery.noConflict();
 
 function savenote() {
 	var note = getLayer('version_note');
@@ -216,6 +211,19 @@ function cbNoteChanged() {
 		getLayer('noteButton').value = "Save";
 		getLayer('noteButton').style.backgroundColor = '';
 	}, 500);
+}
+
+function deletenote() {
+	$j('#version_note').val('');
+	ajaxCallback(function() {
+		var btn = getLayer('noteClearButton');
+		btn.value = 'Cleared!';
+		btn.style.backgroundColor = '#393';
+		setTimeout(function(){
+			getLayer('noteClearButton').value = "Clear";
+			getLayer('noteClearButton').style.backgroundColor = '';
+		}, 500);
+	}, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note=');
 }
 
 function preview_drawing(code,version) {

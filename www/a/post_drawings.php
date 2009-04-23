@@ -29,6 +29,9 @@ if (KeyInRequest('action')) {
 		case 'configure_rowscols':
 			showConfigureRowColForm(intval($_REQUEST['id']));
 			die();
+		case 'load_mini_drawing':
+			showMiniDrawing(intval($_REQUEST['id']));
+			die();
 		case 'delete_row':
 			configureDeleteRow();
 			die();
@@ -424,6 +427,7 @@ function showConfigureRowColForm($version_id) {
 					function(data){
 						jQuery("#rowList").html(data);
 						bindDeleteButtons();
+						updateMini();
 					}, "HTML");
 			});
 			
@@ -440,6 +444,15 @@ function showConfigureRowColForm($version_id) {
 			
 		});
 
+		function updateMini() {
+			jQuery.post("/a/post_drawings.php", {
+				action: "load_mini_drawing",
+				id: <?= $version_id ?>
+			}, function(data){
+				jQuery("#miniBlockDiagram").html(data);
+			}, "HTML");
+		}
+
 		function bindDeleteButtons() {
 			jQuery(".deleteBtn").click(function(){
 				jQuery.post("/a/post_drawings.php", {
@@ -448,6 +461,7 @@ function showConfigureRowColForm($version_id) {
 				},
 				function(data){
 					jQuery("#rowList").html(data);
+					updateMini();
 					bindDeleteButtons();
 				}, "HTML");
 			})
@@ -636,6 +650,11 @@ function configureAddRow()
 	}
 }
 
+function showMiniDrawing($id)
+{
+	$post = POSTChart::create($id);
+	$post->displayMini();
+}
 
 
 

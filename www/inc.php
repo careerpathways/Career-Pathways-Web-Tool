@@ -373,9 +373,6 @@ function ShowDrawingList(&$mains, $type='pathways') {
 		case 'pathways':
 			$draw_page = 'drawings.php';
 			break;
-		case 'ccti':
-			$draw_page = 'ccti_drawings.php';
-			break;
 		case 'post':
 			$draw_page = 'post_drawings.php';
 			break;		

@@ -71,7 +71,7 @@ $(document).ready(function()
 	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").css({cursor: "pointer"});
 
 	// Suppress link following
-	$(".post_cell a").attr("href", "javascript:void(0);");
+	$(".post_cell a, .post_footer a").attr("href", "javascript:void(0);");
 });
 
 /******************************/
@@ -84,7 +84,7 @@ function bindEditableCells()
 	bindPostCells();
 
 	// Make the headers editable
-	$(".post_head_main:not(.post_head_noClick)").click(function(){
+	$(".post_head_main:not(.post_head_noClick)").unbind("click").click(function(){
 		// Split apart the id into meaningful components
 		var headID = $(this).attr("id").split("_")[2];
 
@@ -97,7 +97,7 @@ function bindEditableCells()
 	});
 
 	// Make the footer editable
-	$(".post_footer").click(function(){
+	$(".post_footer").unbind("click").click(function(){
 		// Split apart the id into meaningful components
 		var footerID = $(this).attr("id").split("_")[2];
 
@@ -110,7 +110,7 @@ function bindEditableCells()
 	});
 	
 	// Make the sidebar editable
-	$(".post_sidebar_right").click(function(){
+	$(".post_sidebar_right").unbind("click").click(function(){
 		// Split apart the id into meaningful components
 		var versionID = $(this).attr("id").split("_")[1];
 

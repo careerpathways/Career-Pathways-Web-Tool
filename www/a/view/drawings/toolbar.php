@@ -40,6 +40,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 						getLayer('lock_icon').src = '/common/silk/lock.png';
 						getLayer('drawing_locked_msg').style.display = 'inline';
 						getLayer('drawing_unlocked_msg').style.display = 'none';
+						window.location = window.location;
 					}, '/a/drawings_post.php?mode=pathways&action=lock&drawing_id=<?= $drawing['id'] ?>');
 			}
 		</script>

@@ -36,25 +36,7 @@ fieldset {
 <input type="hidden" name="action" value="copy_version"/>
 <input type="hidden" name="version_id" value="<?= $version['id'] ?>"/>
 
-<?php if (IsAdmin() || (IsStaff() && $POST)) { ?>
-<fieldset id="copy_to">
-	<legend>Copy To</legend>
-	<?php if( ! (($POST && $version['type'] == 'HS' && IsStaff())
-			 || ($POST && $version['type'] == 'CC' && !IsStaff()) )
-			&& $version['school_id'] != $_SESSION['school_id'] ) { ?>
-		<input class="radio" type="radio" name="copy_to" value="user_school" id="copy_to_user_school" /> <label for="copy_to_user_school">Your Organization</label><br/>
-	<?php } ?>
-	<?php if( IsAdmin() || $version['school_id'] == $_SESSION['school_id'] ) { ?>
-		<input class="radio" type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school"><?=$version["school_name"]?></label><br/>
-	<?php } ?>
-	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS' ) ) { ?>
-		<input class="radio" type="radio" name="copy_to" value="othr_school" id="copy_to_othr_school"/> <label for="copy_to_othr_school">Select Organization</label><br/>
-	<?php } ?>
-</fieldset>
-
-<fieldset id="organization">
-	<legend>Organization</legend>
-	<?php
+<?php
 	if( $POST ) {
 		if( $version['type'] == 'HS' ) {
 			if( IsAdmin() )
@@ -67,12 +49,33 @@ fieldset {
 	} else {
 		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
 	}
+?>
+
+<?php if (IsAdmin() || (IsStaff() && $POST)) { ?>
+<fieldset id="copy_to">
+	<legend>Copy To</legend>
+	<?php if( ! (($POST && $version['type'] == 'HS' && IsStaff())
+			 || ($POST && $version['type'] == 'CC' && !IsStaff()) )
+			&& $version['school_id'] != $_SESSION['school_id'] ) { ?>
+		<input class="radio" type="radio" name="copy_to" value="user_school" id="copy_to_user_school" /> <label for="copy_to_user_school">Your Organization</label><br/>
+	<?php } ?>
+	<?php if( IsAdmin() || $version['school_id'] == $_SESSION['school_id']  || array_key_exists($version['school_id'], $schools)) { ?>
+		<input class="radio" type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school"><?=$version["school_name"]?></label><br/>
+	<?php } ?>
+	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS' ) ) { ?>
+		<input class="radio" type="radio" name="copy_to" value="othr_school" id="copy_to_othr_school"/> <label for="copy_to_othr_school">Select Organization</label><br/>
+	<?php } ?>
+</fieldset>
+
+<fieldset id="organization">
+	<legend>Organization</legend>
+	<?php
 	echo GenerateSelectBox($schools, 'target_org_id');
 	?>
 </fieldset>
 <?php }
 
-if (IsAdmin() || $_SESSION['school_id'] === $version['school_id']) { ?>
+if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || array_key_exists($version['school_id'], $schools)) { ?>
 <fieldset id="create">
 	<legend>Create</legend>
 	<input class="radio" type="radio" name="create" value="new_version" id="create_new_version" checked="true"/> <label for="create_new_version">New Version</label><br/>

@@ -370,7 +370,7 @@ abstract class POSTChart
 		echo '<tr>', "\n";
 
 		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-			. ($this->_footer_link?'<a href="javascript:void(0);">':'')
+			. ($this->_footer_link?'<a href="'.$this->_footer_link.'">':'')
 			. $this->_footer_text
 			. ($this->_footer_link?'</a>':'')
 			. '</td>', "\n";
@@ -612,7 +612,7 @@ class POSTChart_CC extends POSTChart
 			$row = array();
 			$row['row_type'] = 'term';
 			$row['row_year'] = floor(($i-1) / 3) + 1;
-			$row['row_term'] = (($i-1) % 3) + 1;
+			$row['row_term'] = (($i-1) % 3) + 2;
 			$this->_rows[] = $row;
 			
 			$col = array();

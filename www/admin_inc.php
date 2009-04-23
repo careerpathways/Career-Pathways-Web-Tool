@@ -125,7 +125,7 @@ function CanDeleteDrawing($drawing_id) {
 	// anyone else can delete drawings created by them
 }
 
-function CanEditVersion($drawing, $mode='post', $check_published=true) {
+function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 	global $DB;
 	
 	if( $mode == 'post' )
@@ -133,7 +133,7 @@ function CanEditVersion($drawing, $mode='post', $check_published=true) {
 	else
 		$tp = '';
 	
-	$drawing = $DB->SingleQuery('SELECT *, M.school_id'.($mode=='post'?', M.type':'').' FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing.' AND D.parent_id=M.id');
+	$drawing = $DB->SingleQuery('SELECT *, M.school_id'.($mode=='post'?', M.type':'').' FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing_id.' AND D.parent_id=M.id');
 
 	if( $check_published ) {
 		// ignore the fact that the drawing may be published
@@ -158,6 +158,7 @@ function GetAffiliatedSchools() {
 	global $DB;
 	
 	$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
+	if( $hsids['hs'] == '' ) $hsids['hs'] = 0;
 	return $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" '.(IsAdmin()?'':'AND id IN (0,'.$hsids['hs'].')').' ORDER BY school_name', 'school_name', 'id');
 }
 

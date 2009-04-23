@@ -55,8 +55,8 @@ if( Request('drawing_id') ) {
 
 	// permissions check
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( !is_array($drawing) || (!IsAdmin() && $_SESSION['school_id'] != $drawing['school_id']) ) {
-			die();
+	if( !CanEditVersion($drawing['id'], $mode, true) ) {
+		die();
 	}
 
 	if( Request('note') !== false ) {
