@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
-chdir('/www/ctpathways.org/dev/www');
+chdir('/web/oregon.ctepathways.org/www');
+set_include_path('.:../www/inc:../common');
 include('inc.php');
 
 $log_dir = '../logs';
@@ -25,13 +26,12 @@ foreach( $files as $file ) {
 			$rec['drawing_code']		= $matches[4][$i];
 
 			$lookup = $DB->SingleQuery('SELECT * FROM drawing_main WHERE code="'.$rec['drawing_code'].'"');
-			$rec['drawing_id']			= $lookup['id'];
+			$rec['drawing_id']			= intval($lookup['id']);
 
 			$rec['status_code'] 		= $matches[5][$i];
 			$rec['bytes_transferred'] 	= $matches[6][$i];
 			$rec['referer'] 			= $matches[7][$i];
 			$rec['user_agent'] 			= $matches[8][$i];
-
 			$DB->Insert('logs',$rec);
 		}
 

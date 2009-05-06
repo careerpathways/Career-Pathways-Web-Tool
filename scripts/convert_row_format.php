@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-set_include_path('.:/web/aaron/www/inc:/web/common');
+set_include_path('.:/web/oregon.ctepathways.org/www/inc:/web/oregon.ctepathways.org/common');
 chdir('../www');
 include('inc.php');
 
