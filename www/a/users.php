@@ -98,6 +98,11 @@ if( KeyInRequest('id') || Request('key') ) {
 		$DB->Query("UPDATE drawings SET created_by=$to_id WHERE created_by=$from_id");
 		$DB->Query("UPDATE drawings SET last_modified_by=$to_id WHERE last_modified_by=$from_id");
 
+		$DB->Query("UPDATE post_drawing_main SET created_by=$to_id WHERE created_by=$from_id");
+		$DB->Query("UPDATE post_drawing_main SET last_modified_by=$to_id WHERE last_modified_by=$from_id");
+		$DB->Query("UPDATE post_drawings SET created_by=$to_id WHERE created_by=$from_id");
+		$DB->Query("UPDATE post_drawings SET last_modified_by=$to_id WHERE last_modified_by=$from_id");
+
 		header("Location: ".$_SERVER['PHP_SELF']."?id=".$from_id);
 		die();
 	}
