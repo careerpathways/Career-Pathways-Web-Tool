@@ -57,13 +57,13 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
 ?>	<soc val="<?=$soc?>">
 <?php
 			foreach( $drawings as $drawing ) {
-?>		<drawing>
+?>		<roadmap>
 			<roadmapurl><?=$drawing['drawing_url']?></roadmapurl>
 			<embeddedurl></embeddedurl>
 			<drawingname><?=htmlspecialchars($drawing['drawing_name'])?></drawingname>
 			<schoolname><?=$drawing['school_name']?></schoolname>
 			<schoolwebsite><?=$drawing['school_website']?></schoolwebsite>
-		</drawing>
+		</roadmap>
 <?php
 			}
 ?>
