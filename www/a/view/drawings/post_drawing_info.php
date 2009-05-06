@@ -105,7 +105,7 @@ var $j = jQuery.noConflict();
 	</tr>
 	<tr>
 		<th width="80">Organization</th>
-		<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
+		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
 	<tr>
 		<th>Oregon Skill Set</th>

@@ -25,7 +25,7 @@ $modified = ($drawing['last_modified_by']==''?array('name'=>''):$DB->SingleQuery
 
 $school_name = $DB->GetValue('school_name', 'schools', $drawing_main['school_id']);
 
-$siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_id=".$drawing_main['id']);
+$siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE deleted=0 AND parent_id=".$drawing_main['id']);
 
 ?>
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="version_form" name="version_form">
@@ -113,6 +113,9 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	<td>&nbsp;</td>
 	<td><!--These are permanent links -->This is a permanent link to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.</td>
 </tr>
+<tr>
+	<th>Delete</th>
+	<td width="545">
 <?php
 	/* who can delete versions?
 		1. admins
@@ -125,28 +128,27 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE parent_
 	if( $version_id != "" &&
 		$drawing['published'] == 0 &&
 		$siblings['num'] > 1 &&
-		(
-			IsAdmin()
-			|| (IsSchoolAdmin() && $_SESSION['school_id'] == $drawing_main['school_id'] )
-			|| $drawing['created_by'] == $_SESSION['user_id']
-			|| $drawing_main['created_by'] == $_SESSION['user_id']
-	    )
+		CanDeleteDrawing($drawing_main['id'])
 	) { ?>
-<tr>
-	<th>Delete</th>
-	<td width="545">
 		<b>There is no way to recover deleted drawings!</b><br>
 		If you are sure you want to delete this version, click the link below:<br>
 		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete this version</a></p>
 		<div id="deleteConfirm"></div>
-	</td>
-</tr>
 <?php
 		$can_delete = true;
 	} else {
+		if( $siblings['num'] == 1 ) {
+			echo '<p>You can\'t delete this version because the drawing has no other versions. If you want to delete the entire drawing, click the "Drawing Properties" link above.</p>';
+		} elseif( $drawing['published'] ) {
+			echo '<p>You can\'t delete this version because it is currently published</p>';
+		} else {
+			echo '<p>You can\'t delete this version</p>';
+		}
 		$can_delete = false;
 	}
 ?>
+	</td>
+</tr>
 </table>
 
 <input type="hidden" name="action" id="action_field" value="">

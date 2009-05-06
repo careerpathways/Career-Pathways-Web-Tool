@@ -98,31 +98,34 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 	$TEMPLATE->AddCrumb('/modules/'.$module.'.php', $MODULE_PAGETITLE);
 }
 
-function CanDeleteDrawing($drawing_id) {
+function CanDeleteDrawing($drawing_id, $type='post') {
 	global $DB;
-	
-	$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
+
+	if( $type == 'post' )	
+		$drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
+	else
+		$drawing = $DB->SingleQuery('SELECT * FROM drawing_main WHERE id='.$drawing_id);
 
 	#if( @$drawing['published'] == 1 || @$drawing['frozen'] == 1 )
 	#	return false;
 
+	// state admins can delete anything
 	if( IsAdmin() ) return true;
 
-	if( IsStaff() && $drawing['type'] == 'HS' ) 
+	// all staff can delete HS drawings in their affiliated list
+	if( $type == 'post' && IsStaff() && strtolower($drawing['type']) == 'hs' ) 
 	{
 		$affl = GetAffiliatedSchools();
 		if( array_key_exists($drawing['school_id'], $affl) )
 			return true;
 	}
 
+	// school admins can delete any drawing at their school
 	if( IsSchoolAdmin() && $_SESSION['school_id'] == $drawing['school_id'] ) return true;
 
+	// anyone else can delete drawings created by them
 	return $drawing['created_by'] == $_SESSION['user_id'];
 
-	// state admins can delete anything
-	// school admins can delete any drawing at their school
-	// all staff can delete HS drawings in their affiliated list
-	// anyone else can delete drawings created by them
 }
 
 function CanEditVersion($drawing_id, $mode='post', $check_published=true) {

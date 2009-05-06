@@ -2,7 +2,7 @@
 global $DB, $drawing_id;
 $drawing = $DB->SingleQuery("SELECT * FROM drawings WHERE id=$drawing_id");
 $parent = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing['parent_id']);
-$num_siblings = $DB->GetValue("COUNT(*)", 'drawings', $drawing['parent_id'], 'parent_id');
+$siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted=0 AND parent_id=".$drawing['parent_id']);
 ?>
 <div id="infobar">
 	<div id="infobar_header"></div>
@@ -24,6 +24,6 @@ $num_siblings = $DB->GetValue("COUNT(*)", 'drawings', $drawing['parent_id'], 'pa
 			echo 'Draft';
 		}?><br />
 		<br />
-		Total Versions: <?= $num_siblings ?>
+		Total Versions: <?= $siblings['num'] ?>
 	</div>
 </div>

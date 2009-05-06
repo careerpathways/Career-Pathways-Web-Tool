@@ -70,8 +70,9 @@ if( KeyInRequest('drawing_id') ) {
 		}
 
 		if( Request('action') == 'delete' ) {
+			$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=$drawing_id");
 			if( is_array($drawing) ) {
-				if( IsSchoolAdmin() || $drawing['frozen'] == 0 ) {
+				if( CanDeleteDrawing($drawing['parent_id']) ) {
 					// school admins can delete versions, and anyone can delete a version if it has never been committed
 					$DB->Query("UPDATE post_drawings SET deleted=1 WHERE id=$drawing_id");
 				}

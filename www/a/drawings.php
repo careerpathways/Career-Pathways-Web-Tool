@@ -108,7 +108,7 @@ if( KeyInRequest('drawing_id') ) {
 
 		if( Request('delete') == 'delete' ) {
 			$drawing_id = intval($_REQUEST['id']);
-			if( CanDeleteDrawing($drawing_id) ) {
+			if( CanDeleteDrawing($drawing_id, 'pathways') ) {
 				// when deleting the entire drawing (from drawing_main) actually remove the records
 				$DB->Query('DELETE FROM connections WHERE source_object_id IN (SELECT objects.id FROM objects, drawings WHERE objects.drawing_id=drawings.id AND drawings.parent_id=' . $drawing_id . ')');
 	

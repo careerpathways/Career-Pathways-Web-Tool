@@ -149,7 +149,7 @@ var $j = jQuery.noConflict();
 <tr>
 	<th>Delete</th>
 	<td width="545">
-	<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
+	<?php if( CanDeleteDrawing($drawing['id'], 'pathways') ) { ?>
 		Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
 		<p><b>There is no way to recover deleted drawings!</b></p>
 		<p>If you are sure you want to delete the entire drawing, click the link below:</p>
@@ -160,8 +160,8 @@ var $j = jQuery.noConflict();
 			<input type="hidden" name="delete" value="delete">
 		</form>
 	<?php } else { ?>
-		You can't delete this drawing because it was created by <a href="/a/users.php?id=<?= $drawing['created_by'] ?>"><?= $DB->GetValue('CONCAT(first_name," ",last_name)','users',$drawing['created_by']) ?></a>. Contact the creator of the drawing or any <a href="/a/users.php#SchoolAdmin">School Admin</a> user within your school to delete this drawing.<br><br>
-		Note: Most of the time, you're trying to delete a version. However, there is no need to delete versions, as the Web Tool is designed to maintain archival records of your roadmap designs.
+		You can't delete this drawing because it was created by <a href="/a/users.php?id=<?= $drawing['created_by'] ?>"><?= $DB->GetValue('CONCAT(first_name," ",last_name)','users',$drawing['created_by']) ?></a>. Contact the creator of the drawing or any <a href="/a/users.php">Organization Admin</a> user within your school to delete this drawing.<br><br>
+		Note: If you're trying to delete a version, there is no need to delete versions, as the Web Tool is designed to maintain archival records of your roadmap designs.
 	<?php } ?>
 	</td>
 </tr>
@@ -286,7 +286,7 @@ $j(document).ready(function(){
 	});
 });
 
-<?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
+<?php if( $drawing['id'] && CanDeleteDrawing($drawing['id'], 'pathways') ) { ?>
 function deleteConfirm() {
 	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
 }
