@@ -10,3 +10,6 @@ RewriteRule ^post/([^\.]+)(?:\.(.+))?$ post_view.php?d=$1&format=$2&page=publish
 RewriteRule ^view_post/([a-z0-9]+).html vpost_view.php?code=$1 [nc,qsa]
 
 RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]
+
+RewriteRule ^olmis\.(.+)$ olmis.php?format=$1 [nc,qsa]
+
