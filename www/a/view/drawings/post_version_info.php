@@ -140,7 +140,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 		if( $siblings['num'] == 1 ) {
 			echo '<p>You can\'t delete this version because the drawing has no other versions. If you want to delete the entire drawing, click the "Drawing Properties" link above.</p>';
 		} elseif( $drawing['published'] ) {
-			echo '<p>You can\'t delete this version because it is currently published</p>';
+			echo '<p>This version is currently published. It cannot be deleted.</p>';
 		} else {
 			echo '<p>You can\'t delete this version</p>';
 		}

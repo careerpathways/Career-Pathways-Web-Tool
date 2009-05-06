@@ -156,10 +156,12 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 <?php
 		$can_delete = true;
 	} else {
-		if( $siblings['num'] == 0 ) {
-?>
-		<p>You can't delete this version because the drawing has no other versions. If you want to delete the entire drawing, click the "Drawing Properties" link above.</p>
-<?php
+		if( $siblings['num'] == 1 ) {
+			echo '<p>You can\'t delete this version because the drawing has no other versions. If you want to delete the entire drawing, click the "Drawing Properties" link above.</p>';
+		} elseif( $drawing['published'] ) {
+			echo '<p>This version is currently published. It cannot be deleted.</p>';
+		} else {
+			echo '<p>You can\'t delete this version</p>';
 		}
 		$can_delete = false;
 	}
