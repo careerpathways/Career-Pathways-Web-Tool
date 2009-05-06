@@ -1,10 +1,8 @@
 #!/usr/bin/php
 <?php
-chdir('/web/oregon.ctepathways.org/www');
-set_include_path('.:../www/inc:../common');
-include('inc.php');
+include('scriptinc.php');
 
-$log_dir = '../logs';
+$log_dir = './logs';
 
 $files = explode("\n",shell_exec('ls -1 '.$log_dir.' | grep access'));
 array_pop($files); // remove last filename (always empty)
