@@ -144,8 +144,6 @@ if( KeyInRequest('drawing_id') ) {
 		else
 			$school_id = $_SESSION['school_id'];
 		
-		$content['code'] = CreateDrawingCodeFromTitle($content['name'],$school_id);
-
 		if( Request('id') ) {
 			// update requests are only handled through drawings_post.php now.
 		} else {
@@ -162,6 +160,9 @@ if( KeyInRequest('drawing_id') ) {
 			$post->sidebar_right = (Request('type')=='cc'?'Career Pathway Certificate of Completion':'High School Diploma');
 			$post->createEmptyChart();
 			$drawing_id = $post->saveToDB();
+
+			$parent = $DB->SingleQuery('SELECT parent_id FROM post_drawings WHERE id = '.$drawing_id);
+			$DB->Query('UPDATE post_drawing_main SET `code` = "'.$parent['parent_id'].'" WHERE `id` = '.$parent['parent_id']);
 
 			// start drawing it
 			header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id);

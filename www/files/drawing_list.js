@@ -234,13 +234,13 @@ function csl(arr, sep) {
 	return str;
 }
 
-function preview_drawing(code,version,mode) {
+function preview_drawing(did,vid,mode) {
 	if( MODE == 'pathways' )
 	{
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/version/'+did+'/'+vid+'.html"></iframe></div>',800,600, null, 'Preview');
 	}
 	else
 	{	
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+did+'/'+vid+'.html"></iframe></div>',800,600, null, 'Preview');
 	}
 }

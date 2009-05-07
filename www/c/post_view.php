@@ -5,7 +5,36 @@ require_once("POSTChart.inc.php");
 
 $drawing_id = 0;
 
-if( Request('page') == 'published' ) {
+
+if( Request('version_id') ) {
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+		FROM post_drawing_main AS main
+		JOIN post_drawings AS d ON d.parent_id = main.id
+		JOIN schools ON main.school_id = schools.id
+		LEFT JOIN oregon_skillsets AS sk ON main.skillset_id = sk.id
+		WHERE deleted = 0
+			AND d.id='.intval(Request('version_id')).'
+			AND main.id='.intval(Request('drawing_id')));
+	if( is_array($drawing) ) {
+		$drawing_id = $drawing['id'];
+		$page_title = $drawing['name'];
+	}
+
+} elseif( Request('drawing_id') ) {
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+		FROM post_drawing_main AS main
+		JOIN post_drawings AS d ON d.parent_id = main.id
+		JOIN schools ON main.school_id = schools.id
+		LEFT JOIN oregon_skillsets AS sk ON main.skillset_id = sk.id
+		WHERE published = 1
+			AND deleted = 0
+			AND main.id='.intval(Request('drawing_id')));
+	if( is_array($drawing) ) {
+		$drawing_id = $drawing['id'];
+		$page_title = $drawing['name'];
+	}
+
+} elseif( Request('page') == 'published' ) {
 	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id

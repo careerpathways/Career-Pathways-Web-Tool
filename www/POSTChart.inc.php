@@ -173,13 +173,15 @@ abstract class POSTChart
 			$post_drawing_main['school_id'] = $this->_school_id;
 			$post_drawing_main['skillset_id'] = dv($this->_skillset_id);
 			$post_drawing_main['name'] = $this->_name;
-			$post_drawing_main['code'] = CreateDrawingCodeFromTitle($this->_name, $this->_school_id, 0, 'post');
 			$post_drawing_main['date_created'] = $DB->SQLDate();
 			$post_drawing_main['last_modified'] = $DB->SQLDate();
 			$post_drawing_main['created_by'] = $_SESSION['user_id'];
 			$post_drawing_main['last_modified_by'] = $_SESSION['user_id'];
 			$post_drawing_main['type'] = $this->_type;
 			$post_drawing_main_id = $DB->Insert('post_drawing_main', $post_drawing_main);
+
+			$DB->Query('UPDATE post_drawing_main SET `code` = "'.$post_drawing_main_id.'" WHERE `id` = '.$post_drawing_main_id);
+
 			$post_drawing['version_num'] = 1;
 		}
 		else

@@ -44,7 +44,6 @@ if( Request('id') ) {
 	$content['name'] = $_REQUEST['title'];
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
-	$content['code'] = CreateDrawingCodeFromTitle($content['name'],$school_id,intval($_REQUEST['id']), $mode);
 
 	$DB->Update($main_table,$content,intval($_REQUEST['id']));
 

@@ -1,9 +1,22 @@
 RewriteEngine on
-RewriteRule ^version/(.+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
-RewriteRule ^published/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=published [nc,qsa]
-RewriteRule ^text/([^\.]+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3&page=text [nc,qsa]
-RewriteRule ^text/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=text [nc,qsa]
 
+# new
+RewriteRule ^version/([0-9]+)/([0-9]+)\.(.+)?$ view.php?version_id=$2&id=$1&d=&v=&format=$3&page=version [nc,qsa]
+# old
+RewriteRule ^version/(.+)/(\d+)(?:\.(.+))?$ view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
+
+# new
+RewriteRule ^published/([0-9]+)/([^\.]+)(?:\.(.+))?$ view.php?id=$1&d=&format=$3&page=published [nc,qsa]
+# old
+RewriteRule ^published/([^\.]+)(?:\.(.+))?$ view.php?d=$1&format=$2&page=published [nc,qsa]
+
+RewriteRule ^text/([0-9]+)/[^\.]+(?:\.(.+))?$ view.php?id=$1&d=&format=$2&page=text [nc,qsa]
+
+# new
+RewriteRule ^post/([0-9]+)/([0-9]+)\.(.+)$ post_view.php?drawing_id=$1&version_id=$2&format=$3 [nc,qsa]
+RewriteRule ^post/([0-9]+)/.+\.(.+)$ post_view.php?drawing_id=$1&format=$2 [nc,qsa]
+
+# old
 RewriteRule ^post/(.+)/(\d+)(?:\.(.+))?$ post_view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
 RewriteRule ^post/([^\.]+)(?:\.(.+))?$ post_view.php?d=$1&format=$2&page=published [nc,qsa]
 
@@ -13,3 +26,4 @@ RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]
 
 RewriteRule ^olmis\.(.+)$ olmis.php?format=$1 [nc,qsa]
 
+RewriteRule ^log/(pathways|post)/([0-9]+)$ linklog.php?mode=$1&id=$2 [nc,qsa]

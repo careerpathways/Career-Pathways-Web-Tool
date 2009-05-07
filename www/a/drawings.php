@@ -130,8 +130,6 @@ if( KeyInRequest('drawing_id') ) {
 
 		$school_id = (IsAdmin()?$_REQUEST['school_id']:$_SESSION['school_id']);
 
-		$content['code'] = CreateDrawingCodeFromTitle($content['name'],$school_id);
-
 		if( Request('id') ) {
 			// update requests are only handled through drawings_post.php now.
 		} else {
@@ -152,6 +150,8 @@ if( KeyInRequest('drawing_id') ) {
 			$content['parent_id'] = $parent_id;
 
 			$drawing_id = $DB->Insert('drawings',$content);
+
+			$DB->Query('UPDATE drawing_main SET `code` = "'.$parent_id.'" WHERE `id` = '.$parent_id);
 
 			// start drawing it
 			header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id);
@@ -310,12 +310,14 @@ function copyVersion($version_id) {
 
 		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
-		$newdrawing['code'] = CreateDrawingCodeFromTitle($newdrawing['name'],$newdrawing['school_id']);
 		$newdrawing['date_created'] = $DB->SQLDate();
 		$newdrawing['last_modified'] = $DB->SQLDate();
 		$newdrawing['created_by'] = $_SESSION['user_id'];
 		$newdrawing['last_modified_by'] = $_SESSION['user_id'];
 		$new_id = $DB->Insert('drawing_main',$newdrawing);
+
+		$DB->Query('UPDATE drawing_main SET `code` = "'.$new_id.'" WHERE `id` = '.$new_id);
+
 		$drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$new_id);
 		$version['next_num'] = 1;
 	} else {

@@ -1,6 +1,6 @@
 <?php
 
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.html';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%.html';
 
@@ -99,7 +99,6 @@ var $j = jQuery.noConflict();
 				<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
 				<div id="checkNameResponse" class="error"></div>
-			<div class="tiny error">Warning: changing the drawing title will break any external web pages that link to this drawing.</div>
 			</div>
 		</td>
 	</tr>
@@ -118,18 +117,21 @@ var $j = jQuery.noConflict();
 		<td>
 		<?php
 			if( is_array($published) ) {
-				echo '<a href="javascript:preview_drawing(drawing_code,'.$published['version_num'].')">Preview Published Drawing</a>';
+				echo '<a href="javascript:preview_drawing('.$published['parent_id'].','.$published['id'].')">Preview Published Drawing</a>';
 			} else {
 				echo 'No versions have been published yet.';
 			}
 		?>
 		</td>
 	</tr>
+<?php
+	if( is_array($published) ) {
+?>
 	<tr>
 		<th>Link</th>
 		<td>
 			<div id="drawing_link"><?php
-			$url = str_replace('%%',$drawing['code'],$published_link);
+			$url = str_replace(array('$$','%%'),array($drawing['id'],$drawing['code']),$published_link);
 			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>
@@ -144,23 +146,21 @@ var $j = jQuery.noConflict();
 			?></div>
 		</td>
 	</tr>
-	<tr>
-		<th valign="top">Accessible</th>
-		<td>
-			<div id="drawing_link_ada"><?php
-			$url = str_replace('%%',$drawing['code'],$accessible_link);
-			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
-			?></div>
-			These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
-			<br>
-		</td>
-	</tr>
 	-->
 	<tr>
 		<td>&nbsp;</td>
 		<td><!--These links -->This link will always link to the <b>published</b> version of this drawing.</td>
 	</tr>
-	<?php
+<?php
+	} else {
+?>
+<tr>
+	<th valign="top">Links</th>
+	<td>Publish a version to get the published links for this drawing.</td>
+</tr>
+<?php	
+	}
+
 		require('post_version_list.php');
 	?>
 	<tr>
@@ -271,11 +271,6 @@ function verifyNameSubmit(result) {
 function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
-	/*
-	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
-	*/
 	getLayer('title_edit').style.display = 'none';
 	getLayer('title_fixed').style.display = 'block';
 }

@@ -1,26 +1,12 @@
 <?php
 
-switch( $MODE ) {
-case 'pathways':
-	$main_table = 'drawing_main';
-	$drawings_table = 'drawings';
-	$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/%%/##.html';
-	$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/%%/##.xml';
-	$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%/##.html';
-	break;
-}
+$main_table = 'drawing_main';
+$drawings_table = 'drawings';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/$$/##.html';
+
 
 $drawing = GetDrawingInfo($version_id, $MODE);
 $drawing_main = $DB->LoadRecord($main_table, $drawing['parent_id']);
-
-switch( $MODE ) {
-case 'pathways':
-	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/'.$drawing_main['code'].'.html" frameborder="0" scrolling="no"></iframe>';
-	break;
-case 'ccti':
-	$embed_code = '<iframe width="800" height="600" src="http://'.$_SERVER['SERVER_NAME'].'/c/post/'.$drawing_main['code'].'.html" frameborder="0" scrolling="no"></iframe>';
-	break;
-}
 
 $created = ($drawing['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['created_by']));
 $modified = ($drawing['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['last_modified_by']));
@@ -79,7 +65,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 	<th>Actions</th>
 	<td>
 		<a href="/a/drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id'],'pathways') ? 'Draw/Edit Version' : 'View Version'?>"><?= CanEditVersion($drawing['id'],'pathways') ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
+		<a href="javascript:preview_drawing(<?= $drawing_main['id'].", ".$drawing['id'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
 		<?php if( IsStaff() ) { ?>
 			<a href="javascript:copyPopup('pathways', '<?=$drawing['id']?>')" class="toolbarButton" title="Copy Version"><?= SilkIcon('page_copy.png') ?></a>
 		<?php } ?>
@@ -100,35 +86,10 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 		</div>
 	</td>
 </tr>
-<?php
-	if( $drawing['published'] ) {
-	?>
-	<tr>
-	<th>Embed Code</th>
-	<td><textarea style="width:560px;height:50px;" class="code"><?= htmlspecialchars($embed_code) ?></textarea></td>
-	</tr>
-<?php
-	}
-?>
 <tr>
 	<th valign="top">Link</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
+	<td><?php $url = str_replace(array('%%','##', '$$'), array($drawing_main['code'], $version_id, $drawing['parent_id']), $published_link); ?>
 	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
-	</td>
-</tr>
-<tr>
-	<th valign="top">XML</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
-	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
-	</td>
-</tr>
-<tr>
-	<th valign="top">Accessible</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
-		<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
-		<br>
-		These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.<br>
-		<br>
 	</td>
 </tr>
 <tr>
@@ -177,19 +138,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 ?>
 </table>
 
-<?php
-/*
-// replaced by publish link in sidebar
-if( $version_id != "" && $drawing['published'] == 0 && (IsAdmin() || $_SESSION['school_id'] == $drawing_main['school_id']) ) {
-	?>
-	<p><input type="button" name="publish" class="publish_link" onclick="publishVersion()" value="Publish this version"></p>
-	<?php
-}
-if( $drawing['published'] ) {
-	echo '<div class="publish_link_inactive" style="width:100px;text-align:center">Published</div>';
-}
-*/
-?>
 
 <input type="hidden" name="action" id="action_field" value="">
 <input type="hidden" name="drawing_id" value="<?= $drawing['id'] ?>">
@@ -230,8 +178,8 @@ function deletenote() {
 	}, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note=');
 }
 
-function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600,null,'Preview');
+function preview_drawing(did,vid) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+did+'/'+vid+'.html"></iframe></div>',800,600,null,'Preview');
 }
 
 function lock_drawing(version) {

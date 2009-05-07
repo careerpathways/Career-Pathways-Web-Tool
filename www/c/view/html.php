@@ -10,11 +10,22 @@
 	<?php
 		require('chart_include.php');
 	?>
-		<script type="text/javascript">
-			<?php if (Request('action') === 'print') : ?>
-			Charts.printing = true;
-			<?php endif; ?>
-			Charts.draw();
-		</script>
+	<script type="text/javascript">
+		<?php if (Request('action') === 'print') { ?>
+		Charts.printing = true;
+		<?php } ?>
+		Charts.draw();
+	</script>
+
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-8726801-2");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>
+
   </body>
 </html>

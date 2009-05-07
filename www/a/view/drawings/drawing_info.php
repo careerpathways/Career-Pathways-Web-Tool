@@ -3,10 +3,15 @@
 $php_page = 'drawings.php';
 $main_table = 'drawing_main';
 $drawings_table = 'drawings';
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.html';
-$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.xml';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%.html';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
+$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
+
 $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
+
+$embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
+<script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
+
 
 $drawing = $DB->LoadRecord($main_table,$id);
 
@@ -82,7 +87,6 @@ var $j = jQuery.noConflict();
 			<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
 			<span id="checkNameResponse" class="error"></span>
-		<div class="tiny error">Warning: changing the drawing title will break any external web pages that link to this drawing.</div>
 		</div>
 	</td>
 </tr>
@@ -101,24 +105,27 @@ var $j = jQuery.noConflict();
 	<td>
 	<?php
 		if( is_array($published) ) {
-			echo '<a href="javascript:preview_drawing(drawing_code,'.$published['version_num'].')">Preview Published Drawing</a>';
+			echo '<a href="javascript:preview_drawing('.$published['parent_id'].','.$published['id'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
 	?>
 	</td>
 </tr>
+<?php
+	if( is_array($published) ) {
+?>
 <tr>
 	<th>Embed Code</th>
 	<td>
-		<textarea style="width:560px;height:40px;" class="code" id="embed_code"><?= htmlspecialchars(str_replace('%%',$drawing['code'],$embed_code)) ?></textarea>
+		<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($id,$drawing['code']),$embed_code)) ?></textarea>
 	</td>
 </tr>
 <tr>
 	<th>Link</th>
 	<td>
 		<div id="drawing_link"><?php
-		$url = str_replace('%%',$drawing['code'],$published_link);
+		$url = str_replace(array('$$','%%'),array($id,$drawing['code']),$published_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -127,7 +134,7 @@ var $j = jQuery.noConflict();
 	<th valign="top">XML</th>
 	<td>
 		<div id="drawing_link_xml"><?php
-		$url = str_replace('%%',$drawing['code'],$xml_link);
+		$url = str_replace(array('$$','%%'),array($id,$drawing['code']),$xml_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -136,7 +143,7 @@ var $j = jQuery.noConflict();
 	<th valign="top">Accessible</th>
 	<td>
 		<div id="drawing_link_ada"><?php
-		$url = str_replace('%%',$drawing['code'],$accessible_link);
+		$url = str_replace('$$',$id,$accessible_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
@@ -144,6 +151,15 @@ var $j = jQuery.noConflict();
 	</td>
 </tr>
 <?php
+	} else {
+?>
+<tr>
+	<th valign="top">Links</th>
+	<td>Publish a version to get the published links for this drawing.</td>
+</tr>
+<?php
+	}
+
 	require('version_list.php');
 ?>
 <tr>
@@ -253,11 +269,6 @@ function verifyNameSubmit(result) {
 function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
 	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('drawing_link').innerHTML = '<a href="'+published_link.replace(/%%/,drawingCode)+'">'+published_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('drawing_link_xml').innerHTML = '<a href="'+xml_link.replace(/%%/,drawingCode)+'">'+xml_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('drawing_link_ada').innerHTML = '<a href="'+accessible_link.replace(/%%/,drawingCode)+'">'+accessible_link.replace(/%%/,drawingCode)+'</a>';
-	getLayer('embed_code').value = '<?= $embed_code ?>';
-	getLayer('embed_code').value = getLayer('embed_code').value.replace(/%%/,drawingCode);
 	getLayer('title_edit').style.display = 'none';
 	getLayer('title_fixed').style.display = 'block';
 }

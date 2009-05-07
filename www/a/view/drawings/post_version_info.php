@@ -3,9 +3,7 @@
 $main_table = 'post_drawing_main';
 $drawings_table = 'post_drawings';
 
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.html';
-$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%/##.xml';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%/##.html';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/$$/##.html';
 
 
 $drawing = GetDrawingInfo($version_id, $MODE);
@@ -73,7 +71,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 	<th>Actions</th>
 	<td>
 		<a href="/a/post_drawings.php?action=draw&version_id=<?= $drawing['id'] ?>" title="<?=CanEditVersion($drawing['id']) ? 'Draw/Edit Version' : 'View Version'?>"><?= CanEditVersion($drawing['id']) ? SilkIcon('pencil.png') : SilkIcon('picture.png') ?></a> &nbsp;
-		<a href="javascript:preview_drawing(<?= "'".$drawing_main['code']."', ".$drawing['version_num'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
+		<a href="javascript:preview_drawing(<?= $drawing_main['id'].", ".$drawing['id'] ?>)" title="Preview Version"><?=SilkIcon('magnifier.png')?></a> &nbsp;
 		<a href="javascript:copyPopup('post', '<?=$drawing['id']?>')" class="toolbarButton" title="Copy Version"><?= SilkIcon('page_copy.png') ?></a>
 	</td>
 </tr>
@@ -91,24 +89,10 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 </tr>
 <tr>
 	<th valign="top">Link</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $published_link); ?>
+	<td><?php $url = str_replace(array('$$','##'), array($drawing_main['id'], $drawing['id']), $published_link); ?>
 	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
-<!--
-<tr>
-	<th valign="top">XML</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $xml_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
-	</td>
-</tr>
-<tr>
-	<th valign="top">Accessible</th>
-	<td><?php $url = str_replace(array('%%','##'), array($drawing_main['code'], $drawing['version_num']), $accessible_link); ?>
-		<a href="<?= $url ?>"><?= $url ?></a>
-	</td>
-</tr>
--->
 <tr>
 	<td>&nbsp;</td>
 	<td><!--These are permanent links -->This is a permanent link to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.</td>
@@ -167,37 +151,6 @@ var $j = jQuery.noConflict();
 $j(document).ready(function(){
 	$j('#version_note').change(savenote);
 });
-<?php /* ?>
-function changeTerms() {
-	$j('#num_terms .current').css({display: 'none'});
-	$j('#num_terms .editing').css({display: 'block'});
-}
-
-function changeExtraRows() {
-	$j('#num_extra_rows .current').css({display: 'none'});
-	$j('#num_extra_rows .editing').css({display: 'block'});
-}
-
-function changeColumns() {
-	$j('#num_columns .current').css({display: 'none'});
-	$j('#num_columns .editing').css({display: 'block'});
-}
-
-function saveConfig(change, did) {
-	$j.post('post_drawings.php', {
-			action: 'config',
-			drawing_id: <?= $version_id ?>,
-			change: change,
-			value: $j('#'+did+' select').attr('value')
-		},
-		function() {
-			window.location.reload();
-		}
-	);
-}
-
-<?php */ ?>
-
 
 function publishVersion() {
 	getLayer('action_field').value = "publish";
@@ -232,8 +185,8 @@ function cbNoteChanged() {
 	}, 500);
 }
 
-function preview_drawing(code,version) {
-	chGreybox.create('<div id="dpcontainer"><iframe src="/c/<?= $MODE=='pathways'?'version':'post' ?>/'+code+'/'+version+'.html"></iframe></div>',800,600, null, 'Preview');
+function preview_drawing(did,vid) {
+	chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+did+'/'+vid+'.html"></iframe></div>',800,600, null, 'Preview');
 }
 
 function lock_drawing(version) {
