@@ -5,10 +5,14 @@ $drawing = $DB->LoadRecord('drawing_main',$id);
 $published = $DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND parent_id=".$drawing['id']);
 $skillset = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id = '. intval($drawing['skillset_id']));
 
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.html';
-$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/%%.xml';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/%%.html';
-$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
+$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
+
+$embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
+<script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
+
+$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
 
 ?>
 <script type="text/javascript" src="/files/greybox.js"></script>
@@ -35,7 +39,7 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 	<td>
 	<?php
 		if( is_array($published) ) {
-			echo '<a href="javascript:preview_drawing(\''.$drawing['code'].'\','.$published['version_num'].')">Preview Published Drawing</a>';
+			echo '<a href="javascript:preview_drawing('.$published['parent_id'].','.$published['id'].')">Preview Published Drawing</a>';
 		} else {
 			echo 'No versions have been published yet.';
 		}
@@ -45,14 +49,14 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 <tr>
 	<th>Embed Code</th>
 	<td>
-		<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace('%%',$drawing['code'],$embed_code)) ?></textarea>
+		<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['name'])),$embed_code)) ?></textarea>
 	</td>
 </tr>
 <tr>
 	<th>Link</th>
 	<td>
 		<div id="drawing_link"><?php
-		$url = str_replace('%%',$drawing['code'],$published_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -61,7 +65,7 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 	<th valign="top">XML</th>
 	<td>
 		<div id="drawing_link_xml"><?php
-		$url = str_replace('%%',$drawing['code'],$xml_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$xml_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -70,7 +74,7 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 	<th valign="top">Accessible</th>
 	<td>
 		<div id="drawing_link_ada"><?php
-		$url = str_replace('%%',$drawing['code'],$accessible_link);
+		$url = str_replace('$$',$id,$accessible_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>

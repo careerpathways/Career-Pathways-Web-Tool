@@ -7,7 +7,7 @@ $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
 
-$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
+#$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
 <script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';

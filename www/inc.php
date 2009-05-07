@@ -308,7 +308,7 @@ global $DB;
 }
 
 function CleanDrawingCode($code) {
-	return preg_replace('/[^a-z0-9_]/i','',$code);
+	return strtolower(preg_replace('/[^a-z0-9_]+/i','_',$code));
 }
 
 function DrawingCodeAlreadyExists($code, $drawing_id, $mode) {
