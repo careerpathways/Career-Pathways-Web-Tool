@@ -16,6 +16,7 @@ $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></di
 $drawing = $DB->LoadRecord($main_table,$id);
 
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
+$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
 if( IsAdmin() ) {
 	if( $id != "" ) {
 		$school_id = $drawing['school_id'];
@@ -118,14 +119,14 @@ var $j = jQuery.noConflict();
 <tr>
 	<th>Embed Code</th>
 	<td>
-		<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($id,$drawing['code']),$embed_code)) ?></textarea>
+		<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['name'])),$embed_code)) ?></textarea>
 	</td>
 </tr>
 <tr>
 	<th>Link</th>
 	<td>
 		<div id="drawing_link"><?php
-		$url = str_replace(array('$$','%%'),array($id,$drawing['code']),$published_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -134,7 +135,7 @@ var $j = jQuery.noConflict();
 	<th valign="top">XML</th>
 	<td>
 		<div id="drawing_link_xml"><?php
-		$url = str_replace(array('$$','%%'),array($id,$drawing['code']),$xml_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$xml_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>

@@ -9,6 +9,7 @@ $drawing = $DB->LoadRecord('post_drawing_main',$id);
 
 // force non-admins to the school of this drawing to prevent hacks
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
+$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
 if( IsAdmin() ) {
 	if( $id != "" ) {
 		$school_id = $drawing['school_id'];
@@ -131,7 +132,7 @@ var $j = jQuery.noConflict();
 		<th>Link</th>
 		<td>
 			<div id="drawing_link"><?php
-			$url = str_replace(array('$$','%%'),array($drawing['id'],$drawing['code']),$published_link);
+			$url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
 			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>

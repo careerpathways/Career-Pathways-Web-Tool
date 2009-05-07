@@ -4,7 +4,7 @@ include('scriptinc.php');
 
 $drawings = $DB->MultiQuery('SELECT DISTINCT(parent_id) AS drawing_id, drawings.id AS version_id,
 		school_name, name AS drawing_name,
-		CONCAT("http://oregon.ctepathways.org/c/published/",code,".html") AS drawing_url,
+		CONCAT("http://oregon.ctepathways.org/c/published/",parent_id,"/view.html") AS drawing_url,
 		CONCAT("http://",school_website) AS school_website
 	FROM objects 
 	JOIN drawings ON drawings.id = drawing_id 
