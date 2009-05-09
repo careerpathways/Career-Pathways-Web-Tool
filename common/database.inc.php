@@ -39,9 +39,9 @@ class common_db
 	//************************//
 	function Query($query, $debug=FALSE, $echo=FALSE) {
 		if($debug==TRUE) {
-			echo $query."<br>";
+			echo $query.";<br>";
 		} else {
-			if($echo==TRUE) { echo $query."<br>"; };
+			if($echo==TRUE) { echo $query.";<br>"; };
 			$this->Log($query);
 			$result = $this->db->query($query);
 			$this->count++;
@@ -57,9 +57,9 @@ class common_db
 	}
 	function SingleQuery($query, $debug=FALSE, $echo=FALSE) {
 		if($debug==TRUE) {
-			echo $query."<br>";
+			echo $query.";<br>";
 		} else {
-			if($echo==TRUE) { echo $query."<br>"; };
+			if($echo==TRUE) { echo $query.";<br>"; };
 			$result = $this->Query($query);
 			if( $this->db->Error == "" ) {
 				$this->error = "";
