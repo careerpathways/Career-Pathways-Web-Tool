@@ -21,6 +21,7 @@ if( KeyInRequest('id') ) {
 			$content = Array( 'school_name' => $_REQUEST['school_name'],
 							  'school_abbr' => $_REQUEST['school_abbr'],
 							  'school_website' => $_REQUEST['school_website'],
+							  'school_phone' => $_REQUEST['school_phone'],
 							  'school_addr' => $_REQUEST['school_addr'],
 							  'school_city' => $_REQUEST['school_city'],
 							  'school_state' => $_REQUEST['school_state'],
@@ -109,7 +110,7 @@ if( KeyInRequest('id') ) {
 
 		echo '<tr>';
 			echo '<th width="30">&nbsp;</th>';
-			echo '<th width="80">Abbr.</th>';
+			echo '<th width="140">Abbr.</th>';
 			echo '<th width="290">Organization Name</th>';
 			echo '<th width="50">Users</th>';
 			echo '<th width="70">Drawings</th>';
@@ -208,6 +209,10 @@ global $DB, $STATES;
 	<tr>
 		<td>Website:</td>
 		<td colspan="2"><input type="text" name="school_website" id="school_website" value="<?= $school['school_website'] ?>" size="50"></td>
+	</tr>
+	<tr>
+		<td>Phone:</td>
+		<td colspan="2"><input type="text" name="school_phone" id="school_phone" value="<?= $school['school_phone'] ?>" size="20"></td>
 	</tr>
 	<tr>
 		<td>Address:</td>
