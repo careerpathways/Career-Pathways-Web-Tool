@@ -100,3 +100,8 @@ table.post_chart th {
 	color: #AA0000;
 	font-weight: bold;
 }
+
+.error {
+	padding: 10px;
+	color: #FF3333;
+}

@@ -732,7 +732,7 @@ function convert_row_format($version_id)
 				$row['drawing_id'] = $version_id;
 				$row['row_type'] = 'term';
 				$row['row_year'] = floor(($i-1) / 3) + 1;
-				$row['row_term'] = (($i-1) % 3) + 1;
+				$row['row_term'] = (($i-1) % 3) + 2;
 				$row_id = $DB->Insert('post_row', $row);
 	
 				// find the cells that are for this row and assign them

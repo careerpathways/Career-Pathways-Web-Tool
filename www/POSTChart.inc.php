@@ -94,11 +94,14 @@ abstract class POSTChart
 			$col = $colmap[$c['col_id']];
 			$this->_cells[$row][$col] = new POSTCell($c);
 		}
-		foreach( $this->_cells as $k=>$v )
+		if( is_array($this->_cells) )
 		{
-			ksort($this->_cells[$k]);
+			foreach( $this->_cells as $k=>$v )
+			{
+				ksort($this->_cells[$k]);
+			}
+			ksort($this->_cells);
 		}
-		ksort($this->_cells);
 	
 		$this->_id = $version_id;
 	}
@@ -353,6 +356,12 @@ abstract class POSTChart
 
 	public function display()
 	{
+		if( !is_array($this->_cells) )
+		{
+			echo '<div class="error">This chart has no data</div>';
+			return FALSE;
+		}
+		
 		echo '<table border="1" class="post_chart">', "\n";
 		$this->_printHeaderRow();
 
@@ -543,7 +552,7 @@ class POSTChart_CC extends POSTChart
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText('Career Pathway Certificate of Completion') . '</td>', "\n";
+			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
 

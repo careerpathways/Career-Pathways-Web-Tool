@@ -49,7 +49,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 
 	// Staff users can only view, not edit
-	if( $_SESSION['user_level'] == CPUSER_STAFF ) {
+	if( $_SESSION['user_level'] <= CPUSER_STAFF && $_SESSION['user_id'] != Request('id') ) {
 		if( Request('id') == '' ) {
 			header("Location: ".$_SERVER['PHP_SELF']);
 		} else {
@@ -103,7 +103,7 @@ if( KeyInRequest('id') || Request('key') ) {
 		$DB->Query("UPDATE post_drawings SET created_by=$to_id WHERE created_by=$from_id");
 		$DB->Query("UPDATE post_drawings SET last_modified_by=$to_id WHERE last_modified_by=$from_id");
 
-		header("Location: ".$_SERVER['PHP_SELF']."?id=".$from_id);
+		header("Location: ".$_SERVER['PHP_SELF']."?id=".$to_id);
 		die();
 	}
 
@@ -224,6 +224,8 @@ if( KeyInRequest('id') || Request('key') ) {
 				if( IsAdmin() ) {
 					$user = $DB->SingleQuery('SELECT * FROM users WHERE id = '.$_REQUEST['id']);
 
+					$_SESSION['original_user_id'] = $_SESSION['user_id'];
+					$_SESSION['original_user_name'] = $_SESSION['full_name'];
 					$_SESSION['user_id'] = $user['id'];
 					$_SESSION['first_name'] = $user['first_name'];
 					$_SESSION['last_name'] = $user['last_name'];
@@ -346,11 +348,6 @@ if( KeyInRequest('id') || Request('key') ) {
 
 	foreach( $schools as $i=>$s ) {
 
-		echo '<tr><td colspan="6">';
-		echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">'.$s['school_name'].'</div>';
-		if( $s['school_addr'] ) { echo '<div style="font-style:italic;margin-left:10px;">'.$s['school_addr'].', '.$s['school_city'].', '.$s['school_state'].' '.$s['school_zip'].'</div>'; }
-		echo '</td></tr>';
-
 		$users = $DB->MultiQuery("
 			SELECT users.id, first_name, last_name, email, phone_number, lev.name AS user_level_name, user_level, last_logon, last_logon_ip, school_id
 			FROM users, admin_user_levels AS lev
@@ -360,23 +357,34 @@ if( KeyInRequest('id') || Request('key') ) {
 			ORDER BY user_level DESC, last_name
 			");
 		if( count($users) == 0 ) {
+			/*
 			echo '<tr>';
 			echo '<td>&nbsp;</td>';
 			echo '<td colspan="5">none</td>';
 			echo '</tr>';
+			*/
 		} else {
-
+			echo '<tr><td colspan="6">';
+			echo '<div style="font-weight:bold;margin-top:20px;color:#003366;">'.$s['school_name'].'</div>';
+			if( $s['school_addr'] ) { echo '<div style="font-style:italic;margin-left:10px;">'.$s['school_addr'].', '.$s['school_city'].', '.$s['school_state'].' '.$s['school_zip'].'</div>'; }
+			echo '</td></tr>';
+	
 			foreach( $users as $u ) {
 				echo '<tr>';
 
 				if( !IsGuestUser() ) {
-					if( $_SESSION['user_level'] == CPUSER_STAFF || 
-						$u['user_level'] > $_SESSION['user_level'] || 
-						(!IsAdmin() && $u['school_id'] != $_SESSION['school_id']) ) {
-						$edit_text = 'view';
-					} else {
+					if( $_SESSION['user_id'] == $u['id'] )
+					{
 						$edit_text = 'edit';
-	
+					}
+					elseif( $_SESSION['user_level'] <= CPUSER_STAFF || 
+						$u['user_level'] > $_SESSION['user_level'] || 
+						(!IsAdmin() && $u['school_id'] != $_SESSION['school_id'])
+						) {
+						$edit_text = 'view';
+					}
+					else {
+						$edit_text = 'edit';
 					}
 					echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
 				} else {
@@ -508,7 +516,12 @@ global $DB;
 		<td class="noborder">
 		<?php
 			// should only be able to create users with equal or less privileges than oneself
-			echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level'],array(),"level<=".$_SESSION['user_level']);
+			if( IsAdmin() )
+				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level']);
+			elseif( IsStaff() )
+				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level'],array(),"level>=16 AND level<=".$_SESSION['user_level']);
+			else
+				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level'],array(),"level<=".$_SESSION['user_level']);
 		?>
 		</td>
 	</tr>
@@ -582,6 +595,30 @@ global $DB;
 		</td>
 	</tr>
 	<?php
+		if( IsAdmin() ) {
+		?>
+		<tr>
+			<td colspan="2" class="noborder"><hr></td>
+		</tr>
+		<tr>
+			<td valign="top" class="noborder">Reassign Drawings:</td>
+			<td><input type="checkbox" name="chown" value="1" /> Check this box, then choose a user:<br />
+			<?php
+			$allusers_ = $DB->MultiQuery('SELECT id, CONCAT(first_name," ",last_name) AS name FROM users ORDER BY first_name, last_name');
+			$allusers[''] = '';
+			foreach( $allusers_ as $u )
+			{
+				$allusers[$u['id']] = $u['name'];
+			}
+			echo GenerateSelectBox($allusers,'to_id','');
+			?><br />
+			Note: There is no undo! This will merge this user's drawings with the target user's drawings, and you will be unable to separate them again.
+			<br />
+			<input type="submit" name="submit" value="Save Changes" class="submit">
+			</td>
+		</tr>
+		<?php
+		}
 		if( IsWebmaster() ) {
 		?>
 		<tr>

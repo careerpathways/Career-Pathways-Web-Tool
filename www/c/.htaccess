@@ -20,10 +20,11 @@ RewriteRule ^post/([0-9]+)/.+\.(.+)$ post_view.php?drawing_id=$1&format=$2 [nc,q
 RewriteRule ^post/(.+)/(\d+)(?:\.(.+))?$ post_view.php?d=$1&v=$2&format=$3&page=version [nc,qsa]
 RewriteRule ^post/([^\.]+)(?:\.(.+))?$ post_view.php?d=$1&format=$2&page=published [nc,qsa]
 
-RewriteRule ^view_post/([a-z0-9]+).html vpost_view.php?code=$1 [nc,qsa]
+# views
+RewriteRule ^study/([0-9]+)/[^\.]+\.(html|js) vpost_view.php?id=$1&format=$2 [nc,qsa]
+
+
 
 RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]
-
 RewriteRule ^olmis\.(.+)$ olmis.php?format=$1 [nc,qsa]
-
 RewriteRule ^log/(pathways|post)/([0-9]+)$ linklog.php?mode=$1&id=$2 [nc,qsa]

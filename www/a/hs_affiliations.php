@@ -137,7 +137,8 @@ global $DB;
 	$affiliations = $DB->MultiQuery('SELECT s.*, a.id AS af_id
 		FROM hs_affiliations AS a
 		JOIN schools AS s on s.id=hs_id
-		WHERE cc_id='.$id.'');
+		WHERE cc_id='.$id.'
+		ORDER BY school_name');
 	?>
 	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="header_form">
 	<ul class="sortable_header">
@@ -184,7 +185,7 @@ function ShowSchoolChooser()
 	if( IsAdmin() ) {
 		echo '<div style="margin-bottom:10px;">';
 		echo 'Choose School: ';
-		$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type="CC" ORDER BY school_name','school_name','id');
+		$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type!="HS" ORDER BY school_name','school_name','id');
 		$schools = array("-1"=>'') + $schools_;
 		echo GenerateSelectBox($schools,'ss',-1,'switch_school(this.value)');
 		echo '</div>';

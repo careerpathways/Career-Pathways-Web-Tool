@@ -48,6 +48,28 @@ if( KeyInRequest('password') ) {
 		echo "Database error: ".$DB->Error();
 	}
 } else {
+
+	if( KeyInRequest('reset') )
+	{
+		if( array_key_exists('original_user_id', $_SESSION) )
+		{
+			$user = $DB->SingleQuery('SELECT * FROM users WHERE id = '.$_SESSION['original_user_id']);
+	
+			unset($_SESSION['original_user_id']);
+			unset($_SESSION['original_user_name']);
+			$_SESSION['user_id'] = $user['id'];
+			$_SESSION['first_name'] = $user['first_name'];
+			$_SESSION['last_name'] = $user['last_name'];
+			$_SESSION['full_name'] = $user['first_name'].' '.$user['last_name'];
+			$_SESSION['email'] = $user['email'];
+			$_SESSION['user_level'] = $user['user_level'];
+			$_SESSION['school_id'] = $user['school_id'];
+		}
+		
+		header("Location: /");
+		die();
+	}
+
 	if( KeyInRequest('logout') ) {
 		$_SESSION['user_level'] = -1;
 		session_destroy();

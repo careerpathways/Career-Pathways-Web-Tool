@@ -9,8 +9,7 @@ $drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS vie
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
 	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
-	WHERE v.code = "'.Request('code').'"
-		AND published = 1
+	WHERE v.id = '.intval(Request('id')).'
 	ORDER BY vl.sort, vl.tab_name');
 
 $page_title = 'Not Found';
@@ -33,6 +32,9 @@ foreach( $drawings as $d )
 	
 	$page_title = $d['view_name'];
 }
+
+if( Request('format') == 'html' )
+{
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -81,8 +83,15 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 	}
 	elseif( count($ds) == 1 )
 	{
-		$p = POSTChart::create($ds[0]['version_id']);
-		$p->display();
+		try
+		{
+			$p = POSTChart::create($ds[0]['version_id']);
+			$p->display();
+		}
+		catch( Exception $e )
+		{
+			echo '<div class="error">Drawing not found</div>';
+		}
 	}
 	else
 	{
@@ -101,8 +110,15 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 		foreach( $ds as $i=>$d )
 		{
 			echo '<div id="tabs'.$type.'-'.($i+1).'">';
-			$p = POSTChart::create($d['version_id']);
-			$p->display();
+			try
+			{
+				$p = POSTChart::create($d['version_id']);
+				$p->display();
+			}
+			catch( Exception $e )
+			{
+				echo '<div class="error">Drawing not found</div>';
+			}
 			echo '</div>';
 		}
 		?>
@@ -116,3 +132,28 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 
 </body>
 </html>
+<?php
+
+
+}
+elseif( Request('format') == 'js' )
+{
+		header("Content-type: text/javascript");
+?>
+		var s=document.createElement('script');
+		s.setAttribute('src','http://<?=$_SERVER['SERVER_NAME']?>/c/log/post/<?=$_REQUEST['id']?>?url='+window.location);
+		document.getElementsByTagName('body')[0].appendChild(s);
+
+		var pc = document.getElementById("<?=(Request('container')?Request('container'):'postContainer')?>");
+		var fr = document.createElement('iframe');
+		fr.setAttribute("width", pc.style.width);
+		fr.setAttribute("height", pc.style.height);
+		fr.setAttribute("src", "http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html");
+		fr.setAttribute("frameborder", 0);
+		fr.setAttribute("scrolling", "auto");
+		document.getElementById('postContainer').appendChild(fr);
+<?php
+	
+}
+
+?>

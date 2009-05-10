@@ -2,10 +2,13 @@
 chdir("..");
 include("inc.php");
 
-$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/view_post/%%.html';
-$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/view_post/%%.xml';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/view_post/text/%%.html';
+$published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/$$/%%.html';
+$xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/$$/%%.xml';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/text/$$/%%.html';
 $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
+
+$embed_code = '<div id="postContainer" style="width:100%; height:600px"></div>
+<script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/study/$$/embed.js"></script>';
 
 
 
@@ -96,7 +99,7 @@ if( $id )
 		<th>Preview</th>
 		<td>
 			<?php
-			$url = str_replace('%%',$view['code'],$published_link);
+			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
 			echo '<a href="'.$url.'" target="_blank">'.$url.'</a>';
 			?>
 		</td>
@@ -105,7 +108,7 @@ if( $id )
 		<th>Link</th>
 		<td>
 			<div id="drawing_link"><?php
-			$url = str_replace('%%',$view['code'],$published_link);
+			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
 			echo '<input type="text" style="width:540px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>
@@ -113,7 +116,7 @@ if( $id )
 	<tr>
 		<th>Embed Code</th>
 		<td>
-			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace('%%',$view['code'],$embed_code)) ?></textarea>
+			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
 	<tr>
@@ -157,6 +160,18 @@ if( $id )
 
 	var selected_drawings = Array();
 
+
+	if(!Array.indexOf){
+	    Array.prototype.indexOf = function(obj){
+	        for(var i=0; i<this.length; i++){
+	            if(this[i]==obj){
+	                return i;
+	            }
+	        }
+	        return -1;
+	    }
+	}
+
 	Array.prototype.remove = function(s) {
 		var i = this.indexOf(s);
 		if(i != -1) this.splice(i, 1);
@@ -188,7 +203,7 @@ if( $id )
 	function savetitle() {
 		$j.get("post_views.php",
 			{id: <?= $id ?>,
-			 title: URLEncode($j('#drawing_title').val()),
+			 title: $j('#drawing_title').val(),
 			 action: "change_name"
 			},
 			function(data) {
@@ -253,6 +268,7 @@ if( $id )
 				$j('.drawing_select > td:not(.preview)').click(
 					function(e) {
 						var dr_id = $j(this).parent().attr('id').split('_')[1];
+
 						if( selected_drawings.indexOf(dr_id) == -1 )
 						{
 							$j(this).parent().children('.icon').children().css({opacity: 0, display: "block"}).animate({opacity:1}, 150);
@@ -387,8 +403,12 @@ else
 		$schools = array("-1"=>'') + $schools_;
 		echo GenerateSelectBox($schools,'school_id',-1,'switch_school(this.value)');
 		echo '</div>';
+		echo '<hr>';
 	}
-	echo '<hr>';
+	else
+	{
+		echo '<h2>'.$school['school_name'].'</h2>';
+	}
 	
 	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id.' ORDER BY name');
 	echo '<table width="100%">';
@@ -413,9 +433,46 @@ else
 	}
 	if( count($views) == 0 )
 	{
-		echo '<tr class="row0"><td colspan="4">No views exist yet</td></tr>';
+		echo '<tr class="row0"><td colspan="4">No views exist yet for your school</td></tr>';
 	}
 	echo '</table>';
+
+
+	$views = $DB->MultiQuery('SELECT v.*, school_name
+		FROM vpost_views v
+		JOIN vpost_links vl ON vl.vid=v.id
+		JOIN post_drawing_main p ON vl.post_id=p.id
+		JOIN schools s ON s.id=v.school_id
+		WHERE p.school_id='.$school_id.'
+			AND p.school_id!=v.school_id
+		ORDER BY v.name');
+	if( count($views) > 0 )
+	{
+		echo '<br /><br />';
+		echo '<h2>Affiliated Organizations</h2>';
+		echo '<table width="100%">';
+			echo '<tr>';
+				echo '<th width="20">&nbsp;</th>';
+				echo '<th>Occupation/Program</th>';
+				echo '<th>URL</th>';
+				echo '<th width="240">Organization</th>';
+			echo '</tr>';
+		foreach( $views as $i=>$v )
+		{
+			echo '<tr class="row' . ($i%2) . '">';
+				echo '<td><img src="/images/blank.gif" width="16" height="16" /></td>';
+		
+				echo '<td>' . $v['name'] . '</td>';
+				$url = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/'.$v['id'].'/'.CleanDrawingCode($v['name']).'.html';
+				echo '<td><input type="text" style="width: 300px" value="'.$url.'" onclick="this.select()" /><a href="'.$url.'" target="_blank">'.SilkIcon('link.png').'</a></td>';
+		
+				echo '<td>' . $v['school_name'] . '</td>';
+			echo '</tr>';
+		}
+		echo '</table>';
+	}
+
+
 	?>	
 	<script type="text/javascript">
 	function switch_school(id) {
@@ -443,7 +500,14 @@ function processDrawingListRequest()
 		<div style="width:700px;margin:0 auto;">
 			<h3>Organizations</h3>
 			<?php
-			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type = "' . (Request('type')=='hs'?'HS':'CC') . '" ORDER BY school_name', 'school_name', 'id');
+			$k1 = (Request('type')=='hs'?'hs':'cc');
+			$k2 = (Request('type')=='cc'?'hs':'cc');
+			$schools = $DB->VerticalQuery('SELECT *
+				FROM schools
+				WHERE organization_type = "' . (Request('type')=='hs'?'HS':'CC') . '"
+					AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.$_SESSION['school_id'].')
+							OR schools.id = '.$_SESSION['school_id'].' )
+				ORDER BY school_name', 'school_name', 'id');
 
 			echo '<select size="6" id="list_schools" style="width:100%" onchange="select_organization(this.value)">';
 			foreach( $schools as $sid=>$school )

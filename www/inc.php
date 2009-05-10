@@ -94,7 +94,11 @@ class ThisSiteTemplate extends SiteTemplate {
 				<?php } else { ?>
 					<a href="/a/password.php">Reset Password</a> &nbsp;&nbsp;&bull;&nbsp;&nbsp;
 				<?php } ?>
-				<a href="/a/login.php<?= (IsLoggedIn()?'?logout':'') ?>">Log <?= (IsLoggedIn()?'Out':'In') ?></a>
+				<?php if( array_key_exists('original_user_id', $_SESSION) ) { ?>
+					<a href="/a/login.php?reset">Return to <?=$_SESSION['original_user_name']?></a>
+				<?php } else { ?>
+					<a href="/a/login.php<?= (IsLoggedIn()?'?logout':'') ?>">Log <?= (IsLoggedIn()?'Out':'In') ?></a>
+				<?php } ?>
 			</div></div>
 
 			<div id="sideboxes">
