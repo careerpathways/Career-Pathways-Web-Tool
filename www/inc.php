@@ -39,7 +39,7 @@ class ThisSite extends SiteSettings {
 
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
-	function force_https_login() { return false; }
+	function force_https_login() { return true; }
 
 	function recaptcha_publickey() { return '6Ldg9wEAAAAAADD5_LekXYwr2W6xeSDvPSrn2ULE'; }
 	function recaptcha_privatekey() { return '6Ldg9wEAAAAAAHq3SbV8Ko0VEpcUEzg-QFq1DIx6'; }
@@ -175,6 +175,21 @@ class ThisSiteTemplate extends SiteTemplate {
 		</div>
 
 		<?php
+
+		if( $_SERVER['SERVER_NAME'] == 'oregon.ctepathways.org' ) {
+		?>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8726801-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+		<?php
+		}
+
 	}
 
 	function HeaderScripts() {
@@ -597,7 +612,7 @@ function dv($value, $default='')
 function ShowLoginForm($email="") {
 global $SITE;
 
-	if( $SITE->force_https_login() && !$SITE->is_aaronsdev() ) {
+	if( $SITE->force_https_login() ) {
 		$form_action = "https://".$SITE->https_server().':'.$SITE->https_port()."/a/login.php";
 	} else {
 		$form_action = "/a/login.php";
