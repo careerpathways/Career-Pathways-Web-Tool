@@ -90,9 +90,7 @@ if( $_REQUEST['page'] == 'text' ) {
 	else if ($format === 'js') {
 		header("Content-type: text/javascript");
 ?>
-		var s=document.createElement('script');
-		s.setAttribute('src','http://<?=$_SERVER['SERVER_NAME']?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+window.location);
-		document.getElementsByTagName('body')[0].appendChild(s);
+		document.write('<script src="http://<?=$_SERVER['SERVER_NAME']?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+window.location.href+'"></script>');
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'pathwaysContainer')?>");
 		var fr = document.createElement('iframe');
