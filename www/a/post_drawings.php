@@ -44,9 +44,6 @@ if (KeyInRequest('action')) {
 		case 'add_col':
 			configureAddCol();
 			die();
-		case 'config':
-			processConfigRequest();
-			die();
 		case 'drawing_list':
 			// used to select a drawing in the connections chooser
 			processDrawingListRequest();
@@ -110,15 +107,20 @@ if( KeyInRequest('drawing_id') ) {
 	if( PostRequest() ) {
 
 		if( Request('delete') == 'delete' ) {
-			$drawing_id = intval($_REQUEST['id']);
+			$drawing_main_id = intval($_REQUEST['id']);
 			
-			if( CanDeleteDrawing($drawing_id) ) {
+			if( CanDeleteDrawing($drawing_main_id) ) {
 				// when deleting the entire drawing (from drawing_main) actually remove the records
 						
-				$DB->Query("DELETE FROM post_drawings WHERE parent_id=".$drawing_id);
-				$DB->Query("DELETE FROM post_drawing_main WHERE id=".$drawing_id);
-				$DB->Query("DELETE FROM post_cell WHERE drawing_id=".$drawing_id);
-				$DB->Query("DELETE FROM post_col WHERE drawing_id=".$drawing_id);
+				$versions = $DB->MultiQuery('SELECT id FROM post_drawings WHERE parent_id='.$drawing_main_id);
+				foreach( $versions as $v )
+				{
+					$DB->Query("DELETE FROM post_cell WHERE drawing_id=".$v['id']);
+					$DB->Query("DELETE FROM post_col WHERE drawing_id=".$v['id']);
+					$DB->Query("DELETE FROM post_row WHERE drawing_id=".$v['id']);
+				}
+				$DB->Query("DELETE FROM post_drawings WHERE parent_id=".$drawing_main_id);
+				$DB->Query("DELETE FROM post_drawing_main WHERE id=".$drawing_main_id);
 				header("Location: ".$_SERVER['PHP_SELF']);
 			}
 			die();
@@ -729,142 +731,6 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/post/helpbar.php');
 }
 
-/**
- * This is an ajax handler for configuring rows/columns
- */
-function processConfigRequest()
-{
-	global $DB;
-
-	$drawing_id = intval(Request('drawing_id'));
-	
-	if( !CanEditVersion($drawing_id) )
-		die('Permissions error');
-	
-	switch( Request('change') )
-	{
-	case 'terms':
-		$old_rows = $DB->GetValue('num_rows', 'post_drawings', $drawing_id);
-		$new_rows = intval(Request('value'));
-		
-		$drawing = array();
-		$drawing['num_rows'] = $new_rows;
-		$DB->Update('post_drawings', $drawing, $drawing_id);
-
-		if( $new_rows < $old_rows )
-		{
-			// removing rows. delete some database records.
-			$DB->Query('DELETE FROM post_cell 
-				WHERE drawing_id='.$drawing_id.'
- 				AND row_num>'.($new_rows));
-		}
-		elseif( $old_rows < $new_rows )
-		{
-			// adding rows. make some new empty cells.
-
-			$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
-			
-			for( $i = $old_rows+1; $i <= $new_rows; $i++ )
-			{
-				foreach( $cols as $num=>$col_id )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['col_id'] = $col_id;
-					$cell['row_num'] = $i;
-					$DB->Insert('post_cell', $cell);
-				}
-			}
-		
-		}
-		
-		break;
-	case 'extra_rows':
-		$old_rows = $DB->GetValue('num_extra_rows', 'post_drawings', $drawing_id);
-		$new_rows = intval(Request('value'));
-		
-		$drawing = array();
-		$drawing['num_extra_rows'] = $new_rows;
-		$DB->Update('post_drawings', $drawing, $drawing_id);
-
-		if( $new_rows < $old_rows )
-		{
-			// removing rows. delete some database records.
-			$DB->Query('DELETE FROM post_cell 
-				WHERE drawing_id='.$drawing_id.'
- 				AND row_num>='.(100+$new_rows));
-		}
-		elseif( $old_rows < $new_rows )
-		{
-			// adding rows. make some new empty cells.
-
-			$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
-			
-			for( $i = $old_rows; $i < $new_rows; $i++ )
-			{
-				foreach( $cols as $num=>$col_id )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['col_id'] = $col_id;
-					$cell['row_num'] = $i+100;
-					$DB->Insert('post_cell', $cell);
-				}
-			}
-		}
-		break;
-	case 'columns':
-		$cols = $DB->VerticalQuery('SELECT * FROM post_col WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id', 'num');
-		$rows = $DB->VerticalQuery('SELECT * FROM post_rows WHERE drawing_id='.$drawing_id.' ORDER BY num', 'id');
-		$drawing = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$drawing_id);
-
-		$old_cols = count($cols);
-		$new_cols = intval(Request('value'));
-		
-		if( $new_cols < $old_cols )
-		{
-			// removing columns. delete cells vertically
-			for( $i = $old_cols; $i > $new_cols; $i-- )
-			{
-				$DB->Query('DELETE FROM post_col WHERE id='.$cols[$i]);
-				$DB->Query('DELETE FROM post_cell WHERE col_id='.$cols[$i]);
-			}
-		}
-		else
-		{
-			// adding columns. add cells vertically
-			
-			for( $i = $old_cols+1; $i <= $new_cols; $i++ )
-			{
-				$col = array();
-				$col['drawing_id'] = $drawing_id;
-				$col['num'] = $i;
-				$col_id = $DB->Insert('post_col', $col);
-				
-				for( $j=1; $j<=$drawing['num_rows']; $j++ )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['row_num'] = $j;
-					$cell['col_id'] = $col_id;
-					$DB->Insert('post_cell', $cell);
-				}
-
-				for( $j=100; $j<$drawing['num_extra_rows']+100; $j++ )
-				{
-					$cell = array();
-					$cell['drawing_id'] = $drawing_id;
-					$cell['row_num'] = $j;
-					$cell['col_id'] = $col_id;
-					$DB->Insert('post_cell', $cell);
-				}
-
-			}
-		}
-	
-		break;	
-	}
-}
 
 
 
