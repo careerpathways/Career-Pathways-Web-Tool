@@ -6,18 +6,21 @@ $data = array();
 $connections = array();
 
 foreach( $objects as $obj ) {
-	$thisobj = unserialize($obj['content']);
+    $thisobj = unserialize($obj['content']);
 
-   //get the connection list for this object
-   $objConnections = $DB->MultiQuery("SELECT *, LPAD(color,6,\"0\") AS color FROM connections WHERE source_object_id=".$thisobj['id']);
+    if( is_array($thisobj) )
+    {
+	   //get the connection list for this object
+	   $objConnections = $DB->MultiQuery("SELECT *, LPAD(color,6,\"0\") AS color FROM connections WHERE source_object_id=".$thisobj['id']);
 
-   foreach($objConnections as $connection) {
-   	$connections[] = $connection;
-   }
+	   foreach($objConnections as $connection) {
+	   	$connections[] = $connection;
+	   }
 
-   $program = $DB->SingleQuery("SELECT * FROM object_type JOIN types ON (object_type.type_id = types.id) WHERE object_type.object_id='".$thisobj['id']."' AND types.family ='program'");
-   $thisobj['config']['program'] = $program['type_id'];
-   $data[] = $thisobj;
+	   $program = $DB->SingleQuery("SELECT * FROM object_type JOIN types ON (object_type.type_id = types.id) WHERE object_type.object_id='".$thisobj['id']."' AND types.family ='program'");
+	   $thisobj['config']['program'] = $program['type_id'];
+	   $data[] = $thisobj;
+    }
 }
 echo 'var chData = ' . (count($data) > 0 ? json_encode($data) : '[]') . ';' . "\n";
 
