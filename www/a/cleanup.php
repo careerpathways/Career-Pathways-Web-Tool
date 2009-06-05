@@ -92,7 +92,7 @@ $offset = $pager->getOffsetByPageId();
 $drawings = $DB->MultiQuery('
 	SELECT m.*, school_abbr
 	FROM drawing_main m
-	JOIN schools s ON m.school_id=s.id
+	LEFT JOIN schools s ON m.school_id=s.id
 	ORDER BY tagline
 	LIMIT '.($offset[0]-1).', '.($params['perPage']).'
 ');
@@ -107,9 +107,9 @@ if( $pager->links != "" ) {
 
 echo '<table>' . "\n";
 
-foreach( $drawings as $d )
+foreach( $drawings as $i=>$d )
 {
-	echo '<tr>';
+	echo '<tr>'; // style="background-color:#'.($i%2==0?'DDDDDD':'FFFFFF').'">';
 		echo '<td><a href="/c/published/' . $d['id'] . '/view.htm" target="_blank">' . SilkIcon('magnifier.png') . '</td>';
 		echo '<td><a href="/a/drawings.php?action=drawing_info&id=' . $d['id'] . '" target="_blank">' . SilkIcon('cog.png') . '</td>';
 
@@ -128,7 +128,34 @@ foreach( $drawings as $d )
 				$where = '';
 			echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', $d['program_id'], array('0'=>''), $where);
 		echo '</div></td>';
+/*
+		echo '<td><div id="olmis_'.$d['id'].'" class="olmis">';
 
+			$versions = $DB->MultiQuery('SELECT * FROM drawings WHERE parent_id='.$d['id']);
+	
+			$olmis = array();
+			foreach( $versions as $v )
+			{
+				$content = $DB->MultiQuery('SELECT content
+					FROM objects
+					WHERE drawing_id = ' . $v['id'] . '
+					AND content LIKE "%http://www.qualityinfo.org%"');
+				foreach( $content as $c )
+					// http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ=292011&go=Continue
+					if( preg_match_all('|qualityinfo\.org/olmisj/OIC?.*?occ=([0-9]{6})|', $c['content'], $matches) )
+						foreach( $matches[1] as $m )
+							if( !in_array($m, $olmis) )
+							{
+								$olmis[] = $m;
+							}
+			}
+			foreach( $olmis as $o )
+			{
+				echo '<nobr><input type="checkbox" value="'.$o.'" /><a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o.'&go=Continue">'.$o.'</a></nobr> ';
+			}
+
+		echo '</div></td>';
+*/
 	echo '</tr>';
 }
 
