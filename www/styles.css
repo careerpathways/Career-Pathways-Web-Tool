@@ -900,6 +900,9 @@ a.chart_header {
 .pager_links a {
 	text-decoration: none;
 }
+.pager_links .active {
+	color: #<?=$D_GOLD?>;
+}
 
 
 .percent_bar {
