@@ -3,6 +3,9 @@ chdir("..");
 include("inc.php");
 require_once('Pager.php');
 
+if( !IsAdmin() )
+	die();
+
 if( Request('action') )
 {
 	switch(Request('action'))
