@@ -92,6 +92,28 @@ if( Request('from_date') ) {
 	
 	
 	
+	$d = $DB->MultiQuery('
+		SELECT COUNT(*) AS num, school_name
+		FROM (
+			SELECT DISTINCT(dm.id), school_id, school_name
+			FROM post_drawing_main AS dm
+			LEFT JOIN schools s ON dm.school_id=s.id
+			WHERE dm.date_created >= "'.$from.'" AND dm.date_created <= "'.$to.' 23:59:59"
+				AND school_name IS NOT NULL
+		) temp
+		GROUP BY school_id
+		ORDER BY num DESC');
+	$total = 0;
+	echo '<table width="300">';
+	foreach( $d as $org ) {
+		$total += $org['num'];
+		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	}
+	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	echo '</table>';
+	echo "\n";
+	
+	
 	
 	die();
 }
@@ -110,7 +132,7 @@ PrintHeader();
 		document.getElementById('greybox_content').innerHTML = content;
 	}
 	function date_clicked(obj) {
-		obj.value = '';
+		if( obj.value == 'yyyy-mm-dd' ) obj.value = '';
 		obj.style.color = '#000000';
 	}
 	function do_user_stats() {
@@ -118,6 +140,7 @@ PrintHeader();
 		getLayer('total_users_added').innerHTML = 'loading...';
 		getLayer('total_orgs_added').innerHTML = 'loading...';
 		getLayer('total_rdmp_added').innerHTML = 'loading...';
+		getLayer('total_post_added').innerHTML = 'loading...';
 		ajaxCallback(user_cb, 'stats.php?from_date='+getLayer('from_date').value+'&to_date='+getLayer('to_date').value);
 	}
 	function user_cb(data) {
@@ -126,6 +149,7 @@ PrintHeader();
 		getLayer('total_users_added').innerHTML = data[1];
 		getLayer('total_orgs_added').innerHTML = data[2];
 		getLayer('total_rdmp_added').innerHTML = data[3];
+		getLayer('total_post_added').innerHTML = data[4];
 	}
 </script>
 <?php
@@ -134,17 +158,24 @@ echo '<h2>User Stats</h2>';
 echo '<br>';
 
 $total_users = $DB->SingleQuery('SELECT COUNT(*) AS num FROM users WHERE user_active=1');
-$total_organizations = $DB->SingleQuery('SELECT COUNT(*) AS num FROM schools');
+$total_organizations = $DB->MultiQuery('SELECT COUNT(*) AS num, organization_type FROM schools GROUP BY organization_type');
+
+$temp['HS'] = 'High Schools';
+$temp['CC'] = 'Community Colleges';
+$temp['Other'] = 'Other Organizations';
 
 echo '<table class="bordered">';
 	echo '<tr>';
 		echo '<th>Total Users</th>';
 		echo '<td>'.$total_users['num'].'</td>';
 	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Total Organizations</th>';
-		echo '<td>'.$total_organizations['num'].'</td>';
-	echo '</tr>';
+	foreach( $total_organizations as $to )
+	{
+		echo '<tr>';
+			echo '<th>Total '.$temp[$to['organization_type']].'</th>';
+			echo '<td>'.$to['num'].'</td>';
+		echo '</tr>';
+	}
 echo '</table>';
 echo '<br>';
 
@@ -172,6 +203,10 @@ echo '<br>';
 		<th valign="top">Roadmaps Added</th>
 		<td><div id="total_rdmp_added"></div></td>
 	</tr>
+	<tr>
+		<th valign="top">POST Drawings Added</th>
+		<td><div id="total_post_added"></div></td>
+	</tr>
 </table>
 <p class="tiny">Note: Statistics data available since Nov 1, 2008</p>
 <br />
@@ -184,58 +219,70 @@ echo '<hr>';
 echo '<h2>Drawing Counts</h2>';
 echo '<br>';
 
-$snapshot = $DB->SingleQuery('SELECT *
-	FROM
-		(SELECT COUNT(*) AS published FROM drawings WHERE published=1) published_versions,
-		(SELECT COUNT(*) AS total_drawings FROM drawing_main) f,
-		(SELECT COUNT(*) AS total_versions FROM drawings) e,
-		(SELECT COUNT(*) AS full_versions FROM
-			(SELECT drawings.*, COUNT(objects.id) AS num_objects
-			FROM drawings, objects
-			WHERE drawing_id=drawings.id
-			GROUP BY drawings.id) c
-		WHERE c.num_objects > 5) d');
+$tables[] = array('main'=>'drawing_main', 'version'=>'drawings', 'caption'=>'Roadmaps');
+$tables[] = array('main'=>'post_drawing_main', 'version'=>'post_drawings', 'caption'=>'POST Drawings');
 
-echo '<table class="bordered">';
-	echo '<tr>';
-		echo '<th>Total Published Drawings</th>';
-		echo '<td>'.$snapshot['published'].'</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Total Drawings</th>';
-		echo '<td>'.$snapshot['total_drawings'].'</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Total Versions</th>';
-		echo '<td>'.$snapshot['total_versions'].'</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Versions with more than 5 objects</th>';
-		echo '<td>'.$snapshot['full_versions'].'</td>';
-	echo '</tr>';
-echo '</table>';
-echo '<br><br>';
+echo '<table><tr>';
+foreach( $tables as $t )
+{
+	echo '<td valign="top" style="padding: 10px">';
+	echo '<h3>' . $t['caption'] . '</h3>';
+	$snapshot = $DB->SingleQuery('SELECT *
+		FROM
+			(SELECT COUNT(*) AS published FROM '.$t['version'].' WHERE published=1) published_versions,
+			(SELECT COUNT(*) AS total_drawings FROM '.$t['main'].') f,
+			(SELECT COUNT(*) AS total_versions FROM '.$t['version'].') e,
+			(SELECT COUNT(*) AS full_versions FROM
+				(SELECT v.*, COUNT(objects.id) AS num_objects
+				FROM '.$t['version'].' AS v, objects
+				WHERE drawing_id=v.id
+				GROUP BY v.id) c
+			WHERE c.num_objects > 5) d');
+	
+	echo '<table class="bordered">';
+		echo '<tr>';
+			echo '<th>Total Published Drawings</th>';
+			echo '<td>'.$snapshot['published'].'</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Total Drawings</th>';
+			echo '<td>'.$snapshot['total_drawings'].'</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Total Versions</th>';
+			echo '<td>'.$snapshot['total_versions'].'</td>';
+		echo '</tr>';
+		if( $t['version'] == 'drawings' )
+		{
+			echo '<tr>';
+				echo '<th>Versions with more than 5 objects</th>';
+				echo '<td>'.$snapshot['full_versions'].'</td>';
+			echo '</tr>';
+		}
+	echo '</table>';
 
+	$versions = $DB->MultiQuery('SELECT IF(num_versions>7,8,num_versions) AS versions, COUNT(*) AS num_drawings FROM
+			(SELECT m.*, COUNT(*) AS num_versions
+			FROM '.$t['main'].' AS m, '.$t['version'].' AS v
+			WHERE parent_id=m.id
+			GROUP BY m.id) g
+		GROUP BY versions');
+	
+	echo '<b>Number of drawings with x versions</b>';
+	echo '<table>';
+	foreach( $versions as $i=>$v ) {
+		echo '<tr>';
+			echo '<td width="70">'.($i==count($versions)-1?$v['versions'].' or more':$v['versions'].' version'.($v['versions']>1?'s':'')).'</td>';
+			echo '<td>'.$v['num_drawings'].'</td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+	echo '<br><br>';
+	
 
-
-$versions = $DB->MultiQuery('SELECT IF(num_versions>7,8,num_versions) AS versions, COUNT(*) AS num_drawings FROM
-		(SELECT drawing_main.*, COUNT(*) AS num_versions
-		FROM drawing_main, drawings
-		WHERE parent_id=drawing_main.id
-		GROUP BY drawing_main.id) g
-	GROUP BY versions');
-
-echo '<b>Number of drawings with x versions</b>';
-echo '<table>';
-foreach( $versions as $i=>$v ) {
-	echo '<tr>';
-		echo '<td width="70">'.($i==count($versions)-1?$v['versions'].' or more':$v['versions'].' version'.($v['versions']>1?'s':'')).'</td>';
-		echo '<td>'.$v['num_drawings'].'</td>';
-	echo '</tr>';
+	echo '</td>';
 }
-echo '</table>';
-echo '<br><br>';
-
+echo '</tr></table>';
 
 
 
@@ -243,94 +290,98 @@ echo '<br><br>';
 echo '<hr>';
 echo '<h2>Editing History</h2>';
 
-$drawings = $DB->MultiQuery('SELECT versions_created.date, new_versions, changed_versions, new_drawings, changed_drawings, drawings_published, current_published
-FROM
-(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS new_versions
-FROM drawings
-GROUP BY YEAR(date_created), MONTH(date_created)) versions_created
-LEFT JOIN
-	(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS changed_versions
-	FROM drawings
-	GROUP BY YEAR(last_modified), MONTH(last_modified)) versions_modified
-ON versions_modified.date = versions_created.date
-LEFT JOIN
-	(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS new_drawings
-	FROM drawing_main
-	GROUP BY YEAR(date_created), MONTH(date_created)) drawings_created
-ON versions_created.date = drawings_created.date
-LEFT JOIN
-	(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS changed_drawings
-	FROM drawing_main
-	GROUP BY YEAR(last_modified), MONTH(last_modified)) drawings_modified
-ON versions_created.date = drawings_modified.date
-LEFT JOIN
-	(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS drawings_published
-	FROM drawings
-	WHERE frozen=1
-	GROUP BY YEAR(date_created), MONTH(date_created)) drawings_published
-ON versions_created.date = drawings_published.date
-LEFT JOIN
-	(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS current_published
-	FROM drawings
-	WHERE published=1
-	GROUP BY YEAR(last_modified), MONTH(last_modified)) current_published
-ON versions_created.date = current_published.date
-WHERE versions_created.date > "2007-09-01"
-ORDER BY versions_created.date');
-
-echo '<table>';
-echo '<tr>';
-	echo '<th>Month</th>';
-	echo '<th width="112">New Drawings</th>';
-	echo '<th width="112">Changed Drawings</th>';
-	echo '<th width="112">New Versions</th>';
-	echo '<th width="112">Changed Versions</th>';
-	echo '<th width="112">Drawings Published</th>';
-	echo '<th width="112">Current Published</th>';
-echo '</tr>';
-foreach( $drawings as $i=>$d ) {
+foreach( $tables as $t )
+{
+	echo '<h3>' . $t['caption'] . '</h3>';
+	
+	$drawings = $DB->MultiQuery('SELECT versions_created.date, new_versions, changed_versions, new_drawings, changed_drawings, drawings_published, current_published
+	FROM
+	(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS new_versions
+	FROM '.$t['version'].'
+	GROUP BY YEAR(date_created), MONTH(date_created)) versions_created
+	LEFT JOIN
+		(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS changed_versions
+		FROM '.$t['version'].'
+		GROUP BY YEAR(last_modified), MONTH(last_modified)) versions_modified
+	ON versions_modified.date = versions_created.date
+	LEFT JOIN
+		(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS new_drawings
+		FROM '.$t['main'].'
+		GROUP BY YEAR(date_created), MONTH(date_created)) drawings_created
+	ON versions_created.date = drawings_created.date
+	LEFT JOIN
+		(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS changed_drawings
+		FROM '.$t['main'].'
+		GROUP BY YEAR(last_modified), MONTH(last_modified)) drawings_modified
+	ON versions_created.date = drawings_modified.date
+	LEFT JOIN
+		(SELECT CONCAT(YEAR(date_created),"-",LPAD(MONTH(date_created),2,"0"),"-01") AS date, COUNT(*) AS drawings_published
+		FROM '.$t['version'].'
+		WHERE frozen=1
+		GROUP BY YEAR(date_created), MONTH(date_created)) drawings_published
+	ON versions_created.date = drawings_published.date
+	LEFT JOIN
+		(SELECT CONCAT(YEAR(last_modified),"-",LPAD(MONTH(last_modified),2,"0"),"-01") AS date, COUNT(*) AS current_published
+		FROM '.$t['version'].'
+		WHERE published=1
+		GROUP BY YEAR(last_modified), MONTH(last_modified)) current_published
+	ON versions_created.date = current_published.date
+	WHERE versions_created.date > "2007-09-01"
+	ORDER BY versions_created.date');
+	
+	echo '<table>';
 	echo '<tr>';
-	echo '<td>'.$DB->Date("F Y",$d['date']).'</td>';
-	echo '<td>'.bar($i,$drawings,'new_drawings').'</td>';
-	echo '<td>'.bar($i,$drawings,'changed_drawings').'</td>';
-	echo '<td>'.bar($i,$drawings,'new_versions').'</td>';
-	echo '<td>'.bar($i,$drawings,'changed_versions').'</td>';
-	echo '<td>'.bar($i,$drawings,'drawings_published').'</td>';
-	echo '<td>'.bar($i,$drawings,'current_published').'</td>';
+		echo '<th>Month</th>';
+		echo '<th width="112">New Drawings</th>';
+		echo '<th width="112">Changed Drawings</th>';
+		echo '<th width="112">New Versions</th>';
+		echo '<th width="112">Changed Versions</th>';
+		echo '<th width="112">Drawings Published</th>';
+		echo '<th width="112">Current Published</th>';
 	echo '</tr>';
+	foreach( $drawings as $i=>$d ) {
+		echo '<tr>';
+		echo '<td>'.$DB->Date("F Y",$d['date']).'</td>';
+		echo '<td>'.bar($i,$drawings,'new_drawings').'</td>';
+		echo '<td>'.bar($i,$drawings,'changed_drawings').'</td>';
+		echo '<td>'.bar($i,$drawings,'new_versions').'</td>';
+		echo '<td>'.bar($i,$drawings,'changed_versions').'</td>';
+		echo '<td>'.bar($i,$drawings,'drawings_published').'</td>';
+		echo '<td>'.bar($i,$drawings,'current_published').'</td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+	
+	echo '<table>';
+		echo '<tr>';
+			echo '<th>New Drawings</th>';
+			echo '<td>Number of drawings created during each month</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Changed Drawings</th>';
+			echo '<td>Number of drawings modified</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>New Versions</th>';
+			echo '<td>Number of new versions of a drawing created</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Changed Versions</th>';
+			echo '<td>Number of versions changed</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Drawings Published</th>';
+			echo '<td>Number of drawings published during each month</td>';
+		echo '</tr>';
+		echo '<tr>';
+			echo '<th>Current Published</th>';
+			echo '<td>Of the currently published drawings, shows in which months those were published</td>';
+		echo '</tr>';
+	
+	echo '</table>';
+	
+	echo '<br><br>';
 }
-echo '</table>';
-
-echo '<table>';
-	echo '<tr>';
-		echo '<th>New Drawings</th>';
-		echo '<td>Number of drawings created during each month</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Changed Drawings</th>';
-		echo '<td>Number of drawings modified</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>New Versions</th>';
-		echo '<td>Number of new versions of a drawing created</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Changed Versions</th>';
-		echo '<td>Number of versions changed</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Drawings Published</th>';
-		echo '<td>Number of drawings published during each month</td>';
-	echo '</tr>';
-	echo '<tr>';
-		echo '<th>Current Published</th>';
-		echo '<td>Of the currently published drawings, shows in which months those were published</td>';
-	echo '</tr>';
-
-echo '</table>';
-
-echo '<br><br>';
-
 
 /*
 $log_dir = '/www/ctpathways.org/oregon/logs';
@@ -393,7 +444,7 @@ echo '</table>';
 
 
 
-echo '<h3>Maps Embedded</h3>';
+echo '<h3>Roadmaps Embedded</h3>';
 $maps = $DB->MultiQuery('
 	SELECT DATE(date) AS date, url, drawing_id, dm.name,
 		COUNT(*) AS num_views,
