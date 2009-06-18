@@ -41,7 +41,7 @@ foreach( $drawings as $d )
 $fp = fopen($SITE->cache_path('olmis').'olmis.csv', 'w');
 foreach( $olmis as $o )
 	foreach( $o['soc'] as $soc )
-		fwrite($fp, $o['school_name'].','.$soc.','.$o['drawing_url'].",".$o['drawing_name'].",\n");
+		fwrite($fp, $o['school_name'].','.$soc.','.$o['drawing_url'].',"'.trim($o['drawing_name']).'"'."\n");
 fclose($fp);
 
 
