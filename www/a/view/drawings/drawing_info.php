@@ -448,7 +448,7 @@ $j(document).ready(function(){
 
 function bindOlmisCheckboxes()
 {
-	$j("#olmis_links input").click(function(){
+	$j("#olmis_links input").unbind("click").click(function(){
 		var id = $j(this).attr("id").split("_")[1];
 		mode = ($j(this).attr("checked") ? "enable" : "disable");
 			
@@ -466,7 +466,7 @@ function bindOlmisCheckboxes()
 			});
 	});
 
-	$j("#olmis_search input").click(function(){
+	$j("#olmis_search input").unbind("click").click(function(){
 		var id = $j(this).attr("id").split("_")[1];
 
 		$j.post("/a/drawings_post.php",
