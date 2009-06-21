@@ -368,7 +368,9 @@ $j(document).ready(function(){
 					{
 						var skillset_id = json["skillset"];
 						$j("#existingDrawings").html(json["drawings"]);
-						$j('#skillset select').val(skillset_id);
+						if( skillset_id != 0 ){
+							$j('#skillset select').val(skillset_id);
+						}
 						updateDrawingLinks(json.code);
 						$j("#drawing_header").html(json.header);
 					}

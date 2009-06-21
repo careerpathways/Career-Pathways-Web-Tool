@@ -122,7 +122,7 @@ if( KeyInRequest('id') ) {
 			else
 				$programs_ = $DB->MultiQuery('SELECT * FROM programs ORDER BY title');
 			
-			$programs = array(array('id'=>'0', 'title'=>''));
+			$programs = array(array('id'=>'0', 'title'=>'Not Listed'));
 			foreach( $programs_ as $p )
 			{
 				$programs[] = array('id'=>$p['id'], 'title'=>$p['title']);
