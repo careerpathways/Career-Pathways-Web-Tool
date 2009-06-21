@@ -27,7 +27,7 @@ global $DB;
 		$sort_by = "";
 	}
 	$DB->Query("SELECT `$value_field`, `$name_field` FROM ".$table.$where.$sort_by);
-	$str = "<select name=\"".$select_name."\">\n";
+	$str = "<select name=\"".$select_name."\" id=\"".$select_name."\">\n";
 	foreach( $addl as $key=>$value ) {
 		$str .= "<option value=\"".$key."\">".$value."</option>\n";
 	}
