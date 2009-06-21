@@ -1067,3 +1067,6 @@ ol.import_instructions > li
   width: 50px;
 }
 
+tr.editable {
+	background-color:#<?=$L_GOLD?>;
+}

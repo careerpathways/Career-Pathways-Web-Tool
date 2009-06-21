@@ -45,6 +45,12 @@ if( is_array($drawing) ) {
 	$title = $drawing['name'];
 	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=".$drawing['school_id']);
 
+	if( $drawing['name'] == '' )
+	{
+		$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
+		$title = $program['title'];
+	}
+
 	$school_options = $DB->LoadRecord('school_options',$drawing['school_id'],'school_id');
 	if( !is_array($school_options) ) {
 		// load default values

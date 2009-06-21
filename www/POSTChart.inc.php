@@ -76,7 +76,7 @@ abstract class POSTChart
 		global $DB;
 		
 		$this->_cols = $DB->MultiQuery('SELECT id, title, num FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num');
-		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term');
+		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term, id');
 		
 		$colmap = array();
 		foreach( $this->_cols as $i=>$a )

@@ -15,6 +15,14 @@ $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></di
 
 $drawing = $DB->LoadRecord($main_table,$id);
 
+
+
+$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
+if( count($program) > 0 )
+{
+	$drawing['full_name'] = $drawing['name'] == '' ? $program['title'] : $drawing['name'];
+}
+
 $schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
 $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
 if( IsAdmin() ) {
@@ -26,6 +34,7 @@ if( IsAdmin() ) {
 } else {
 	$school_id = $_SESSION['school_id'];
 }
+$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = '.$school_id);
 
 if( $id != "" ) {
 	$published = $DB->SingleQuery("SELECT * FROM $drawings_table WHERE published=1 AND parent_id=".$drawing['id']);
@@ -33,8 +42,9 @@ if( $id != "" ) {
 
 ?>
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<script type="text/javascript" src="/files/jquery.selectboxes.min.js"></script>
 <script type="text/javascript">
-var $j = jQuery.noConflict();
+	var $j = jQuery.noConflict();
 </script>
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript" src="/files/drawing_list.js"></script>
@@ -45,62 +55,106 @@ var $j = jQuery.noConflict();
 <p>
 <?php if( $id == "" ) { ?>
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
+<div id="existingDrawings" style="float:right; width:330px;"></div>
 <table>
 <tr>
-	<th valign="bottom">Occupation/Program</th>
+	<th>Oregon Skill Set</th>
+	<td><div id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>''));
+	?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
+</tr>
+<?php
+if( $school['organization_type'] != 'Other') { 
+?>
+<tr>
+	<th>Approved Program Name</th>
+	<td><div id="program"><?php
+		echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
+	?></div></td>
+</tr>
+<?php
+}
+?>
+<tr>
+	<th valign="bottom"><div id="drawing_title_label">Program Name</div></th>
 	<td>
-		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
-		<div id="checkNameResponse" class="error"></div>
+		<input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>">
 	</td>
 </tr>
 <tr>
-	<th width="80">Organization</th>
+	<th width="160">Organization</th>
 	<td>
 	<?php
 	if( IsAdmin() ) {
 		echo GenerateSelectBox($schools,'school_id',$school_id);
 	} else {
-		echo '<b>'.$schools[$school_id].'</b>';
+		echo '<b>'.$schools[$school_id].'</b><input type="hidden" name="school_id" id="school_id" value="'.$school_id.'" />';
 	}
 	?>
 	</td>
 </tr>
 <tr>
-	<th>Oregon Skill Set</th>
-	<td><div id="skillset"style="float:left"><?php
-		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-	?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
-</tr>
-<tr>
 	<td>&nbsp;</td>
-	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>
+	<td>
+		<div style="float:right"><input type="button" class="submit" value="Reset" id="submitButtonReset"></div>
+		<input type="button" class="submit" value="Create" id="submitButtonCreate">
+	</td>
 </tr>
 </table>
 <input type="hidden" name="id" value="">
 </form>
 <?php } else { ?>
 <table>
-<tr>
-	<th>Occupation/Program</th>
+<tr class="editable">
+	<td colspan="2">
+	<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowRoadmapHeader($drawing['id']) ?></div>
+	</td>
+</tr>
+<tr class="editable">
+	<th>Approved Program Name</th>
+	<td><div id="program"><?php
+		echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', $drawing['program_id'], array('0'=>'Not Listed'));
+	?></div></td>
+</tr>
+<tr class="editable">
+	<th><div id="drawing_title_label"><?= ($drawing['program_id'] == 0 ? 'Program Name' : 'Alternate Title') ?></div></th>
 	<td>
-		<div id="title_fixed"><span id="title_value"><?= $drawing['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
-		<div id="title_edit" style="display:none">
-			<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
-			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
-			<span id="checkNameResponse" class="error"></span>
+		<input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>"> <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
+	</td>
+</tr>
+<tr class="editable">
+	<th>Oregon Skill Set</th>
+	<td><div id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array('0'=>''));
+	?></div></td>
+</tr>
+<tr class="editable">
+	<th width="160">Organization</th>
+	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
+</tr>
+<?php
+if( $school['organization_type'] != 'Other' && is_array($published) ) { 
+?>
+<tr class="editable">
+	<th>OLMIS</th>
+	<td>
+		<div id="olmis_links"><?=ShowOlmisCheckboxes($drawing['id'], false, "This published roadmap is publicly accessible from the following OLMIS occupational reports:")?></div>
+		<div id="olmis_search"></div>
+		<a href="javascript:void(0);" id="olmis_expand" class="edit"><?=SilkIcon('link_go.png')?> Add Link</a>
+		<div style="width:400px; display:none;" id="olmis_add">
+			<input type="button" id="search_olmis" value="Find OLMIS Links" class="submit" /> Search your drawing for links to OLMIS pages
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;or<br />
+			Enter OLMIS URLs into this box then click "Add"<br />
+			<textarea id="olmis_textarea" style="width:400px;height:40px"></textarea>
+			<input type="button" id="enter_olmis_links" value="Add" class="submit" style="float: right"/>
+			Note: Only <b>full</b> occupational report URLs will be added.
 		</div>
 	</td>
 </tr>
-<tr>
-	<th width="80">Organization</th>
-	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
-</tr>
-<tr>
-	<th>Oregon Skill Set</th>
-	<td><div id="skillset"><?php
-		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
-	?></div></td>
-</tr>
+<?php
+}
+?>
 <tr>
 	<th>Preview</th>
 	<td>
@@ -126,7 +180,7 @@ var $j = jQuery.noConflict();
 	<th>Link</th>
 	<td>
 		<div id="drawing_link"><?php
-		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['full_name'])),$published_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -135,7 +189,7 @@ var $j = jQuery.noConflict();
 	<th valign="top">XML</th>
 	<td>
 		<div id="drawing_link_xml"><?php
-		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$xml_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['full_name'])),$xml_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
@@ -205,98 +259,226 @@ var published_link = "<?= $published_link ?>";
 var xml_link = "<?= $xml_link ?>";
 var accessible_link = "<?= $accessible_link ?>";
 
-function checkName(title) {
-	$j.get('/a/drawings_checkname.php',
-		  {mode: 'pathways',
-		   id: '<?= $drawing['id'] ?>',
-		   title: title.value<?php if(IsAdmin()) { ?>,
-		   school_id: $j("#school_id").val()
-		   <?php } ?>
-		  },
-		  verifyName);
-}
+var programList;
+var program_id;
+var drawingCode = '<?=array_key_exists('code',$drawing)?$drawing['code']:''?>';
 
-
-function verifyName(result) {
-	if( result == 0 ) {
-		getLayer('checkNameResponse').innerHTML = 'There is already a drawing by that name. Choose a different name.';
-	} else {
-		getLayer('checkNameResponse').innerHTML = '';
+function saveTitle() {
+	if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+	{
+		alert("You must enter either an approved program name or a custom program name");
+	}
+	else
+	{
+		$j.get('/a/drawings_post.php',
+			  {mode: 'pathways',
+			   id: '<?= $drawing['id'] ?>',
+			   changeTitle: "true",
+			   title: $j("#drawing_title").val()<?php if(IsAdmin()) { ?>,
+			   school_id: $j("#school_id").val()
+			   <?php } ?>
+			  }, function(data){
+			  	data = eval(data);
+			  	$j("#drawing_title").val(data.title);
+			  	$j("#drawing_title").css({backgroundColor: '#99FF99'});
+			  	setTimeout(function(){
+				  	$j("#drawing_title").css({backgroundColor: '#FFFFFF'});
+			  	}, 300);
+			  	
+				$j("#drawing_header").html(data.header);
+				updateDrawingLinks(data.code);
+			  });
 	}
 }
 
-function savetitle() {
-	var title = getLayer('drawing_title');
-	$j.get('/a/drawings_checkname.php',
-		  {mode: 'pathways',
-		   id: '<?= $drawing['id'] ?>',
-		   title: title.value<?php if(IsAdmin()) { ?>,
-		   school_id: $j("#school_id").val()
-		   <?php } ?>
-		  },
-		  verifyNameSubmit);
+function updateDrawingLinks(newCode)
+{
+  	drawingCode = newCode;
+  	$j("#drawing_link input").val(published_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+  	$j("#drawing_link_xml input").val(xml_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
 }
 
-function submitform() {
-	var title = getLayer('drawing_title');
-	$j.get('/a/drawings_checkname.php',
-		  {mode: 'pathways',
-		   id: '<?= $drawing['id'] ?>',
-		   title: title.value<?php if(IsAdmin()) { ?>,
-		   school_id: $j("#school_id").val()
-		   <?php } ?>
-		  },
-		  verifyNameSubmitNew);
-}
-
-
-function verifyNameSubmitNew(result) {
-	if( result == 0 ) {
-		verifyName(0);
-	} else {
-		getLayer('drawing_form').submit();
+function loadProgramTitles() {
+	$j("#program_id").removeOption(/./);
+	for( var i=0; i<programList.length; i++ )
+	{
+		$j("#program_id").addOption(programList[i].id, programList[i].title).val(0);
 	}
-}
-
-function verifyNameSubmit(result) {
-	if( result == 0 ) {
-		verifyName(0);
-	} else {
-		var title = getLayer('drawing_title');
-		ajaxCallback(cbNameChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&id=<?= $drawing['id'] ?>&title='+URLEncode(title.value));
-	}
-}
-
-function cbNameChanged(drawingCode) {
-	drawing_code = drawingCode;
-	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('title_edit').style.display = 'none';
-	getLayer('title_fixed').style.display = 'block';
-}
-
-function showTitleChange() {
-	getLayer('title_edit').style.display = 'block';
-	getLayer('title_fixed').style.display = 'none';
 }
 
 $j(document).ready(function(){
+	program_id = $j("#program_id").val();
+
 	$j('#skillset select').bind('change', function() {
-		$j('#skillset select').css({backgroundColor: '#99FF99'});
-		setTimeout(function() {
-			$j('#skillset select').css({backgroundColor: '#FFFFFF'});
-			$j('#skillsetConf').html('');
-		}, 500);
+		$j('#skillset select').css({backgroundColor: '#FFFF99'});
 		$j.post('drawings_post.php',
 			{action: 'skillset',
 			 mode: 'pathways',
-			 id: <?= intval($drawing['id']) ?>,
+			 id: '<?= intval($drawing['id']) ?>',
 			 skillset_id: $j('#skillset select').val()
 			},
-			function() {
+			function(data) {
+				json = eval(data);
+				if( json == null )
+				{
+
+				}
+				else
+				{
+					programList = json;
+					loadProgramTitles();
+				}
+				$j('#skillset select').css({backgroundColor: '#FFFFFF'});
+				$j('#skillsetConf').html('');
 			}
 		);
 	});
+	
+	$j('#program select').bind('change', function() {
+		if( $j(this).val() == 0 ) {
+			$j("#drawing_title_label").html("Program Name");
+		} else {
+			$j("#drawing_title_label").html("Optional Alternate Title");
+		}
+
+		if( $j(this).val() == 0 && $j("#drawing_title").val() == "" )
+		{
+			alert("You must enter either an approved program name or a custom program name");
+			$j(this).val(program_id); // reset the select box
+			$j("#drawing_title_label").html("Optional Alternate Title");
+		}
+		else
+		{
+			program_id = $j(this).val();
+			$j('#program select').css({backgroundColor: '#FFFF99'});
+			$j.post('drawings_post.php',
+				{action: 'skillset',
+				 mode: 'pathways',
+				 id: '<?= intval($drawing['id']) ?>',
+				 program_id: $j('#program select').val(),
+				 school_id: $j('#school_id').val()
+				},
+				function(data) {
+					json = eval(data);
+					if( json == null )
+					{
+	
+					}
+					else
+					{
+						var skillset_id = json["skillset"];
+						$j("#existingDrawings").html(json["drawings"]);
+						$j('#skillset select').val(skillset_id);
+						updateDrawingLinks(json.code);
+						$j("#drawing_header").html(json.header);
+					}
+					$j('#program select').css({backgroundColor: '#FFFFFF'});
+					$j('#programConf').html('');
+				}
+			);
+		}
+	});
+
+	$j("#submitButtonCreate").click(function(){
+		if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+		{
+			alert("You must enter either an approved program name or a custom program name");
+		}
+		else
+		{
+			$j.post("/a/drawings.php",
+				{id: "",
+				 skillset_id: $j("#skillset_id").val(),
+				 program_id: $j("#program_id").val(),
+				 drawing_title: $j("#drawing_title").val(),
+				 school_id: $j("#school_id").val()
+				},
+				function(data){
+					data = eval(data);
+					window.location = data["redirect"]
+				});
+		}
+	});
+
+	$j("#submitButtonReset").click(function(){
+		$j("#skillset select").val(0).change();
+		$j("#drawing_title").val("");
+		$j("#school_id").val(<?=$_SESSION['school_id']?>);
+	});
+
+	// OLMIS stuff
+	
+	$j("#olmis_expand").click(function(){
+		$j("#olmis_add").slideDown(300);
+	});
+
+	$j("#search_olmis").click(function(){
+		$j("#olmis_search").html('Please wait while we search your drawing for OLMIS links. This may take a while depending on how many versions of your drawing exist.<br /><img src="/images/horiz-gold.gif" />');
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: "find"},
+			function(data){
+				json = eval(data);
+				$j("#olmis_search").html(json.olmis);				
+				$j("#olmis_add").slideUp(300);
+				bindOlmisCheckboxes();
+			});
+	});
+	
+	$j("#enter_olmis_links").click(function(){
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: "add",
+			 content: $j("#olmis_textarea").val()},
+			function(data){
+				json = eval(data);
+				$j("#olmis_links").html(json.olmis);
+				$j("#olmis_textarea").val("");
+				bindOlmisCheckboxes();
+			});
+	});
+
+	bindOlmisCheckboxes();
+
 });
+
+function bindOlmisCheckboxes()
+{
+	$j("#olmis_links input").click(function(){
+		var id = $j(this).attr("id").split("_")[1];
+		mode = ($j(this).attr("checked") ? "enable" : "disable");
+			
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: mode,
+			 code: id
+			},
+			function(data){
+				if( mode == "disable" )
+				{
+					$j("#olmischk_"+id).remove();
+				}
+			});
+	});
+
+	$j("#olmis_search input").click(function(){
+		var id = $j(this).attr("id").split("_")[1];
+
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: "enable",
+			 code: id
+			},
+			function(data){
+				$j("#olmischk_"+id).appendTo("#olmis_links");
+				bindOlmisCheckboxes();
+			});
+	});	
+}
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id'], 'pathways') ) { ?>
 function deleteConfirm() {

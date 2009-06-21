@@ -39,7 +39,7 @@ class ThisSite extends SiteSettings {
 
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
-	function force_https_login() { return true; }
+	function force_https_login() { return false; }
 
 	function recaptcha_publickey() { return '6Ldg9wEAAAAAADD5_LekXYwr2W6xeSDvPSrn2ULE'; }
 	function recaptcha_privatekey() { return '6Ldg9wEAAAAAAHq3SbV8Ko0VEpcUEzg-QFq1DIx6'; }
@@ -383,6 +383,18 @@ function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 	}
 }
 
+function ShowRoadmapHeader($drawing_id)
+{
+	global $DB;
+	$drawing = $DB->SingleQuery('SELECT school_abbr,
+		IF(m.name="", p.title, m.name) AS full_name
+		FROM drawing_main AS m
+		JOIN schools ON m.school_id=schools.id
+		LEFT JOIN programs AS p ON m.program_id=p.id
+		WHERE m.id = '.$drawing_id);
+	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" height="19" width="800" />';
+}
+
 
 function ShowDrawingList(&$mains, $type='pathways') {
 	global $DB;
@@ -683,5 +695,78 @@ function showPublishForm($mode)
 	</div>
 	<?php
 }
+
+
+function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='')
+{
+	global $DB;
+	$html = '';
+	if( is_array($drawing_id) )
+	{
+		if( count($drawing_id) > 0 )
+		{
+			$olmis = $DB->MultiQuery('SELECT olmis_id, job_title AS title
+				FROM olmis_codes
+				WHERE olmis_id IN ('.implode(',',$drawing_id).')
+				ORDER BY title');
+			foreach( $olmis as $o )
+			{
+				$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" '.($defaultChecked?'checked="checked"':'').'/> <a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
+			}
+		}
+	}
+	else
+	{
+		$olmis = $DB->MultiQuery('SELECT l.*, IFNULL(c.job_title, l.olmis_id) AS title
+			FROM olmis_links AS l
+			LEFT JOIN olmis_codes AS c on l.olmis_id = c.olmis_id
+			WHERE drawing_id = '.$drawing_id.'
+			ORDER BY title');
+		if( count($olmis) > 0 )
+		{
+			$html .= '<div style="">' . $text . '</div>';
+		}
+		foreach( $olmis as $o )
+		{
+			$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> <a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
+		}
+	}
+	return $html;
+}
+
+function SearchForOLMISLinks($content)
+{
+	global $DB;
+	
+	// 1. parse $content for olmis urls
+	// 2. for any ids that are not in the database, parse the olmis page to find the job title
+	// 3. return an array of IDs
+	
+	$soc = array();
+	if( preg_match_all('|qualityinfo\.org/olmisj/OIC?.*?occ=([0-9]{6})|', $content, $matches) )
+	foreach( $matches[1] as $m )
+		if( !in_array($m, $soc) )
+		{
+			$soc[] = $m;
+		}
+
+	foreach( $soc as $s )
+	{
+		$query = $DB->SingleQuery('SELECT * FROM olmis_codes WHERE olmis_id = "'.$s.'"');
+		if( !is_array($query) )
+		{
+			$content = file_get_contents('http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$s.'&go=Continue');
+			if( preg_match('|"reportSubTitle">for ([^0-9\(\)]+) \(|', $content, $match) )
+			{
+				$title = $match[1];
+				$DB->Insert('olmis_codes', array('olmis_id'=>$s, 'job_title'=>$title));
+			}
+		}
+	}
+
+	return $soc;	
+}
+
+
 
 ?>

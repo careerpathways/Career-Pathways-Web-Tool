@@ -43,7 +43,7 @@ if( KeyInRequest('id') ) {
 				$school_id = $DB->Insert('schools', $content);
 				
 				// Insert default HS headers
-				foreach( array('English', 'Math', 'Science', 'Social Studies', 'Electives', 'Career and Technical Courses') as $num=>$title )
+				foreach( array('English', 'Math', 'Science', 'Social Studies', 'Electives', 'Career and Technical Courses', 'Employment') as $num=>$title )
 				{
 					$data = array();
 					$data['school_id'] = $school_id;

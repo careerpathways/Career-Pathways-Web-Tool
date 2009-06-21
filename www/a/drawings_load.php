@@ -55,9 +55,9 @@ switch( Request('mode') ) {
 			
 			$schools = $DB->VerticalQuery('
 				SELECT schools.id, school_name
-				FROM '.$main_table.'
+				FROM '.$main_table.' AS m
 				LEFT JOIN schools ON school_id=schools.id
-				WHERE '.$main_table.'.name IN ("'.str_replace(',','","',Request('categories')).'")
+				WHERE m.name IN ("'.str_replace(',','","',Request('categories')).'")
 				'.$where,
 			'school_name','id');
 		} else {
@@ -102,7 +102,7 @@ switch( Request('mode') ) {
 			$people_ = $DB->MultiQuery('
 				SELECT u1.id AS u1_id, CONCAT(u1.first_name," ",u1.last_name) AS u1_name,
 					u2.id AS u2_id, CONCAT(u2.first_name," ",u2.last_name) AS u2_name
-				FROM '.$main_table.'
+				FROM '.$main_table.' AS m
 				LEFT JOIN users AS u1 ON u1.id=created_by
 				LEFT JOIN users AS u2 ON u2.id=last_modified_by
 				WHERE name IN ("'.str_replace(',','","',Request('categories')).'")');
@@ -165,9 +165,10 @@ switch( Request('mode') ) {
 		if( Request('people_id') )
 		{
 			$cats_people = $DB->VerticalQuery("
-				SELECT DISTINCT(IF(name='','(no title)',name)) AS name
-				FROM ".$main_table."
-				WHERE ".$main_table.".id IN (SELECT parent_id FROM ".$version_table."
+				SELECT DISTINCT(IF(name='',IFNULL(p.title,'(no title)'),name)) AS name
+				FROM ".$main_table." AS m
+				LEFT JOIN programs AS p ON m.program_id=p.id
+				WHERE m.id IN (SELECT parent_id FROM ".$version_table."
 					WHERE (created_by IN (".Request('people_id').") OR last_modified_by IN (".Request('people_id')."))
 					)
 				ORDER BY name", 'name','name');
@@ -178,13 +179,13 @@ switch( Request('mode') ) {
 			$school_ids = implode('","', array_filter(explode(',',Request('school_id')), 'is_numeric'));
 			$org_types = strtoupper(implode('","', array_filter(explode(',',Request('school_id')), 'is_not_numeric')));
 
-			$sql = '
-				SELECT DISTINCT(IF(name="","(no title)",name)) AS name
-				FROM '.$main_table.'
+			$sql = "
+				SELECT DISTINCT(IF(name='',IFNULL(p.title,'(no title)'),name)) AS name
+				FROM ".$main_table.' AS m
+				LEFT JOIN programs AS p ON m.program_id=p.id
 				JOIN schools ON school_id=schools.id
 				WHERE ' . (strlen($school_ids)>0 ? 'school_id IN ("'.$school_ids.'")' : 'organization_type IN ("'.$org_types.'")' ) . '
 				ORDER BY name';
-			
 			$cats_school = $DB->VerticalQuery($sql, 'name','name');
 			$cats = $cats_school;
 		}
@@ -192,14 +193,16 @@ switch( Request('mode') ) {
 		if( Request('people_id')!="" && Request('school_id')!="" )
 		{
 			// if they're both set, take the intersection of the two searches instead of writing a separate query
-			$cats = array_intersect($cats_people,$cats_school);
+			//$cats = array_intersect($cats_people,$cats_school);
+			$cats = $cats_people;
 		}
 		elseif( Request('people_id')=="" && Request('school_id')=="" )
 		{
 			// if neither search is requested, return all titles
 			$cats = $DB->VerticalQuery("
-				SELECT DISTINCT(name) AS name
-				FROM ".$main_table."
+				SELECT DISTINCT(IF(name='',IFNULL(p.title,'(no title)'),name)) AS name
+				FROM ".$main_table." AS m
+				LEFT JOIN programs AS p ON m.program_id=p.id
 				ORDER BY name"
 			,'name','name');
 		}
@@ -276,15 +279,15 @@ switch( Request('mode') ) {
 				$field_sql = array(
 					'schools'=>array('school_id'),
 					'people'=>array('created_by','last_modified_by'),
-					'categories'=>array('name')
+					'categories'=>array('m.name','p.title')
 				);
 				foreach( $fields as $f ) {
 					if( Request($f) ) {
-						#$search[$f] = explode(',',Request($f));
-						$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
+						// why was the first line commented out? we can't filter out numeric items if we want to be able to search for drawing names
+						$search[$f] = explode(',',Request($f));
+						#$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
 					}
 				}
-	
 				$where = "";
 				if( count($search) > 0 ) {
 					foreach( $search as $field=>$items ) {
@@ -302,11 +305,12 @@ switch( Request('mode') ) {
 										$i++;
 									}
 								}
+
 								if( count($items) == 0 ) $where .= "1";
 								$where .= ") ";
 								break;
 							case 'people':
-								$where .= "AND ".$main_table.".id IN (SELECT parent_id FROM ".$version_table." WHERE (";
+								$where .= "AND m.id IN (SELECT parent_id FROM ".$version_table." WHERE (";
 								$i=0;
 								foreach( $items as $s ) {
 									foreach( $field_sql[$field] as $sfield ) {
@@ -333,10 +337,12 @@ switch( Request('mode') ) {
 					$where_post_type = '';
 				}
 	
-				$sql = "SELECT ".$main_table.".id, CONCAT(school_abbr,': ',IF(name='','(no title)',name)) AS name, code,
-						created_by, last_modified_by, ".$main_table.".date_created, last_modified, school_id
-					FROM ".$main_table.", schools
-					WHERE school_id=schools.id
+				$sql = "SELECT m.id, CONCAT(school_abbr,': ',IF(m.name='',IFNULL(p.title,'(no title)'),m.name)) AS name,
+						code, created_by, last_modified_by, m.date_created, last_modified, school_id
+					FROM ".$main_table." AS m
+					LEFT JOIN programs AS p ON m.program_id=p.id
+					JOIN schools ON school_id=schools.id
+					WHERE 1
 						$where $post_where $where_post_type
 					ORDER BY name";
 				$mains = $DB->MultiQuery($sql);
@@ -364,14 +370,16 @@ switch( Request('mode') ) {
 						OR INSTR(o.course_number, '".$DB->Safe(Request('search'))."')
 						OR INSTR(o.course_title, '".$DB->Safe(Request('search'))."')";
 				}
-	
+
 				$mains = $DB->MultiQuery("
-					SELECT m.id, s.school_name, CONCAT(school_abbr,': ',IF(m.name='','(no title)',m.name)) AS name, m.code, GROUP_CONCAT(DISTINCT(d.id)) AS drawing_list,
+					SELECT m.id, s.school_name, CONCAT(school_abbr,': ',IF(m.name='',IFNULL(p.title,'(no title)'),m.name)) AS name,
+						m.code, GROUP_CONCAT(DISTINCT(d.id)) AS drawing_list,
 						m.created_by, m.last_modified_by, m.date_created, m.last_modified, m.school_id
 					FROM ".$objects_table." AS o
 					JOIN ".$version_table." AS d ON o.drawing_id=d.id
 					JOIN ".$main_table." AS m ON d.parent_id=m.id
 					JOIN schools AS s ON m.school_id=s.id
+					LEFT JOIN programs AS p ON m.program_id=p.id
 					LEFT JOIN users AS dum ON dum.id=d.last_modified_by
 					LEFT JOIN users AS duc ON duc.id=d.created_by
 					LEFT JOIN users AS mum ON mum.id=m.last_modified_by

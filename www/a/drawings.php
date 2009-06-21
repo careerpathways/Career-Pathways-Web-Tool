@@ -124,7 +124,6 @@ if( KeyInRequest('drawing_id') ) {
 		}
 
 		$content = array();
-		$content['name'] = $_REQUEST['name'];
 		$content['last_modified'] = $DB->SQLDate();
 		$content['last_modified_by'] = $_SESSION['user_id'];
 
@@ -137,6 +136,8 @@ if( KeyInRequest('drawing_id') ) {
 			$content['created_by'] = $_SESSION['user_id'];
 			$content['school_id'] = $school_id;
 			$content['skillset_id'] = Request('skillset_id');
+			$content['program_id'] = Request('program_id');
+			$content['name'] = Request('drawing_title');
 
 			$parent_id = $DB->Insert('drawing_main',$content);
 
@@ -154,7 +155,9 @@ if( KeyInRequest('drawing_id') ) {
 			$DB->Query('UPDATE drawing_main SET `code` = "'.$parent_id.'" WHERE `id` = '.$parent_id);
 
 			// start drawing it
-			header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id);
+			$url = $_SERVER['PHP_SELF']."?action=draw&version_id=".$drawing_id;
+			//header("Location: ".$url);
+			echo '('.json_encode(array('redirect'=>$url)).')';
 		}
 
 	} else {

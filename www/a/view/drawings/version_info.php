@@ -6,7 +6,11 @@ $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/$$/##.html';
 
 
 $drawing = GetDrawingInfo($version_id, $MODE);
-$drawing_main = $DB->LoadRecord($main_table, $drawing['parent_id']);
+$drawing_main = $DB->SingleQuery("SELECT m.*, IF(program_id=0, m.name, programs.title) AS name
+	FROM drawing_main AS m 
+	LEFT JOIN programs ON m.program_id=programs.id
+	WHERE m.id=".$drawing['parent_id']);
+
 
 $created = ($drawing['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['created_by']));
 $modified = ($drawing['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$drawing['last_modified_by']));
