@@ -142,12 +142,12 @@ if( $school['organization_type'] != 'Other' && is_array($published) ) {
 		<div id="olmis_search"></div>
 		<a href="javascript:void(0);" id="olmis_expand" class="edit"><?=SilkIcon('link_go.png')?> Add Link</a>
 		<div style="width:400px; display:none;" id="olmis_add">
-			<input type="button" id="search_olmis" value="Find OLMIS Links" class="submit" /> Search your drawing for links to OLMIS pages
+			<input type="button" id="search_olmis" value="Find OLMIS Links" class="submit tiny" /> Search your drawing for links to OLMIS pages
 			<br />
 			&nbsp;&nbsp;&nbsp;&nbsp;or<br />
 			Enter OLMIS URLs into this box then click "Add"<br />
 			<textarea id="olmis_textarea" style="width:400px;height:40px"></textarea>
-			<input type="button" id="enter_olmis_links" value="Add" class="submit" style="float: right"/>
+			<input type="button" id="enter_olmis_links" value="Add" class="submit tiny" style="float: right"/>
 			Note: Only <b>full</b> occupational report URLs will be added.
 		</div>
 	</td>
