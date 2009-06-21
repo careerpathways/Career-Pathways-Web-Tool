@@ -94,7 +94,9 @@ if( KeyInRequest('id') ) {
 		
 		if( Request('mode') == 'enable' )
 		{
-			$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id) VALUES ('.intval(Request('id')).',"'.intval(Request('code')).'")');
+			$check = $DB->SingleQuery('SELECT COUNT(1) AS num FROM olmis_links WHERE drawing_id='.intval(Request('id')).' AND olmis_id="'.intval(Request('code')).'"');
+			if( $check['num'] == 0 )
+				$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id) VALUES ('.intval(Request('id')).',"'.intval(Request('code')).'")');
 		}
 
 		if( Request('mode') == 'disable' )
