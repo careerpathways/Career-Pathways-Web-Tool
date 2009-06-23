@@ -3,6 +3,6 @@
 <?php require('chart_data_js.php'); ?>
 </script>
 
-<!--[if IE]><script type="text/javascript" src="/files/excanvas-compressed.js"></script><![endif]--> 
+<!--[if IE]><script type="text/javascript" src="/files/excanvas.js"></script><![endif]--> 
 <script type="text/javascript" src="/files/prototype.js"></script>
 <script type="text/javascript" src="/c/chview.js"></script>
