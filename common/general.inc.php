@@ -22,7 +22,6 @@ include("util.inc.php");
 include("email.inc.php");
 include("shopping.inc.php");
 include("states.inc.php");
-include("web/FCKeditor/fckeditor.php");
 
 
 // define user level constants
