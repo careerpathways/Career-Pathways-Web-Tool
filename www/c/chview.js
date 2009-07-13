@@ -5,6 +5,11 @@ header("Content-type: text/javascript");
 Charts = {
   whichi: function() { return 'view'; },
   draw: function(canvas_container, toolbar_container) {
+	// in IE 8, this has to happen BEFORE we use a canvas
+	if (/MSIE/.test(navigator.userAgent) && !window.opera && G_vmlCanvasManager) {
+		G_vmlCanvasManager.init_(document);
+	}
+		
     if (canvas_container) {
     	Charts.element = $(canvas_container);
     }
@@ -541,12 +546,16 @@ ChartBox = Class.create(Widget, {
     elem: null,
     
 	getElem: function() {
-		this.elem = new Element('div', {'class': 'ctepathwaysBox'});
+		/* NOTE: putting the class in the constructor, i.e. 
+		 * new Element('div', {'class': 'ctepathwaysBox'}); doesn't work in IE
+		 * 8 with Prototype earlier than v1.6.1. See
+		 * https://prototype.lighthouseapp.com/projects/8886/tickets/529 */
+		this.elem = new Element('div').addClassName('ctepathwaysBox');
 		
 		if (this.w > 0) this.elem.style.width = (this.getWidth() - 20) + 'px';
 
-		this.titleElement = new Element('div', {'class': 'ctepathwaysBoxTitle'});
-	    this.contentElement = new Element('div', {'class': 'ctepathwaysBoxContent'});
+		this.titleElement = new Element('div').addClassName('ctepathwaysBoxTitle');
+	    this.contentElement = new Element('div').addClassName('ctepathwaysBoxContent');
 	    
 	    this.elem.appendChild(this.titleElement);
 	    this.elem.appendChild(this.contentElement);
