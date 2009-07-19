@@ -1070,3 +1070,13 @@ ol.import_instructions > li
 tr.editable {
 	background-color:#<?=$L_GOLD?>;
 }
+
+/* stats page */
+.olmis_title {
+  margin-top: 8px;
+  font-size: 1.2em;
+}
+.olmis_roadmap {
+  margin-left: 30px;
+}
+
