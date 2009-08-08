@@ -2,7 +2,7 @@
 include("inc.php");
 
 
-if( $_SERVER['REMOTE_ADDR'] != '207.192.71.230' ) {
+if( $_SERVER['REMOTE_ADDR'] != '74.207.243.119' ) {
 	die();
 }
 
@@ -25,6 +25,7 @@ foreach( $schools as $s ) {
 		FROM users, admin_user_levels AS lev
 		WHERE school_id=".$s['id']."
 			AND lev.level = users.user_level
+			AND email LIKE '%@%.%'
 		");
 	foreach( $users as $u ) {
 		echo $u['email']."\n";

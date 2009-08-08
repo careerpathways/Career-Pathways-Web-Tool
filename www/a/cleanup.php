@@ -33,7 +33,7 @@ if( Request('action') )
 				$programs[] = array('id'=>$p['id'], 'title'=>$p['title']);
 			}
 			
-			echo json_encode($programs);
+			echo '('.json_encode($programs).')';
 			break;
 
 		case 'program':
