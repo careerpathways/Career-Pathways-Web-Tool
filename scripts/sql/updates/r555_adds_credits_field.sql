@@ -1,0 +1,1 @@
+ALTER TABLE `post_cell` ADD COLUMN `course_credits` TINYINT NOT NULL DEFAULT '0' AFTER `legend`;
