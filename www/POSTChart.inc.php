@@ -86,7 +86,7 @@ abstract class POSTChart
 		foreach( $this->_rows as $i=>$a )
 			$rowmap[$a['id']] = $i;
 		
-		$cells = $DB->MultiQuery('SELECT id, row_id, col_id, content, href, legend, course_credits, course_subject, course_number, course_title FROM post_cell WHERE row_id > 0 AND col_id > 0 AND drawing_id='.$version_id);
+		$cells = $DB->MultiQuery('SELECT id, row_id, col_id, content, href, legend, course_subject, course_number, course_title FROM post_cell WHERE row_id > 0 AND col_id > 0 AND drawing_id='.$version_id);
 
 		foreach( $cells as $c )
 		{
@@ -529,8 +529,8 @@ class POSTChart_CC extends POSTChart
 	{
 		if( $cell->course_subject )
 		{
-			return $cell->course_subject . ' ' . $cell->course_number . (($cell->course_credits) ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . (($cell->course_credits) ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title . '</a>';
+			return $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title;
+			return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title . '</a>';
 		}
 		else
 		{

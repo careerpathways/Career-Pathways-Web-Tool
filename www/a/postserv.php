@@ -149,7 +149,7 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_cell`.`drawing_id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_credits`, `course_subject`, `course_number`, `course_title`, `row_id`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
+		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_cell`.`drawing_id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`, `row_id`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
 			FROM `post_cell`
 			LEFT JOIN `post_col` ON `post_cell`.`col_id` = `post_col`.`id`
 			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
@@ -223,14 +223,14 @@ require_once("POSTChart.inc.php");
 			}
 
 			$("#postTopRadio").click(function(){
-				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", false).css({"background" : "#FFFFFF"});
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", false).css({"background" : "#FFFFFF"});
 				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFECBF"});
 				$("#ccFreeRow").css({background: "#FFFFFF"});
 			});
 			$("#postBottomRadio").click(function(){
 				$("#postFormContent, #postFormURL").attr("disabled", false).css({"background" : "#FFFFFF"});
-				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", "disabled");
+				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFFFFF"});
 				$("#ccFreeRow").css({background: "#FFECBF"});
 			});
@@ -257,7 +257,6 @@ require_once("POSTChart.inc.php");
 							title: ($("#postFormTitle").val()),
 							content: ($("#postFormContent").val()),
 							href: $("#postFormURL").val(),
-							credits: $("#postFormCredits").val(),
 							legend: legendData
 					},
 					success: function(data){
@@ -406,12 +405,10 @@ require_once("POSTChart.inc.php");
 		$subject = (isset($_POST['subject']))?$_POST['subject']:'';
 		$number = (isset($_POST['number']))?$_POST['number']:'';
 		$title = (isset($_POST['title']))?$_POST['title']:'';
-		$credits = (isset($_POST['credits']))?$_POST['credits']:0;
 
 		// Update the database
 		$DB->Update('post_cell', array(
 			'legend'=>$_POST['legend'],
-			'course_credits'=>$credits,
 			'course_subject'=>$subject,
 			'course_number'=>$number,
 			'course_title'=>$title,
@@ -426,7 +423,7 @@ require_once("POSTChart.inc.php");
 		// Decide what we should draw back to the page
 		if($subject != '' && $number != '')
 		{
-			echo '<span style="background: ' . $background . '">' . $subject . ' ' . $number . (($credits)?' (' . $credits . ')':'') . '<br />' . $title . '</span>';
+			echo '<span style="background: ' . $background . '">' . $subject . ' ' . $number . '<br />' . $title . '</span>';
 		}
 		else
 		{
@@ -601,12 +598,6 @@ require_once("POSTChart.inc.php");
 							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
 							<div style="float: left; height: 20px;">
 								<input id="postFormNumber" maxlength="7" value="<?=$cell['course_number']?>" style="width: 50px;" /> (e.g. 200)
-							</div>
-						</div>
-						<div>
-							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Credits:</div>
-							<div style="float: left; height: 20px;">
-								<input id="postFormCredits" maxlength="7" value="<?=(($cell['course_credits']) ? $cell['course_credits'] : '')?>" style="width: 50px;" /> (e.g. 4)
 							</div>
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>
