@@ -13,7 +13,7 @@ $filename = $SITE->cache_path('post_vertical') . $hash;
 
 header("Content-type: image/png");
 
-if( 1 || !file_exists($filename) ) {
+if( !file_exists($filename) ) {
 	$bbox = imagettfbbox($font_size, 90, $title_font, $text);
 	$dst = imagecreatetruecolor(abs($bbox[6])-2, abs($bbox[3]) + 8);
 
@@ -29,7 +29,5 @@ if( 1 || !file_exists($filename) ) {
 } else {
 	readfile($filename);
 }
-
-
 
 ?>
