@@ -24,7 +24,10 @@ foreach( $tables as $t )
 		$snapshot = $DB->SingleQuery('SELECT *
 		FROM
 			(SELECT COUNT(*) AS published FROM drawings WHERE published=1) published_versions,
-			(SELECT COUNT(DISTINCT(drawing_id)) AS embedded FROM external_links WHERE type="pathways") x,
+			(SELECT COUNT(DISTINCT(drawing_id)) AS embedded
+				FROM external_links l
+				LEFT JOIN drawing_main m ON m.id=l.drawing_id
+				WHERE type="pathways" AND school_id IS NOT NULL) x,
 			(SELECT COUNT(*) AS total_drawings FROM drawing_main) f,
 			(SELECT COUNT(*) AS total_versions FROM drawings) e,
 			(SELECT COUNT(*) AS full_versions FROM
