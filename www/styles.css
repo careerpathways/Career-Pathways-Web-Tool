@@ -906,7 +906,7 @@ a.chart_header {
 
 
 .percent_bar {
-	border: 1px black solid;
+	border: 1px #<?=$D_GOLD?> solid;
 	height: 13px;
 }
 
@@ -1078,5 +1078,15 @@ tr.editable {
 }
 .olmis_roadmap {
   margin-left: 30px;
+}
+
+.drawing_schoolname {
+    background-color: #<?= $BLUE ?>;
+	color: white;
+}
+.drawinglist_schoolname {
+	font-size: 1.2em;
+	font-weight: bold;	
+	padding: 4px;
 }
 

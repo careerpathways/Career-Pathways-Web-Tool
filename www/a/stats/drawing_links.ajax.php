@@ -1,6 +1,5 @@
 <?php
-chdir("../..");
-include("inc.php");
+include('stats.inc.php');
 
 ModuleInit('stats');
 

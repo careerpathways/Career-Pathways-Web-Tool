@@ -18,7 +18,7 @@ include('formatting-functions.inc.php');
 include("general.inc.php");
 include("admin_inc.php");
 include("json_encode.php");
-
+include('Cycler.php');
 
 /*
  * Is this even used anywhere?
@@ -103,7 +103,7 @@ global $DB;
 function GetDrawingInfo($drawing_id, $type='pathways') {
 global $DB;
 	if( $type == 'pathways' ) {
-		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id drawings_id, sk.title AS skillset, school_name
+		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id AS drawings_id, sk.title AS skillset, school_name
 			FROM drawing_main
 			JOIN drawings ON drawings.parent_id=drawing_main.id
 			LEFT JOIN oregon_skillsets AS sk ON sk.id = drawing_main.skillset_id
