@@ -381,7 +381,7 @@ abstract class POSTChart
 		echo '<tr>', "\n";
 
 		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-			. ($this->_footer_link?'<a href="'.$this->_footer_link.'" target="_top">':'')
+			. ($this->_footer_link?'<a href="'.$this->_footer_link.'" target="_blank">':'')
 			. $this->_footer_text
 			. ($this->_footer_link?'</a>':'')
 			. '</td>', "\n";
@@ -440,7 +440,7 @@ class POSTChart_HS extends POSTChart
 		$link = ($cell->href != '');
 
 		// Draw the item inside the post_cell
-		return ($link?'<a href="' . $cell->href . '" target="_top">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+		return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 	}
 	
 	protected function _cellHasContent(&$cell)
@@ -538,7 +538,7 @@ class POSTChart_CC extends POSTChart
 			$link = ($cell->href != '');
 	
 			// Draw the item inside the post_cell
-			return ($link?'<a href="' . $cell->href . '" target="_top">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
 		}
 	}
 	
