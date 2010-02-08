@@ -283,9 +283,8 @@ switch( Request('mode') ) {
 				);
 				foreach( $fields as $f ) {
 					if( Request($f) ) {
-						// why was the first line commented out? we can't filter out numeric items if we want to be able to search for drawing names
-						$search[$f] = explode(',',Request($f));
-						#$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
+						// only include numbers in the filter array. this effectively removes the "cc" or "hs" when getting a list of all schools of a type 
+						$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
 					}
 				}
 				$where = "";
