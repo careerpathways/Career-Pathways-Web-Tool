@@ -304,12 +304,12 @@ function copyVersion($version_id) {
 	}
 
 	if( $create == 'new_drawing' ) {
-		if ($copy_to !== 'same_school') {
-			$newdrawing['school_id'] = $_SESSION['school_id'];
-		}
-		else {
+		if ($copy_to == 'othr_school' && IsAdmin())
+			$newdrawing['school_id'] = Request('target_org_id');
+		elseif ($copy_to == 'same_school')
 			$newdrawing['school_id'] = $drawing['school_id'];
-		}
+		else
+			$newdrawing['school_id'] = $_SESSION['school_id'];
 
 		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
@@ -356,9 +356,8 @@ function copyVersion($version_id) {
 
 		$obj = unserialize($obj['content']);
 		$obj['id'] = $new_id;
-		if( $copy_to !== 'same_school' ) {
+		if( $copy_to !== 'same_school' )
 			$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
-		}
 		$newobj['content'] = serialize($obj);
 
 		$DB->Insert('objects',$newobj);
@@ -370,6 +369,8 @@ function copyVersion($version_id) {
 		unset($connection['id']);
 		$connection['source_object_id'] = $idMap[$connection['source_object_id']];
 		$connection['destination_object_id'] = $idMap[$connection['destination_object_id']];
+		if( $copy_to !== 'same_school' )
+			$connection['color'] = "333333";  // reset the colors on the connections to grey
 		$DB->Insert('connections', $connection);
 	}
 

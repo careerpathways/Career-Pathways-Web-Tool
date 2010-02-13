@@ -280,7 +280,6 @@ function copyVersion($version_id) {
 
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') : 'same_school';
-
 	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) ) {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
 			if ($copy_to !== 'same_school') {
@@ -305,8 +304,7 @@ function copyVersion($version_id) {
 		} elseif ($copy_to == 'same_school') {
 			$newdrawing['school_id'] = $drawing['school_id'];
 			$post->school_id = $drawing['school_id'];
-		}
-		else {
+		} else {
 			$newdrawing['school_id'] = $_SESSION['school_id'];
 			$post->school_id = $_SESSION['school_id'];
 		}
