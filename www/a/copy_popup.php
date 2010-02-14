@@ -51,11 +51,11 @@ fieldset {
 	}
 ?>
 
-<?php if (IsAdmin() || (IsStaff() && $POST)) { ?>
+<?php if (IsAdmin() || (IsStaff() && $POST)) : ?>
 <fieldset id="copy_to">
 	<legend>Copy To</legend>
-	<?php if( ! (($POST && $version['type'] == 'HS' && IsStaff())
-			 || ($POST && $version['type'] == 'CC' && !IsStaff()) )
+	<?php if( !(	($POST && $version['type'] == 'HS' && IsStaff())
+				 || ($POST && $version['type'] == 'CC' && !IsStaff())	 )
 			&& $version['school_id'] != $_SESSION['school_id'] ) { ?>
 		<input class="radio" type="radio" name="copy_to" value="user_school" id="copy_to_user_school" /> <label for="copy_to_user_school">Your Organization</label><br/>
 	<?php } ?>
@@ -73,9 +73,9 @@ fieldset {
 	echo GenerateSelectBox($schools, 'target_org_id');
 	?>
 </fieldset>
-<?php }
+<?php endif;
 
-if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || array_key_exists($version['school_id'], $schools)) { ?>
+if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && array_key_exists($version['school_id'], $schools))) { ?>
 <fieldset id="create">
 	<legend>Create</legend>
 	<input class="radio" type="radio" name="create" value="new_version" id="create_new_version" checked="true"/> <label for="create_new_version">New Version</label><br/>
