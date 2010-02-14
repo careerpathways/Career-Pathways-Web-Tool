@@ -159,21 +159,6 @@ if( KeyInRequest('id') ) {
 function ShowSchoolForm($id="") {
 global $DB, $STATES;
 
-	$COUNTIES = array('Clatsop', 'Tillamook', 'Columbia', 'Washington', 'Multnomah',
-			'Yamhill', 'Clackamas', 'Marion', 'Polk', 'Lincoln', 'Benton', 'Linn',
-			'Hood River', 'Wasco', 'Sherman', 'Gilliam', 'Morrow', 'Umatilla', 'Union',
-			'Wallowa', 'Baker', 'Grant', 'Wheeler', 'Jefferson', 'Lane', 'Deschutes',
-			'Crook', 'Grant', 'Malheur', 'Harney', 'Lake', 'Klamath', 'Jackson',
-			'Josephine', 'Curry', 'Coos', 'Douglas');
-	asort($COUNTIES);
-	$allcounties = array();
-	foreach( $COUNTIES as $c ) {
-			$allcounties[$c] = $c;
-	}
-	$COUNTIES[''] = '';
-	$COUNTIES = array_merge($COUNTIES, $allcounties);
-	unset($allcounties);
-	
 	$orgtypes['CC'] = 'Community College';
 	$orgtypes['Other'] = 'Other Organization';
 	$orgtypes['HS'] = 'High School';
@@ -235,7 +220,7 @@ global $DB, $STATES;
 	<tr>
 		<td>County:</td>
 		<td colspan="2"><?=
-			GenerateSelectBox($COUNTIES, 'school_county', $school['school_county'])
+			GenerateSelectBoxDB('counties', 'school_county', 'id', 'county', 'county', $school['school_county'], array(''=>''))
 		?></td>
 	</tr>
 
