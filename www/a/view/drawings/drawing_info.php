@@ -1,4 +1,5 @@
 <?php
+global $SITE;
 
 $php_page = 'drawings.php';
 $main_table = 'drawing_main';
@@ -6,8 +7,6 @@ $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
-
-#$embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
 <script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
@@ -57,6 +56,9 @@ if( $id != "" ) {
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <div id="existingDrawings" style="float:right; width:330px;"></div>
 <table>
+<?php
+if($SITE->oregon_skillset_enabled){
+?>
 <tr>
 	<th>Oregon Skill Set</th>
 	<td><div id="skillset"><?php
@@ -64,6 +66,7 @@ if( $id != "" ) {
 	?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
 </tr>
 <?php
+}
 if( $school['organization_type'] != 'Other') { 
 ?>
 <tr>
@@ -122,18 +125,24 @@ if( $school['organization_type'] != 'Other') {
 		<input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>"> <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
 	</td>
 </tr>
+<?php
+	if($SITE->oregon_skillset_enabled){
+?>
 <tr class="editable">
 	<th>Oregon Skill Set</th>
 	<td><div id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array('0'=>''));
 	?></div></td>
 </tr>
+<?php 
+	}
+?>
 <tr class="editable">
 	<th width="160">Organization</th>
 	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
 </tr>
 <?php
-if( $school['organization_type'] != 'Other' && is_array($published) ) { 
+if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array($published) ) {
 ?>
 <tr class="editable">
 	<th>OLMIS</th>
