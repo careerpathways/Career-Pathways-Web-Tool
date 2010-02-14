@@ -70,12 +70,18 @@ var $j = jQuery.noConflict();
 	?>
 	</td>
 </tr>
+<?php
+if($SITE->oregon_skillset_enabled){
+?>
 <tr>
 	<th>Oregon Skill Set</th>
 	<td valign="top"><span id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
 	?></span>(optional)</td>
 </tr>
+<?php
+}
+?>
 <tr>
 	<td>&nbsp;</td>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>
@@ -107,12 +113,18 @@ var $j = jQuery.noConflict();
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
+	<?php
+	if($SITE->oregon_skillset_enabled){
+	?>
 	<tr>
 		<th>Oregon Skill Set</th>
 		<td height="34"><div id="skillset" style="float:left"><?php
 			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
 		?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
 	</tr>
+	<?php
+	}
+	?>
 	<tr>
 		<th>Preview</th>
 		<td>
