@@ -27,13 +27,13 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 			<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br />
 			<?php } ?>
 			<a href="/c/post/<?= $drawing_main['id'] . '/' . $drawing['id'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a><br />
-			<?php if (CanEditVersion($drawing['id'], 'post', false) && $drawing['published'] == 0) : ?>
+			<?php if (CanEditVersion($drawing['id'], 'post', false)) : ?>
 				<form action="/a/post_drawings.php" method="post" id="publishForm">
 					<input type="hidden" name="drawing_id" value="<?=$drawing['id']?>" />
 					<input type="hidden" name="action" value="publish" />
 					<input type="submit" value="Publish" style="display:none" />
 				</form>
-				<a href="javascript:publishPopup('post', <?=$_REQUEST['version_id']?>)" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> publish this version</a>
+				<a href="javascript:publishPopup('post', <?=$_REQUEST['version_id']?>)" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> <?=$drawing['published'] == 0?'':'un'?>publish this version</a>
 			<?php endif; ?>
 		</div>
 

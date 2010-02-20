@@ -44,7 +44,10 @@ fieldset {
 			else
 				$schools = GetAffiliatedSchools();
 		} else {
-			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+			if( IsAdmin() )
+				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+			else
+				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id'] . ' ORDER BY school_name', 'school_name', 'id');
 		}
 	} else {
 		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
@@ -82,7 +85,8 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 	<input class="radio" type="radio" name="create" value="new_drawing" id="create_new_drawing"/> <label for="create_new_drawing">New Drawing</label><br/>
 </fieldset>
 <?php } else { ?>
-<p>A new drawing will be created</p>
+	<p>A new drawing will be created</p>
+	<input class="radio" type="radio" name="create" value="new_drawing" id="create_new_drawing" style="display:none;" checked="checked" />
 <?php } ?>
 
 <fieldset id="drawingName">

@@ -58,11 +58,11 @@ function showPublishForm($mode)
 	?>
 	<div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
 	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-		<p>Are you sure you want to publish this version? Any web pages that are embedding this drawing will automatically be updated.</p>
+		<p>Are you sure you want to <?=$version['published'] == 0?'':'un'?>publish this version? Any web pages that are embedding this drawing will automatically be updated.</p>
 		<input type="submit" class="submit" value="Yes" />
 		<input type="button" class="submit" value="No" onclick="chGreybox.close()" />
 
-		<input type="hidden" name="action" value="publish" />
+		<input type="hidden" name="action" value="<?=$version['published'] == 0?'':'un'?>publish" />
 		<input type="hidden" name="drawing_id" value="<?=$version_id?>" />
 
 		<?php

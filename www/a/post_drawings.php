@@ -85,7 +85,13 @@ if( KeyInRequest('drawing_id') ) {
 				$DB->Query("UPDATE post_drawings SET published=1, frozen=1 WHERE id=$drawing_id");
 			}
 		}
-
+		if( Request('action') == 'unpublish' ) {
+			$drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=$drawing_id");
+			if( is_array($drawing) ) {
+				$DB->Query("UPDATE post_drawings SET published=0 WHERE id=".$drawing_id);
+			}
+		}
+		
 		header('Location: '.$_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing['parent_id']);
 		die();
 
