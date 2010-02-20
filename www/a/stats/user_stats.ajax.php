@@ -7,6 +7,8 @@ if( Request('from_date') ) {
 	$from = date('y-m-d', strtotime(Request('from_date')));
 	$to = date('y-m-d', strtotime(Request('to_date')));
 
+	
+	$response = array();
 
 
 	$d = $DB->MultiQuery('
@@ -22,15 +24,15 @@ if( Request('from_date') ) {
 		GROUP BY school_id
 		ORDER BY num DESC');
 	$total = 0;
-	echo '<table width="300">';
+	$str = '<table width="300">';
 	foreach( $d as $org ) {
 		$total += $org['num'];
-		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
 	}
-	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
-	echo '</table>';
-	echo "\n";
-
+	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	$str .= '</table>';
+	$response['active_users'] = $str;
+	
 
 
 	$d = $DB->MultiQuery('
@@ -44,25 +46,25 @@ if( Request('from_date') ) {
 		GROUP BY school_id
 		ORDER BY num DESC');
 	$total = 0;
-	echo '<table width="300">';
+	$str = '<table width="300">';
 	foreach( $d as $org ) {
 		$total += $org['num'];
-		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
 	}
-	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
-	echo '</table>';
-	echo "\n";
+	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	$str .= '</table>';
+	$response['users_added'] = $str;
 
 
 
 	$d = $DB->MultiQuery('SELECT * FROM schools WHERE date_created>="'.$from.'" AND date_created<="'.$to.' 23:59:59"');
-	echo '<table width="300">';
+	$str = '<table width="300">';
 	foreach( $d as $org ) {
-		echo '<tr><td>&nbsp;</td><td>' .$org['school_name'].'</td></tr>';
+		$str .= '<tr><td>&nbsp;</td><td>' .$org['school_name'].'</td></tr>';
 	}
-	echo '<tr><td width="30">'.count($d).'</td><td><b>Total</b></td></tr>';
-	echo '</table>';
-	echo "\n";
+	$str .= '<tr><td width="30">'.count($d).'</td><td><b>Total</b></td></tr>';
+	$str .= '</table>';
+	$response['orgs_added'] = $str;
 
 
 
@@ -78,15 +80,15 @@ if( Request('from_date') ) {
 		GROUP BY school_id
 		ORDER BY num DESC');
 	$total = 0;
-	echo '<table width="300">';
+	$str = '<table width="300">';
 	foreach( $d as $org ) {
 		$total += $org['num'];
-		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
 	}
-	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
-	echo '</table>';
-	echo "\n";
-	
+	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	$str .= '</table>';
+	$response['rdmp_added'] = $str;
+		
 	
 	
 	$d = $DB->MultiQuery('
@@ -101,16 +103,17 @@ if( Request('from_date') ) {
 		GROUP BY school_id
 		ORDER BY num DESC');
 	$total = 0;
-	echo '<table width="300">';
+	$str = '<table width="300">';
 	foreach( $d as $org ) {
 		$total += $org['num'];
-		echo '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
 	}
-	echo '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
-	echo '</table>';
-	echo "\n";
+	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
+	$str .= '</table>';
+	$response['post_added'] = $str;
 	
-	
+
+	echo json_encode($response);
 }
 
 ?>
