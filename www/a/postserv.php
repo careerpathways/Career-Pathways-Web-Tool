@@ -149,7 +149,9 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_cell`.`drawing_id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, `course_subject`, `course_number`, `course_title`, `row_id`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
+		$cell = $DB->SingleQuery("SELECT `post_cell`.`id`, `post_cell`.`drawing_id`, `post_drawing_main`.`type`, `content`, `href`, `legend`, 
+				`course_subject`, `course_number`, `course_title`, `course_credits`, 
+				`row_id`, `post_col`.`num` AS `col_num`, `post_col`.`title` AS `col_name`
 			FROM `post_cell`
 			LEFT JOIN `post_col` ON `post_cell`.`col_id` = `post_col`.`id`
 			LEFT JOIN `post_drawings` ON (`post_cell`.`drawing_id` = `post_drawings`.`id`)
@@ -218,19 +220,19 @@ require_once("POSTChart.inc.php");
 			}
 			else
 			{
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", "disabled");
 				$("#ccFreeRow").css({background: "#FFECBF"});
 			}
 
 			$("#postTopRadio").click(function(){
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", false).css({"background" : "#FFFFFF"});
+				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", false).css({"background" : "#FFFFFF"});
 				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFECBF"});
 				$("#ccFreeRow").css({background: "#FFFFFF"});
 			});
 			$("#postBottomRadio").click(function(){
 				$("#postFormContent, #postFormURL").attr("disabled", false).css({"background" : "#FFFFFF"});
-				$("#postFormSubject, #postFormNumber, #postFormTitle").attr("disabled", "disabled");
+				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFFFFF"});
 				$("#ccFreeRow").css({background: "#FFECBF"});
 			});
@@ -256,6 +258,7 @@ require_once("POSTChart.inc.php");
 							number: $("#postFormNumber").val(),
 							title: ($("#postFormTitle").val()),
 							content: ($("#postFormContent").val()),
+							credits: ($("#postFormCredits").val()),
 							href: $("#postFormURL").val(),
 							legend: legendData
 					},
@@ -404,6 +407,7 @@ require_once("POSTChart.inc.php");
 
 		$subject = (isset($_POST['subject']))?$_POST['subject']:'';
 		$number = (isset($_POST['number']))?$_POST['number']:'';
+		$credits = (isset($_POST['credits']))?$_POST['credits']:'0';
 		$title = (isset($_POST['title']))?$_POST['title']:'';
 
 		// Update the database
@@ -412,6 +416,7 @@ require_once("POSTChart.inc.php");
 			'course_subject'=>$subject,
 			'course_number'=>$number,
 			'course_title'=>$title,
+			'course_credits'=>$credits,
 			'content'=>$_POST['content'],
 			'href' => $href), intval($id));
 
@@ -423,7 +428,7 @@ require_once("POSTChart.inc.php");
 		// Decide what we should draw back to the page
 		if($subject != '' && $number != '')
 		{
-			echo '<span style="background: ' . $background . '">' . $subject . ' ' . $number . '<br />' . $title . '</span>';
+			echo '<span style="background: ' . $background . '">' . $subject . ' ' . $number . ($credits > 0 ? ' (' . $credits . ')' : '') . '<br />' . $title . '</span>';
 		}
 		else
 		{
@@ -598,6 +603,12 @@ require_once("POSTChart.inc.php");
 							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Number:</div>
 							<div style="float: left; height: 20px;">
 								<input id="postFormNumber" maxlength="7" value="<?=$cell['course_number']?>" style="width: 50px;" /> (e.g. 200)
+							</div>
+						</div>
+						<div>
+							<div style="clear: both; float: left; width: 150px; height: 20px; font-weight: bold;">Course Credits:</div>
+							<div style="float: left; height: 20px;">
+								<input id="postFormCredits" maxlength="2" value="<?=$cell['course_credits']?>" style="width: 50px;" /> (e.g. 4)
 							</div>
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>
