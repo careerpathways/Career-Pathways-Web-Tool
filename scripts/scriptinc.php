@@ -11,4 +11,6 @@ set_include_path('.' . PATH_SEPARATOR . './www/include' . PATH_SEPARATOR . './co
 define("NOSESSION", true);
 include('inc.php');
 
+set_time_limit(0);
+
 ?>

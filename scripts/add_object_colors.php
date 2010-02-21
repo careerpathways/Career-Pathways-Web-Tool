@@ -10,10 +10,11 @@ foreach($objects as $o)
 
 	if(array_key_exists('color', $content['config']) && $content['config']['color'] != '333333')
 	{
-		echo $o['id'] . ': ' . $content['config']['color'] . "\n";
+		//echo $o['id'] . ': ' . $content['config']['color'] . "\n";
 		$DB->Query('UPDATE objects SET color = "' . strtolower($content['config']['color']) . '" WHERE id = ' . $o['id']);
 	}
 }
+unset($objects); // it's a large variable
 
 // Count the number of drawings using each color
 $colors = $DB->MultiQuery('SELECT * FROM color_schemes');
@@ -40,7 +41,7 @@ foreach($colors as $color)
 		GROUP BY d.id
 		) AS tmp
 		GROUP BY id');
-	echo $color['hex'] . ' ' . count($roadmaps) . "\n";
+	echo '#' . $color['hex'] . ' => ' . count($roadmaps) . "\n";
 	$DB->Query('UPDATE color_schemes SET num_roadmaps = ' . count($roadmaps) . ' WHERE id = ' . $color['id']);
 }
 

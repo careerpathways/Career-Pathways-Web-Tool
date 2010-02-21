@@ -33,6 +33,7 @@ switch( $_REQUEST['a'] ) {
 
 		// insert the new object, and get the auto_increment value
 		$obj['content'] = serialize($_REQUEST['content']);
+		$obj['color'] = (array_key_exists('color', $_REQUEST['content']['config']) ? $_REQUEST['content']['config']['color'] : '333333');
 		$id = $DB->Insert('objects', $obj);
 
 		// quickly update the object's content, inserting its id into the variable structure.
@@ -116,9 +117,11 @@ switch( $_REQUEST['a'] ) {
 
 			$objstr = serialize($obj);
 
+			$color = $obj['config']['color'];
+			
 			chlog("updated object: ".$obj['id']);
 
-			$DB->Update('objects', array('content'=>$objstr,'date'=>$DB->SQLDate()), intval($_REQUEST['id']));
+			$DB->Update('objects', array('content'=>$objstr, 'color'=>$color, 'date'=>$DB->SQLDate()), intval($_REQUEST['id']));
 
 		}
 		if($debug) {
