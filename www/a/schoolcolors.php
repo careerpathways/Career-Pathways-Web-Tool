@@ -16,6 +16,8 @@ if( IsAdmin() ) {
 }
 
 
+$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 
 PrintHeader();
 ShowSchoolForm($school_id);
@@ -45,8 +47,7 @@ if( !is_array($school) ) {
 <script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/utilities/utilities.js" ></script>
 <script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/slider/slider-min.js" ></script>
 <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.4.1/build/colorpicker/assets/skins/sam/colorpicker.css">
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/colorpicker/colorpicker-beta-min.js" ></script>
-
+<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/colorpicker/colorpicker-beta-min.js"></script>
 
 <script type="text/javascript">
 
@@ -66,8 +67,14 @@ function switch_school(id) {
 	document.location.href = "/a/schoolcolors.php?school_id="+id;
 }
 
-function deleteColor(school_id, color) {
-	ajaxCallback(receivedCurrentColors, '/a/schoolcolors_action.php?delete&color='+color+'&sid='+school_id);
+function deleteColor(school_id, color, replaceWith) {
+	if(typeof(replaceWith) == "undefined" && parseInt(jQuery("#color_cell_"+color+" .school_color_num").html()) > 0){ 
+		ajaxCallback(function(data){
+		    chGreybox.create(data, 400, 300, null, "Reassign Color");
+		}, '/a/schoolcolors_action.php?promptDelete&color='+color+'&sid='+school_id);
+	}else{
+		ajaxCallback(receivedCurrentColors, '/a/schoolcolors_action.php?delete&color='+color+'&sid='+school_id+'&replaceWith='+replaceWith);
+	}
 }
 
 function getColors(school_id) {
@@ -108,13 +115,15 @@ function receivedCurrentColors(obj) {
 	var data = eval(obj);
 	var container = getLayer('school_colors');
 
-	showColorList(data.colors, container, 'current');
+	showColorList(data.colors, container, 'current', data.usage);
 
 	curColorsLoaded = true;
 	loadPicker();
+
+	chGreybox.close(); // only relevant when the replace prompt is open
 }
 
-function showColorList(colors, container, mode) {
+function showColorList(colors, container, mode, usage) {
 	// mode is either 'auto' or 'current'
 
 	var cl_tbody = document.createElement('tbody');
@@ -130,6 +139,7 @@ function showColorList(colors, container, mode) {
 
 		var cl_cell = document.createElement('td');
 			cl_cell.className = 'content_cell';
+			cl_cell.id = 'color_cell_' + colors[i];
 			cl_cell.width = '40px';
 
 		var cl_color = document.createElement('div');
@@ -142,7 +152,7 @@ function showColorList(colors, container, mode) {
 				cl_color.parentCell = cl_cell;
 			}
 
-		if( mode == 'current' && colors[i] != '333333' && colors[i] != 'FFFFFF' ) {
+		if( mode == 'current' && colors[i] != '333333' && colors[i] != 'ffffff' ) {
 			cl_xbutton = document.createElement('a');
 			cl_xbutton.className = "school_color_x";
 			cl_xbutton.href = "javascript:deleteColor("+school_id+",'"+colors[i]+"')";
@@ -151,6 +161,14 @@ function showColorList(colors, container, mode) {
 		}
 
 		cl_cell.appendChild(cl_color);
+
+		if(typeof(usage) != "undefined"){
+			cl_usage = document.createElement('div');
+			cl_usage.className = "school_color_num";
+			cl_usage.innerHTML = usage[i];
+			cl_cell.appendChild(cl_usage);
+		}
+		
 		cl_row.appendChild(cl_cell);
 
 		if( mode == 'auto' ) {
@@ -349,7 +367,11 @@ Event.onDOMReady(initPage);
 	
 	.color_table {
 		margin-bottom: 3px;
-	}	
+	}
+	
+	.school_color_num {
+		text-align: center;
+	}
 
 </style>
 

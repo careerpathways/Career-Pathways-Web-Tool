@@ -1,12 +1,14 @@
 <?php
 
-$dir = explode("/",dirname(__FILE__));
+$_SERVER['CONFIG_FILE'] = 'laptop-aaron.settings.php';
+
+$dir = preg_split('~[/\\\]~', dirname(__FILE__));
 array_pop($dir);
 $basedir = implode("/", $dir);
 
 chdir($basedir);
-set_include_path('.:./www/inc:./common');
+set_include_path('.' . PATH_SEPARATOR . './www/include' . PATH_SEPARATOR . './common');
 define("NOSESSION", true);
-include('./www/inc.php');
+include('inc.php');
 
 ?>

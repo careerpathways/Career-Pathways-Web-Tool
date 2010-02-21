@@ -1,6 +1,7 @@
 <?php
 chdir("..");
 include("inc.php");
+require_once('colors.inc.php');
 
 ModuleInit('schoolcolors');
 
@@ -24,13 +25,124 @@ if( Request('sid') ) {
 		echo $num['num'];
 		die();
 
+	} elseif( KeyInRequest('promptDelete') ) {
+		
+		echo '<div style="background-color: white; width: 100%;"><div style="padding-top:5px; padding-left:5px;">';
+
+		$color = $DB->SingleQuery('SELECT * FROM color_schemes WHERE school_id = ' . $school_id . ' AND hex = "' . strtolower($_REQUEST['color']) . '"');
+
+		echo '<div style="padding:20px;">';
+			echo '<div style="background-color:#' . $color['hex'] . '; width:40px; height:40px; margin:0 auto;"></div>';
+		echo '</div>';
+		
+		echo '<div style="padding-bottom:5px;">This color is currently being used by ' . $color['num_roadmaps'] . ' roadmaps. You must choose a new color for the objects currently using this color.</div>'; 
+		
+		$colors = $DB->MultiQuery('SELECT *
+			FROM color_schemes
+			WHERE school_id='.$school_id, 'hex');
+		usort($colors, 'hslsort');
+
+		$colors[] = array('hex'=>'333333', 'num_roadmaps'=>'');
+		
+		foreach($colors as $c)
+		{
+			if($c['hex'] != $color['hex'])
+				echo '<div style="background-color:#' . $c['hex'] . '; width:40px; height:40px; float:left; margin-right:5px; margin-bottom:5px;">
+					<input type="radio" name="reassign_color" class="reassign_color" value="' . $c['hex'] . '"' . ($c['hex'] == '333333' ? 'checked="checked"' : '') . ' />
+				</div>';
+		}
+		
+		echo '<div style="clear:both;"></div>';
+		
+		echo '<div style="padding: 10px;">';
+			echo '<input type="button" value="Reassign and Delete" id="reassignBtn" class="submit" />';
+		echo '</div>';
+		
+		echo '</div></div>';
+		?>
+		<script type="text/javascript">
+			jQuery("#reassignBtn").click(function(){
+				$(this).val("Please wait...").unbind("click").css({float: "left"}).after('<div style="float:left; margin-left:10px;"><img src="/images/e6d09e_loader.gif" width="43" height="11" /></div><div style="clear:both;"></div>');
+				deleteColor(school_id, "<?=$color['hex']?>", $(".reassign_color:checked").val());
+			});
+		</script>
+		<?php 
+		die();
 	} elseif( KeyInRequest('delete') && Request('color') ) {
 
+		if(Request('replaceWith'))
+		{
+			$drawing_ids = array();
+
+			$objects = $DB->MultiQuery('
+				SELECT o.*, d.id AS drawing_id
+				FROM objects o
+				JOIN drawings d ON o.drawing_id=d.id
+				JOIN drawing_main m ON d.parent_id = m.id
+				WHERE school_id = ' . $school_id . '
+					AND color = "' . Request('color') . '"');
+			foreach($objects as $o)
+			{
+				$content = unserialize($o['content']);
+				$content['config']['color'] = Request('replaceWith');
+				
+				$data = array();
+				$data['content'] = serialize($content);
+				$data['color'] = Request('replaceWith');
+				$DB->Update('objects', $data, $o['id']);
+				
+				if(!in_array($o['drawing_id'], $drawing_ids))
+					$drawing_ids[] = $o['drawing_id'];
+			}
+
+			$objects = $DB->MultiQuery('
+				SELECT o.*, d.id AS drawing_id
+				FROM objects o
+				JOIN drawings d ON o.drawing_id=d.id
+				JOIN drawing_main m ON d.parent_id = m.id
+				WHERE school_id = ' . $school_id . '
+					AND color = "' . Request('color') . '"');
+			foreach($objects as $o)
+			{
+				$content = unserialize($o['content']);
+				$content['config']['color'] = Request('replaceWith');
+				
+				$data = array();
+				$data['content'] = serialize($content);
+				$data['color'] = Request('replaceWith');
+				$DB->Update('objects', $data, $o['id']);
+				
+				if(!in_array($o['drawing_id'], $drawing_ids))
+					$drawing_ids[] = $o['drawing_id'];
+			}
+
+			$connections = $DB->MultiQuery('
+				SELECT c.*, d.id AS drawing_id
+				FROM connections c
+				JOIN objects o ON c.source_object_id = o.id
+				JOIN drawings d ON o.drawing_id=d.id
+				JOIN drawing_main m ON d.parent_id = m.id
+				WHERE school_id = ' . $school_id . '
+					AND c.color = "' . Request('color') . '"');
+			foreach($connections as $c)
+			{
+				$data = array();
+				$data['color'] = Request('replaceWith');
+				$DB->Update('connections', $data, $c['id']);
+				
+				if(!in_array($o['drawing_id'], $drawing_ids))
+					$drawing_ids[] = $c['drawing_id'];
+			}
+			
+			// This is not exact, but it will at least make the number go up so the number of the target color doesn't stay the same
+			// The number will be corrected when the nightly script runs
+			$DB->Query('UPDATE color_schemes SET num_roadmaps = num_roadmaps + ' . count($drawing_ids) . ' WHERE school_id = ' . $school_id . ' AND hex = "' . Request('replaceWith') . '"');
+		}
 		$DB->Query("DELETE FROM color_schemes WHERE school_id=".$school_id." AND hex='".substr(strtolower($_REQUEST['color']),0,6)."'");
 
 	} else {
 
-		if( Request('color') ) {
+		if( Request('color') && strtolower(Request('color')) != 'ffffff') {
 			$_REQUEST['color'] = str_replace('#','',$_REQUEST['color']);
 
 			$check = $DB->SingleQuery("SELECT * FROM color_schemes WHERE school_id=".$school_id." AND hex='".substr($_REQUEST['color'],0,6)."'");
@@ -44,43 +156,32 @@ if( Request('sid') ) {
 		}
 	}
 
-	$colors = $DB->MultiQuery("SELECT * FROM color_schemes WHERE school_id=".$school_id);
+	$data = $DB->MultiQuery('SELECT *
+		FROM color_schemes
+		WHERE school_id='.$school_id, 'hex');
+	usort($data, 'hslsort');
 
-		$group = array('grey'=>array(), 'r'=>array(), 'g'=>array(), 'b'=>array());
-		foreach( $colors as $c ) {
-			$group[getdominantcolor($c['hex'])][] = array('obj'=>$c, 'sort'=>getbrightness($c['hex']));
-		}
-
-		usort($group['grey'], 'TheSort');
-		usort($group['r'], 'TheSort');
-		usort($group['g'], 'TheSort');
-		usort($group['b'], 'TheSort');
-
-		$colors_ = array();
-		foreach( $group['grey'] as $c ) {
-			$colors_[] = $c['obj'];
-		}
-		foreach( $group['r'] as $c ) {
-			$colors_[] = $c['obj'];
-		}
-		foreach( $group['g'] as $c ) {
-			$colors_[] = $c['obj'];
-		}
-		foreach( $group['b'] as $c ) {
-			$colors_[] = $c['obj'];
-		}
+	$data[] = array('hex'=> 'ffffff', 'num_roadmaps'=>'&nbsp;');
+	$data[] = array('hex'=> '333333', 'num_roadmaps'=>'&nbsp;');
 
 	$colors = array();
-	foreach( $colors_ as $c ) {
+	$usage = array();
+	foreach( $data as $c ) {
 		$colors[] = $c['hex'];
+		$usage[] = $c['num_roadmaps'];
 	}
-	$colors[] = 'FFFFFF';
-	$colors[] = '333333';
-	echo '({"request_mode":"request","colors":["'.implode('","',$colors).'"]})';
+	echo '({"request_mode":"request","colors":["'.implode('","',$colors).'"],"usage":["'.implode('","',$usage).'"]})';
 }
 
 function TheSort($a, $b) {
 	return $a['sort'] > $b['sort'];
+}
+
+function hslsort($a, $b) 
+{
+	$A = RGBtoHSL($a['hex']);
+	$B = RGBtoHSL($b['hex']);
+	return $A['H'] < $B['H'];
 }
 
 
