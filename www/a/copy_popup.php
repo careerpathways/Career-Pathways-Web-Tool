@@ -54,7 +54,7 @@ fieldset {
 	}
 ?>
 
-<?php if (IsAdmin() || (IsStaff() && $POST)) : ?>
+<?php if (IsAdmin() || (IsStaff() && $POST && count($schools) > 1)) : ?>
 <fieldset id="copy_to">
 	<legend>Copy To</legend>
 	<?php if( !(	($POST && $version['type'] == 'HS' && IsStaff())
