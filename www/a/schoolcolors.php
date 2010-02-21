@@ -393,7 +393,7 @@ if( IsAdmin() ) {
 	<div id="school_colors" class="color_table"></div>
 	<div id="colors_help" class="grey">
 		Changes are saved as soon as you see them here.<br>
-		WARNING: Removing colors that are in use will cause objects which use that color to appear grey.
+		If you remove a color currently in use by some drawings, you will have a chance to reassign the objects to a new color.
 	</div>
 <hr>
 

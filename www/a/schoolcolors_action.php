@@ -70,7 +70,7 @@ if( Request('sid') ) {
 		die();
 	} elseif( KeyInRequest('delete') && Request('color') ) {
 
-		if(Request('replaceWith'))
+		if(Request('replaceWith') && Request('replaceWith') != "undefined")
 		{
 			$drawing_ids = array();
 
