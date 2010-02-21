@@ -451,6 +451,7 @@ require_once("POSTChart.inc.php");
 		$return['course_subject'] = $data['course_subject'];
 		$return['course_number'] = $data['course_number'];
 		$return['course_title'] = $data['course_title'];
+		$return['course_credits'] = $data['course_credits'];
 		echo json_encode($return);
 	}// end function fetchCell
 

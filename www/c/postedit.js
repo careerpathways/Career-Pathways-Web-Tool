@@ -25,7 +25,8 @@ var clipboard = {
 	paste: function(id){
 		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
 			{content: clipboard.data.content, href: clipboard.data.href, legend: clipboard.data.legend,
-			 number: clipboard.data.course_number, title: clipboard.data.course_title, subject: clipboard.data.course_subject},
+			 number: clipboard.data.course_number, title: clipboard.data.course_title, 
+			 subject: clipboard.data.course_subject, credits: clipboard.data.course_credits},
 			function(data){
 				$("#post_cell_"+id).html(data);
 				var bgSwap = $("#post_cell_"+id).children().css("background");
@@ -35,7 +36,7 @@ var clipboard = {
 			}
 		);
 	},
-	data: {content: '', href: '', legend: '', course_number: '', course_title: '', course_subject:''}
+	data: {content: '', href: '', legend: '', course_number: '', course_title: '', course_subject:'', course_credits:''}
 };
 
 $(document).ready(function()
