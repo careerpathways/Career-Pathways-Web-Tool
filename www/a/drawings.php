@@ -81,7 +81,7 @@ if( KeyInRequest('drawing_id') ) {
 				$DB->Query("UPDATE drawings SET published=0 WHERE id=".$drawing_id);
 			}
 		}
-		
+
 		header('Location: '.$_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing['parent_id']);
 		die();
 
@@ -117,7 +117,7 @@ if( KeyInRequest('drawing_id') ) {
 			if( CanDeleteDrawing($drawing_id, 'pathways') ) {
 				// when deleting the entire drawing (from drawing_main) actually remove the records
 				$DB->Query('DELETE FROM connections WHERE source_object_id IN (SELECT objects.id FROM objects, drawings WHERE objects.drawing_id=drawings.id AND drawings.parent_id=' . $drawing_id . ')');
-	
+
 				$drawings = $DB->VerticalQuery("SELECT id FROM drawings WHERE parent_id=" . $drawing_id,'id');
 				foreach( $drawings as $did ) {
 					$DB->Query("DELETE FROM objects WHERE drawing_id=".$did);
@@ -222,41 +222,41 @@ function showVersion() {
 	PrintHeader();
 	?>
 
-	<script type="text/javascript" src="/files/greybox.js"></script>
+<script
+	type="text/javascript" src="/files/greybox.js"></script>
 
-	<style type="text/css" media="print">
-		#drawing_canvas, #header, #topbar {
-			display: none;
-		}
+<style type="text/css" media="print">
+#drawing_canvas,#header,#topbar {
+	display: none;
+}
 
-		#printHelp {
-			width: 5in;
-			margin: auto;
-			margin-top: 2in;
-			padding: 2em;
-			border: 1em dashed black;
-			font-size: 2em;
-			text-align: center;
-			font-weight: bold;
-		}
-	</style>
+#printHelp {
+	width: 5in;
+	margin: auto;
+	margin-top: 2in;
+	padding: 2em;
+	border: 1em dashed black;
+	font-size: 2em;
+	text-align: center;
+	font-weight: bold;
+}
+</style>
 
-	<style type="text/css" media="screen">
-		#printHelp {
-			display: none;
-		}
-	</style>
+<style type="text/css" media="screen">
+#printHelp {
+	display: none;
+}
+</style>
 
-	<div id="printHelp">
-		<p>To print, please click the <var>print this version</var> button in the toolbar.</p>
-	</div>
+<div id="printHelp">
+<p>To print, please click the <var>print this version</var> button in
+the toolbar.</p>
+</div>
 
-	<div id="drawing_canvas" class="ctpathways">
-		<?php require('c/view/chart_include.php'); ?>
-		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
-		<script type="text/javascript" src="/c/chadmin.js"></script>
-		<?php endif; ?>
-		<script type="text/javascript">
+<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
+	<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
+<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
+<script type="text/javascript">
 			function init() {
 				if (arguments.callee.done) return;
 				arguments.callee.done = true;
@@ -276,8 +276,7 @@ function showVersion() {
 
 			/* for other browsers */
 			window.onload = init;
-		</script>
-	</div>
+		</script></div>
 
 	<?php
 	PrintFooter();
@@ -311,11 +310,11 @@ function copyVersion($version_id) {
 
 	if( $create == 'new_drawing' ) {
 		if ($copy_to == 'othr_school' && IsAdmin())
-			$newdrawing['school_id'] = Request('target_org_id');
+		$newdrawing['school_id'] = Request('target_org_id');
 		elseif ($copy_to == 'same_school')
-			$newdrawing['school_id'] = $drawing['school_id'];
+		$newdrawing['school_id'] = $drawing['school_id'];
 		else
-			$newdrawing['school_id'] = $_SESSION['school_id'];
+		$newdrawing['school_id'] = $_SESSION['school_id'];
 
 		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
@@ -363,7 +362,7 @@ function copyVersion($version_id) {
 		$obj = unserialize($obj['content']);
 		$obj['id'] = $new_id;
 		if( $copy_to !== 'same_school' )
-			$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
+		$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		$newobj['content'] = serialize($obj);
 		$newobj['color'] = $obj['config']['color'];
 
@@ -377,7 +376,7 @@ function copyVersion($version_id) {
 		$connection['source_object_id'] = $idMap[$connection['source_object_id']];
 		$connection['destination_object_id'] = $idMap[$connection['destination_object_id']];
 		if( $copy_to !== 'same_school' )
-			$connection['color'] = "333333";  // reset the colors on the connections to grey
+		$connection['color'] = "333333";  // reset the colors on the connections to grey
 		$DB->Insert('connections', $connection);
 	}
 
@@ -396,11 +395,11 @@ function showNewDrawingForm() {
 }
 
 function showDrawingInfo() {
-global $DB, $TEMPLATE;
+	global $DB, $TEMPLATE;
 
 	$TEMPLATE->AddCrumb('', 'Roadmap Drawing Properties');
 	$TEMPLATE->toolbar_function = "ShowSymbolLegend";
-	
+
 	PrintHeader();
 
 	$drawing = $DB->SingleQuery("SELECT drawing_main.*
@@ -451,24 +450,22 @@ function ShowInfobar() {
 
 function ShowToolbar() {
 	ShowInfobar();
-
 	showToolbarAndHelp(true, 'standard');
 }
 
 
 function ShowPublishedHelp() {
 	ShowInfobar();
-
 	showToolbarAndHelp(false, 'published');
 }
 
 function ShowFrozenHelp() {
 	ShowInfobar();
-
 	showToolbarAndHelp(true, 'frozen');
 }
 
 function ShowReadonlyHelp() {
+	ShowInfobar();
 	showToolbarAndHelp(false, 'read_only');
 }
 

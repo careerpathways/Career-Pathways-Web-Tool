@@ -90,7 +90,8 @@ class ThisSiteTemplate extends SiteTemplate {
 
 			<?php
 			if( $this->toolbar_function != '' ) {
-				eval($this->toolbar_function.'();');
+				$func = $this->toolbar_function;
+				$func();
 			}
 
 			$this->PublicToolbar();
