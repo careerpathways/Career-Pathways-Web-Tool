@@ -86,8 +86,10 @@ function selectDefaults2() {
 
 function selectDefaultsGrp() {
 	<?php
-	$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
-	echo 'var hss = ['.$_SESSION['school_id'].','.$hsids['hs'].']'."\n";
+	$hsids = $DB->VerticalQuery('SELECT hs_id FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id'], 'hs_id');
+	$ccids = $DB->VerticalQuery('SELECT cc_id FROM hs_affiliations WHERE hs_id='.$_SESSION['school_id'], 'cc_id');
+	$school_ids = array_merge(array($_SESSION['school_id']), $hsids, $ccids);
+	echo 'var hss = ['.implode(',', $school_ids).'];'."\n";
 	?>
 	if( hss.length > 0 )
 	{
