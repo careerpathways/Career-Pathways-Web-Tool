@@ -210,24 +210,29 @@ if( KeyInRequest('id') ) {
 	}
 }
 
-if( Request('drawing_id') ) {
-
+if( Request('drawing_id') ) 
+{
 	// permissions check
+	// this was preventing notes from being saved to locked or published drawings
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( !CanEditVersion($drawing['id'], $mode, true) ) {
-		die();
+	if( $drawing['created_by'] != $_SESSION['user_id'] && $drawing['last_modified_by'] != $_SESSION['user_id'] )
+	{
+		die('403 Forbidden');
 	}
 
-	if( Request('note') !== false ) {
-			$content = array();
-			$content['note'] = $_REQUEST['note'];
-			$DB->Update($version_table, $content, intval($_REQUEST['drawing_id']));
+	if( Request('note') !== false ) 
+	{
+		$content = array();
+		$content['note'] = $_REQUEST['note'];
+		$DB->Update($version_table, $content, intval($_REQUEST['drawing_id']));
 	}
 
 	if( Request('action') == 'lock' )
 	{
 		$DB->Update($version_table, array('frozen'=>1), intval(Request('drawing_id')));
 	}
+	
+	die('200 OK');
 }
 
 ?>

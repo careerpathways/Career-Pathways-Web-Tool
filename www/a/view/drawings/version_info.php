@@ -42,7 +42,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 <tr>
 	<th>Note</th>
 	<td>
-		<?php if( IsStaff() ) { ?>
+		<?php if( $drawing['created_by'] == $_SESSION['user_id'] || $drawing['last_modified_by'] == $_SESSION['user_id'] ) { ?>
 			<div id="note_edit">
 				<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
 				<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
@@ -159,10 +159,18 @@ function savenote() {
 	ajaxCallback(cbNoteChanged, '/a/drawings_post.php?mode=<?= $MODE ?>&drawing_id=<?= $version_id ?>&note='+URLEncode(note.value));
 }
 
-function cbNoteChanged() {
+function cbNoteChanged(data) {
 	var btn = getLayer('noteButton');
-	btn.value = 'Saved!';
-	btn.style.backgroundColor = '#393';
+	if(data != "200 OK")
+	{
+		btn.value = 'Error!';
+		btn.style.backgroundColor = '#933';
+	}
+	else
+	{
+		btn.value = 'Saved!';
+		btn.style.backgroundColor = '#393';
+	}
 	setTimeout(function(){
 		getLayer('noteButton').value = "Save";
 		getLayer('noteButton').style.backgroundColor = '';
@@ -171,10 +179,18 @@ function cbNoteChanged() {
 
 function deletenote() {
 	$j('#version_note').val('');
-	ajaxCallback(function() {
+	ajaxCallback(function(data) {
 		var btn = getLayer('noteClearButton');
-		btn.value = 'Cleared!';
-		btn.style.backgroundColor = '#393';
+		if(data != "200 OK")
+		{
+			btn.value = 'Error!';
+			btn.style.backgroundColor = '#933';
+		}
+		else
+		{
+			btn.value = 'Cleared!';
+			btn.style.backgroundColor = '#393';
+		}
 		setTimeout(function(){
 			getLayer('noteClearButton').value = "Clear";
 			getLayer('noteClearButton').style.backgroundColor = '';
