@@ -1,7 +1,7 @@
 <?php
 global $DB, $drawing_id;
 $drawing = $DB->SingleQuery("SELECT * FROM drawings WHERE id=$drawing_id");
-$parent = $DB->SingleQuery("SELECT m.*, IF(program_id=0, m.name, programs.title) AS name
+$parent = $DB->SingleQuery("SELECT m.*, IF(programs.title, programs.title, m.name) AS name
 	FROM drawing_main AS m 
 	LEFT JOIN programs ON m.program_id=programs.id
 	WHERE m.id=".$drawing['parent_id']);
