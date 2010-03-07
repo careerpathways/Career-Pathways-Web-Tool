@@ -10,105 +10,117 @@ if( Request('from_date') ) {
 	
 	$response = array();
 
+	
+	
+	
+	
 
 	$d = $DB->MultiQuery('
-		SELECT COUNT(*) AS num, school_name
-		FROM (
-			SELECT DISTINCT(user_id) AS user_id, school_id, school_name
-			FROM login_history AS lh
-			LEFT JOIN users u ON lh.user_id=u.id
-			LEFT JOIN schools s ON u.school_id=s.id
-			WHERE date >= "'.$from.'" AND date <= "'.$to.' 23:59:59"
-				AND school_name IS NOT NULL
-		) temp
-		GROUP BY school_id
-		ORDER BY num DESC');
-	$total = 0;
+		SELECT org_type, school_name, COUNT(1) AS num FROM (
+					SELECT DISTINCT(user_id) AS user_id, school_id, school_name, organization_type AS org_type
+					FROM login_history AS lh
+					LEFT JOIN users u ON lh.user_id=u.id
+					LEFT JOIN schools s ON u.school_id=s.id
+					WHERE date >= "'.$from.'" AND date <= "'.$to.' 23:59:59"
+						AND school_name IS NOT NULL
+					ORDER BY school_id) tmp
+		GROUP BY org_type, school_name WITH ROLLUP
+	');
 	$str = '<table width="300">';
-	foreach( $d as $org ) {
-		$total += $org['num'];
-		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	foreach( $d as $org ) 
+	{
+		$str .= '<tr>';
+		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+		$str .= '</tr>';
 	}
-	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
 	$str .= '</table>';
 	$response['active_users'] = $str;
 	
 
 
 	$d = $DB->MultiQuery('
-		SELECT COUNT(*) AS num, school_name
+		SELECT org_type, school_name, COUNT(*) AS num
 		FROM (
-			SELECT DISTINCT(u.id) AS user_id, school_id, school_name
+			SELECT DISTINCT(u.id) AS user_id, school_id, school_name, organization_type AS org_type
 			FROM users u
 			LEFT JOIN schools s ON u.school_id=s.id
 			WHERE u.date_created >= "'.$from.'" AND u.date_created <= "'.$to.' 23:59:59"
 		) temp
-		GROUP BY school_id
-		ORDER BY num DESC');
-	$total = 0;
+		GROUP BY org_type, school_name WITH ROLLUP');
 	$str = '<table width="300">';
-	foreach( $d as $org ) {
-		$total += $org['num'];
-		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	foreach( $d as $org ) 
+	{
+		$str .= '<tr>';
+		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+		$str .= '</tr>';
 	}
-	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
 	$str .= '</table>';
 	$response['users_added'] = $str;
 
 
 
-	$d = $DB->MultiQuery('SELECT * FROM schools WHERE date_created>="'.$from.'" AND date_created<="'.$to.' 23:59:59"');
+	$d = $DB->MultiQuery('
+		SELECT organization_type, school_name, COUNT(1) AS num
+		FROM schools 
+		WHERE date_created>="'.$from.'" AND date_created<="'.$to.' 23:59:59"
+		GROUP BY organization_type, school_name WITH ROLLUP
+		');
 	$str = '<table width="300">';
-	foreach( $d as $org ) {
-		$str .= '<tr><td>&nbsp;</td><td>' .$org['school_name'].'</td></tr>';
+	foreach( $d as $org ) 
+	{
+		$str .= '<tr>';
+		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['organization_type'] . ' Total</b>') . '</td>';
+		$str .= '<td width="30">' . ($org['school_name'] ? '' : '<b>' . $org['num'] . '</b>') . '</td>';
+		$str .= '</tr>';
 	}
-	$str .= '<tr><td width="30">'.count($d).'</td><td><b>Total</b></td></tr>';
 	$str .= '</table>';
 	$response['orgs_added'] = $str;
 
 
 
 	$d = $DB->MultiQuery('
-		SELECT COUNT(*) AS num, school_name
+		SELECT org_type, school_name, COUNT(*) AS num
 		FROM (
-			SELECT DISTINCT(dm.id), school_id, school_name
+			SELECT DISTINCT(dm.id), school_id, school_name, organization_type AS org_type
 			FROM drawing_main AS dm
 			LEFT JOIN schools s ON dm.school_id=s.id
 			WHERE dm.date_created >= "'.$from.'" AND dm.date_created <= "'.$to.' 23:59:59"
 				AND school_name IS NOT NULL
 		) temp
-		GROUP BY school_id
-		ORDER BY num DESC');
-	$total = 0;
+		GROUP BY org_type, school_name WITH ROLLUP');
 	$str = '<table width="300">';
-	foreach( $d as $org ) {
-		$total += $org['num'];
-		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	foreach( $d as $org ) 
+	{
+		$str .= '<tr>';
+		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+		$str .= '</tr>';
 	}
-	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
 	$str .= '</table>';
 	$response['rdmp_added'] = $str;
 		
 	
 	
 	$d = $DB->MultiQuery('
-		SELECT COUNT(*) AS num, school_name
+		SELECT org_type, school_name, COUNT(*) AS num
 		FROM (
-			SELECT DISTINCT(dm.id), school_id, school_name
+			SELECT DISTINCT(dm.id), school_id, school_name, organization_type AS org_type
 			FROM post_drawing_main AS dm
 			LEFT JOIN schools s ON dm.school_id=s.id
 			WHERE dm.date_created >= "'.$from.'" AND dm.date_created <= "'.$to.' 23:59:59"
 				AND school_name IS NOT NULL
 		) temp
-		GROUP BY school_id
-		ORDER BY num DESC');
-	$total = 0;
+		GROUP BY org_type, school_name WITH ROLLUP');
 	$str = '<table width="300">';
-	foreach( $d as $org ) {
-		$total += $org['num'];
-		$str .= '<tr><td>'.$org['num'].'</td><td>' .$org['school_name'].'</td></tr>';
+	foreach( $d as $org ) 
+	{
+		$str .= '<tr>';
+		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+		$str .= '</tr>';
 	}
-	$str .= '<tr><td width="30">'.$total.'</td><td><b>Total</b></td></tr>';
 	$str .= '</table>';
 	$response['post_added'] = $str;
 	

@@ -32,22 +32,46 @@ echo '<h2>User Stats</h2>';
 echo '<br>';
 
 $total_users = $DB->SingleQuery('SELECT COUNT(*) AS num FROM users WHERE user_active=1');
-$total_organizations = $DB->MultiQuery('SELECT COUNT(*) AS num, organization_type FROM schools GROUP BY organization_type');
+$total_organizations = $DB->VerticalQuery('SELECT COUNT(*) AS num, organization_type FROM schools GROUP BY organization_type', 'num', 'organization_type');
+$total_active = $DB->ArrayQuery('
+		SELECT organization_type, COUNT(1) AS numOrgs, SUM(num) AS numUsers
+		FROM
+		(
+			SELECT school_name, COUNT(users.id) AS num, organization_type
+			FROM schools
+			LEFT JOIN users ON school_id = schools.id
+			GROUP BY schools.id
+		) tmp
+		WHERE num > 0
+		GROUP BY organization_type
+		', 'organization_type');
 
-$temp['HS'] = 'High Schools';
-$temp['CC'] = 'Community Colleges';
-$temp['Other'] = 'Other Organizations';
+$caption['HS'] = 'High Schools';
+$caption['CC'] = 'Community Colleges';
+$caption['Other'] = 'Other Organizations';
 
 echo '<table class="bordered">';
 	echo '<tr>';
 		echo '<th>Total Users</th>';
 		echo '<td>'.$total_users['num'].'</td>';
 	echo '</tr>';
-	foreach( $total_organizations as $to )
+echo '</table>';
+echo '<br />';
+
+echo '<table class="bordered">';
+	echo '<tr>';
+		echo '<th></th>';
+		echo '<th>Total Orgs</th>';
+		echo '<th>Orgs with Users</th>';
+		echo '<th>Num Users</th>';
+	echo '</tr>';
+	foreach($caption as $type=>$title)
 	{
 		echo '<tr>';
-			echo '<th>Total '.$temp[$to['organization_type']].'</th>';
-			echo '<td>'.$to['num'].'</td>';
+			echo '<th>'.$title.'</th>';
+			echo '<td>'.$total_organizations[$type].'</td>';
+			echo '<td>'.$total_active[$type]['numOrgs'].'</td>';
+			echo '<td>'.$total_active[$type]['numUsers'].'</td>';
 		echo '</tr>';
 	}
 echo '</table>';
