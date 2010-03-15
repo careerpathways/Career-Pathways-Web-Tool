@@ -4,8 +4,8 @@ include("firstinclude.inc.php");
 if(array_key_exists('CONFIG_FILE', $_SERVER))
 	include($_SERVER['CONFIG_FILE']);
 else
-	include("settings.inc.php");
-
+	include("default.settings.php");
+	
 define('CPUSER_HIGHSCHOOL', 8);
 define("CPUSER_STAFF", 16);
 define("CPUSER_SCHOOLADMIN", 64);

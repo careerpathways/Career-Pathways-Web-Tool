@@ -213,9 +213,10 @@ if( KeyInRequest('id') ) {
 if( Request('drawing_id') ) 
 {
 	// permissions check
-	// this was preventing notes from being saved to locked or published drawings
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( $drawing['created_by'] != $_SESSION['user_id'] && $drawing['last_modified_by'] != $_SESSION['user_id'] )
+	if( !($drawing['school_id'] == $_SESSION['school_id'] 
+		|| $drawing['created_by'] == $_SESSION['user_id'] 
+		|| $drawing['last_modified_by'] == $_SESSION['user_id']) )
 	{
 		die('403 Forbidden');
 	}

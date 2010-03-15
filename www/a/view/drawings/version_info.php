@@ -42,7 +42,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 <tr>
 	<th>Note</th>
 	<td>
-		<?php if( $drawing['created_by'] == $_SESSION['user_id'] || $drawing['last_modified_by'] == $_SESSION['user_id'] ) { ?>
+		<?php if( $drawing_main['school_id'] == $_SESSION['school_id'] || $drawing['created_by'] == $_SESSION['user_id'] || $drawing['last_modified_by'] == $_SESSION['user_id'] ) { ?>
 			<div id="note_edit">
 				<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
 				<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">

@@ -48,11 +48,15 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 <tr>
 	<th>Note</th>
 	<td>
-		<div id="note_edit">
-			<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>" />
-			<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()" />
-			<input type="button" class="submit tiny" value="Clear" id="noteClearButton" onclick="deletenote()" />
-		</div>
+		<?php if( $drawing_main['school_id'] == $_SESSION['school_id'] || $drawing['created_by'] == $_SESSION['user_id'] || $drawing['last_modified_by'] == $_SESSION['user_id'] ) { ?>
+			<div id="note_edit">
+				<input type="text" id="version_note" name="name" size="60" value="<?= $drawing['note'] ?>">
+				<input type="button" class="submit tiny" value="Save" id="noteButton" onclick="savenote()">
+				<input type="button" class="submit tiny" value="Clear" id="noteClearButton" onclick="deletenote()" />
+			</div>
+		<?php } else { ?>
+			<?= $drawing['note'] ?>
+		<?php } ?>
 	</td>
 </tr>
 <tr>
