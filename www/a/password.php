@@ -108,6 +108,12 @@ global $SITE;
 		$form_action = "password.php";
 	}
 
+	if($_SESSION['email'] == 'guest')
+	{
+		echo '<p>The guest account password cannot be changed.';
+		return;
+	}
+	
 	?>
 	<p><?php echo $msg; ?></p>
 	<form action="<?= $form_action; ?>" method="post">

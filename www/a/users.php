@@ -49,7 +49,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 
 	// Staff users can only view, not edit
-	if( $_SESSION['user_level'] <= CPUSER_STAFF && $_SESSION['user_id'] != Request('id') ) {
+	if( ($_SESSION['user_level'] <= CPUSER_STAFF && $_SESSION['user_id'] != Request('id')) || $_SESSION['email'] == 'guest' ) {
 		if( Request('id') == '' ) {
 			header("Location: ".$_SERVER['PHP_SELF']);
 		} else {
