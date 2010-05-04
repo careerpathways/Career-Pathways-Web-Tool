@@ -8,6 +8,11 @@ PrintStatsMenu();
 echo '<h2>OLMIS Links</h2>';
 echo '<br />';
 
+$count = $DB->SingleQuery('
+	SELECT COUNT(1) AS num FROM drawing_main m JOIN (SELECT drawing_id, olmis_id FROM olmis_links GROUP BY drawing_id) o ON drawing_id = m.id
+');
+echo $count['num'] . ' drawings link to OLMIS reports<br /><br />';
+
 $olmis = $DB->MultiQuery('
 	SELECT c.olmis_id, c.job_title
 	FROM olmis_links AS l

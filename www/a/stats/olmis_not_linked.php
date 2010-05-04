@@ -8,6 +8,25 @@ PrintStatsMenu();
 echo '<h2>Roadmaps Not Linked to OLMIS</h2>';
 echo '<br />';
 
+$total = $DB->SingleQuery('
+	SELECT COUNT(1) AS num FROM
+	(
+			SELECT s.school_name, m.id, IF(m.name="", p.title, m.name) AS NAME
+			FROM drawing_main m 
+			LEFT JOIN programs p ON m.program_id=p.id 
+			JOIN drawings d ON m.id=d.parent_id 
+			JOIN schools s ON m.school_id=s.id 
+			WHERE published = 1 
+				AND m.id NOT IN (
+					SELECT m.id FROM drawing_main m JOIN olmis_links o ON m.id = o.drawing_id
+				)
+			GROUP BY m.id 
+			ORDER BY s.school_name, m.name
+	) tmp
+');
+echo $total['num'] . ' drawings at community colleges do not link to OLMIS<br /><br />';
+
+
 $schools = $DB->MultiQuery('
 	SELECT id, school_name, COUNT(1) AS num
 	FROM 

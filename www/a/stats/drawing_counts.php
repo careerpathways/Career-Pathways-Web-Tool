@@ -14,7 +14,7 @@ foreach( $tables as $t )
 {
 	echo '<tr>';
 		echo '<td colspan="2" valign="top">';
-			echo '<h3>' . $t['caption'] . '</h3>';
+			echo '<h3>' . ($t['main'] == 'drawing_main' ? $t['type'] . ' ' : '') . $t['caption'] . '</h3>';
 		echo '</td>';
 	echo '</tr>';
 	echo '<tr>';
@@ -23,23 +23,29 @@ foreach( $tables as $t )
 	{
 		$snapshot = $DB->SingleQuery('SELECT *
 		FROM
-			(SELECT COUNT(*) AS published FROM drawings WHERE published=1) published_versions,
+			(SELECT COUNT(*) AS published FROM drawings d JOIN drawing_main m ON m.id=d.parent_id JOIN schools s ON m.school_id=s.id WHERE published=1 AND organization_type="' . $t['type'] . '") published_versions,
 			(SELECT COUNT(DISTINCT(drawing_id)) AS embedded
 				FROM external_links l
 				LEFT JOIN drawing_main m ON m.id=l.drawing_id
-				WHERE type="pathways" AND school_id IS NOT NULL) x,
-			(SELECT COUNT(*) AS total_drawings FROM drawing_main) f,
-			(SELECT COUNT(*) AS total_versions FROM drawings) e,
+				JOIN schools s ON m.school_id=s.id
+				WHERE type="pathways" AND school_id IS NOT NULL AND organization_type = "' . $t['type'] . '") x,
+			(SELECT COUNT(*) AS total_drawings FROM drawing_main JOIN schools s ON school_id=s.id WHERE organization_type = "' . $t['type'] . '") f,
+			(SELECT COUNT(*) AS total_versions FROM drawings d JOIN drawing_main m ON d.parent_id=m.id JOIN schools s ON school_id=s.id WHERE organization_type = "' . $t['type'] . '") e,
 			(SELECT COUNT(*) AS full_versions FROM
-				(SELECT v.*, COUNT(objects.id) AS num_objects
-				FROM drawings AS v, objects
-				WHERE drawing_id=v.id
+				(SELECT v.*, COUNT(o.id) AS num_objects
+				FROM drawings AS v
+				JOIN objects o ON o.drawing_id=v.id
+				JOIN drawing_main m ON m.id=v.parent_id
+				JOIN schools s on s.id=m.school_id
+				WHERE organization_type="' . $t['type'] . '"
 				GROUP BY v.id) c
 				WHERE c.num_objects > 5) d');
 		$versions = $DB->MultiQuery('SELECT IF(num_versions>7,8,num_versions) AS versions, COUNT(*) AS num_drawings FROM
 			(SELECT m.*, COUNT(*) AS num_versions
-			FROM drawing_main AS m, drawings AS v
-			WHERE parent_id=m.id
+			FROM drawing_main AS m
+			JOIN drawings AS v ON v.parent_id=m.id
+			JOIN schools s ON m.school_id=s.id
+			WHERE organization_type="' . $t['type'] . '"
 			GROUP BY m.id) g
 		GROUP BY versions');
 	}

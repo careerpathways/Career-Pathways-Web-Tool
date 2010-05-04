@@ -4,7 +4,8 @@ include('GoogleCharts.php');
 
 ModuleInit('stats');
 
-$tables[] = array('main'=>'drawing_main', 'version'=>'drawings', 'caption'=>'Roadmaps', 'type'=>'');
+$tables[] = array('main'=>'drawing_main', 'version'=>'drawings', 'caption'=>'Roadmaps', 'type'=>'CC');
+$tables[] = array('main'=>'drawing_main', 'version'=>'drawings', 'caption'=>'Roadmaps', 'type'=>'Other');
 $tables[] = array('main'=>'post_drawing_main', 'version'=>'post_drawings', 'caption'=>'CC POST Drawings', 'type'=>'CC');
 $tables[] = array('main'=>'post_drawing_main', 'version'=>'post_drawings', 'caption'=>'HS POST Drawings', 'type'=>'HS');
 
