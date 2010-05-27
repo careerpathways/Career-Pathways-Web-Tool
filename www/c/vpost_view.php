@@ -63,6 +63,7 @@ echo '<div style="margin-bottom: 10px">';
 echo '<div id="post_title">';
 	echo '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
 echo '</div>';
+/*
 if( count($skillsets) > 0 )
 {
 	asort($skillsets);
@@ -73,6 +74,7 @@ if( count($skillsets) > 0 )
 		echo 'Oregon Skill Set: ' . $skillset['title'];
 	echo '</div>';
 }
+*/
 echo '</div>';
 
 foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )

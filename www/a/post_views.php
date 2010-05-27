@@ -502,12 +502,25 @@ function processDrawingListRequest()
 			<?php
 			$k1 = (Request('type')=='hs'?'hs':'cc');
 			$k2 = (Request('type')=='cc'?'hs':'cc');
-			$schools = $DB->VerticalQuery('SELECT *
-				FROM schools
-				WHERE organization_type = "' . (Request('type')=='hs'?'HS':'CC') . '"
-					AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.$_SESSION['school_id'].')
-							OR schools.id = '.$_SESSION['school_id'].' )
-				ORDER BY school_name', 'school_name', 'id');
+
+			// "Other" orgs should be able to choose any CC or Other org, not just their own
+			$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+			if($mySchool['organization_type'] == 'Other' && Request('type') == 'cc')
+			{
+				$schools = $DB->VerticalQuery('SELECT *
+					FROM schools
+					WHERE organization_type IN ("CC", "Other")
+					ORDER BY id='.$_SESSION['school_id'].' DESC, school_name', 'school_name', 'id');
+			}
+			else
+			{
+				$schools = $DB->VerticalQuery('SELECT *
+					FROM schools
+					WHERE organization_type IN (' . (Request('type')=='hs'?'"HS"':'"CC","Other"') . ')
+						AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.$_SESSION['school_id'].')
+								OR schools.id = '.$_SESSION['school_id'].' )
+					ORDER BY school_name', 'school_name', 'id');
+			}
 
 			echo '<select size="6" id="list_schools" style="width:100%" onchange="select_organization(this.value)">';
 			foreach( $schools as $sid=>$school )
@@ -518,11 +531,12 @@ function processDrawingListRequest()
 			?>
 			<br />
 			
-			<div id="list_of_drawings"></div>
-		
 			<div id="submit_btn" style="display:none" onclick="save_drawing_selection('<?= strtoupper(request('type')) ?>')">Save</div>
 			
+			<div id="list_of_drawings"></div>
+
 			<div id="drawing_preview_box" style="display:none;margin:0 auto;width:700px;height:400px;"><h3>Preview</h3><iframe style="width:700px;height:400px;background-color:#FFFFFF;"></iframe></div>
+		
 		</div>
 	</div>
 	<script type="text/javascript">
