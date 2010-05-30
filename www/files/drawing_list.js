@@ -35,6 +35,7 @@ var timeout;
 var school_id = "<?= $school_id ?>";
 var people_id = "<?= $people_id ?>";
 var categories = "<?= $categories ?>";
+var loaded_with_search_value = "";
 
 function load_data(selectbox, search) {
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search+'&type='+MODE;
@@ -108,7 +109,14 @@ function selectDefaultsGrp() {
 
 function init() {
 	var url = "/a/drawings_load.php?mode=list_schools&selectdefault&type="+MODE;
+
+	if(getLayer('search_box').value != ""){
+		loaded_with_search_value = getLayer('search_box').value;
+		do_search();
+	}
+	
 	ajaxCallback(init2, url);
+	
 	Event.observe(getLayer('search_box'), 'keydown', function(evt) {
 	  if (!evt) evt = window.event;
 	  if (evt.keyCode == 13) do_search();
@@ -129,7 +137,11 @@ function init3(data) {
 
 function init4(data) {
 	load_cb(data);
-	load_drawing_list();
+	// Load the drawing list from the state of the three boxes only if there was nothing in the search box.
+	// If there was a value in the search box, the search has already been performed and the list will update soon.
+	if(loaded_with_search_value == ""){
+		load_drawing_list();
+	}
 }
 
 function queue_change(sel) {

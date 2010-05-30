@@ -356,7 +356,10 @@ switch( Request('mode') ) {
 					$parent['drawings'] = $drawings;
 				}
 			} else {
-	
+			// Request('search') is not empty
+
+				$_SESSION['drawing_list_search_' . Request('type')] = Request('search');
+				
 				if( $t == 'Pathways' )
 				{
 					$objects_table = 'objects';

@@ -9,6 +9,15 @@ function Request($key) {
 	}
 }
 
+function session($key) {
+// return what is in the session variable if it exists
+	if( array_key_exists($key, $_SESSION) ) {
+		return $_SESSION[$key];
+	} else {
+		return false;
+	}
+}
+
 
 //*************************
 // KeyInRequest($key)

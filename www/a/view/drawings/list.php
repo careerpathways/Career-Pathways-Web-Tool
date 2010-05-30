@@ -59,7 +59,7 @@ PrintHeader();
 </nobr></td>
 <td width="240">
 	<div id="search_form" align="right"><nobr>
-		<input type="text" size="20" name="search_box" id="search_box" value="<?= Request('search') ?>">
+		<input type="text" size="20" name="search_box" id="search_box" value="<?= (Request('search') ? Request('search') : Session('drawing_list_search_' . $MODE)) ?>">
 		<input type="button" class="submit" value="Search" onclick="do_search()">
 	</nobr></div>
 </td>
