@@ -42,6 +42,8 @@ $drawing_status = "";
 if( is_array($drawing) ) {
 
 	$colors = $DB->VerticalQuery('SELECT id, hex FROM color_schemes WHERE school_id IN ('.$drawing['school_id'].', 0)', 'hex', 'id');
+	$colors[] = 'ffffff';
+	$colors[] = '333333';
 	$title = $drawing['name'];
 	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=".$drawing['school_id']);
 

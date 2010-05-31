@@ -142,7 +142,7 @@ if( Request('sid') ) {
 
 	} else {
 
-		if( Request('color') && strtolower(Request('color')) != 'ffffff') {
+		if( Request('color') && !in_array(strtolower(Request('color')), array('ffffff','333333')) ) {
 			$_REQUEST['color'] = str_replace('#','',$_REQUEST['color']);
 
 			$check = $DB->SingleQuery("SELECT * FROM color_schemes WHERE school_id=".$school_id." AND hex='".substr($_REQUEST['color'],0,6)."'");
@@ -179,6 +179,12 @@ function TheSort($a, $b) {
 
 function hslsort($a, $b) 
 {
+	// Force white and grey to the end of the list
+	if(in_array(strtolower($a['hex']), array('ffffff', '333333')))
+		return TRUE;
+	if(in_array(strtolower($b['hex']), array('ffffff', '333333')))
+		return FALSE;
+		
 	$A = RGBtoHSL($a['hex']);
 	$B = RGBtoHSL($b['hex']);
 	return $A['H'] < $B['H'];
