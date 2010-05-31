@@ -147,7 +147,7 @@ function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 
 
 function drawing_sort_by_version($a,$b) {
-	return $a['version_num'] > $b['version_num'];
+	return $a['version_num'] < $b['version_num'];
 }
 
 

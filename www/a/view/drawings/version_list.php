@@ -8,7 +8,7 @@
 			FROM drawings
 			WHERE drawings.parent_id=".$drawing['id']."
 				AND deleted=0
-			ORDER BY version_num");
+			ORDER BY version_num DESC");
 		foreach( $versions as $v ) {
 			$created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name, id FROM users WHERE id=".$v['created_by']));
 			$modified = ($v['last_modified_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name, id FROM users WHERE id=".$v['last_modified_by']));

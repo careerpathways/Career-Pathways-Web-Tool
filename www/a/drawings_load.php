@@ -352,7 +352,7 @@ switch( Request('mode') ) {
 						FROM ".$version_table."
 						WHERE ".$version_table.".parent_id=".$parent['id']."
 							AND deleted=0
-						ORDER BY version_num");
+						ORDER BY version_num DESC");
 					$parent['drawings'] = $drawings;
 				}
 			} else {
@@ -400,7 +400,7 @@ switch( Request('mode') ) {
 						)
 						$post_where
 					GROUP BY m.id
-					ORDER BY version_num");
+					ORDER BY version_num DESC");
 	
 				foreach( $mains as &$parent ) {
 					/*
@@ -415,7 +415,8 @@ switch( Request('mode') ) {
 					$drawings = $DB->MultiQuery("
 						SELECT *
 						FROM ".$version_table."
-						WHERE parent_id=".$parent['id']." AND deleted=0");
+						WHERE parent_id=".$parent['id']." 
+							AND deleted=0");
 					$parent['drawings'] = $drawings;
 					
 					usort($parent['drawings'],'drawing_sort_by_version');
