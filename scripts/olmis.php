@@ -22,7 +22,7 @@ $olmis = $DB->MultiQuery('
 $fp = fopen($SITE->cache_path('olmis').'olmis.csv', 'w');
 foreach( $olmis as $o )
 {
-	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways'))
+	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways')){}
 	else
 		$url = $o['drawing_url'];
 	
