@@ -23,7 +23,7 @@ class ThisSite extends SiteSettings {
 
 	function base_url() { return $_SERVER['SERVER_NAME']; }
 	function cache_path($folder="") { 
-		$base_dir = 'C:/Users/Aaron Parecki/Documents/Aptana Studio Workspace/Pathways/cache/';
+		$base_dir = 'C:/Users/Aaron Parecki/Aptana Studio Workspace 1.5/Pathways/cache/';
 		
 		if( $folder ) {
 			if( !is_dir($base_dir . $folder) ) 
