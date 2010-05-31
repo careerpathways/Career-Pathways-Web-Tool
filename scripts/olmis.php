@@ -22,7 +22,11 @@ $olmis = $DB->MultiQuery('
 $fp = fopen($SITE->cache_path('olmis').'olmis.csv', 'w');
 foreach( $olmis as $o )
 {
-	fwrite($fp, $o['school_name'].','.$o['olmis_id'].','.$o['drawing_url'].',"'.trim($o['drawing_name']).'"'."\n");
+	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways'))
+	else
+		$url = $o['drawing_url'];
+	
+	fwrite($fp, $o['school_name'].','.$o['olmis_id'].','.$url.',"'.trim($o['drawing_name']).'"'."\n");
 }
 fclose($fp);
 

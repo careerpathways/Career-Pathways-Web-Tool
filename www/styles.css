@@ -1067,7 +1067,7 @@ ol.import_instructions > li
   width: 50px;
 }
 
-tr.editable {
+tr.editable, tr.even {
 	background-color:#<?=$L_GOLD?>;
 }
 

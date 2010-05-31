@@ -145,6 +145,77 @@ function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 	}
 }
 
+/**
+ * Tries to find the external link to the specified drawing in the external_links table.
+ * Filters out things like file:/// links and known testing URLs.
+ * 
+ * @param int $drawing_id
+ * @param string $type 'post' or 'pathways'
+ * @return string
+ */
+function getExternalDrawingLink($drawing_id, $type)
+{
+	global $DB;
+	
+	$drawing_id = intval($drawing_id);
+	$type = ($type == 'pathways' ? 'pathways' : 'post');
+	
+	$links = $DB->VerticalQuery('
+		SELECT url
+		FROM external_links 
+		WHERE drawing_id = ' . $drawing_id . ' 
+			AND type = "' . $type . '"
+			AND counter > 3
+		ORDER BY counter ASC
+		', 'url');
+	$exclude = $DB->VerticalQuery('SELECT pattern FROM external_link_exclude', 'pattern');
+	
+	$bestLink = FALSE;
+	// start with the least likely, refining the search as we look through the list
+	foreach($links as $link)
+	{
+		// if the link matches any of the excluded patterns, skip it
+		foreach($exclude as $e)
+			if(preg_match($e, $link))
+				continue 2;
+
+		$bestLink = $link;
+	}
+	return $bestLink;
+}
+
+function getExternalDrawingLinks($drawing_id, $type)
+{
+	global $DB;
+	
+	$drawing_id = intval($drawing_id);
+	$type = ($type == 'pathways' ? 'pathways' : 'post');
+	
+	$links = $DB->MultiQuery('
+		SELECT url, counter, last_seen
+		FROM external_links 
+		WHERE drawing_id = ' . $drawing_id . ' 
+			AND type = "' . $type . '"
+			AND counter > 3
+		ORDER BY counter DESC
+		', 'url');
+	$exclude = $DB->VerticalQuery('SELECT pattern FROM external_link_exclude', 'pattern');
+	
+	$bestLinks = array();
+	// start with the least likely, refining the search as we look through the list
+	foreach($links as $link)
+	{
+		// if the link matches any of the excluded patterns, skip it
+		foreach($exclude as $e)
+			if(preg_match($e, $link['url']))
+				continue 2;
+
+		$bestLinks[] = $link;
+	}
+	return $bestLinks;
+}
+
+
 
 function drawing_sort_by_version($a,$b) {
 	return $a['version_num'] < $b['version_num'];

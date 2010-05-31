@@ -214,6 +214,14 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 		<br>
 	</td>
 </tr>
+<tr>
+	<th valign="top">External Link</th>
+	<td>
+		This is the best link we found to an external page embedding this drawing.
+		<input type="text" style="width:560px;" value="<?=getExternalDrawingLink($id, 'pathways')?>" onclick="this.select()" />
+		<br /><br />
+	</td>
+</tr>
 <?php
 	} else {
 ?>
@@ -226,6 +234,30 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 
 	require('version_list.php');
 ?>
+<tr>
+	<th>External Links</th>
+	<td>
+		<div>Displaying all external links found embedding this drawing</div>
+		<table class="border" cellpadding="3">
+			<tr>
+				<th>URL</th>
+				<th>Views</th>
+				<th>Last Seen</th>
+			</tr>
+		<?php 
+		$trClass = new Cycler('even', 'odd');
+		foreach(getExternalDrawingLinks($id, 'pathways') as $link)
+		{
+			echo '<tr class="' . $trClass . '">';
+				echo '<td><a href="' . $link['url'] . '" target="_new">' . $link['url'] . '</a></td>';
+				echo '<td>' . $link['counter'] . '</td>';
+				echo '<td>' . date('m/d/y g:ia', strtotime($link['last_seen'])) . '</td>';
+			echo '</tr>';
+		}
+		?>
+		</table>
+	</td>
+</tr>
 <tr>
 	<th>Delete</th>
 	<td width="545">
