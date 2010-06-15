@@ -116,14 +116,14 @@ function html_occupation($o)
 	ob_start();
 	echo '<div class="olmis_title"><a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">' . $o['job_title'] . '</a></div>' . "\n";
 	$drawings = $DB->MultiQuery('
-		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr
+		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr, schools.school_name
 		FROM olmis_links AS l
 		JOIN drawing_main AS d ON l.drawing_id=d.id
 		LEFT JOIN programs AS p ON d.program_id=p.id
 		JOIN schools ON d.school_id=schools.id
 		WHERE l.olmis_id = '.$o['olmis_id']);
 	foreach( $drawings as $d ) {
-		echo '<div class="olmis_roadmap"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank">' . $d['school_abbr'] . ': ' . $d['name'] . '</a></div>' . "\n";
+		echo '<div class="olmis_roadmap"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank"><span title="' . $d['school_name'] . '">' . $d['school_abbr'] . '</span>: ' . $d['name'] . '</a></div>' . "\n";
 	}
 	return ob_get_clean();
 }
@@ -137,14 +137,14 @@ function json_occupation($o)
 		'url'=>'http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11'
 	);
 	$drawings = $DB->MultiQuery('
-		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr
+		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr, schools.school_name
 		FROM olmis_links AS l
 		JOIN drawing_main AS d ON l.drawing_id=d.id
 		LEFT JOIN programs AS p ON d.program_id=p.id
 		JOIN schools ON d.school_id=schools.id
 		WHERE l.olmis_id = '.$o['olmis_id']);
 	foreach( $drawings as $d ) 
-		$program['roadmaps'][] = array('url'=>'http://' . $_SERVER['SERVER_NAME'] . '/c/published/' . $d['id'] . '/view.html', 'school_abbr'=>$d['school_abbr'], 'title'=>$d['name']);
+		$program['roadmaps'][] = array('url'=>'http://' . $_SERVER['SERVER_NAME'] . '/c/published/' . $d['id'] . '/view.html', 'school_abbr'=>$d['school_abbr'], 'school_name'=>$d['school_name'], 'title'=>$d['name']);
 
 	return $program;
 }
