@@ -252,18 +252,20 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 		{
 			echo '<div>Displaying all external links found embedding this drawing</div>';
 			?>
-			<table class="border" cellpadding="3" width="410">
+			<table class="border" cellpadding="3" width="100%">
 				<tr>
+					<th></th>
 					<th>URL</th>
 					<th>Views</th>
-					<th>Last Seen</th>
+					<th>Last Viewed</th>
 				</tr>
 			<?php 
 			$trClass = new Cycler('even', 'odd');
 			foreach(getExternalDrawingLinks($id, 'pathways') as $link)
 			{
 				echo '<tr class="' . $trClass . '">';
-					echo '<td><a href="' . $link['url'] . '" target="_new">' . $link['url'] . '</a></td>';
+					echo '<td><a href="' . $link['url'] . '" target="_blank">' . SilkIcon('link.png') . '</a></td>';
+					echo '<td><a href="' . $link['url'] . '" target="_blank">' . $link['url'] . '</a></td>';
 					echo '<td>' . $link['counter'] . '</td>';
 					echo '<td>' . date('m/d/y g:ia', strtotime($link['last_seen'])) . '</td>';
 				echo '</tr>';
