@@ -124,25 +124,13 @@ if($SITE->oregon_skillset_enabled){
 	</tr>
 	<?php
 	}
-	?>
-	<tr>
-		<th>Preview</th>
-		<td>
-		<?php
-			if( is_array($published) ) {
-				echo '<a href="javascript:preview_drawing('.$published['parent_id'].','.$published['id'].')">Preview Published Drawing</a>';
-			} else {
-				echo 'No versions have been published yet.';
-			}
-		?>
-		</td>
-	</tr>
-<?php
+
 	if( is_array($published) ) {
 ?>
 	<tr>
-		<th>Link</th>
+		<th>HTML Link</th>
 		<td>
+			<div style="width:16px; float: left;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
 			<div id="drawing_link"><?php
 			$url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
 			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
@@ -151,7 +139,7 @@ if($SITE->oregon_skillset_enabled){
 	</tr>
 	<!--
 	<tr>
-		<th valign="top">XML</th>
+		<th valign="top">XML Link</th>
 		<td>
 			<div id="drawing_link_xml"><?php
 			$url = str_replace('%%',$drawing['code'],$xml_link);
@@ -173,18 +161,19 @@ if($SITE->oregon_skillset_enabled){
 </tr>
 <?php	
 	}
-
-		require('post_version_list.php');
-	?>
+	
+	require('post_version_list.php');		
+?>
 	<tr>
 		<th>Delete</th>
 		<td width="545">
 		<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
-			Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
-			<p><b>There is no way to recover deleted drawings!</b></p>
-			<p>If you are sure you want to delete the entire drawing, click the link below:</p>
-			<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete drawing and all versions</a></p>
-			<div id="deleteConfirm"></div>
+			<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete this drawing and remove <b>all</b> versions</a></p>
+			<div id="deleteConfirm" style="display: none">
+				<p>Please be careful. Deleting this drawing will break any links from external web pages to this drawing.</p>
+				<p><b>There is no way to recover deleted drawings!</b></p>
+				<p>Are you sure? <a href="javascript:doDelete()">Yes</a></p>
+			</div>
 			<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="delete_form">
 				<input type="hidden" name="id" value="<?= $drawing['id'] ?>">
 				<input type="hidden" name="delete" value="delete">
@@ -302,7 +291,7 @@ function preview_drawing(code,version) {
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id']) ) { ?>
 function deleteConfirm() {
-	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
+	getLayer('deleteConfirm').style.display = "block";
 }
 function doDelete() {
 	getLayer('delete_form').submit();

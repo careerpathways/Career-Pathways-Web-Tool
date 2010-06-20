@@ -298,6 +298,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	echo '<table>';
 	echo '<tr>';
 		echo '<th width="20">&nbsp;</th>';
+		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="280">Occupation/Program</th>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th>Tab Name</th>';
@@ -317,6 +318,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 
 		echo '<tr>';
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
+			echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $d['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')" title="View Version">' . SilkIcon('magnifier.png') . '</a></td>';
 			echo '<td width="90">';

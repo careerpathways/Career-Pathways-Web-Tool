@@ -64,32 +64,32 @@ function CanEditOtherSchools() {
 function CreateDrawingCodeFromTitle($title, $school_id, $drawing_id=0, $mode='pathways') {
 global $DB;
 	// replace spaces with underscores
-	$dirty_code = preg_replace('/\s+/','_',strtolower($title));
+	$dirty_code = preg_replace('/\s+/','-',strtolower($title));
 
 	// remove any character that is not a letter or number
 	$clean_code = CleanDrawingCode($dirty_code);
 
 	// remove any duplicate underscores
-	$clean_code = preg_replace('/_+/','_',$clean_code);
+	$clean_code = preg_replace('/_+/','-',$clean_code);
 
 	// get the coded version of the school abbreviation (removes spaces)
 	$school_abbr = CleanDrawingCode($DB->GetValue('school_abbr','schools',$school_id));
 
 	// this is the ideal code for this drawing. but it may already exist in the database
-	$proposed_code = strtolower($school_abbr.'_'.$clean_code);
+	$proposed_code = strtolower($school_abbr.'-'.$clean_code);
 
 	// look for conflicting codes
 	$code = $proposed_code;
 	while( DrawingCodeAlreadyExists($code, $drawing_id, $mode) ) {
 		// keep trying new codes until we get one that is unique
-		$code = $proposed_code.'_'.rand(100,999);
+		$code = $proposed_code.'-'.rand(100,999);
 	}
 
 	return $code;
 }
 
 function CleanDrawingCode($code) {
-	return strtolower(preg_replace('/[^a-z0-9_]+/i','_',$code));
+	return trim(strtolower(preg_replace('/[^a-z0-9\-]+/i','-',$code)), ' -');
 }
 
 function DrawingCodeAlreadyExists($code, $drawing_id, $mode) {

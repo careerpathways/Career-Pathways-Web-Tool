@@ -50,9 +50,8 @@ if( $id != "" ) {
 <script type="text/javascript" src="/files/drawing_list.js"></script>
 <script type="text/javascript" src="/c/drawings.js"></script>
 
-<a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
+<a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br /><br />
 
-<p>
 <?php if( $id == "" ) { ?>
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <div id="existingDrawings" style="float:right; width:330px;"></div>
@@ -108,7 +107,7 @@ if( $school['organization_type'] != 'Other') {
 <input type="hidden" name="id" value="">
 </form>
 <?php } else { ?>
-<table>
+<table width="960">
 <tr class="editable">
 	<td colspan="2">
 	<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowRoadmapHeader($drawing['id']) ?></div>
@@ -139,7 +138,7 @@ if( $school['organization_type'] != 'Other') {
 	}
 ?>
 <tr class="editable">
-	<th width="160">Organization</th>
+	<th width="120">Organization</th>
 	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
 </tr>
 <?php
@@ -164,20 +163,7 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 </tr>
 <?php
 }
-?>
-<tr>
-	<th>Preview</th>
-	<td>
-	<?php
-		if( is_array($published) ) {
-			echo '<a href="javascript:preview_drawing('.$published['parent_id'].','.$published['id'].')">Preview Published Drawing</a>';
-		} else {
-			echo 'No versions have been published yet.';
-		}
-	?>
-	</td>
-</tr>
-<?php
+
 	if( is_array($published) ) {
 ?>
 <tr>
@@ -187,25 +173,44 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 	</td>
 </tr>
 <tr>
-	<th>Link</th>
+	<th valign="top">External Link</th>
 	<td>
+		<?php 
+		if($external = getExternalDrawingLink($id, 'pathways'))
+		{
+			?>
+			<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
+			<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" /><br />
+				This link is published to the OLMIS reports listed above.<br />
+			<?php 
+		}
+		else
+			echo 'We did not find any external links embedding this drawing.<br />';
+		?>
+		<br />
+	</td>
+</tr>
+<tr>
+	<th>HTML Link</th>
+	<td>
+		<div style="width:16px; float:left;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
 		<div id="drawing_link"><?php
-		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['full_name'])),$published_link);
-		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$published_link);
+		echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
 </tr>
 <tr>
-	<th valign="top">XML</th>
+	<th valign="top">XML Link</th>
 	<td>
 		<div id="drawing_link_xml"><?php
-		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['full_name'])),$xml_link);
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$xml_link);
 		echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
 	</td>
 </tr>
 <tr>
-	<th valign="top">Accessible</th>
+	<th valign="top">Accessible Link</th>
 	<td>
 		<div id="drawing_link_ada"><?php
 		$url = str_replace('$$',$id,$accessible_link);
@@ -213,23 +218,6 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 		?></div>
 		These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
 		<br>
-	</td>
-</tr>
-<tr>
-	<th valign="top">External Link</th>
-	<td>
-		<?php 
-		if($external = getExternalDrawingLink($id, 'pathways'))
-		{
-			?>
-			This is the best link we found to an external page embedding this drawing.
-			<input type="text" style="width:560px;" value="<?=$external?>" onclick="this.select()" />
-			<?php 
-		}
-		else
-			echo 'We did not find any external links embedding this drawing.';
-		?>
-		<br /><br />
 	</td>
 </tr>
 <?php
@@ -242,53 +230,20 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 <?php
 	}
 
-	require('version_list.php');
+	require('version_list.php');	
+	
+	require('external_links.php');
 ?>
-<tr>
-	<th>External Links</th>
-	<td>
-		<?php 
-		$external_links = getExternalDrawingLinks($id, 'pathways');
-		if(count($external_links) > 0)
-		{
-			echo '<div>Displaying all external links found embedding this drawing</div>';
-			?>
-			<table class="border" cellpadding="3" width="100%">
-				<tr>
-					<th></th>
-					<th>URL</th>
-					<th>Views</th>
-					<th>Last Viewed</th>
-				</tr>
-			<?php 
-			$trClass = new Cycler('even', 'odd');
-			foreach(getExternalDrawingLinks($id, 'pathways') as $link)
-			{
-				echo '<tr class="' . $trClass . '">';
-					echo '<td><a href="' . $link['url'] . '" target="_blank">' . SilkIcon('link.png') . '</a></td>';
-					echo '<td><a href="' . $link['url'] . '" target="_blank">' . $link['url'] . '</a></td>';
-					echo '<td>' . $link['counter'] . '</td>';
-					echo '<td>' . date('m/d/y g:ia', strtotime($link['last_seen'])) . '</td>';
-				echo '</tr>';
-			}
-			?>
-			</table>
-			<?php
-		}
-		else
-			echo 'We did not find any external links embedding this drawing.<br /><br />';
-		?>
-	</td>
-</tr>
 <tr>
 	<th>Delete</th>
 	<td width="545">
 	<?php if( CanDeleteDrawing($drawing['id'], 'pathways') ) { ?>
-		Deleting this drawing will remove all versions. Please be careful. Deleting this drawing will break any links from external web pages to this drawing.
-		<p><b>There is no way to recover deleted drawings!</b></p>
-		<p>If you are sure you want to delete the entire drawing, click the link below:</p>
-		<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete drawing and all versions</a></p>
-		<div id="deleteConfirm"></div>
+		<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete this drawing and remove <b>all</b> versions</a></p>
+		<div id="deleteConfirm" style="display: none">
+			<p>Please be careful. Deleting this drawing will break any links from external web pages to this drawing.</p>
+			<p><b>There is no way to recover deleted drawings!</b></p>
+			<p>Are you sure? <a href="javascript:doDelete()">Yes</a></p>
+		</div>
 		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="delete_form">
 			<input type="hidden" name="id" value="<?= $drawing['id'] ?>">
 			<input type="hidden" name="delete" value="delete">
@@ -547,7 +502,7 @@ function bindOlmisCheckboxes()
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id'], 'pathways') ) { ?>
 function deleteConfirm() {
-	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
+	getLayer('deleteConfirm').style.display = "block";
 }
 function doDelete() {
 	getLayer('delete_form').submit();

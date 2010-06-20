@@ -12,7 +12,7 @@ $embed_code = '<div id="postContainer" style="width:100%; height:600px"></div>
 
 
 
-$MODE = 'pathways';
+$MODE = 'post_views';
 ModuleInit('post_views');
 
 
@@ -96,35 +96,47 @@ if( $id )
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>	
 	<tr>
-		<th>Preview</th>
-		<td>
-			<?php
-			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
-			echo '<a href="'.$url.'" target="_blank">'.$url.'</a>';
-			?>
-		</td>
-	</tr>
-	<tr>
-		<th>Link</th>
-		<td>
-			<div id="drawing_link"><?php
-			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
-			echo '<input type="text" style="width:540px" value="'.$url.'" onclick="this.select()" />';
-			?></div>
-		</td>
-	</tr>
-	<tr>
 		<th>Embed Code</th>
 		<td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
 	<tr>
+		<th valign="top">External Link</th>
+		<td>
+			<?php 
+			if($external = getExternalDrawingLink($id, 'post'))
+			{
+				?>
+				<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
+				<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" /><br />
+				<?php 
+			}
+			?>
+			<br />
+		</td>
+	</tr>
+	<tr>
+		<th>HTML Link</th>
+		<td>
+			<div id="drawing_link"><?php
+			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
+			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
+			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
+			?></div>
+		</td>
+	</tr>
+	<?php 
+		require('view/drawings/external_links.php');
+	?>
+	<tr>
 		<th>Delete</th>
 		<td>
-			Deleting this "view" will not delete the drawings associated with it. Click the link below to delete this view.<br />
 			<a href="javascript:void(0);" id="deleteLink" class="noline"><?=SilkIcon('cross.png')?> Delete this view</a> &nbsp;&nbsp;
-			<span id="deleteConfirm" style="display:none">Are you sure? <a href="javascript:void(0);">yes</a></span><br />
+			<div id="deleteConfirm" style="display:none">
+				<p>Deleting this view will not delete the drawings associated with it. Click the link below to delete only this view.</p>
+				<p>Are you sure? <a href="javascript:void(0);">yes</a></p>
+			</div><br />
 			<br />
 		</td>
 	</tr>
@@ -214,9 +226,14 @@ if( $id )
 		);
 	}
 
-	function preview_drawing(code) {
+	function preview_drawing(code) 
+	{
 		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
 	}
+	function preview_postview(id)
+	{
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/study/'+id+'/view.html"></iframe></div>',800,600, null, 'Preview');
+	} 
 	
 	function addDrawingToView(type)
 	{

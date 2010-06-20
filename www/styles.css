@@ -1090,3 +1090,13 @@ tr.editable, tr.even {
 	padding: 4px;
 }
 
+
+.trim {
+	overflow: hidden;
+	white-space: nowrap;
+}
+.external_links .trim {
+	width: 600px;
+}
+
+
