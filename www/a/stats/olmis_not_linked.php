@@ -46,11 +46,10 @@ echo '<table>';
 
 foreach($schools as $s)
 {
-	echo '<tr>';
-		echo '<td><div style="font-size: 18pt;">' . $s['school_name'] . '</div></td>';
-		echo '<td><div style="font-size: 18pt;">' . $s['num'] . '</div></td>';
+	echo '<tr class="drawing_schoolname">';
+		echo '<td class="drawinglist_schoolname" colspan="2">' . $s['school_name'] . ' (' . $s['num'] . ')</td>';
 	echo '</tr>';
-
+	
 	$olmis = $DB->MultiQuery('
 		SELECT s.school_name, m.id, IF(m.name="", p.title, m.name) AS name
 		FROM drawing_main m 
@@ -67,8 +66,9 @@ foreach($schools as $s)
 	
 	foreach( $olmis as $o ) 
 	{
-		echo '<tr>';
-			echo '<td colspan="2"><a href="/a/drawings.php?action=drawing_info&id=' . $o['id'] . '">' . $o['name'] . '</a></td>';
+		echo '<tr class="drawing_main">';
+			echo '<td><a href="/a/drawings.php?action=drawing_info&id=' . $o['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
+			echo '<td class="drawinglist_name">' . ($o['name'] ? $o['name'] : '[[deleted]]') . '</td>';
 		echo '</tr>';
 	}
 	

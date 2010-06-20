@@ -112,7 +112,8 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='')
 		}
 		foreach( $olmis as $o )
 		{
-			$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> <a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
+			$link = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">';
+			$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> ' . $link . '<img src="/images/olmis-16.gif" /></a> ' . $link . $o['title'] . '</a></div>';
 		}
 	}
 	return $html;

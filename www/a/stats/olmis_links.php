@@ -22,8 +22,17 @@ $olmis = $DB->MultiQuery('
 
 echo count($olmis) . ' OLMIS reports currently link to published roadmaps';
 
-foreach( $olmis as $o ) {
-	echo '<div class="olmis_title"><a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">' . $o['job_title'] . '</a></div>';
+echo '<table>';
+foreach( $olmis as $o )
+{
+	$a = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">';
+	echo '<tr class="drawing_main">';
+		echo '<td>' . $a . '<img src="/images/olmis-16.gif" width="16" height="16" /></a></td>';
+		echo '<td class="drawinglist_name" colspan="3">' . $o['job_title'] . '</td>';
+	echo '</tr>';
+
+	$trClass = new Cycler('row_light', 'row_dark');
+	
 	$drawings = $DB->MultiQuery('
 		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr
 		FROM olmis_links AS l
@@ -31,10 +40,17 @@ foreach( $olmis as $o ) {
 		LEFT JOIN programs AS p ON d.program_id=p.id
 		JOIN schools ON d.school_id=schools.id
 		WHERE l.olmis_id = '.$o['olmis_id']);
-	foreach( $drawings as $d ) {
-		echo '<div class="olmis_roadmap"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank">' . $d['school_abbr'] . ': ' . $d['name'] . '</a></div>';
+	foreach( $drawings as $d ) 
+	{
+		echo '<tr class="' . $trClass . '">';
+			echo '<td></td>';
+			echo '<td width="25"></td>';
+			echo '<td width="16">' . SilkIcon('link.png') . '</td>';
+			echo '<td><a href="/c/published/' . $d['id'] . '/view.html" target="_blank">' . $d['school_abbr'] . ': ' . $d['name'] . '</a></td>';
+		echo '</tr>';
 	}
 }
+echo '</table>';
 
 PrintFooter();
 
