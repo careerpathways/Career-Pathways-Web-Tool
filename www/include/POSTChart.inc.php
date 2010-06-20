@@ -22,8 +22,9 @@ abstract class POSTChart
 	protected $_cols;
 	protected $_rows;
 
-	protected $_knownLegend = array();
-
+	protected $_knownLegend = array(); // array of legend symbols seen in this drawing
+	protected $_legendLookup = FALSE; // copy of the post_legend table in the DB
+	
 
 	// Create from the a database record
 	// factory method to create an object of the correct type
@@ -133,7 +134,9 @@ abstract class POSTChart
 	private function _gatherLegend($legend)
 	{
 		global $DB;
-		$legendText = $DB->MultiQuery("SELECT `text` FROM `post_legend` ORDER BY `id` ASC");
+
+		if($this->_legendLookup == FALSE)
+			$this->_legendLookup = $DB->VerticalQuery("SELECT `id`, `text` FROM `post_legend` ORDER BY `id` ASC", 'text', 'id');
 
 		// Figure out our legend code
 		$background = $titleTag = '';
@@ -141,8 +144,8 @@ abstract class POSTChart
 			if( $id )
 			{
 				$background .= $id . '-';
-				$titleTag .= $legendText[($id - 1)]['text'] . ', ';
-				@$this->_knownLegend[$id] = $legendText[($id - 1)]['text'];
+				$titleTag .= $this->_legendLookup[$id] . ', ';
+				$this->_knownLegend[$id] = $this->_legendLookup[$id];
 			}
 		$titleTag = (strlen($titleTag) > 0) ? ' title="' . substr($titleTag, 0, -2) . '"' : '';
 		$background = (strlen($background) > 0) ? 'background: url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : '';	
@@ -382,9 +385,9 @@ abstract class POSTChart
 		echo '<tr>', "\n";
 
 		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-			. ($this->_footer_link?'<a href="'.$this->_footer_link.'" target="_blank">':'')
+			. ($this->_footer_link ? '<a href="'.$this->_footer_link.'" target="_blank">' : '')
 			. $this->_footer_text
-			. ($this->_footer_link?'</a>':'')
+			. ($this->_footer_link ? '</a>' : '')
 			. '</td>', "\n";
 		echo '</tr>', "\n";
 
