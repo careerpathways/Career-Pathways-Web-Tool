@@ -22,8 +22,9 @@ if( count($program) > 0 )
 	$drawing['full_name'] = $drawing['name'] == '' ? $program['title'] : $drawing['name'];
 }
 
-$schools = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_name','id');
-$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
+$schools = $DB->VerticalQuery("SELECT * FROM schools WHERE organization_type IN ('CC', 'Other') ORDER BY school_name",'school_name','id');
+$schls = $DB->VerticalQuery("SELECT * FROM schools WHERE organization_type IN ('CC', 'Other') ORDER BY school_name",'school_abbr','id');
+
 if( IsAdmin() ) {
 	if( $id != "" ) {
 		$school_id = $drawing['school_id'];
