@@ -116,7 +116,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 ?>
 		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete <b>this</b> version</a></p>
 		<div id="deleteConfirm" style="display: none">
-			<p><b>There is no way to recover deleted drawings!</b></p>
+			<p><b>There is no way to recover deleted versions!</b></p>
 			<p>Are you sure? <a href="javascript:doDelete()">Yes</a></p>
 		</div>
 <?php
