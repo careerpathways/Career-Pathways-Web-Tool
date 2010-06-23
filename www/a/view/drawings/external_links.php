@@ -9,7 +9,7 @@
 			<table class="border external_links" cellpadding="3" width="100%">
 				<tr>
 					<th width="16"></th>
-					<th>URL</th>
+					<td>This drawing is embedded on the following web pages</td>
 					<th width="110">Last Viewed</th>
 				</tr>
 			<?php 

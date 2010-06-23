@@ -74,8 +74,8 @@ if( KeyInRequest('drawing_id') ) {
 					$DB->Query("UPDATE post_drawings SET deleted=1 WHERE id=$drawing_id");
 				}
 			}
-			header("Location: ".$_SERVER['PHP_SELF']);
-			die();
+			#header("Location: ".$_SERVER['PHP_SELF']);
+			#die();
 		}
 
 		if( Request('action') == 'publish' ) {

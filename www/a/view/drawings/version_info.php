@@ -114,10 +114,11 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 		CanDeleteDrawing($drawing_main['id'], 'pathways')
 	) {
 ?>
-		<b>There is no way to recover deleted drawings!</b><br>
-		If you are sure you want to delete this version, click the link below:<br>
-		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete this version</a></p>
-		<div id="deleteConfirm"></div>
+		<p><a href="javascript:deleteConfirm()" class="noline"><?= SilkIcon('cross.png') ?> Delete <b>this</b> version</a></p>
+		<div id="deleteConfirm" style="display: none">
+			<p><b>There is no way to recover deleted drawings!</b></p>
+			<p>Are you sure? <a href="javascript:doDelete()">Yes</a></p>
+		</div>
 <?php
 		$can_delete = true;
 	} else {
@@ -212,7 +213,7 @@ function lock_drawing(version) {
 
 <?php if( $can_delete ) { ?>
 function deleteConfirm() {
-	getLayer('deleteConfirm').innerHTML = 'Are you sure? <a href="javascript:doDelete()">Yes</a>';
+	getLayer('deleteConfirm').style.display = 'block';
 }
 function doDelete() {
 	getLayer('action_field').value = 'delete';

@@ -59,13 +59,12 @@ if( KeyInRequest('drawing_id') ) {
 
 		if( Request('action') == 'delete' ) {
 			if( is_array($drawing) ) {
-				if( IsSchoolAdmin() || $drawing['frozen'] == 0 ) {
+				if( IsSchoolAdmin() || $drawing['frozen'] == 0 ) 
+				{
 					// school admins can delete versions, and anyone can delete a version if it has never been committed
 					$DB->Query("UPDATE drawings SET deleted=1 WHERE id=$drawing_id");
 				}
 			}
-			header("Location: ".$_SERVER['PHP_SELF']);
-			die();
 		}
 
 		if( Request('action') == 'publish' ) {
