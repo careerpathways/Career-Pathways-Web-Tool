@@ -112,6 +112,8 @@ function selectDefaultsGrp() {
 function init() {
 	var url = "/a/drawings_load.php?mode=list_schools&selectdefault&type="+MODE;
 
+	jQuery(".ajaxloader").append('<img src="/images/cf9d2b_loader.gif" />');
+
 	if(getLayer('search_box').value != ""){
 		loaded_with_search_value = getLayer('search_box').value;
 		do_search();
