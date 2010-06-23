@@ -51,6 +51,18 @@ if (KeyInRequest('action')) {
 		case 'publish_form':
 			showPublishForm('post');
 			die();
+		case 'hide_footer':
+			hideFooter(intval($_REQUEST['id']));
+			die();
+		case 'include_footer':
+			showFooter(intval($_REQUEST['id']));
+			die();
+		case 'hide_header':
+			hideHeader(intval($_REQUEST['id']));
+			die();
+		case 'include_header':
+			showHeader(intval($_REQUEST['id']));
+			die();
 	}
 }
 
@@ -191,6 +203,34 @@ if( KeyInRequest('drawing_id') ) {
 }
 
 
+
+function showFooter($id) {
+	global $DB;
+	$DB->SingleQuery("UPDATE post_drawings SET footer_state=1 WHERE id = ". $id ." ");
+	$post = POSTChart::create($id);
+	$post->displayMini();
+}
+
+function hideFooter($id) {
+	global $DB;
+	$DB->SingleQuery("UPDATE post_drawings SET footer_state=0 WHERE id = ". $id ." ");
+	$post = POSTChart::create($id);
+	$post->displayMini();
+}
+
+function showHeader($id) {
+	global $DB;
+	$DB->SingleQuery("UPDATE post_drawings SET header_state=1 WHERE id = ". $id ." ");
+	$post = POSTChart::create($id);
+	$post->displayMini();
+}
+
+function hideHeader($id) {
+	global $DB;
+	$DB->SingleQuery("UPDATE post_drawings SET header_state=0 WHERE id = ". $id ." ");
+	$post = POSTChart::create($id);
+	$post->displayMini();
+}
 
 
 
@@ -368,6 +408,9 @@ function ShowDrawingForm($id) {
 
 function showConfigureRowColForm($version_id) {
 	global $DB;
+	
+	$headerState = $DB->SingleQuery("SELECT header_state FROM post_drawings WHERE id = ". $version_id ." ");
+	$footerState = $DB->SingleQuery("SELECT footer_state FROM post_drawings WHERE id = ". $version_id ." ");
 
 	$post = POSTChart::create($version_id);
 
@@ -411,6 +454,34 @@ function showConfigureRowColForm($version_id) {
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
 			bindDeleteButtons();
+			
+			jQuery("#include_footer").change(function(){
+				var action;
+				var id = <?= $version_id ?>;
+				if (jQuery(this).is(':checked')) {
+					action = "include_footer";
+				} else {
+					action = "hide_footer";
+				}
+				jQuery.get("/a/post_drawings.php?action="+action+"&id="+id,
+					function(data){
+						updateMini();
+					}, "HTML");
+			});
+			
+			jQuery("#include_header").change(function(){
+				var action;
+				var id = <?= $version_id ?>;
+				if (jQuery(this).is(':checked')) {
+					action = "include_header";
+				} else {
+					action = "hide_header";
+				}
+				jQuery.get("/a/post_drawings.php?action="+action+"&id="+id,
+					function(data){
+						updateMini();
+					}, "HTML");
+			});
 			
 			jQuery(".addRowLink").click(function(){
 				var type = jQuery(this).attr("id").split("_")[1];
@@ -501,6 +572,7 @@ function showConfigureRowColForm($version_id) {
 
 	</td>
 	<td valign="top" style="padding-left:30px">
+		
 		<div class="rowConfigHead">Add Row</div>
 		<table id="addRowTable">
 		<?php if( $post->type == 'CC' ) { ?>
@@ -535,10 +607,15 @@ function showConfigureRowColForm($version_id) {
 			</tr>
 		<?php } ?>
 		</table>
+		
+		<div id="noteboxes" style="margin-top: 120px">
+			<input type="checkbox" id="include_header" name="include_header" <?php if($headerState['header_state'] == 1) { echo 'checked="checked"'; } ?> /><label for="include_header">Include header notes?</label><br/>
+			<input type="checkbox" id="include_footer" name="include_footer" <?php if($footerState['footer_state'] == 1) { echo 'checked="checked"'; } ?> /><label for="include_footer">Include footer notes?</label>
+		</div>
 
 	</td>
 	</tr></table>
-
+	
 	<div style="text-align:right; margin-right: 10px;">
 		<input type="button" onclick="chGreybox.close()" value="Close" class="submit" />
 	</div>

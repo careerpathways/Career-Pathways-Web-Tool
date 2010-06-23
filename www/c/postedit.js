@@ -69,10 +69,10 @@ $(document).ready(function()
 	);
 
 	// Add a cursor icon to all editable elements
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").css({cursor: "pointer"});
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers .post_sidebar_right").css({cursor: "pointer"});
 
 	// Suppress link following
-	$(".post_cell a, .post_footer a").attr("href", "javascript:void(0);");
+	$(".post_cell a, .post_footer a, .post_headers a").attr("href", "javascript:void(0);");
 });
 
 /******************************/
@@ -104,6 +104,19 @@ function bindEditableCells()
 
 		$.get("/a/postserv.php",
 			{mode: "prompt", type: "footer", id: footerID},
+			function(data){
+				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
+		}, "html");
+	});
+	
+	// Make the header editable
+	$(".post_headers").unbind("click").click(function(){
+		// Split apart the id into meaningful components
+		var headerID = $(this).attr("id").split("_")[2];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "header", id: headerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
 				chGreybox.onClose = function() {bindPostCells()};
@@ -193,7 +206,7 @@ function bindPostCells()
 	$(".post_draggable").draggable({
 		start : function() {
 			$(".post_cell").unbind('mouseup');
-			$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer").hover(function(){},function(){});
+			$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers").hover(function(){},function(){});
 			$(this).css({ border: "1px #777777 solid" })
 		},
 		helper : 'original',
@@ -206,13 +219,13 @@ function bindPostCells()
 	});
 
 	// Set up the class to update on hover
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").hover(function(){
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers, .post_sidebar_right").hover(function(){
 		$(this).addClass("post_cell_hover");
 	},function(){
 		$(this).removeClass("post_cell_hover");
 	});
 
 	// clear out any lingering hovers
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_sidebar_right").removeClass("post_cell_hover");
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers, .post_sidebar_right").removeClass("post_cell_hover");
 
 }//end function bindPostCells

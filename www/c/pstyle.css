@@ -82,7 +82,7 @@ table.post_chart th {
 	text-align: right;
 }
 
-.post_footer {
+.post_footer, .post_headers {
 	font-size: 7pt;
 	height: 14px;
 }

@@ -40,6 +40,9 @@ require_once("POSTChart.inc.php");
 
 			elseif($_GET['type'] == 'footer')
 				printFooterForm($_GET['id']);
+				
+			elseif($_GET['type'] == 'header')
+				printHeaderForm($_GET['id']);
 
 			elseif($_GET['type'] == 'sidebar_right')
 				printSidebarRightForm($_GET['id']);
@@ -65,6 +68,7 @@ require_once("POSTChart.inc.php");
 					$version_id = $DB->GetValue('drawing_id', 'post_col', intval($_GET['id']));
 					break;
 				case 'footer':
+				case 'header':
 				case 'sidebar_right':
 					if( array_key_exists('action', $_POST) )
 					{
@@ -105,6 +109,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'head':
 					commitHead($_GET['id']);
+					break;
+				case 'header':
+					commitHeader($_GET['id']);
 					break;
 				case 'footer':
 					commitFooter($_GET['id']);
@@ -347,6 +354,39 @@ require_once("POSTChart.inc.php");
 		</script>
 <?php
 	}//end function printFooterForm
+	
+	function printHeaderForm( $id)
+	{
+		global $DB;
+
+		$cell = $DB->SingleQuery("SELECT `header_text`, `header_link`
+			FROM `post_drawings`
+			WHERE `id` = '" . intval($id) . "'");
+
+		// Draw the Header form
+		ob_start();
+
+		echo getHeaderHTML($cell);
+?>
+		<script language="JavaScript" type="text/javascript">
+			$(".postGreyboxContent input").keydown(function(e) {
+				if( e.keyCode == 13 ) $("#postFormSave").click();
+			});
+
+			$("#postFormSave").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/a/postserv.php?mode=commit&type=header&id=<?=$id?>",
+					data: {text: $("#postFormContent").val(), link: $("#postFormURL").val()},
+					success: function(data){
+						$("#post_headers_<?=$id?>").html(data);
+						chGreybox.close();
+					}
+				});
+			});
+		</script>
+<?php
+	}//end function printHeaderForm
 
 	function printSidebarRightForm($id)
 	{
@@ -479,6 +519,23 @@ require_once("POSTChart.inc.php");
 		$DB->Update('post_drawings', array('footer_text' => $_POST['text'], 'footer_link'=>$href), intval($id));
 		echo ($link?'<a href="javascript:void(0);">':'') . $_POST['text'] . ($link?'</a>':'');
 	}//end function commitFooter
+	
+	function commitHeader($id)
+	{
+		global $DB;
+
+		$href = $_POST['link'];
+		$link = FALSE;
+		if(isset($_POST['link']) && $_POST['link'] != '')
+		{
+			$link = TRUE;
+			if(substr($href, 0, 7) != 'http://' && substr($href, 0, 8) != 'https://')
+				$href = 'http://' . $_POST['link'];
+		}
+
+		$DB->Update('post_drawings', array('header_text' => $_POST['text'], 'header_link'=>$href), intval($id));
+		echo ($link?'<a href="javascript:void(0);">':'') . $_POST['text'] . ($link?'</a>':'');
+	}//end function commitHeader
 
 	function commitSwap($fromID, $toID)
 	{
@@ -663,6 +720,28 @@ require_once("POSTChart.inc.php");
 			<br /><br />
 			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$footer['footer_link']?>" />
+			<br /><br />
+			<div style="text-align: right;">
+				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
+			</div>
+		</form>
+<?php
+		return ob_get_clean();
+	}//end function getFooterHTML
+	
+		function getHeaderHTML(&$header = NULL)
+	{
+		if(!$header)
+			$header = array('header_text'=>'', 'header_link'=>'');
+
+		ob_start();
+?>
+		<form action="javascript:void(0);">
+			<div style="font-weight: bold;">Header Content:</div>
+			<input type="text" id="postFormContent" style="width: 400px; border: 1px #AAA solid;" value="<?=$header['header_text']?>" />
+			<br /><br />
+			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
+			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$header['header_link']?>" />
 			<br /><br />
 			<div style="text-align: right;">
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />

@@ -12,8 +12,12 @@ abstract class POSTChart
 	protected $_skillset_id;
 	protected $_school_name;
 	protected $_school_abbr;
+	protected $_footer_state;
 	protected $_footer_link;
 	protected $_footer_text;
+	protected $_header_state;
+	protected $_header_link;
+	protected $_header_text;
 	protected $_sidebar_right;
 
 	// 2D array [row#][col#]
@@ -31,13 +35,15 @@ abstract class POSTChart
 	public static function create($id)
 	{
 		global $DB;
+		
 
-		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_text`, `d`.`footer_link`, `d`.`sidebar_text_right`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_state`, `d`.`footer_text`, `d`.`footer_link`,`d`.`header_state`, `d`.`header_text`, `d`.`header_link`, `d`.`sidebar_text_right`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
 				AND d.id = '.$id.'
 				AND deleted = 0');
+		
 		if( is_array($drawing) ) 
 		{
 			switch( $drawing['type'] )
@@ -54,8 +60,12 @@ abstract class POSTChart
 			$post->loadDataFromDB($id);
 			$post->name = $drawing['name'];
 			$post->school_id = $drawing['school_id'];
+			$post->_footer_state = $drawing['footer_state'];
 			$post->footer_link = $drawing['footer_link'];
 			$post->footer_text = $drawing['footer_text'];
+			$post->_header_state = $drawing['header_state'];
+			$post->header_link = $drawing['header_link'];
+			$post->header_text = $drawing['header_text'];
 			$post->sidebar_right = $drawing['sidebar_text_right'];
 			
 			return $post;
@@ -202,6 +212,8 @@ abstract class POSTChart
 		$post_drawing['parent_id'] = $post_drawing_main_id;
 		$post_drawing['footer_text'] = "".$this->_footer_text;
 		$post_drawing['footer_link'] = "".$this->_footer_link;
+		$post_drawing['header_text'] = "".$this->_header_text;
+		$post_drawing['header_link'] = "".$this->_header_link;
 		$post_drawing['sidebar_text_right'] = "".$this->_sidebar_right;
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
@@ -331,6 +343,14 @@ abstract class POSTChart
 			case 'footer_text':
 				$this->_footer_text = $val;
 				break;
+				
+			case 'header_link':
+				$this->_header_link = $val;
+				break;
+			
+			case 'header_text':
+				$this->_header_text = $val;
+				break;
 
 			case 'sidebar_right':
 				$this->_sidebar_right = $val;
@@ -369,6 +389,18 @@ abstract class POSTChart
 		echo '<table border="1" class="post_chart">', "\n";
 		$this->_printHeaderRow();
 
+		// Draw the header notes
+		if ($this->_header_state == 1) {
+			echo '<tr>', "\n";
+
+			echo '<td id="post_headers_' . $this->_id . '" class="post_headers" colspan="' . $this->footerCols . '" style="min-height: 20px;">'
+				. ($this->_header_link ? '<a href="'.$this->_header_link.'" target="_blank">' : '')
+				. $this->_header_text
+				. ($this->_header_link ? '</a>' : '')
+				. '</td>', "\n";
+			echo '</tr>', "\n";
+		}
+		
 		foreach( $this->_cells as $rowNum=>$row )
 		{
 			echo '<tr>', "\n";
@@ -382,14 +414,17 @@ abstract class POSTChart
 			}
 			echo '</tr>', "\n";
 		}
-		echo '<tr>', "\n";
-
-		echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-			. ($this->_footer_link ? '<a href="'.$this->_footer_link.'" target="_blank">' : '')
-			. $this->_footer_text
-			. ($this->_footer_link ? '</a>' : '')
-			. '</td>', "\n";
-		echo '</tr>', "\n";
+		
+		if ($this->_footer_state == 1) {
+			echo '<tr>', "\n";
+		
+			echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
+				. ($this->_footer_link ? '<a href="'.$this->_footer_link.'" target="_blank">' : '')
+				. $this->_footer_text
+				. ($this->_footer_link ? '</a>' : '')
+				. '</td>', "\n";
+			echo '</tr>', "\n";
+		}
 
 		// Draw the legend if it exists
 		if(count($this->_knownLegend) > 0)
@@ -413,6 +448,13 @@ abstract class POSTChart
 		echo '<table class="post_chart_mini">', "\n";
 		$this->_printHeaderRowMini();
 
+		if ($this->_header_state == 1) {
+			echo '<tr>', "\n";
+			
+			echo '<td id="post_headers_' . $this->_id . '" class="post_footer'.($this->_header_text?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
+			echo '</tr>', "\n";
+		}
+		
 		if( is_array($this->_cells) )
 		foreach( $this->_cells as $rowNum=>$row )
 		{
@@ -424,11 +466,15 @@ abstract class POSTChart
 			}
 			echo '</tr>', "\n";
 		}
-		echo '<tr>', "\n";
 
-		echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_footer_text?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
-		echo '</tr>', "\n";
+		if ($this->_footer_state == 1) {
+			echo '<tr>', "\n";
+			
+			echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_footer_text?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
+			echo '</tr>', "\n";
+		}
 		echo '</table>', "\n";
+
 	}
 	
 }
@@ -455,9 +501,9 @@ class POSTChart_HS extends POSTChart
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows+1) . '"></td>', "\n";
+			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '"></td>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" rowspan="' . ($this->totalRows+1) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
+			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '<tr>', "\n";
 			echo '<th class="post_head_xy post_head">Grade</th>', "\n";
@@ -471,13 +517,13 @@ class POSTChart_HS extends POSTChart
 	protected function _printHeaderRowMini()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left post_mini_full" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<td class="post_sidebar_left post_mini_full" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '"></td>', "\n";
 			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
 			foreach( $this->_cols as $col )
 			{
 				echo '<th id="post_header_' . $col['id'] . '" class="post_head_main post_head'.($col['title']?' post_mini_full':'').'"></th>', "\n";
 			}
-			echo '<td  class="post_sidebar_right post_mini_full" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<td  class="post_sidebar_right post_mini_full" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '"></td>', "\n";
 		echo '</tr>', "\n";
 	}
 	
@@ -554,19 +600,19 @@ class POSTChart_CC extends POSTChart
 	protected function _printHeaderRow()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '"></td>', "\n";
 			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
-			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . $this->totalRows . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
+			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
 
 	protected function _printHeaderRowMini()
 	{
 		echo '<tr>', "\n";
-			echo '<td class="post_sidebar_left post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<td class="post_sidebar_left post_mini_full" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '"></td>', "\n";
 			echo '<th class="post_head_xy post_head post_mini_full"></th>', "\n";
 			echo '<th class="post_head_main post_head post_mini_full" colspan="' . count($this->_cols) . '"></th>', "\n";
-			echo '<td class="post_sidebar_right post_mini_full" valign="middle" rowspan="' . $this->totalRows . '"></td>', "\n";
+			echo '<td class="post_sidebar_right post_mini_full" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '"></td>', "\n";
 		echo '</tr>', "\n";
 	}
 

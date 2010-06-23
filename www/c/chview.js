@@ -119,6 +119,18 @@ Charts = {
 		title.style.top = 0;
 		title.style.left = 0;
 		Charts.element.appendChild(title);
+		
+		// add the vertical page divider
+		var pageVDivider = document.createElement('div');
+		pageVDivider.className = 'chVDivider';
+		pageVDivider.innerHTML = '';
+		Charts.element.appendChild(pageVDivider);
+		
+		// add the horizontal page divider
+		var pageHDivider = document.createElement('div');
+		pageHDivider.className = 'chHDivider';
+		pageHDivider.innerHTML = '';
+		Charts.element.appendChild(pageHDivider);
 
 		if(data.skillset) {
 		  var skillset = document.createElement('div');
