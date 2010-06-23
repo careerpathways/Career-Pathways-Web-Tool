@@ -692,6 +692,12 @@ a.chart_header {
 	border: 1px #<?= $D_GOLD ?> solid;
 }
 
+#live_lists .ajaxloader {
+	float: right;
+	width: 16px;
+	height: 16px;
+}
+
 #live_lists .title {
 	display: block;
 	background-color: #<?= $D_GOLD ?>;

@@ -38,6 +38,7 @@ var categories = "<?= $categories ?>";
 var loaded_with_search_value = "";
 
 function load_data(selectbox, search) {
+	jQuery("#"+selectbox).siblings(".ajaxloader").append('<img src="/images/cf9d2b_loader.gif" />');
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search+'&type='+MODE;
 	ajaxCallback(load_cb, url);
 }
@@ -45,6 +46,7 @@ function load_data(selectbox, search) {
 function load_cb(data) {
 	var obj = eval(data);
 	var sel = getLayer(obj[0]);
+	jQuery("#"+obj[0]).siblings(".ajaxloader").html('');
 	removeAllOptions(sel);
 	sel.options[0] = new Option("[Show All]", "-1", false);
 	sel.options[0].className = 'even';
@@ -219,6 +221,7 @@ function load_drawing_list() {
 	var search = getLayer('search_box').value;
 
 	var url = "/a/drawings_load.php?mode=drawing_list&search="+search+"&people="+people_list+"&schools="+schools_list+"&categories="+cats_list+"&type="+MODE;
+	jQuery("#drawing_list").html('<div style="width:220px; margin:30px auto;"><img src="/images/wide-loader-on-white.gif" /></div>');
 	doSomething(getLayer('drawing_list'),url);
 }
 

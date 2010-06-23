@@ -4,7 +4,9 @@ $TEMPLATE->toolbar_function = 'ShowDrawingListHelp';
 PrintHeader();
 ?>
 
+<script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
 <script type="text/javascript">
+	jQuery.noConflict();
 	var MODE = '<?= $MODE ?>';
 </script>
 
@@ -68,6 +70,7 @@ PrintHeader();
 <table id="live_lists"><tr>
 <td width="33%">
 	<div class="live_list">
+		<div class="ajaxloader"></div>
 		<div class="title">Organizations</div>
 		<select size="13" id="list_schools" multiple onchange="queue_change(this)">
 		</select>
@@ -75,6 +78,7 @@ PrintHeader();
 </td>
 <td width="33%">
 	<div class="live_list">
+		<div class="ajaxloader"></div>
 		<div class="title">Users</div>
 		<select size="13" id="list_people" multiple onchange="queue_change(this)">
 		</select>
@@ -82,6 +86,7 @@ PrintHeader();
 </td>
 <td width="33%">
 	<div class="live_list">
+		<div class="ajaxloader"></div>
 		<div class="title">Occupations/Programs</div>
 		<select size="13" id="list_categories" multiple onchange="queue_change(this)">
 		</select>

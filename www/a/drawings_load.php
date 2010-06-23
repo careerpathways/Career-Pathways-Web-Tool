@@ -281,10 +281,15 @@ switch( Request('mode') ) {
 					'people'=>array('created_by','last_modified_by'),
 					'categories'=>array('m.name','p.title')
 				);
-				foreach( $fields as $f ) {
-					if( Request($f) ) {
-						// only include numbers in the filter array. this effectively removes the "cc" or "hs" when getting a list of all schools of a type 
-						$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
+				foreach( $fields as $f ) 
+				{
+					if( Request($f) ) 
+					{
+						if($f == 'categories')
+							$search[$f] = explode(',', Request($f));
+						else
+							// only include numbers in the filter array. this effectively removes the "cc" or "hs" when getting a list of all schools of a type 
+							$search[$f] = array_filter(explode(',',Request($f)), 'is_numeric');
 					}
 				}
 				$where = "";
