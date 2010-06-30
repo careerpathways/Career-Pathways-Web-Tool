@@ -167,6 +167,10 @@ function do_change(whichbox) {
 				load_data('list_categories','school_id='+schools_list);
 			}
 
+			if(search == ""){
+				load_data('list_schools','');
+			}
+			
 			// whenever you change schools, the "show all" on the people list should be selected.
 			// this will happen after the load_data('list_people') finishes running, but the 
 			// load_drawing_list() method needs selectedIndex=0 in order to not filter on old criteria
