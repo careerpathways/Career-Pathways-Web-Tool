@@ -212,8 +212,10 @@ abstract class POSTChart
 		$post_drawing['parent_id'] = $post_drawing_main_id;
 		$post_drawing['footer_text'] = "".$this->_footer_text;
 		$post_drawing['footer_link'] = "".$this->_footer_link;
+		$post_drawing['footer_state'] = "".$this->_footer_state;
 		$post_drawing['header_text'] = "".$this->_header_text;
 		$post_drawing['header_link'] = "".$this->_header_link;
+		$post_drawing['header_state'] = "".$this->_header_state;
 		$post_drawing['sidebar_text_right'] = "".$this->_sidebar_right;
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
