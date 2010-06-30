@@ -109,6 +109,18 @@ document.observe('chart:drawn', function(e) {
   var self = this;
   Event.observe(okbtn, 'mousedown', function() {Charts.insertFCKcontent(Charts);});
 
+	// add the vertical page divider
+	var pageVDivider = document.createElement('div');
+	pageVDivider.className = 'chVDivider';
+	pageVDivider.innerHTML = '';
+	Charts.element.appendChild(pageVDivider);
+	
+	// add the horizontal page divider
+	var pageHDivider = document.createElement('div');
+	pageHDivider.className = 'chHDivider';
+	pageHDivider.innerHTML = '';
+	Charts.element.appendChild(pageHDivider);
+
   
 
   Charts.fck = {Config: {}}; //new FCKeditor("PathwaysEditor");
