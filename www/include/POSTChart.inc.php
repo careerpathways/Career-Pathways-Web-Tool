@@ -12,7 +12,7 @@ abstract class POSTChart
 	protected $_skillset_id;
 	protected $_school_name;
 	protected $_school_abbr;
-	protected $_footer_state;
+	protected $_footer_state = 1;
 	protected $_footer_link;
 	protected $_footer_text;
 	protected $_header_state;
@@ -36,7 +36,6 @@ abstract class POSTChart
 	{
 		global $DB;
 		
-
 		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_state`, `d`.`footer_text`, `d`.`footer_link`,`d`.`header_state`, `d`.`header_text`, `d`.`header_link`, `d`.`sidebar_text_right`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
@@ -87,7 +86,7 @@ abstract class POSTChart
 		global $DB;
 		
 		$this->_cols = $DB->MultiQuery('SELECT id, title, num FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num');
-		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term, id');
+		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term, row_qtr FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term, row_qtr, id');
 		
 		$colmap = array();
 		foreach( $this->_cols as $i=>$a )
@@ -246,6 +245,7 @@ abstract class POSTChart
 			$post_row['row_type'] = $row['row_type'];
 			$post_row['row_year'] = $row['row_year'];
 			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
+			$post_row['row_qtr'] = ($row['row_qtr']?$row['row_qtr']:"");
 			$post_row_id = $DB->Insert('post_row', $post_row);
 			$rowmap[$i] = $post_row_id;
 		}
@@ -417,9 +417,9 @@ abstract class POSTChart
 			echo '</tr>', "\n";
 		}
 		
-		if ($this->_footer_state == 1) {
+		if ($this->_footer_state == 1) 
+		{
 			echo '<tr>', "\n";
-		
 			echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
 				. ($this->_footer_link ? '<a href="'.$this->_footer_link.'" target="_blank">' : '')
 				. $this->_footer_text
@@ -469,9 +469,9 @@ abstract class POSTChart
 			echo '</tr>', "\n";
 		}
 
-		if ($this->_footer_state == 1) {
-			echo '<tr>', "\n";
-			
+		if ($this->_footer_state == 1) 
+		{
+			echo '<tr>', "\n";		
 			echo '<td id="post_footer_' . $this->_id . '" class="post_footer'.($this->_footer_text?' post_mini_full':'').'" colspan="' . $this->footerCols . '"></td>', "\n";
 			echo '</tr>', "\n";
 		}
@@ -630,7 +630,7 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return '<nobr>' . ordinalize($row['row_year'], true) . ' Yr</nobr><br />' . $terms[$row['row_term']];
+				return l()->term_name($row);
 
 			case 'prereq':
 				return 'Prereqs';
@@ -652,7 +652,7 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return ($row['row_year']) . $row['row_term'];
+				return l()->term_name_short($row);
 
 			case 'prereq':
 				return 'P';
@@ -670,18 +670,41 @@ class POSTChart_CC extends POSTChart
 	
 	protected function _createEmptyChart()
 	{
-		for( $i=1; $i<=6; $i++ )
+		if(l('post row type') == 'term/year')
 		{
-			$row = array();
-			$row['row_type'] = 'term';
-			$row['row_year'] = floor(($i-1) / 3) + 1;
-			$row['row_term'] = (($i-1) % 3) + 2;
-			$this->_rows[] = $row;
-			
-			$col = array();
-			$col['title'] = '';
-			$col['num'] = $i;
-			$this->_cols[] = $col;
+			for( $i=1; $i<=6; $i++ )
+			{
+				$row = array();
+				$row['row_type'] = 'term';
+				$row['row_year'] = floor(($i-1) / 3) + 1;
+				$row['row_term'] = (($i-1) % 3) + 2;
+				$row['row_qtr'] = 0;
+				$this->_rows[] = $row;
+				
+				$col = array();
+				$col['title'] = '';
+				$col['num'] = $i;
+				$this->_cols[] = $col;
+			}
+		}
+		else
+		{
+			for( $i=1; $i<=8; $i++ )
+			{
+				$row = array();
+				$row['row_type'] = 'term';
+				$row['row_year'] = 0;
+				$row['row_term'] = '';
+				$row['row_qtr'] = $i;
+				$this->_rows[] = $row;
+			}
+			for( $i=1; $i<=6; $i++ )
+			{
+				$col = array();
+				$col['title'] = '';
+				$col['num'] = $i;
+				$this->_cols[] = $col;
+			}
 		}
 	}
 

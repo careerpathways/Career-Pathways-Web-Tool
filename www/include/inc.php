@@ -35,12 +35,18 @@ function logmsg($message) {
 	fclose($fp);
 }
 
-function l($str)
+function l($str=NULL)
 {
 	static $loc;
 	if(!isset($loc))
 		$loc = new Localize_Strings();
-	return $loc->get($str);
+	
+	if($str === NULL)
+		// return the localize object so methods can be run off it directly
+		return $loc;
+	else
+		// default to lookup up a string from the get() method
+		return $loc->get($str);
 }
 
 function IsLoggedIn() {

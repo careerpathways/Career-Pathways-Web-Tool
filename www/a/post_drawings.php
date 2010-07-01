@@ -418,6 +418,7 @@ function showConfigureRowColForm($version_id) {
 	{
 		$years = array(1=>1, 2, 3, 4, 5, 6);
 		$terms = array('F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer (after Spring)', 'M'=>'Summer (before Fall)');
+		$quarters = array(1=>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	}
 	
 	?>
@@ -497,6 +498,7 @@ function showConfigureRowColForm($version_id) {
 						data.type = type;
 						data.year = jQuery("#addYear").val();
 						data.term = jQuery("#addTerm").val();
+						data.qtr  = jQuery("#addQtr").val();
 						break;
 					default:
 						return false;
@@ -582,7 +584,13 @@ function showConfigureRowColForm($version_id) {
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Year: <?= GenerateSelectBox($years, 'addYear') ?> Term: <?= GenerateSelectBox($terms, 'addTerm') ?> </div></td>
+				<td>
+					<?php 
+					if(l('post row type') == 'year/term')
+						echo '<div class="addRowText">Year: ' . GenerateSelectBox($years, 'addYear') . ' Term: ' . GenerateSelectBox($terms, 'addTerm') . '</div></td>';
+					else
+						echo '<div class="addRowText">Quarter: ' . GenerateSelectBox($quarters, 'addQtr') . '</td>';
+					?>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_electives" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
@@ -714,7 +722,16 @@ function configureAddRow()
 				break;
 
 			case 'term':
-				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'), 'row_year'=>Request('year'), 'row_term'=>Request('term'));
+				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'));
+				if(l('post row type') == 'year/term')
+				{
+					$row_data['row_year'] = Request('year');
+					$row_data['row_term'] = Request('term');
+				}
+				else
+				{
+					$row_data['row_qtr'] = Request('qtr');
+				}
 				break;
 
 			default:
