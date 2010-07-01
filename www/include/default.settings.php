@@ -7,6 +7,8 @@ class ThisSite extends SiteSettings {
 	public $olmis_enabled = TRUE;
 	public $oregon_skillset_enabled = TRUE;
 
+	public $lang_file = 'oregon';
+	
 	function name() { return "Career Pathways Web Tool"; }
 	function email_name() { return "Oregon CTE Pathways"; }
 	function email() { return "helpdesk@ctepathways.org"; }

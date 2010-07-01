@@ -210,7 +210,7 @@ global $DB, $STATES;
 	<tr>
 		<td>State:</td>
 		<td colspan="2"><?php
-			echo GenerateSelectBox($STATES,'school_state','OR');
+			echo GenerateSelectBox($STATES,'school_state',l('school state abbr'));
 		?></td>
 	</tr>
 	<tr>

@@ -44,13 +44,13 @@ if( !file_exists($filename) ) {
 	$bbox = imagettftext($dst, $font_size, 0, 4,16, (Request('type')=='pathways'?$c_cptitle2:$c_cptitle1), $font_thick, $school);
 	if( Request('type') == 'pathways' )
 	{
-		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle1, $font_thin, "CAREER");
-		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+2,16, $c_cptitle2, $font_thick, "PATHWAYS");
+		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle1, $font_thin, l('drawing head pathways 1'));
+		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+2,16, $c_cptitle2, $font_thick, l('drawing head pathways 2'));
 	}
 	else
 	{
-		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle2, $font_thin, "PLAN OF");
-		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+3,16, $c_cptitle2, $font_thick, "STUDY");
+		$bbox = imagettftext($dst, $font_size-1, 0, $bbox[2]+2,16, $c_cptitle2, $font_thin, l('drawing head post 1'));
+		$bbox = imagettftext($dst, $font_size, 0, $bbox[2]+3,16, $c_cptitle2, $font_thick, l('drawing head post 2'));
 	}
 
 	imagefilledrectangle($dst, $bbox[2]+5,0, $width,imagesy($dst), $c_bkg);

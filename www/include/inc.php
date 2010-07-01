@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
+
 include("firstinclude.inc.php");
 
 if(array_key_exists('CONFIG_FILE', $_SERVER))
@@ -20,6 +22,9 @@ include("admin_inc.php");
 include("json_encode.php");
 include('Cycler.php');
 
+include('Localize.php');
+include('lang/' . $SITE->lang_file . '.php');
+
 /*
  * Is this even used anywhere?
  */
@@ -30,6 +35,13 @@ function logmsg($message) {
 	fclose($fp);
 }
 
+function l($str)
+{
+	static $loc;
+	if(!isset($loc))
+		$loc = new Localize_Strings();
+	return $loc->get($str);
+}
 
 function IsLoggedIn() {
 	if( $_SESSION['user_level'] > -1 ) {
