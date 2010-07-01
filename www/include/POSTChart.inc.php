@@ -621,12 +621,6 @@ class POSTChart_CC extends POSTChart
 
 	public function rowNameFromData(&$row)
 	{
-		$terms['F'] = 'Fall';
-		$terms['W'] = 'Winter';
-		$terms['S'] = 'Spring';
-		$terms['U'] = 'Summer';
-		$terms['M'] = 'Summer';
-
 		switch( $row['row_type'] )
 		{
 			case 'term':

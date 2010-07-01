@@ -13,6 +13,12 @@ class Localize_Strings extends Localize
 
 	public function term_name(&$row)
 	{
+		$terms['F'] = 'Fall';
+		$terms['W'] = 'Winter';
+		$terms['S'] = 'Spring';
+		$terms['U'] = 'Summer';
+		$terms['M'] = 'Summer';
+
 		return '<nobr>' . ordinalize($row['row_year'], true) . ' Yr</nobr><br />' . $terms[$row['row_term']];
 	}
 	
