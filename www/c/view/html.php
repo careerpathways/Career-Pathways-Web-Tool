@@ -23,7 +23,7 @@
 	</script>
 	<script type="text/javascript">
 	try {
-	var pageTracker = _gat._getTracker("UA-8726801-2");
+	var pageTracker = _gat._getTracker("<?=l('google analytics drawings')?>");
 	pageTracker._trackPageview();
 	} catch(err) {}</script>
 

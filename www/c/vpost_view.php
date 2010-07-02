@@ -71,7 +71,7 @@ if( count($skillsets) > 0 )
 	$skillset = $DB->SingleQuery('SELECT title FROM oregon_skillsets WHERE id = '.array_pop($skillsets));
 
 	echo '<div id="skillset">';
-		echo 'Oregon Skill Set: ' . $skillset['title'];
+		echo l('skillset name') . ': ' . $skillset['title'];
 	echo '</div>';
 }
 */

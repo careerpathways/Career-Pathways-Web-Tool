@@ -5,7 +5,7 @@ class ThisSite extends SiteSettings {
 	var $debug = true;
 
 	public $olmis_enabled = FALSE;
-	public $oregon_skillset_enabled = FALSE;
+	public $oregon_skillset_enabled = TRUE;
 	
 	public $lang_file = 'pierce';
 	

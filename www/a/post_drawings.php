@@ -301,7 +301,7 @@ function showVersion() {
 	if( $drawing['skillset'] )
 	{
 		echo '<div id="skillset">';
-			echo 'Oregon Skill Set: ' . $drawing['skillset'];
+			echo l('skillset name') . ': ' . $drawing['skillset'];
 		echo '</div>';
 	}
 	echo '</div>';
@@ -402,7 +402,7 @@ function showNewDrawingForm() {
 }
 
 function ShowDrawingForm($id) {
-	global $DB, $MODE;
+	global $DB, $MODE, $SITE;
 	require('view/drawings/post_drawing_info.php');
 }
 

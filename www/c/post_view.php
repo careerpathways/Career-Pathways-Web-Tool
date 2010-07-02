@@ -85,7 +85,7 @@ else
 		echo '</div>';
 		if( $drawing['skillset'] ) {
 			echo '<div id="skillset">';
-				echo 'Oregon Skill Set: ' . $drawing['skillset'];
+				echo l('skillset name') . ': ' . $drawing['skillset'];
 			echo '</div>';
 		}
 	echo '</div>';

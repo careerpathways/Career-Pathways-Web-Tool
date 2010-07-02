@@ -9,6 +9,10 @@ class Localize_Strings extends Localize
 		$this->add('drawing head pathways 2', 'PATHWAYS');
 		$this->add('school state abbr', 'WA');
 		$this->add('post row type', 'quarter');
+		$this->add('skillset name', 'Career Cluster');
+		$this->add('program name label', 'Career Cluster Pathway');
+		$this->add('show program name for post', TRUE);
+		$this->add('google analytics drawings', '');
 	}
 	
 	public function term_name($row)

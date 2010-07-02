@@ -36,7 +36,9 @@ var $j = jQuery.noConflict();
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
 <p>
-<?php if( $id == "" ) {
+<?php 
+/** begin new drawing form **/
+if( $id == "" ) {
 	
 	$drawing = array('id'=>'', 'code'=>'', 'name'=>'');	
 	
@@ -74,7 +76,7 @@ var $j = jQuery.noConflict();
 if($SITE->oregon_skillset_enabled){
 ?>
 <tr>
-	<th>Oregon Skill Set</th>
+	<th><?=l('skillset name')?></th>
 	<td valign="top"><span id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
 	?></span>(optional)</td>
@@ -93,13 +95,14 @@ if($SITE->oregon_skillset_enabled){
 
 <?php
 /** end new drawing form **/
+
 } else {
 
 /** begin drawing edit form **/
 	?>
 	<table width="100%">
 	<tr>
-		<th>Occupation/Program</th>
+		<th><?=l('program name label')?></th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $drawing['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
@@ -117,10 +120,10 @@ if($SITE->oregon_skillset_enabled){
 	if($SITE->oregon_skillset_enabled){
 	?>
 	<tr>
-		<th>Oregon Skill Set</th>
+		<th><?=l('skillset name')?></th>
 		<td height="34"><div id="skillset" style="float:left"><?php
 			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
-		?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
+		?></div><div id="skillsetConf" style="color:#393; font-weight: bold; padding-left: 10px;"></div></td>
 	</tr>
 	<?php
 	}

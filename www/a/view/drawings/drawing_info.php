@@ -52,7 +52,12 @@ if( $id != "" ) {
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br /><br />
 
-<?php if( $id == "" ) { ?>
+<?php 
+
+/** begin new drawing form **/
+if( $id == "" ) { 
+
+?>
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 <div id="existingDrawings" style="float:right; width:330px;"></div>
 <table>
@@ -60,7 +65,7 @@ if( $id != "" ) {
 if($SITE->oregon_skillset_enabled){
 ?>
 <tr>
-	<th>Oregon Skill Set</th>
+	<th><?=l('skillset name')?></th>
 	<td><div id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>''));
 	?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
@@ -70,7 +75,7 @@ if($SITE->oregon_skillset_enabled){
 if( $school['organization_type'] != 'Other') { 
 ?>
 <tr>
-	<th>Approved Program Name</th>
+	<th><?=l('program name label')?></th>
 	<td><div id="program"><?php
 		echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
 	?></div></td>
@@ -106,7 +111,12 @@ if( $school['organization_type'] != 'Other') {
 </table>
 <input type="hidden" name="id" value="">
 </form>
-<?php } else { ?>
+<?php 
+
+/** end new drawing form **/
+} else { 
+
+?>
 <table width="960">
 <tr class="editable">
 	<td colspan="2">
@@ -114,7 +124,7 @@ if( $school['organization_type'] != 'Other') {
 	</td>
 </tr>
 <tr class="editable">
-	<th>Approved Program Name</th>
+	<th><?=l('program name label')?></th>
 	<td><div id="program"><?php
 		echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', $drawing['program_id'], array('0'=>'Not Listed'));
 	?></div></td>
@@ -129,7 +139,7 @@ if( $school['organization_type'] != 'Other') {
 	if($SITE->oregon_skillset_enabled){
 ?>
 <tr class="editable">
-	<th>Oregon Skill Set</th>
+	<th><?=l('skillset name')?></th>
 	<td><div id="skillset"><?php
 		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array('0'=>''));
 	?></div></td>

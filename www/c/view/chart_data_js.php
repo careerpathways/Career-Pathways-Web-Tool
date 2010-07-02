@@ -83,7 +83,7 @@ var chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overfl
 <?php
 if( $drawing['skillset'] ) {
 	?>
-	var chSkillset = '<div class="title_skillset" style="font-size:8pt;font-weight:bold;">Oregon Skill Set: <?= $drawing['skillset'] ?></div>';
+	var chSkillset = '<div class="title_skillset" style="font-size:8pt;font-weight:bold;"><?=l('skillset name')?>: <?= $drawing['skillset'] ?></div>';
 	<?php
 } else {
 	?>

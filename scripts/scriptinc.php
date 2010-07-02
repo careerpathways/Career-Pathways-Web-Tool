@@ -1,6 +1,6 @@
 <?php
 
-$_SERVER['CONFIG_FILE'] = 'laptop-aaron.settings.php';
+$_SERVER['CONFIG_FILE'] = 'pierce.settings.php';
 
 $dir = preg_split('~[/\\\]~', dirname(__FILE__));
 array_pop($dir);
