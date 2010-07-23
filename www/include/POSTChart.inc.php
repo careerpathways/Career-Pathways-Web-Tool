@@ -243,7 +243,7 @@ abstract class POSTChart
 			$post_row = array();
 			$post_row['drawing_id'] = $post_drawing_id;
 			$post_row['row_type'] = $row['row_type'];
-			$post_row['row_year'] = $row['row_year'];
+			$post_row['row_year'] = ($row['row_year']?$row['row_year']:"");
 			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
 			$post_row['row_qtr'] = ($row['row_qtr']?$row['row_qtr']:"");
 			$post_row_id = $DB->Insert('post_row', $post_row);
