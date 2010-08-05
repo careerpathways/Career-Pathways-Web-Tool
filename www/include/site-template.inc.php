@@ -205,6 +205,7 @@ pageTracker._trackPageview();
 			echo '<li' . ( $p == '/p/tutorial' ? ' class="active"' : '' ) . '><a href="/p/tutorial">Tutorial</a></li>';
 			echo '<li' . ( $p == '/p/release_info' ? ' class="active"' : '' ) . '><a href="/p/release_info">Release Info</a></li>';
 			echo '<li' . ( $p == '/p/ada' ? ' class="active"' : '' ) . '><a href="/p/ada">ADA Compliance</a></li>';
+			echo '<li' . ( $p == '/p/licensing' ? ' class="active"' : '' ) . '><a href="/p/licensing">Licensing</a></li>';
 			echo '<li' . ( $p == '/a/help' ? ' class="active"' : '' ) . '><a href="/a/help">Help Desk</a></li>';
 		echo '</ul>';
 		echo '</div><br /></div>';
@@ -217,6 +218,8 @@ pageTracker._trackPageview();
 			'tutorial' => "Tutorial",
 			'release_info' => "Release Info",
 			'ada' => "ADA Compliance",
+			'licensing' => "Licensing",
+			'license_agreement' => "License Agreement",
 			'help' => "Internal Help Text"
 		);
 	}

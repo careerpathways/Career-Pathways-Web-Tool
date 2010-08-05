@@ -276,6 +276,7 @@ create table `guest_logins` (
 	`email` varchar (100)   NULL ,  
 	`school` varchar (200)   NULL ,  
 	`referral` varchar (200)   NULL ,  
+	`download` tinyint(4) NOT NULL DEFAULT '0',
 	`ipaddr` varchar (20)   NULL  , 
 	PRIMARY KEY ( `id` )  
 );

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Copyright 2007-2010 by Oregon Department of Community Colleges and Workforce Development.
+ * See LICENSE.htm for licensing information.
+ */
+
 include("inc.php");
 require_once "Text/Wiki.php";
 

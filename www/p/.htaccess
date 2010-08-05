@@ -2,4 +2,5 @@ RewriteEngine on
 
 RewriteRule ^dashboard$ ../ [L]
 
-RewriteRule ^(.*)$ handler.php?page=$1 [nc]
+RewriteRule ^(ada|release_info|tutorial)$ handler.php?page=$1 [nc]
+RewriteRule ^(license_agreement|licensing)$ $1.php [QSA,L]
