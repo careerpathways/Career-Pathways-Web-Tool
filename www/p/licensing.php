@@ -14,7 +14,7 @@ if(array_key_exists('download', $_GET))
 
 	<p>You can also browse the source code at <a href="http://cpwebtool.org/trac/browser/trunk">cpwebtool.org</a></p>
 
-	<p>If you would like assistance installing the software, please contact one of the companies listed on our <a href="http://cpwebtool.org/Consulting">Consulting</a> page.</p>
+	<p>If you would like assistance installing the software, please contact <a href="http://cpwebtool.org/Consulting">Sivecki and Associates, LLC</a> for services and rates.</p>
 
 	<?php
 	PrintFooter();
@@ -45,7 +45,8 @@ PrintHeader();
 </ul>
 
 <h3>Third-Party Libraries</h3>
-The Career Pathways Roadmap Web Tool uses the following open-source libraries, links are provided to their corresponding licenses.
+<p>The Career Pathways Roadmap Web Tool uses the following open-source libraries, links are provided to their corresponding licenses.</p>
+<b>Included</b>
 <ul>
 	<li><a href="http://prototypejs.org/">Prototype</a> - <a href="http://dev.rubyonrails.org/browser/spinoffs/prototype/trunk/LICENSE">MIT-style license</a></li>
 	<li><a href="http://jquery.com/">jQuery</a> - <a href="http://jquery.org/license">MIT license</a></li>
@@ -53,8 +54,20 @@ The Career Pathways Roadmap Web Tool uses the following open-source libraries, l
 	<li><a href="http://code.google.com/p/explorercanvas/">ExCanvas</a> - <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache license</a></li>
 	<li><a href="http://jqueryui.com/about">jQuery UI</a> - <a href="http://jqueryui.com/latest/MIT-LICENSE.txt">MIT license</a></li>
 	<li><a href="http://keithdevens.com/software/phpxml">XML Library by Keith Evans</a> - <a href="http://keithdevens.com/software/license">Artistic License</a></li>
+</ul>
+<b>Download Separately</b>
+<ul>
 	<li><a href="http://phpmailer.worxware.com/">PHPMailer</a> - <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a></li>
 </ul>
+
+<h3>Consulting</h3>
+<p>If you would like assistance installing the software, please contact <a href="http://cpwebtool.org/Consulting">Sivecki and Associates, LLC</a> for services and rates.</p>
+
+<h3>Code Modification</h3>
+<p>According to <a href="license_agreement#section-3c">section 3 C</a> of the license agreement, you are required to provide a copy of any 
+modifications you make back to us. Please send us your changes to <a href="mailto:code@ctepathways.org">code@ctepathways.org</a> or contact
+us at this address to arrange other delivery options.</p>
+
 
 <?php
 PrintFooter();
