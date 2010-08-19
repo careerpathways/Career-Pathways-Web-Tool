@@ -7,15 +7,15 @@ if(array_key_exists('download', $_GET))
 	$TEMPLATE->AddCrumb('/p/licensing', 'Download Source Code');
 	PrintHeader();
 	?>
+	<div style="width: 600px;">	
+		<p>This zip file contains the source code to the Career Pathways Roadmap Web Tool.</p>
+		
+		<p><a href="source/career-pathways-web-tool.zip">career-pathways-web-tool.zip</a> (5mb)</p>
 	
-	<p>This zip file contains the source code to the Career Pathways Roadmap Web Tool.</p>
-	
-	<p><a href="source/career-pathways-web-tool.zip">career-pathways-web-tool.zip</a> (5mb)</p>
+		<p>You can also browse the source code, see release note and change logs at <a href="http://cpwebtool.org/trac/browser/trunk">cpwebtool.org</a></p>
 
-	<p>You can also browse the source code at <a href="http://cpwebtool.org/trac/browser/trunk">cpwebtool.org</a></p>
-
-	<p>If you would like assistance installing the software, please contact <a href="http://cpwebtool.org/Consulting">Sivecki and Associates, LLC</a> for services and rates.</p>
-
+		<?php printConsultingInfo()?>
+	</div>
 	<?php
 	PrintFooter();
 	die();
@@ -25,15 +25,25 @@ $TEMPLATE->AddCrumb('/p/licensing', 'Licensing');
 
 PrintHeader();
 ?>
+<div style="width: 600px;">
+
+<h3>About the Career Pathways Roadmap Web Tool</h3>
+<p>The Oregon Department of Community Colleges and Workforce Development (OCCWD) working in partnership with Oregon's 17 community colleges through the 
+Oregon Pathways Alliance developed the Career Pathway Roadmap Webtool to provide visual maps using web technology for students and citizens to learn more 
+about education, training, occupations, careers, and the labor market in Oregon.</p>  
+<p>We welcome others state agencies, educational institutions, and organizations to download the source code to develop a comparable Web Tool for the 
+students and citizens in your state or region.  The Web Tool was developed with funds from the US Department of Labor Employment and Training 
+Administration (US DOL ETA) and the Oregon Community College Strategic Reserve Fund.</p>
 
 <h3>Download Source Code</h3>
-<p style="width: 500px;">The Career Pathways Roadmap Web Tool is available under an open-source license. Please read our 
-<a href="license_agreement">license agreement</a>, then <a href="/a/guestlogin.php?download">register</a> to download the source code.</p>
-
-<p>License Agreement (<a href="license_agreement">HTML</a>, <a href="Career Pathways Web Tool License Agreement.pdf" target="_new">PDF</a>)</p>
-
-<a href="/a/guestlogin.php?download">Register</a>
-
+<p>Please complete the following steps to download the Web Tool Source Code:</p>
+<ul>
+<li>Read the <a href="license_agreement">Open Source License Agreement</a>.  License Agreement (<a href="license_agreement">HTML</a>, <a href="Career Pathways Web Tool License Agreement.pdf" target="_new">PDF</a>)</li>
+<li>Read the Installation Requirements and Third Party Libraries information below.</li>
+<li><a href="/a/guestlogin.php?download">Register</a> to be a licensed user.</li>
+<li>Download the Source Code</li>
+</ul>
+   
 <h3>Installation Requirements</h3>
 <ul>
 	<li>Fedora Linux server, or a Windows server</li>
@@ -46,7 +56,7 @@ PrintHeader();
 
 <h3>Third-Party Libraries</h3>
 <p>The Career Pathways Roadmap Web Tool uses the following open-source libraries, links are provided to their corresponding licenses.</p>
-<b>Included</b>
+<b>The following third-party libraries are included in the Career Pathways Roadmap Web Tool:</b>
 <ul>
 	<li><a href="http://prototypejs.org/">Prototype</a> - <a href="http://dev.rubyonrails.org/browser/spinoffs/prototype/trunk/LICENSE">MIT-style license</a></li>
 	<li><a href="http://jquery.com/">jQuery</a> - <a href="http://jquery.org/license">MIT license</a></li>
@@ -55,20 +65,32 @@ PrintHeader();
 	<li><a href="http://jqueryui.com/about">jQuery UI</a> - <a href="http://jqueryui.com/latest/MIT-LICENSE.txt">MIT license</a></li>
 	<li><a href="http://keithdevens.com/software/phpxml">XML Library by Keith Evans</a> - <a href="http://keithdevens.com/software/license">Artistic License</a></li>
 </ul>
-<b>Download Separately</b>
+<b>The following third-party library must be downloaded separately:</b>
 <ul>
 	<li><a href="http://phpmailer.worxware.com/">PHPMailer</a> - <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a></li>
 </ul>
+<?php printConsultingInfo()?>
 
+</div>
+
+<?php
+PrintFooter();
+
+function printConsultingInfo()
+{
+?>
 <h3>Consulting</h3>
-<p>If you would like assistance installing the software, please contact <a href="http://cpwebtool.org/Consulting">Sivecki and Associates, LLC</a> for services and rates.</p>
+<p>If you would like assistance installing or customizing the software, please contact <a href="http://cpwebtool.org/Consulting">Sivecki and Associates, LLC</a> for services and rates.</p>
+
+<h3>Troubleshooting</h3>
+<p>If you are experiencing any difficulty downloading the source code after registering, please contact us through our <a href="/a/help">Help Desk</a>. We will respond within 24 business hours.</p>
 
 <h3>Code Modification</h3>
 <p>According to <a href="license_agreement#section-3c">section 3 C</a> of the license agreement, you are required to provide a copy of any 
 modifications you make back to us. Please send us your changes to <a href="mailto:code@ctepathways.org">code@ctepathways.org</a> or contact
 us at this address to arrange other delivery options.</p>
-
-
 <?php
-PrintFooter();
+}
+
+
 ?>

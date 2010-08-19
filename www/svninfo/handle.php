@@ -7,12 +7,11 @@ switch($mode) {
 	case '':
 		?>
 		run <a href="revision">svn info</a><br><br>
-		run <a href="svnupdate">svn update</a><br>
 		<?php;
 		break;
 	case 'revision':
 		header("Content-type: text/plain");
-		echo shell_exec("/usr/bin/sudo -u aaron /usr/bin/svn info /www/ctpathways.org/dev/www | egrep 'Revision|URL'");
+		echo shell_exec("/usr/bin/svn info /web/ctepathways.org/test/www | egrep 'Revision|URL'");
 		break;
 	case 'svnupdate':
 		header("Content-type: text/plain");
