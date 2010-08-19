@@ -27,7 +27,7 @@ PrintHeader();
 ?>
 <div style="width: 600px;">
 
-<h3>About the Career Pathways Roadmap Web Tool</h3>
+<h3>About the Career Pathways Roadmap Web Tool Development Project</h3>
 <p>The Oregon Department of Community Colleges and Workforce Development (OCCWD) working in partnership with Oregon's 17 community colleges through the 
 Oregon Pathways Alliance developed the Career Pathway Roadmap Webtool to provide visual maps using web technology for students and citizens to learn more 
 about education, training, occupations, careers, and the labor market in Oregon.</p>  
