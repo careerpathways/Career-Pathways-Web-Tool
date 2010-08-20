@@ -29,10 +29,10 @@ PrintHeader();
 
 <h3>About the Career Pathways Roadmap Web Tool Development Project</h3>
 <p>The Oregon Department of Community Colleges and Workforce Development (OCCWD) working in partnership with Oregon's 17 community colleges through the 
-Oregon Pathways Alliance developed the Career Pathway Roadmap Webtool to provide visual maps using web technology for students and citizens to learn more 
+Oregon Pathways Alliance developed the Career Pathways Roadmap Web Tool to provide visual maps using web technology for students and citizens to learn more 
 about education, training, occupations, careers, and the labor market in Oregon.</p>  
 <p>We welcome others state agencies, educational institutions, and organizations to download the source code to develop a comparable Web Tool for the 
-students and citizens in your state or region.  The Web Tool was developed with funds from the US Department of Labor Employment and Training 
+students and citizens in their state or region.  The Web Tool was developed with funds from the US Department of Labor Employment and Training 
 Administration (US DOL ETA) and the Oregon Community College Strategic Reserve Fund.</p>
 
 <h3>Download Source Code</h3>
@@ -70,6 +70,18 @@ Administration (US DOL ETA) and the Oregon Community College Strategic Reserve F
 	<li><a href="http://phpmailer.worxware.com/">PHPMailer</a> - <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a></li>
 </ul>
 <?php printConsultingInfo()?>
+
+<h3>Oregon Career Pathway Statewide Initiative</h3>
+
+<p>For more information about the Oregon Career Pathway Initiative go to:</p>
+<a href="http://www.oregonpathways.org">www.oregonpathways.org</a>
+<p>or contact:</p>
+<p>
+Mimi Maduro<br />
+Pathways Initiative Statewide Director<br />
+Dept. of Community Colleges & Workforce Development<br />
+<a href="mailto:mmaduro@cgcc.cc.or.us">mmaduro@cgcc.cc.or.us</a>
+</p>
 
 </div>
 
