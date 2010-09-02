@@ -1,19 +1,10 @@
---
--- Table structure for table `admin_level_module`
---
 
-DROP TABLE IF EXISTS `admin_level_module`;
 CREATE TABLE `admin_level_module` (
   `module_id` int(11) NOT NULL,
   `level` int(11) NOT NULL,
   PRIMARY KEY  (`module_id`,`level`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `admin_module`
---
-
-DROP TABLE IF EXISTS `admin_module`;
 CREATE TABLE `admin_module` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) default NULL,
@@ -22,120 +13,142 @@ CREATE TABLE `admin_module` (
   `active` tinyint(4) default NULL,
   `order` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `admin_user_levels`
---
-
-DROP TABLE IF EXISTS `admin_user_levels`;
 CREATE TABLE `admin_user_levels` (
   `level` int(11) NOT NULL default '0',
   `name` varchar(50) default NULL,
   PRIMARY KEY  (`level`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `color_schemes`
---
-
-DROP TABLE IF EXISTS `color_schemes`;
 CREATE TABLE `color_schemes` (
-  `id` int(11) NOT NULL auto_increment,
-  `school_id` int(11) default NULL,
-  `hex` varchar(6) default NULL,
-  `files_generated` tinyint(1) NOT NULL default '0',
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `school_id` INT(11) DEFAULT NULL,
+  `hex` VARCHAR(6) DEFAULT NULL,
+  `files_generated` TINYINT(1) NOT NULL DEFAULT '0',
+  `num_roadmaps` INT(11) NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `connections`
---
-
-DROP TABLE IF EXISTS `connections`;
- CREATE TABLE `connections` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `source_object_id` int(10) unsigned NOT NULL,
-  `destination_object_id` int(10) unsigned NOT NULL,
-  `num_segments` int(2) unsigned NOT NULL default '3',
-  `color` char(6) NOT NULL,
-  `source_axis` char(1) NOT NULL default 'x',
-  `source_side` char(1) NOT NULL default 'n',
-  `source_position` tinyint(3) unsigned NOT NULL default '50',
-  `destination_side` char(1) NOT NULL default 'n',
-  `destination_position` tinyint(3) unsigned NOT NULL default '50',
-  `created` datetime NOT NULL,
-  `modified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+CREATE TABLE `connections` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `source_object_id` INT(10) UNSIGNED NOT NULL,
+  `destination_object_id` INT(10) UNSIGNED NOT NULL,
+  `num_segments` INT(2) UNSIGNED NOT NULL,
+  `color` CHAR(6) NOT NULL,
+  `created` DATETIME NOT NULL,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `source_axis` CHAR(1) NOT NULL,
+  `source_side` CHAR(1) NOT NULL DEFAULT 'n',
+  `source_position` TINYINT(3) UNSIGNED NOT NULL DEFAULT '50',
+  `destination_side` CHAR(1) NOT NULL DEFAULT 'n',
+  `destination_position` TINYINT(3) UNSIGNED NOT NULL DEFAULT '50',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `drawing_main`
---
+CREATE TABLE `counties` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `county` VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
 
-DROP TABLE IF EXISTS `drawing_main`;
 CREATE TABLE `drawing_main` (
-  `id` int(11) NOT NULL auto_increment,
-  `school_id` int(11) default NULL,
-  `name` varchar(255) default NULL,
-  `tagline` varchar(100) default NULL,
-  `tagline_color_id` varchar(6) default NULL,
-  `code` varchar(30) default NULL,
-  `date_created` datetime default NULL,
-  `last_modified` datetime default NULL,
-  `created_by` int(11) default NULL,
-  `last_modified_by` int(11) default NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `school_id` INT(11) DEFAULT NULL,
+  `skillset_id` INT(11) NOT NULL DEFAULT '0',
+  `program_id` INT(11) NOT NULL DEFAULT '0',
+  `name` VARCHAR(255) DEFAULT NULL,
+  `tagline` VARCHAR(100) DEFAULT NULL,
+  `tagline_color_id` VARCHAR(6) DEFAULT NULL,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `date_created` DATETIME DEFAULT NULL,
+  `last_modified` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `last_modified_by` INT(11) DEFAULT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `drawings`
---
-
-DROP TABLE IF EXISTS `drawings`;
 CREATE TABLE `drawings` (
-  `id` int(11) NOT NULL auto_increment,
-  `parent_id` int(11) default NULL,
-  `version_num` int(11) default NULL,
-  `published` tinyint(1) NOT NULL default '0',
-  `frozen` tinyint(1) default '0',
-  `note` varchar(255) default NULL,
-  `date_created` datetime default NULL,
-  `last_modified` datetime default NULL,
-  `created_by` int(11) default NULL,
-  `last_modified_by` int(11) default NULL,
-  `deleted` tinyint(1) NOT NULL default '0',
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` INT(11) DEFAULT NULL,
+  `version_num` INT(11) DEFAULT NULL,
+  `published` TINYINT(1) NOT NULL DEFAULT '0',
+  `frozen` TINYINT(1) DEFAULT '0',
+  `note` VARCHAR(255) DEFAULT NULL,
+  `date_created` DATETIME DEFAULT NULL,
+  `last_modified` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `last_modified_by` INT(11) DEFAULT NULL,
+  `deleted` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=345 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `email_text`
---
-
-DROP TABLE IF EXISTS `email_text`;
 CREATE TABLE `email_text` (
-  `id` varchar(50) NOT NULL default '',
-  `description` text,
-  `sender` varchar(255) default NULL,
-  `recipient` varchar(255) default NULL,
-  `bcc` varchar(255) default NULL,
-  `subject` varchar(255) default NULL,
-  `emailbody` text,
+  `id` VARCHAR(50) NOT NULL DEFAULT '',
+  `description` TEXT,
+  `sender` VARCHAR(255) DEFAULT NULL,
+  `recipient` VARCHAR(255) DEFAULT NULL,
+  `bcc` VARCHAR(255) DEFAULT NULL,
+  `subject` VARCHAR(255) DEFAULT NULL,
+  `emailbody` TEXT,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `email_variables`
---
-
-DROP TABLE IF EXISTS `email_variables`;
 CREATE TABLE `email_variables` (
-  `email_id` varchar(50) default NULL,
-  `variable` varchar(100) default NULL,
-  `description` text
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `email_id` VARCHAR(50) DEFAULT NULL,
+  `variable` VARCHAR(100) DEFAULT NULL,
+  `description` TEXT
+);
 
-DROP TABLE IF EXISTS `hs_affiliations`;
+CREATE TABLE `external_link_detail` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(30) NOT NULL,
+  `date` DATETIME NOT NULL,
+  `drawing_id` INT(11) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `remote_addr` VARCHAR(20) DEFAULT NULL,
+  `user_agent` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `external_link_exclude` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `pattern` VARCHAR(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `external_links` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(30) NOT NULL,
+  `drawing_id` INT(11) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `last_seen` DATETIME NOT NULL,
+  `counter` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `guest_logins` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date` DATETIME DEFAULT NULL,
+  `first_name` VARCHAR(30) DEFAULT NULL,
+  `last_name` VARCHAR(30) DEFAULT NULL,
+  `email` VARCHAR(100) DEFAULT NULL,
+  `school` VARCHAR(200) DEFAULT NULL,
+  `referral` VARCHAR(200) DEFAULT NULL,
+  `download` TINYINT(4) NOT NULL DEFAULT '0',
+  `ipaddr` VARCHAR(20) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `helprequests` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `date` DATETIME DEFAULT NULL,
+  `user_id` INT(11) DEFAULT NULL,
+  `subject` VARCHAR(255) DEFAULT NULL,
+  `message` TEXT,
+  PRIMARY KEY  (`id`)
+);
+
 CREATE TABLE `hs_affiliations` (                          
 	`id` int(10) unsigned NOT NULL auto_increment,          
 	`cc_id` int(10) unsigned NOT NULL default '0',          
@@ -143,41 +156,187 @@ CREATE TABLE `hs_affiliations` (
 	PRIMARY KEY  (`id`)                                     
 );
 
---
--- Table structure for table `news`
---
+CREATE TABLE `login_history` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date` DATETIME DEFAULT NULL,
+  `user_id` INT(11) DEFAULT NULL,
+  `name` VARCHAR(50) DEFAULT NULL,
+  `ip_address` VARCHAR(20) DEFAULT NULL,
+  `user_agent` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
 
-DROP TABLE IF EXISTS `news`;
+CREATE TABLE `logs` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `remote_addr` VARCHAR(20) DEFAULT NULL,
+  `date` DATETIME DEFAULT NULL,
+  `url` VARCHAR(255) DEFAULT NULL,
+  `drawing_code` VARCHAR(255) DEFAULT NULL,
+  `drawing_id` INT(11) DEFAULT NULL,
+  `status_code` INT(11) DEFAULT NULL,
+  `bytes_transferred` INT(11) DEFAULT NULL,
+  `referer` VARCHAR(255) DEFAULT NULL,
+  `user_agent` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `logs_processed` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `filename` VARCHAR(50) DEFAULT NULL,
+  `date_processed` DATETIME DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
 CREATE TABLE `news` (
-  `id` int(11) NOT NULL auto_increment,
-  `date` datetime default NULL,
-  `category` varchar(50) default NULL,
-  `user_id` int(11) default NULL,
-  `caption` varchar(255) default NULL,
-  `text` text,
-  `active` tinyint(1) NOT NULL default '1',
-  `sort_index` int(11) default NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `date` DATE DEFAULT NULL,
+  `category` VARCHAR(50) DEFAULT NULL,
+  `user_id` INT(11) DEFAULT NULL,
+  `caption` VARCHAR(255) DEFAULT NULL,
+  `text` TEXT,
+  `active` TINYINT(1) NOT NULL DEFAULT '1',
+  `sort_index` INT(11) DEFAULT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `objects`
---
-
-DROP TABLE IF EXISTS `objects`;
 CREATE TABLE `objects` (
-  `id` int(11) NOT NULL auto_increment,
-  `drawing_id` int(11) default NULL,
-  `content` text,
-  `date` datetime default NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `drawing_id` INT(11) DEFAULT NULL,
+  `content` MEDIUMTEXT,
+  `date` DATETIME DEFAULT NULL,
+  `color` VARCHAR(6) NOT NULL DEFAULT '333333',
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5168 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `schools`
---
+CREATE TABLE `olmis_codes` (
+  `olmis_id` VARCHAR(20) NOT NULL,
+  `job_title` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY  (`olmis_id`)
+);
 
-DROP TABLE IF EXISTS `schools`;
+CREATE TABLE `olmis_links` (
+  `id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `drawing_id` INT(10) UNSIGNED DEFAULT NULL,
+  `olmis_id` VARCHAR(20) DEFAULT NULL,
+  `enabled` TINYINT(4) NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `oregon_skillsets` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_cell` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `drawing_id` INT(10) UNSIGNED DEFAULT NULL,
+  `row_num` INT(11) DEFAULT NULL,
+  `row_id` INT(11) DEFAULT NULL,
+  `col_id` INT(11) DEFAULT NULL,
+  `content` TEXT NOT NULL,
+  `href` TEXT NOT NULL,
+  `legend` TEXT,
+  `course_credits` TINYINT(4) NOT NULL DEFAULT '0',
+  `course_subject` VARCHAR(10) DEFAULT NULL,
+  `course_number` VARCHAR(10) DEFAULT NULL,
+  `course_title` VARCHAR(255) DEFAULT NULL,
+  `course_description` TEXT,
+  `course_description_cachedate` DATETIME DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_col` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `drawing_id` INT(10) UNSIGNED DEFAULT NULL,
+  `title` VARCHAR(255) DEFAULT NULL,
+  `num` INT(11) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_default_col` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `school_id` INT(11) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `num` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_drawing_main` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `school_id` INT(11) DEFAULT NULL,
+  `skillset_id` INT(11) DEFAULT NULL,
+  `program_id` INT(11) NOT NULL DEFAULT '0',
+  `name` VARCHAR(255) DEFAULT NULL,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `date_created` DATETIME DEFAULT NULL,
+  `last_modified` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `last_modified_by` INT(11) DEFAULT NULL,
+  `type` ENUM('HS','CC') DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_drawings` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` INT(11) DEFAULT NULL,
+  `version_num` INT(11) DEFAULT NULL,
+  `published` TINYINT(1) NOT NULL DEFAULT '0',
+  `frozen` TINYINT(1) DEFAULT '0',
+  `note` VARCHAR(255) DEFAULT NULL,
+  `footer_text` VARCHAR(255) DEFAULT NULL,
+  `footer_link` VARCHAR(255) DEFAULT NULL,
+  `sidebar_text_right` VARCHAR(255) DEFAULT NULL,
+  `date_created` DATETIME DEFAULT NULL,
+  `last_modified` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `last_modified_by` INT(11) DEFAULT NULL,
+  `deleted` TINYINT(1) NOT NULL DEFAULT '0',
+  `num_rows` INT(11) DEFAULT NULL,
+  `num_extra_rows` INT(11) DEFAULT NULL,
+  `header_text` TEXT,
+  `header_link` TEXT,
+  `header_state` TINYINT(1) NOT NULL DEFAULT '0',
+  `footer_state` TINYINT(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_legend` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `graphic` VARCHAR(255) NOT NULL,
+  `text` VARCHAR(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_row` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `drawing_id` INT(10) UNSIGNED NOT NULL,
+  `row_type` ENUM('prereq','term','electives','unlabeled') DEFAULT NULL,
+  `row_year` ENUM('1','2','3','4','5','6','7','8','9','10','11','12') DEFAULT NULL,
+  `row_term` ENUM('M','F','W','S','U') DEFAULT NULL,
+  `row_qtr` TINYINT(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `post_sidebar_options` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` ENUM('HS','CC') NOT NULL,
+  `text` VARCHAR(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `programs` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `skillset_id` INT(10) UNSIGNED NOT NULL,
+  `title` VARCHAR(200) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `school_options` (
+  `school_id` INT(11) NOT NULL,
+  `show_banner` TINYINT(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY  (`school_id`)
+);
+
 CREATE TABLE `schools` (
   `id` int(11) NOT NULL auto_increment,
   `school_name` varchar(100) default NULL,
@@ -190,24 +349,14 @@ CREATE TABLE `schools` (
   `school_phone` varchar(20) default NULL,    
   `date_created` datetime default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `school_options`
---
-
-DROP TABLE IF EXISTS `school_options`;
 CREATE TABLE `school_options` (
 	`school_id` int(11) NOT NULL,
 	`show_banner` tinyint(1) NOT NULL default '1',
 	PRIMARY KEY  (`school_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL auto_increment,
   `school_id` int(11) default NULL,
@@ -230,143 +379,27 @@ CREATE TABLE `users` (
   `approved_by` int(11) default NULL,
   `date_created` datetime default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `object_type`
---
-
-DROP TABLE IF EXISTS `object_type`;
-CREATE TABLE `object_type` (
-  `id` int(11) NOT NULL auto_increment,
-  `object_id` int(11) NOT NULL,
-  `type_id` int(11) NOT NULL,
+CREATE TABLE `vpost_links` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `vid` INT(10) UNSIGNED DEFAULT NULL,
+  `post_id` INT(10) UNSIGNED DEFAULT NULL,
+  `tab_name` VARCHAR(100) DEFAULT NULL,
+  `sort` INT(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+);
 
---
--- Table structure for table `types`
---
-
-DROP TABLE IF EXISTS `types`;
-CREATE TABLE `types` (
-  `id` int(11) NOT NULL auto_increment,
-  `description` varchar(50) NOT NULL,
-  `family` varchar(25) NOT NULL,
+CREATE TABLE `vpost_views` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `school_id` INT(11) DEFAULT NULL,
+  `code` VARCHAR(40) DEFAULT NULL,
+  `name` VARCHAR(200) DEFAULT NULL,
+  `date_created` DATETIME DEFAULT NULL,
+  `last_modified` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `last_modified_by` INT(11) DEFAULT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `helprequests`;
-CREATE TABLE `helprequests` (            
-	`id` int(11) NOT NULL auto_increment,  
-	`date` datetime default NULL,          
-	`user_id` int(11) default NULL,        
-	`subject` varchar(255) default NULL,   
-	`message` text,                        
-	PRIMARY KEY  (`id`)                    
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-DROP TABLE IF EXISTS `guest_logins`;
-create table `guest_logins` (    
-	`id` int UNSIGNED   NOT NULL AUTO_INCREMENT ,  
-	`date` datetime   NULL ,  
-	`first_name` varchar (30)   NULL ,  
-	`last_name` varchar (30)   NULL ,  
-	`email` varchar (100)   NULL ,  
-	`school` varchar (200)   NULL ,  
-	`referral` varchar (200)   NULL ,  
-	`download` tinyint(4) NOT NULL DEFAULT '0',
-	`ipaddr` varchar (20)   NULL  , 
-	PRIMARY KEY ( `id` )  
 );
 
-CREATE TABLE `login_history` (                           
- `id` int(10) unsigned NOT NULL auto_increment,         
- `date` datetime default NULL,                          
- `user_id` int(11) default NULL,                        
- `name` varchar(50) default NULL,                       
- `ip_address` varchar(20) default NULL,                 
- `user_agent` varchar(255) default NULL,                
- PRIMARY KEY  (`id`)                                    
-);
-
-CREATE TABLE `logs` (                                       
-	`id` int(10) unsigned NOT NULL auto_increment,            
-	`remote_addr` varchar(20) default NULL,                   
-	`date` datetime default NULL,                             
-	`url` varchar(255) default NULL,                          
-	`drawing_code` varchar(255) default NULL,                 
-	`drawing_id` int(11) default NULL,                        
-	`status_code` int(11) default NULL,                       
-	`bytes_transferred` int(11) default NULL,                 
-	`referer` varchar(255) default NULL,                      
-	`user_agent` varchar(255) default NULL,                   
-	PRIMARY KEY  (`id`)                                       
-);
-        
-CREATE TABLE `logs_processed` (                            
-	`id` int(10) unsigned NOT NULL auto_increment,           
-	`filename` varchar(50) default NULL,                     
-	`date_processed` datetime default NULL,                  
-	PRIMARY KEY  (`id`)                                      
-);
-
-CREATE TABLE `ccti_data` (                                
-	`id` int(10) unsigned NOT NULL auto_increment,          
-	`section_id` int(10) unsigned default NULL,             
-	`row` int(11) NOT NULL default '0',                     
-	`col` int(11) NOT NULL default '0',                     
-	`rowspan` int(11) NOT NULL default '1',                 
-	`colspan` int(11) NOT NULL default '1',                 
-	`text` text NOT NULL,                                   
-	PRIMARY KEY  (`id`)                                     
-);
-
-CREATE TABLE `ccti_drawings` (                           
-	`id` int(10) unsigned NOT NULL auto_increment,         
-	`school_id` int(11) default NULL,                      
-	`name` varchar(255) default NULL,                      
-	`code` varchar(255) default NULL,                      
-	`date_created` datetime default NULL,                  
-	`last_modified` datetime default NULL,                 
-	`created_by` int(11) default NULL,                     
-	`last_modified_by` int(11) default NULL,               
-	`deleted` tinyint(4) NOT NULL default '0',             
-	PRIMARY KEY  (`id`)                                    
-)
-
-CREATE TABLE `ccti_programs` (                           
-	`id` int(10) unsigned NOT NULL auto_increment,         
-	`drawing_id` int(10) unsigned default NULL,            
-	`header` varchar(255) default NULL,                    
-	`footer` varchar(255) default NULL,                    
-	`school_id` int(11) NOT NULL default '0',              
-	`completes_with` varchar(255) default NULL,            
-	`num_columns` int(11) NOT NULL default '6',            
-	`show_occ_titles` tinyint(1) NOT NULL default '1',     
-	`index` int(11) NOT NULL default '0',                  
-	PRIMARY KEY  (`id`)                                    
-)
-
-CREATE TABLE `ccti_section_labels` (                      
-	`id` int(10) unsigned NOT NULL auto_increment,          
-	`section_id` int(10) unsigned default NULL,             
-	`axis` enum('x','y','xy') default NULL,                 
-	`col` int(11) NOT NULL default '0',                     
-	`row` int(11) NOT NULL default '0',                     
-	`colspan` int(11) NOT NULL default '1',                 
-	`rowspan` int(11) NOT NULL default '1',                 
-	`text` varchar(255) default NULL,                       
-	PRIMARY KEY  (`id`)                                     
-)
-
-CREATE TABLE `ccti_sections` (                           
-	`id` int(10) unsigned NOT NULL auto_increment,         
-	`program_id` int(10) unsigned default NULL,            
-	`header` varchar(255) default NULL,                    
-	`num_rows` int(11) NOT NULL default '1',               
-	`index` int(11) NOT NULL default '0',                  
-	PRIMARY KEY  (`id`)                                    
-);
 
