@@ -664,7 +664,7 @@ class POSTChart_CC extends POSTChart
 	
 	protected function _createEmptyChart()
 	{
-		if(l('post row type') == 'term/year')
+		if(l('post row type') == 'year/term')
 		{
 			for( $i=1; $i<=6; $i++ )
 			{
