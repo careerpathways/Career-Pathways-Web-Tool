@@ -28,7 +28,7 @@ foreach( $olmis as $o )
 	$a = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">';
 	echo '<tr class="drawing_main">';
 		echo '<td>' . $a . '<img src="/images/olmis-16.gif" width="16" height="16" /></a></td>';
-		echo '<td class="drawinglist_name" colspan="4">' . $o['job_title'] . '</td>';
+		echo '<td class="drawinglist_name" colspan="5">' . $o['job_title'] . '</td>';
 	echo '</tr>';
 
 	$trClass = new Cycler('row_light', 'row_dark');
@@ -42,12 +42,18 @@ foreach( $olmis as $o )
 		WHERE l.olmis_id = '.$o['olmis_id']);
 	foreach( $drawings as $d ) 
 	{
+		if(($url = getExternalDrawingLink($d['id'], 'pathways')) == FALSE)
+			$url = '/c/published/' . $d['id'] . '/view.html';
+		
+		$domain = parse_url($url, PHP_URL_HOST);
+			
 		echo '<tr class="' . $trClass . '">';
 			echo '<td></td>';
 			echo '<td width="25"></td>';
 			echo '<td width="16"><a href="/a/drawings.php?action=drawing_info&id=' . $d['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
-			echo '<td width="16"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank">' . SilkIcon('link.png') . '</a></td>';
-			echo '<td><a href="/c/published/' . $d['id'] . '/view.html" target="_blank">' . $d['school_abbr'] . ': ' . $d['name'] . '</a></td>';
+			echo '<td width="16"><a href="' . $url . '" target="_blank">' . SilkIcon('link.png') . '</a></td>';
+			echo '<td><a href="' . $url . '" target="_blank">' . $d['school_abbr'] . ': ' . $d['name'] . '</a></td>';
+			echo '<td>' . $domain . '</td>';
 		echo '</tr>';
 	}
 }
