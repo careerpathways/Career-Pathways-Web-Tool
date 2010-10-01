@@ -96,7 +96,7 @@ if( $_REQUEST['page'] == 'text' ) {
 	else if ($format === 'js') {
 		header("Content-type: text/javascript");
 ?>
-		document.write('<script src="http://<?=$_SERVER['SERVER_NAME']?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+window.location.href+'"></script>');
+		document.write('<script src="http://<?=$_SERVER['SERVER_NAME']?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+encodeURIComponent(window.location.href)+'"></script>');
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'pathwaysContainer')?>");
 
