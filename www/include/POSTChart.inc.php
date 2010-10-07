@@ -388,7 +388,7 @@ abstract class POSTChart
 			return FALSE;
 		}
 		
-		echo '<table border="1" class="post_chart">', "\n";
+		echo '<table border="1" class="post_chart school_', $this->_school_id,'">', "\n";
 		$this->_printHeaderRow();
 
 		// Draw the header notes
@@ -581,8 +581,10 @@ class POSTChart_CC extends POSTChart
 	{
 		if( $cell->course_subject )
 		{
-			return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			return '<a href="#">' . $cell->course_subject . ' ' . $cell->course_number . '<br />' . $cell->course_title . '</a>';
+			#return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+			return '<a href="javascript:void(0);" class="course"><span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span></a>'
+				. ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') 
+				. '<br />' . $cell->course_title;
 		}
 		else
 		{

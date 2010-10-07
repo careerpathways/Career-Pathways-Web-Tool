@@ -128,8 +128,8 @@ function SearchForOLMISLinks($content)
 	// 3. return an array of IDs
 	
 	$soc = array();
-	if( preg_match_all('|qualityinfo\.org/olmisj/OIC?.*?occ=([0-9]{6})|', $content, $matches) )
-	foreach( $matches[1] as $m )
+	if( preg_match_all('~(qualityinfo\.org|olmis\.emp\.state\.or\.us)/olmisj/OIC?.*?occ=([0-9]{6})~', $content, $matches) )
+	foreach( $matches[2] as $m )
 		if( !in_array($m, $soc) )
 		{
 			$soc[] = $m;

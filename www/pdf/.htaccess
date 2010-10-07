@@ -1,0 +1,3 @@
+RewriteEngine on
+RewriteRule ([0-9]+)/([0-9]+)\.pdf index.php?mode=version&drawing_id=$1&version_id=$2 [L]
+RewriteRule ([0-9]+)/(.+)\.pdf index.php?mode=drawing&drawing_id=$1&name=$2 [L]

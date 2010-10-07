@@ -131,6 +131,8 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 	}
 	echo '</div>';
 }
+
+include('view/course_description_include.php');
 ?>
 
 </body>

@@ -3,6 +3,7 @@
 $main_table = 'drawing_main';
 $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/version/$$/##.html';
+$pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/##.pdf';
 
 
 $drawing = GetDrawingInfo($version_id, $MODE);
@@ -93,7 +94,15 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 <tr>
 	<th valign="top">Link</th>
 	<td><?php $url = str_replace(array('%%','##', '$$'), array($drawing_main['code'], $version_id, $drawing['parent_id']), $published_link); ?>
-	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
+		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />
+	</td>
+</tr>
+<tr>
+	<th valign="top">PDF</th>
+	<td><?php $url = str_replace(array('%%','##','$$'), array($drawing_main['code'], $version_id, $drawing['parent_id']), $pdf_link); ?>
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
+		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
 <tr>

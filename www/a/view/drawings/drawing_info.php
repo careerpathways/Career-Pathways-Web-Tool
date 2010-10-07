@@ -6,6 +6,7 @@ $main_table = 'drawing_main';
 $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
+$pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
@@ -203,11 +204,22 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 <tr>
 	<th>HTML Link</th>
 	<td>
-		<div style="width:16px; float:left;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
 		<div id="drawing_link"><?php
 		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$published_link);
-		echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
+		echo '<input type="text" style="width:542px" value="'.$url.'" onclick="this.select()" />';
 		?></div>
+	</td>
+</tr>
+<tr>
+	<th valign="top">PDF Link</th>
+	<td><?php 
+		$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['full_name'])),$pdf_link);
+		?>
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
+		<div id="drawing_link_pdf">
+			<input type="text" style="width:542px" value="<?=$url?>" onclick="this.select()" />
+		</div>
 	</td>
 </tr>
 <tr>

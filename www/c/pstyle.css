@@ -101,6 +101,13 @@ table.post_chart th {
 	font-weight: bold;
 }
 
+
+.greyboxClose {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
 .error {
 	padding: 10px;
 	color: #FF3333;

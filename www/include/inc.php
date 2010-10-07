@@ -121,11 +121,14 @@ global $DB;
 function GetDrawingInfo($drawing_id, $type='pathways') {
 global $DB;
 	if( $type == 'pathways' ) {
-		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, drawings.id AS drawings_id, sk.title AS skillset, school_name
+		$drawing = $DB->SingleQuery("SELECT drawing_main.*, drawings.*, 
+				drawings.id AS drawings_id, sk.title AS skillset, school_name,
+				IF(drawing_main.name='', p.title, drawing_main.name) AS full_name
 			FROM drawing_main
 			JOIN drawings ON drawings.parent_id=drawing_main.id
 			LEFT JOIN oregon_skillsets AS sk ON sk.id = drawing_main.skillset_id
 			LEFT JOIN schools ON drawing_main.school_id=schools.id
+			LEFT JOIN programs AS p ON drawing_main.program_id=p.id
 			WHERE drawings.id=".$drawing_id);
 	} elseif( $type == 'post' ) {
 		$drawing = $DB->SingleQuery("SELECT post_drawing_main.*, post_drawings.*, post_drawings.id drawings_id, school_name
@@ -278,5 +281,12 @@ function dv($value, $default='')
 	return ( $value ? $value : $default );	
 }
 
+/*
+ * Return a handle to the $DB object, easier than using `global $DB` everywhere
+ */
+function db()
+{
+	return $GLOBALS['DB'];
+}
 
 ?>

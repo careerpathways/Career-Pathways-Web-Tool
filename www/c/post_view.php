@@ -7,7 +7,7 @@ $drawing_id = 0;
 
 
 if( Request('version_id') ) {
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
 		JOIN schools ON main.school_id = schools.id
@@ -21,7 +21,7 @@ if( Request('version_id') ) {
 	}
 
 } elseif( Request('drawing_id') ) {
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
 		JOIN schools ON main.school_id = schools.id
@@ -35,7 +35,7 @@ if( Request('version_id') ) {
 	}
 
 } elseif( Request('page') == 'published' ) {
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
 		JOIN schools ON main.school_id = schools.id
@@ -49,7 +49,7 @@ if( Request('version_id') ) {
 	}
 } elseif( Request('page') == 'version') {
 
-	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, d.id, sk.title AS skillset
+	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
 		JOIN schools ON main.school_id = schools.id
@@ -69,6 +69,7 @@ if( Request('version_id') ) {
 <head>
 	<title><?= ($drawing_id==0?'Not Found':$page_title) ?></title>
 	<link rel="stylesheet" href="/c/pstyle.css" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
 
@@ -93,6 +94,8 @@ else
 	$post = POSTChart::create($drawing_id);
 	$post->display();
 }
+
+include('view/course_description_include.php');
 ?>
 
 </body>
