@@ -74,7 +74,10 @@ if( PostRequest() ) {
 		$_SESSION['user_level'] = $user['user_level'];
 		$_SESSION['school_id'] = $user['school_id'];
 
-		header("Location: /p/licensing?download");
+		if(Request('download'))
+			header("Location: /p/licensing?download");
+		else
+			header("Location: /");
 		die();
 	} else {
 		PrintHeader();
