@@ -74,6 +74,8 @@ $school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
 if( $id )
 {
 	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
+	$school_id = $view['school_id'];
+	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
 
 	?>
 	<a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br /><br />
@@ -238,7 +240,7 @@ if( $id )
 	function addDrawingToView(type)
 	{
 		$j.get("post_views.php",
-			{type: type, drawing_id: <?= $id ?>, action: 'drawing_list', showForm: 1},
+			{type: type, drawing_id: <?= $id ?>, action: 'drawing_list', showForm: 1, school_id: <?=$school_id?>},
 			function(data) {
 				chGreybox.create(data, 700,500);
 			}
@@ -527,15 +529,15 @@ function processDrawingListRequest()
 				$schools = $DB->VerticalQuery('SELECT *
 					FROM schools
 					WHERE organization_type IN ("CC", "Other")
-					ORDER BY id='.$_SESSION['school_id'].' DESC, school_name', 'school_name', 'id');
+					ORDER BY id='.Request('school_id').' DESC, school_name', 'school_name', 'id');
 			}
 			else
 			{
 				$schools = $DB->VerticalQuery('SELECT *
 					FROM schools
 					WHERE organization_type IN (' . (Request('type')=='hs'?'"HS"':'"CC","Other"') . ')
-						AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.$_SESSION['school_id'].')
-								OR schools.id = '.$_SESSION['school_id'].' )
+						AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.Request('school_id').')
+								OR schools.id = '.Request('school_id').' )
 					ORDER BY school_name', 'school_name', 'id');
 			}
 
