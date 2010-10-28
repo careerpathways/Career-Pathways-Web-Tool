@@ -760,7 +760,7 @@ global $DB;
 			WHERE drawings.parent_id=".$parent['id']."
 				AND deleted=0
 				AND (created_by=".$user_id." OR last_modified_by=".$user_id.")
-			ORDER BY version_num");
+			ORDER BY version_num DESC");
 		$parent['drawings'] = $versions;
 	}
 
@@ -783,7 +783,7 @@ global $DB;
 			WHERE post_drawings.parent_id=".$parent['id']."
 				AND deleted=0
 				AND (created_by=".$user_id." OR last_modified_by=".$user_id.")
-			ORDER BY version_num");
+			ORDER BY version_num DESC");
 		$parent['drawings'] = $versions;
 	}
 

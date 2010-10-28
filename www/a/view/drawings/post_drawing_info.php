@@ -2,6 +2,7 @@
 
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/%%.xml';
+$pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post/$$/%%.pdf';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/text/%%.html';
 
 
@@ -138,6 +139,17 @@ if($SITE->oregon_skillset_enabled){
 			$url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
 			echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
+		</td>
+	</tr>
+	<tr>
+		<th valign="top">PDF Link</th>
+		<td><?php 
+			$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$pdf_link);
+			?>
+			<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
+			<div id="drawing_link_pdf">
+				<input type="text" style="width:542px" value="<?=$url?>" onclick="this.select()" />
+			</div>
 		</td>
 	</tr>
 	<!--

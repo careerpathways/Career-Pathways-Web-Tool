@@ -4,6 +4,7 @@ $main_table = 'post_drawing_main';
 $drawings_table = 'post_drawings';
 
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/$$/##.html';
+$pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post/$$/##.pdf';
 
 
 $drawing = GetDrawingInfo($version_id, $MODE);
@@ -98,8 +99,15 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 	</td>
 </tr>
 <tr>
+	<th valign="top">PDF</th>
+	<td><?php $url = str_replace(array('##','$$'), array($version_id, $drawing['parent_id']), $pdf_link); ?>
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
+		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />
+	</td>
+</tr>
+<tr>
 	<td>&nbsp;</td>
-	<td><!--These are permanent links -->This is a permanent link to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.</td>
+	<td>These are permanent links to <b>this version</b> of the drawing. You can give this link to people to share your in-progress drawing easily.</td>
 </tr>
 <tr>
 	<th>Delete</th>

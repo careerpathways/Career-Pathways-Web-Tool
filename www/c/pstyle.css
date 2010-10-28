@@ -55,7 +55,6 @@ table.post_chart th {
 	text-align: center;
 	vertical-align: middle;
 	width: 120px;
-	padding: 12px 0;
 }
 .post_cell_hover {
 	background-color: #FFFFAA !important;
@@ -63,10 +62,21 @@ table.post_chart th {
 .post_cell_dragHover {
 	border: 2px #FF7777 solid;
 }
+.post_cell .cell_container {
+	position: relative;
+}
+.post_cell .post_draggable {
+	padding: 16px 0;
+}
+.post_cell .legend {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+}
+
 
 .post_draggable {
 	width: 100%;
-	height: 100%;
 }
 
 

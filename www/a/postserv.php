@@ -305,7 +305,11 @@ require_once("POSTChart.inc.php");
 			</div>
 		</form>
 		<script language="JavaScript" type="text/javascript">
-			$("#postFormTitle").focus();
+			$("#postFormTitle").focus().bind("keydown", function(e){
+				if(e.keyCode == 13){
+					$("#postFormSave").click();
+				}
+			});
 			$("#postFormSave").click(function(){
 				$.ajax({
 					type: "POST",

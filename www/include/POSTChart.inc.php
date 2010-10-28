@@ -148,18 +148,18 @@ abstract class POSTChart
 			$this->_legendLookup = $DB->VerticalQuery("SELECT `id`, `text` FROM `post_legend` ORDER BY `id` ASC", 'text', 'id');
 
 		// Figure out our legend code
-		$background = $titleTag = '';
+		$image = $titleTag = '';
 		foreach(explode('-', $legend) as $id)
 			if( $id )
 			{
-				$background .= $id . '-';
+				$image .= $id . '-';
 				$titleTag .= $this->_legendLookup[$id] . ', ';
 				$this->_knownLegend[$id] = $this->_legendLookup[$id];
 			}
-		$titleTag = (strlen($titleTag) > 0) ? ' title="' . substr($titleTag, 0, -2) . '"' : '';
-		$background = (strlen($background) > 0) ? 'background: url(/c/images/legend/' . substr($background, 0, -1) . '.png) top left no-repeat;' : '';	
+		$titleTag = (strlen($titleTag) > 0) ? ' title="' . trim($titleTag, ', ') . '"' : '';
+		$image = (strlen($image) > 0) ? '/c/images/legend/' . trim($image, '-') . '.png' : '';	
 		// Return our information
-		return array($titleTag, $background);
+		return array($titleTag, $image);
 	}
 	
 	protected function _rowName($num)
@@ -409,10 +409,15 @@ abstract class POSTChart
 			echo '<td class="post_head_row post_head" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
-				list($titleTag, $background) = $this->_gatherLegend($cell->legend);
+				list($titleTag, $image) = $this->_gatherLegend($cell->legend);
 
 				// Write the cell to the page
-				echo '<td class="post_cell" style="' . $background . '"><div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">' . $this->_cellContent($cell) . '</div></td>', "\n";
+				echo '<td class="post_cell"><div class="cell_container">';
+					echo ($image ? '<img src="' . $image . '" height="12" class="legend" />' : '');
+					echo '<div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">';
+						echo $this->_cellContent($cell);
+					echo '</div>';
+				echo '</div></td>', "\n";
 			}
 			echo '</tr>', "\n";
 		}
@@ -582,9 +587,14 @@ class POSTChart_CC extends POSTChart
 		if( $cell->course_subject )
 		{
 			#return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			return '<a href="javascript:void(0);" class="course"><span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span></a>'
-				. ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') 
-				. '<br />' . $cell->course_title;
+			$text = '';
+			if(!array_key_exists('hidecoursedescription', $_GET))
+				$text .= '<a href="javascript:void(0);" class="course">';
+			$text .= '<span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span>';
+			if(!array_key_exists('hidecoursedescription', $_GET))
+				$text .= '</a>';
+			$text .= ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+			return $text;
 		}
 		else
 		{

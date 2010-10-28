@@ -150,7 +150,7 @@ function bindPostCells()
 		}
 	
 		// Split apart the id into meaningful components
-		var cellID = $(this).children().attr("id").split("_")[2];
+		var cellID = $(this).find(".post_draggable").attr("id").split("_")[2];
 
 		// Make the call to Greybox in and prompt
 		$.get("/a/postserv.php",
