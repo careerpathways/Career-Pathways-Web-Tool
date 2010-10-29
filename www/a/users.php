@@ -492,11 +492,11 @@ global $DB;
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
+	<tr>
+		<td class="noborder">Organization:</td>
+		<td class="noborder">
 	<?php
 	if( IsAdmin() ) { ?>
-		<tr>
-			<td class="noborder">Organization:</td>
-			<td class="noborder">
 			<?php
 				if( $user['school_id'] == 0 ) {
 					echo 'Other: '.$user['other_school'].'<br>';
@@ -507,10 +507,12 @@ global $DB;
 				}
 				echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id'],$addl);
 			?>
-			</td>
-		</tr>
-	<?php }
-	?>
+	<?php } else { 
+		$school = $DB->SingleQuery('SELECT school_name FROM schools WHERE id = ' . $user['school_id']);
+		echo $school['school_name'];
+	}?>
+		</td>
+	</tr>
 	<tr>
 		<td class="noborder">User Level:</td>
 		<td class="noborder">
