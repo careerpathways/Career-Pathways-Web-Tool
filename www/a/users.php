@@ -234,8 +234,11 @@ if( KeyInRequest('id') || Request('key') ) {
 					$_SESSION['user_level'] = $user['user_level'];
 					$_SESSION['school_id'] = $user['school_id'];
 				}
+				else
+				{
+					die('Your are not an admin, cannot log in as other users.');
+				}
 				header('Location: /');
-				die();
 				break;
 			}
 
@@ -437,6 +440,7 @@ global $DB;
 <br>
 
 <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="userform">
+<input type="hidden" name="id" value="<?= $id ?>">
 <table width="100%">
 
 	<?php
@@ -638,7 +642,6 @@ global $DB;
 	?>
 
 </table>
-<input type="hidden" name="id" value="<?= $id ?>">
 </form>
 <?php
 

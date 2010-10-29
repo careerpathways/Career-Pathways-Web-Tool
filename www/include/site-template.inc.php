@@ -126,10 +126,9 @@ class ThisSiteTemplate extends SiteTemplate {
 			<li class="copy"><a href="#copy">Copy</a></li>
 			<li class="paste"><a href="#paste">Paste</a></li>
 			<li class="delete"><a href="#clear">Clear</a></li>
-		</div>
+		</ul>
 
 		<?php
-
 		if( $_SERVER['SERVER_NAME'] == 'oregon.ctepathways.org' ) {
 		?>
 <script type="text/javascript">
