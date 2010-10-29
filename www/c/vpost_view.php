@@ -46,14 +46,22 @@ if( Request('format') == 'html' )
 	<script type="text/javascript" src="/files/js/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" src="/files/js/jquery.ui.core.js"></script>
 	<script type="text/javascript" src="/files/js/jquery.ui.tabs.js"></script>
+	<link rel="stylesheet" href="/files/js/jquery/ui.tabs.css" />
+	<link rel="stylesheet" href="/files/js/jquery/ui.all.css" />
+	<link rel="stylesheet" href="/c/pstyle-print.css"<?=(array_key_exists('print', $_GET) ? '' : ' media="print"')?> />
+<?php
+	if(!array_key_exists('print', $_GET))
+	{
+?>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#tabshs").tabs();
 			$("#tabscc").tabs();
 		});
 	</script>
-	<link rel="stylesheet" href="/files/js/jquery/ui.tabs.css" />
-	<link rel="stylesheet" href="/files/js/jquery/ui.all.css" />
+<?php
+	}
+?>
 </head>
 <body>
 
@@ -112,7 +120,7 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 		<?php
 		foreach( $ds as $i=>$d )
 		{
-			echo '<div id="tabs'.$type.'-'.($i+1).'">';
+			echo '<div id="tabs'.$type.'-'.($i+1).'" class="tabs_hs">';
 			try
 			{
 				$p = POSTChart::create($d['version_id']);
@@ -134,6 +142,20 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 
 include('view/course_description_include.php');
 ?>
+<script type="text/javascript">
+	$(function(){
+		$("#tabshs").bind("tabsshow", function(e, ui){
+			$(ui.panel).find(".post_cell .cell_container").each(function(){
+				if($(this).find("img").length > 0) {
+					var h = $(this).parent(".post_cell").height();
+					$(this).css({
+						height: h + "px"
+					});
+				}
+			});
+		});
+	});
+</script>
 
 </body>
 </html>

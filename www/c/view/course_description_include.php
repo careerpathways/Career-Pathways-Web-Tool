@@ -26,10 +26,6 @@
 				$("#cdgb_container").css({left: ((w - gbw) / 2) + "px", top: ((h / 2) - gbh) + "px"}).show();
 			}, "json");
 		});
-		$(".post_cell .cell_container").each(function(){
-			var h = $(this).parent(".post_cell").height();
-			$(this).css({height: h+"px"});
-		});
 	});
 
 	function close_course_greybox(){

@@ -309,7 +309,20 @@ function showVersion() {
 	echo '<div id="canvas">';
 	$post->display();
 	echo '</div> <!-- end canvas -->';
-	
+?>
+<script type="text/javascript">
+	$(function(){
+		$(".post_cell .cell_container").each(function(){
+			if($(this).find("img").length > 0) {
+				var h = $(this).parent(".post_cell").height();
+				$(this).css({
+					height: h + "px"
+				});
+			}
+		});
+	});
+</script>
+<?php
 	PrintFooter();
 
 }

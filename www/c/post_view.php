@@ -97,6 +97,18 @@ else
 
 include('view/course_description_include.php');
 ?>
+<script type="text/javascript">
+	$(function(){
+		$(".post_cell .cell_container").each(function(){
+			if($(this).find("img").length > 0) {
+				var h = $(this).parent(".post_cell").height();
+				$(this).css({
+					height: h + "px"
+				});
+			}
+		});
+	});
+</script>
 
 </body>
 </html>

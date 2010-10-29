@@ -3,6 +3,7 @@ chdir("..");
 include("inc.php");
 
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/$$/%%.html';
+$pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post-view/$$/%%.pdf';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/$$/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/text/$$/%%.html';
 $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameborder="0" scrolling="no"></iframe>';
@@ -124,6 +125,16 @@ if( $id )
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
 			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
+			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
+			?></div>
+		</td>
+	</tr>
+	<tr>
+		<th>PDF Link</th>
+		<td>
+			<div id="drawing_link"><?php
+			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode($view['name'])), $pdf_link);
+			echo '<div style="width:16px; float:left;"><a href="' . $url . '">' . SilkIcon('page_white_acrobat.png') . '</a></div>';
 			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>

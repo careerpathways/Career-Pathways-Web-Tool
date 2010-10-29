@@ -40,6 +40,14 @@ switch(request('mode'))
 		$name = $drawing['name'] . ' - Version ' . $drawing['version_num'] . '.pdf';
 		break;		
 		
+	case 'post_view':
+		$url = 'http://' . $_SERVER['SERVER_NAME'] . '/c/study/' . request('id') . '/view.html?print&hidecoursedescription';
+		$filename = 'post-view-' . request('id') . '.pdf';
+		$drawing = $DB->SingleQuery('SELECT name FROM vpost_views
+			WHERE id = ' . request('id'));
+		$name = $drawing['name'] . '.pdf';
+		break;
+		
 	default:
 		die('error');
 }

@@ -1,0 +1,18 @@
+<?php
+header('Content-type: text/css');
+?>
+#tabshs, #tabscc {
+	border: 0;
+}
+
+#tabshs ul, #tabscc ul {
+	display: none;
+}
+
+.tabs_hs, .tabs_cc {
+	margin-bottom: 20px;
+}
+
+.post_chart {
+	page-break-inside: avoid;
+}
