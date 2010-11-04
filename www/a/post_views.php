@@ -112,7 +112,7 @@ if( $id )
 			{
 				?>
 				<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
-				<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" /><br />
+				<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" /><br />
 				<?php 
 			}
 			?>

@@ -181,31 +181,32 @@ function getExternalDrawingLink($drawing_id, $type)
 	$drawing_id = intval($drawing_id);
 	$type = ($type == 'pathways' ? 'pathways' : 'post');
 	
-	$links = $DB->VerticalQuery('
+	$link = $DB->SingleQuery('
 		SELECT url
 		FROM external_links 
 		WHERE drawing_id = ' . $drawing_id . ' 
 			AND type = "' . $type . '"
-			AND counter > 3
-		ORDER BY counter ASC
-		', 'url');
-	$exclude = $DB->VerticalQuery('SELECT pattern FROM external_link_exclude', 'pattern');
-	
-	$bestLink = FALSE;
-	// start with the least likely, refining the search as we look through the list
-	foreach($links as $link)
-	{
-		// if the link matches any of the excluded patterns, skip it
-		foreach($exclude as $e)
-			if(preg_match($e, $link))
-				continue 2;
+			AND `primary` = 1
+		');
 
-		$bestLink = $link;
+	// If there was no "best link" marked in the database, find one and mark it
+	$url = FALSE;
+	if($link == FALSE || count($link) == 0)
+	{
+		$links = getExternalDrawingLinks($drawing_id, $type);
+		if(array_key_exists(0, $links))
+		{
+			$DB->Update('external_links', array('`primary`'=>1), $links[0]['id']);
+			$url = $links[0]['url'];
+		}
 	}
-	return $bestLink;
+	else
+		$url = $link['url'];
+	
+	return $url;
 }
 
-function getExternalDrawingLinks($drawing_id, $type)
+function getExternalDrawingLinks($drawing_id, $type, $orderBy='counter DESC')
 {
 	global $DB;
 	
@@ -213,13 +214,12 @@ function getExternalDrawingLinks($drawing_id, $type)
 	$type = ($type == 'pathways' ? 'pathways' : 'post');
 	
 	$links = $DB->MultiQuery('
-		SELECT url, counter, last_seen
+		SELECT id, url, counter, last_seen, `primary`
 		FROM external_links 
 		WHERE drawing_id = ' . $drawing_id . ' 
 			AND type = "' . $type . '"
-			AND counter > 3
-		ORDER BY counter DESC
-		', 'url');
+			AND counter > 1
+		ORDER BY ' . $orderBy, 'url');
 	$exclude = $DB->VerticalQuery('SELECT pattern FROM external_link_exclude', 'pattern');
 	
 	$bestLinks = array();

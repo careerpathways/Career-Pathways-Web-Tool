@@ -191,7 +191,7 @@ if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array(
 		{
 			?>
 			<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
-			<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" /><br />
+			<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" /><br />
 				This link is published to the OLMIS reports listed above.<br />
 			<?php 
 		}

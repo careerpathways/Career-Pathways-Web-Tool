@@ -1104,5 +1104,16 @@ tr.editable, tr.even {
 .external_links .trim {
 	width: 600px;
 }
+.external_links .make_primary {
+	cursor: pointer; 
+	width: 16px; 
+	height: 16px; 
+}
+.external_links .make_primary {
+	background: url(/common/silk/link_go.png) no-repeat -16px 0;
+}
+.external_links .make_primary.primary {
+	background: url(/common/silk/link_break.png) no-repeat 0 0;
+}
 
 
