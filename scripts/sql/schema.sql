@@ -122,6 +122,7 @@ CREATE TABLE `external_links` (
   `type` VARCHAR(30) NOT NULL,
   `drawing_id` INT(11) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
+  `primary` TINYINT(4) NOT NULL DEFAULT '0',
   `last_seen` DATETIME NOT NULL,
   `counter` INT(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
