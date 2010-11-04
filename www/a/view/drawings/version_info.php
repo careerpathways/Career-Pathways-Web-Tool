@@ -92,14 +92,14 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 	</td>
 </tr>
 <tr>
-	<th valign="top">Link</th>
+	<th valign="top">HTML Link</th>
 	<td><?php $url = str_replace(array('%%','##', '$$'), array($drawing_main['code'], $version_id, $drawing['parent_id']), $published_link); ?>
 		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
 		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
 <tr>
-	<th valign="top">PDF</th>
+	<th valign="top">PDF Link</th>
 	<td><?php $url = str_replace(array('%%','##','$$'), array($drawing_main['code'], $version_id, $drawing['parent_id']), $pdf_link); ?>
 		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
 		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />

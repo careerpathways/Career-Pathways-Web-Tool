@@ -83,7 +83,12 @@ if( $id )
 	
 	<script type="text/javascript" src="/files/greybox.js"></script>
 	<table width="100%">
-	<tr>
+	<tr class="editable">
+		<td colspan="2">
+			<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowPostViewHeader($view['id']) ?></div>
+		</td>
+	</tr>
+	<tr class="editable">
 		<th>Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
@@ -94,7 +99,7 @@ if( $id )
 			</div>
 		</td>
 	</tr>
-	<tr>
+	<tr class="editable">
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>	
@@ -112,13 +117,18 @@ if( $id )
 			{
 				?>
 				<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
-				<input type="text" style="width:544px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" /><br />
+				<input type="text" style="width:496px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" />
+					<input type="button" id="external_link_save" value="save" class="submit small" /><br />
+					<div style="width:560px;">The primary URL is linked on external web pages such as MyPathCareers.org. To change, edit the URL above or select a URL from the list below.</div>
 				<?php 
 			}
 			?>
 			<br />
 		</td>
 	</tr>
+	<?php 
+		require('view/drawings/external_links.php');
+	?>
 	<tr>
 		<th>HTML Link</th>
 		<td>
@@ -139,9 +149,6 @@ if( $id )
 			?></div>
 		</td>
 	</tr>
-	<?php 
-		require('view/drawings/external_links.php');
-	?>
 	<tr>
 		<th>Delete</th>
 		<td>

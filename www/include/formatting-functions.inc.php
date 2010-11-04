@@ -81,7 +81,7 @@ function showPublishForm($mode)
 }
 
 
-function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='')
+function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $readonly=false)
 {
 	global $DB;
 	$html = '';
@@ -95,7 +95,10 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='')
 				ORDER BY title');
 			foreach( $olmis as $o )
 			{
-				$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" '.($defaultChecked?'checked="checked"':'').'/> <a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
+				$html .= '<div id="olmischk_'.$o['olmis_id'].'">';
+				if(!$readonly)
+					$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" '.($defaultChecked?'checked="checked"':'').'/> ';
+				$html .= '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
 			}
 		}
 	}
@@ -113,7 +116,10 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='')
 		foreach( $olmis as $o )
 		{
 			$link = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">';
-			$html .= '<div id="olmischk_'.$o['olmis_id'].'"><input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> ' . $link . '<img src="/images/olmis-16.gif" /></a> ' . $link . $o['title'] . '</a></div>';
+			$html .= '<div id="olmischk_'.$o['olmis_id'].'">';
+			if(!$readonly)
+				$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> ';
+			$html .= $link . '<img src="/images/olmis-16.gif" /></a> ' . $link . $o['title'] . '</a></div>';
 		}
 	}
 	return $html;
@@ -192,9 +198,28 @@ function ShowRoadmapHeader($drawing_id)
 		JOIN schools ON m.school_id=schools.id
 		LEFT JOIN programs AS p ON m.program_id=p.id
 		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" height="19" width="800" />';
+	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
 }
 
+
+function ShowPostHeader($drawing_id)
+{
+	global $DB;
+	$drawing = $DB->SingleQuery('SELECT school_abbr,
+		IF(m.name="", p.title, m.name) AS full_name
+		FROM post_drawing_main AS m
+		JOIN schools ON m.school_id=schools.id
+		LEFT JOIN programs AS p ON m.program_id=p.id
+		WHERE m.id = '.$drawing_id);
+	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+}
+
+function ShowPostViewHeader($view_id)
+{
+	global $DB;
+	$view = $DB->SingleQuery('SELECT name FROM vpost_views WHERE id = ' . $view_id);
+	return '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($view['name']) . '.png" alt="' . $view['name'] . '" width="800" height="19" />';
+}
 
 function ShowDrawingList(&$mains, $type='pathways') {
 	global $DB;

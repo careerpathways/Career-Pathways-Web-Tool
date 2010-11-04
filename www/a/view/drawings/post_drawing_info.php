@@ -102,7 +102,12 @@ if($SITE->oregon_skillset_enabled){
 /** begin drawing edit form **/
 	?>
 	<table width="100%">
-	<tr>
+	<tr class="editable">
+		<td colspan="2">
+			<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowPostHeader($drawing['id']) ?></div>
+		</td>
+	</tr>
+	<tr class="editable">
 		<th><?=l('program name label')?></th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $drawing['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
@@ -113,14 +118,14 @@ if($SITE->oregon_skillset_enabled){
 			</div>
 		</td>
 	</tr>
-	<tr>
+	<tr class="editable">
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
 	<?php
 	if($SITE->oregon_skillset_enabled){
 	?>
-	<tr>
+	<tr class="editable">
 		<th><?=l('skillset name')?></th>
 		<td height="34"><div id="skillset" style="float:left"><?php
 			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));

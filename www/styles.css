@@ -1115,5 +1115,8 @@ tr.editable, tr.even {
 .external_links .make_primary.primary {
 	background: url(/common/silk/link_break.png) no-repeat 0 0;
 }
+.external_link.primary {
+	background-color:#<?=$L_GOLD?>;
+}
 
 

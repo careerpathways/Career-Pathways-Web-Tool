@@ -93,13 +93,14 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 	</td>
 </tr>
 <tr>
-	<th valign="top">Link</th>
+	<th valign="top">HTML Link</th>
 	<td><?php $url = str_replace(array('$$','##'), array($drawing_main['id'], $drawing['id']), $published_link); ?>
-	<input type="text" style="width:560px" value="<?= $url ?>" onclick="this.select()" />
+		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
+		<input type="text" style="width:520px" value="<?= $url ?>" onclick="this.select()" />
 	</td>
 </tr>
 <tr>
-	<th valign="top">PDF</th>
+	<th valign="top">PDF Link</th>
 	<td><?php $url = str_replace(array('##','$$'), array($version_id, $drawing['parent_id']), $pdf_link); ?>
 		<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
 		<input type="text" style="width:520px;" value="<?= $url ?>" onclick="this.select()" />

@@ -69,7 +69,7 @@ if( Request('format') == 'html' )
 
 echo '<div style="margin-bottom: 10px">';
 echo '<div id="post_title">';
-	echo '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
+	echo ShowPostViewHeader(intval(Request('id')));
 echo '</div>';
 /*
 if( count($skillsets) > 0 )
