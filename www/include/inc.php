@@ -237,6 +237,41 @@ function getExternalDrawingLinks($drawing_id, $type, $orderBy='counter DESC')
 }
 
 
+function drawing_not_found($type, $drawing_id=0, $version_id=0, $drawing_code='', $version=0)
+{
+	global $DB;
+	
+	$data = array(
+		'date' => date('Y-m-d H:i:s'),
+		'type' => $type,
+		'request_uri' => $_SERVER['REQUEST_URI'],
+		'query_string' => $_SERVER['QUERY_STRING'],
+		'external_url' => array_key_exists('HTTP_REFERER', $_SERVER) ? $_SERVER['HTTP_REFERER'] : '',
+		'drawing_id' => $drawing_id,
+		'version_id' => $version_id,
+		'version' => $version,
+		'drawing_code' => $drawing_code,
+		'counter' => 1
+	);
+
+	// Check if we already have a record of this request URI
+	$check = $DB->SingleQuery('SELECT COUNT(1) AS num FROM external_link_errors WHERE request_uri = "' . $data['request_uri'] . '"');
+	if($check['num'] > 0)
+	{
+		$DB->Query('UPDATE external_link_errors 
+			SET counter = counter + 1, date = NOW()
+			WHERE request_uri = "' . $data['request_uri'] . '"');
+	}
+	else
+	{
+		$DB->Insert('external_link_errors', $data);
+	}
+	
+	header('HTTP/1.0 404 Not Found');
+	echo 'Not found';
+	die();
+}
+
 
 function drawing_sort_by_version($a,$b) {
 	return $a['version_num'] < $b['version_num'];

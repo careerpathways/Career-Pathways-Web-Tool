@@ -2,6 +2,8 @@
 <?php
 global $DB, $drawing_id;
 $drawing = $DB->SingleQuery("SELECT * FROM drawings WHERE id=".intval($_REQUEST['drawing_id']));
+if($drawing):
+
 $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing['parent_id']);
 ?>
 <div id="toolbar">
@@ -46,3 +48,6 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 		</script>
 	</div>
 </div>
+<?php 
+endif;
+?>

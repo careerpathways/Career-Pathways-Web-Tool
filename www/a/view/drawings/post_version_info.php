@@ -6,8 +6,10 @@ $drawings_table = 'post_drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/post/$$/##.html';
 $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post/$$/##.pdf';
 
-
 $drawing = GetDrawingInfo($version_id, $MODE);
+
+if($drawing):
+
 $drawing_main = $DB->LoadRecord($main_table, $drawing['parent_id']);
 
 switch( $MODE ) {
@@ -225,3 +227,8 @@ function doDelete() {
 <?php } ?>
 
 </script>
+<?php 
+else:
+	echo 'Version ' . request('version_id') . ' not found';
+endif;
+?>

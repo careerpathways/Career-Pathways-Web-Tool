@@ -1,6 +1,9 @@
 <?php
 global $DB;
 $drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".Request('version_id'));
+
+if($drawing):
+
 $parent = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$drawing['parent_id']);
 $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE deleted=0 AND parent_id=".$drawing['parent_id']);
 ?>
@@ -27,3 +30,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 		Total Versions: <?= $siblings['num'] ?>
 	</div>
 </div>
+<?php 
+endif;
+?>

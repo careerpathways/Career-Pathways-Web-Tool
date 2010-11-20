@@ -7,6 +7,9 @@ $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/##.pdf';
 
 
 $drawing = GetDrawingInfo($version_id, $MODE);
+
+if($drawing):
+
 $drawing_main = $DB->SingleQuery("SELECT m.*, IF(m.name='', programs.title, m.name) AS name
 	FROM drawing_main AS m 
 	LEFT JOIN programs ON m.program_id=programs.id
@@ -231,3 +234,8 @@ function doDelete() {
 <?php } ?>
 
 </script>
+<?php 
+else:
+	echo 'Version ' . request('version_id') . ' not found.';
+endif;
+?>

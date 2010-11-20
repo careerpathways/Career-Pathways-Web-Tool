@@ -19,6 +19,8 @@ if( Request('version_id') ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}
+	else
+		drawing_not_found('post', Request('drawing_id'), Request('version_id'));
 
 } elseif( Request('drawing_id') ) {
 	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
@@ -33,7 +35,9 @@ if( Request('version_id') ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}
-
+	else
+		drawing_not_found('post', Request('drawing_id'));
+	
 } elseif( Request('page') == 'published' ) {
 	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
 		FROM post_drawing_main AS main
@@ -47,6 +51,9 @@ if( Request('version_id') ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}
+	else
+		drawing_not_found('post', 0, 0, Request('d'));
+		
 } elseif( Request('page') == 'version') {
 
 	$drawing = $DB->SingleQuery('SELECT main.*, schools.school_abbr, schools.id AS school_id, d.id, sk.title AS skillset
@@ -61,6 +68,9 @@ if( Request('version_id') ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}
+	else
+		drawing_not_found('post', 0, 0, Request('d'), Request('v'));
+
 }
 
 ?>

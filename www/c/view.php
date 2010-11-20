@@ -15,9 +15,7 @@ if( KeyInRequest('version_id') ) {
 			AND drawings.id=".intval($_REQUEST['version_id']));
 
 	if( !is_array($drawing) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo "Not found";
-		die();
+		drawing_not_found('roadmap', $_REQUEST['id'], $_REQUEST['version_id']);
 	}
 
 } else if( KeyInRequest('v') ) {
@@ -31,9 +29,7 @@ if( KeyInRequest('version_id') ) {
 			AND drawings.version_num=".intval($_REQUEST['v']));
 
 	if( !is_array($drawing) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo "Not found";
-		die();
+		drawing_not_found('roadmap', 0, 0, $_REQUEST['d'], $_REQUEST['v']);
 	}
 
 } else if (KeyInRequest('id')) {
@@ -46,9 +42,7 @@ if( KeyInRequest('version_id') ) {
 		AND published=1");
 
 	if( !is_array($drawing) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo "Not found: ".$_REQUEST['id'];
-		die();
+		drawing_not_found('roadmap', $_REQUEST['id']);
 	}
 
 } else {
@@ -62,9 +56,7 @@ if( KeyInRequest('version_id') ) {
 		AND published=1");
 
 	if( !is_array($drawing) ) {
-		header("HTTP/1.0 404 Not Found");
-		echo "Not found: ".$_REQUEST['d'];
-		die();
+		drawing_not_found('roadmap', 0, 0, $_REQUEST['d']);
 	}
 
 }

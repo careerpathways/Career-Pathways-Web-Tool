@@ -1,6 +1,8 @@
 <?php
 global $DB, $drawing_id;
 $drawing = $DB->SingleQuery("SELECT * FROM drawings WHERE id=$drawing_id");
+if($drawing):
+
 $parent = $DB->SingleQuery("SELECT m.*, IF(m.name='', programs.title, m.name) AS name
 	FROM drawing_main AS m 
 	LEFT JOIN programs ON m.program_id=programs.id
@@ -30,3 +32,6 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawings WHERE deleted
 		Total Versions: <?= $siblings['num'] ?>
 	</div>
 </div>
+<?php 
+endif;
+?>

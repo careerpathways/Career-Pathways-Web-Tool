@@ -1,6 +1,7 @@
 <?php
 global $DB;
 $drawing = $DB->SingleQuery("SELECT * FROM post_drawings WHERE id=".intval($_REQUEST['version_id']));
+if($drawing):
 $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$drawing['parent_id']);
 ?>
 <div id="toolbar">
@@ -60,3 +61,6 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 		</script>
 	</div>
 </div>
+<?php
+endif;
+?>

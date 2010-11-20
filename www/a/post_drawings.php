@@ -781,8 +781,8 @@ function showVersionInfo() {
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
 	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
-
 	PrintHeader();
+
 	$version_id = Request('version_id');
 	require('view/drawings/post_version_info.php');
 	PrintFooter();

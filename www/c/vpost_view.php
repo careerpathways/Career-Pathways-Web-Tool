@@ -37,6 +37,9 @@ foreach( $drawings as $d )
 if( Request('format') == 'html' )
 {
 
+	if(count($drawings) == 0)
+		drawing_not_found('postview', Request('id'));
+	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
