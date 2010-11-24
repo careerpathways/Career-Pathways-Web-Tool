@@ -9,9 +9,8 @@ ModuleInit('users');
  ** Main user management page **
 
  State admins (127) can edit all users.
- School admins, staff, and webmasters (16,64,96) can only edit/add users from their school, and cannot edit super-admins.
+ School admins, staff, and webmasters (16,64,96) can only edit/add users from their school and affiliated high schools, and cannot edit super-admins.
  School admins can delete users at the school
-
 */
 
 
@@ -65,9 +64,11 @@ if( KeyInRequest('id') || Request('key') ) {
 	if( !IsAdmin() && Request('id') ) {
 		$valid = true;
 
-		// check school_id of the requested user
+		// get the school_id of the requested user
 		$school_id = $DB->GetValue('school_id','users', Request('id'));
-		if( $school_id != $_SESSION['school_id'] ) {
+		// check if the logged in user is affiliated with the requested user
+		$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $school_id);
+		if( $school_id != $_SESSION['school_id'] && $affiliation['num'] == 0) {
 			$valid = false;
 		}
 
@@ -81,6 +82,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 		if( !$valid ) {
 			PrintHeader();
+			echo '...';
 			ShowExistingUser($DB->SingleQuery("SELECT * FROM users WHERE id=".Request('id')),false);
 			PrintFooter();
 			die();
@@ -148,9 +150,19 @@ if( KeyInRequest('id') || Request('key') ) {
 			// only state admins can change the school someone is assigned to
 			$content['school_id'] = $_REQUEST['school_id'];
 		} else {
-			// this forces the school_id of the edited user to be the same as the current user's
-			$content['school_id'] = $_SESSION['school_id'];
-
+			if(Request('school_id'))
+			{
+				$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . Request('school_id'));
+				if($affiliation['num'])
+				{
+					$content['school_id'] = Request('school_id');
+				}
+				else
+				{
+					// this forces the school_id of the edited user to be the same as the current user's
+					$content['school_id'] = $_SESSION['school_id'];
+				}
+			}
 			// prevent users from faking input in an http request
 			$content['user_level'] = min($_SESSION['user_level'],$content['user_level']);
 		}
@@ -376,17 +388,16 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '<tr>';
 
 				if( !IsGuestUser() ) {
-					if( $_SESSION['user_id'] == $u['id'] )
+					$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $u['school_id']);
+					$edit_text = 'view';
+					if( $_SESSION['user_id'] == $u['id'] || IsAdmin()
+						|| IsWebmaster() &&
+						(
+							($u['school_id'] == $_SESSION['school_id'] && $u['user_level'] <= $_SESSION['user_level'])
+							|| $affiliation['num']
+						)
+					)
 					{
-						$edit_text = 'edit';
-					}
-					elseif( $_SESSION['user_level'] <= CPUSER_STAFF || 
-						$u['user_level'] > $_SESSION['user_level'] || 
-						(!IsAdmin() && $u['school_id'] != $_SESSION['school_id'])
-						) {
-						$edit_text = 'view';
-					}
-					else {
 						$edit_text = 'edit';
 					}
 					echo '<td width="30"><a href="'.$_SERVER['PHP_SELF'].'?id='.$u['id'].'" class="edit">'.$edit_text.'</a></td>';
@@ -500,7 +511,8 @@ global $DB;
 		<td class="noborder">Organization:</td>
 		<td class="noborder">
 	<?php
-	if( IsAdmin() ) { ?>
+	$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $user['school_id']);
+	if( IsAdmin() || ((IsWebmaster() || IsSchoolAdmin()) && ($user['id'] == '' || $affiliation['num'])) ) { ?>
 			<?php
 				if( $user['school_id'] == 0 ) {
 					echo 'Other: '.$user['other_school'].'<br>';
@@ -509,7 +521,17 @@ global $DB;
 				} else {
 					$addl = array();
 				}
-				echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id'],$addl);
+				if(IsAdmin())
+					echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id'],$addl);
+				else
+				{
+					$tmp = GetHSAffiliations($_SESSION['school_id']);
+					$tmp[] = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+					$school_list = array();
+					foreach($tmp as $t)
+						$school_list[$t['id']] = $t['school_name'];
+					echo GenerateSelectBox($school_list, 'school_id',$user['school_id']);
+				}
 			?>
 	<?php } else { 
 		$school = $DB->SingleQuery('SELECT school_name FROM schools WHERE id = ' . $user['school_id']);

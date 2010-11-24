@@ -166,6 +166,16 @@ function GetAssociatedDrawings($drawing_id, $mode='connections', $type=null)
 	}
 }
 
+function GetHSAffiliations($cc_id)
+{
+	global $DB;
+	return $DB->MultiQuery('SELECT s.*, a.id AS af_id
+		FROM hs_affiliations AS a
+		JOIN schools AS s on s.id=hs_id
+		WHERE cc_id='.$cc_id.'
+		ORDER BY school_name');
+}
+
 /**
  * Tries to find the external link to the specified drawing in the external_links table.
  * Filters out things like file:/// links and known testing URLs.
