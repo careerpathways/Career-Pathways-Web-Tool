@@ -177,7 +177,6 @@ function bindPostCells()
 		drop : function(e, ui){
 			// Grab a copy of the IDs for both the objects we're interacting with
 			var ele = $(this).find(".post_draggable");
-			console.debug(ele);
 			var toID = $(ele).attr("id").split("_");
 			toID = toID[2];
 			var fromID = $(ui.draggable).attr("id").split("_");
