@@ -48,7 +48,7 @@ $(document).ready(function()
 			menu: "contextMenu"
 		},
 		function(action, el, pos) {
-			var cellID = $(el).find("div").attr("id").split("_")[2];
+			var cellID = $(el).find(".post_draggable").attr("id").split("_")[2];
 			switch(action) {
 				case "copy":
 					clipboard.copy(cellID);
