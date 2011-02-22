@@ -497,7 +497,7 @@ class POSTChart_HS extends POSTChart
 		$link = ($cell->href != '');
 
 		// Draw the item inside the post_cell
-		return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+		return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?($cell->content):'') . ($link?'</a>':'');
 	}
 	
 	protected function _cellHasContent(&$cell)
@@ -602,7 +602,7 @@ class POSTChart_CC extends POSTChart
 			$link = ($cell->href != '');
 	
 			// Draw the item inside the post_cell
-			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?htmlentities($cell->content):'') . ($link?'</a>':'');
+			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?($cell->content):'') . ($link?'</a>':'');
 		}
 	}
 	
