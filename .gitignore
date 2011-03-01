@@ -1,0 +1,7 @@
+# Can ignore specific files
+.DS_Store
+
+# Use wildcards as well
+www/include/*.settings.php
+!www/include/default.settings.php
+
