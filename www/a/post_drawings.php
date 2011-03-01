@@ -842,7 +842,4 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/post/helpbar.php');
 }
 
-
-
-
 ?>

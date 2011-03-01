@@ -271,8 +271,9 @@ switch( Request('mode') ) {
 				$post_where = '';
 			}
 
-			if( Request('search') == "" )
-			{
+			if( Request('search') == "" )			
+			{	
+				$_SESSION['drawing_list_search_' . Request('type')] = '';
 				$search = array();
 				$fields = array('schools','people','categories');
 				$field_sql = array(
@@ -363,6 +364,9 @@ switch( Request('mode') ) {
 			// Request('search') is not empty
 
 				$_SESSION['drawing_list_search_' . Request('type')] = Request('search');
+				$_SESSION[$session_key]['school_id'] = '';
+				$_SESSION[$session_key]['people_id'] = '';
+				$_SESSION[$session_key]['categories'] = '';
 				
 				if( $t == 'Pathways' )
 				{
