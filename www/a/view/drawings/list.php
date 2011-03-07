@@ -63,6 +63,9 @@ PrintHeader();
 	<div id="search_form" align="right"><nobr>
 		<input type="text" size="20" name="search_box" id="search_box" value="<?= (Request('search') ? Request('search') : Session('drawing_list_search_' . $MODE)) ?>">
 		<input type="button" class="submit" value="Search" onclick="do_search()">
+		
+		<input type="button" class="submit" value="Reset" onclick="do_reset()">
+		
 	</nobr></div>
 </td>
 </tr></table>

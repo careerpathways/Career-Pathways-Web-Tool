@@ -82,6 +82,7 @@ function selectDefaults() {
 	people_id = <?= $_SESSION['user_id'] ?>;
 	categories = "";
 }
+
 function selectDefaults2() {
 	getLayer('search_box').value = "";
 	init();
@@ -215,6 +216,11 @@ function do_search() {
 	getLayer('list_schools').selectedIndex = -1;
 	getLayer('list_categories').selectedIndex = -1;
 	load_drawing_list();
+}
+
+function do_reset() {
+	getLayer('search_box').value = "";
+	do_search();
 }
 
 function load_drawing_list() {

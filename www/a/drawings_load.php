@@ -367,7 +367,7 @@ switch( Request('mode') ) {
 				$_SESSION[$session_key]['school_id'] = '';
 				$_SESSION[$session_key]['people_id'] = '';
 				$_SESSION[$session_key]['categories'] = '';
-				
+			
 				if( $t == 'Pathways' )
 				{
 					$objects_table = 'objects';
