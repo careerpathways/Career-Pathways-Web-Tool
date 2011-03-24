@@ -34,7 +34,7 @@ foreach( $news as $n ) {
 		echo '<div class="news_date">'.$DB->Date('F j, Y', $n['date']).'</div>';
 	}
 
-	$wiki =& new Text_Wiki();
+	$wiki = new Text_Wiki();
 	$xhtml = $wiki->transform($n['text'], 'Xhtml');
 
 	/*** for the embedding instructions ***/

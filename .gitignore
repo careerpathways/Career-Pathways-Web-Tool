@@ -1,5 +1,7 @@
 .DS_Store
 
+cache/*/*
+
 www/include/*.settings.php
 !www/include/default.settings.php
 
