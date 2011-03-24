@@ -33,6 +33,10 @@ class common_db
 		$this->db->Database = $this->name;
 		return $this->db->Connect();
 	}
+	
+	function halt_on_error($bool) {
+		$this->db->Halt_On_Error = ($bool ? "yes" : "no");
+	}
 
 	//************************//
 	// Query()

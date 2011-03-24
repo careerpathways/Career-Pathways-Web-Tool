@@ -64,7 +64,7 @@ abstract class SiteSettings {
 			$this->DB->name   = $this->DBname;
 			$this->DB->tp = ""; // prefix for the tables in the database
 			$this->DB->pswdsalt = "Sa";
-			$this->DB->display_errors = FALSE;
+			$this->DB->display_errors = TRUE;
 
 		// Attempt to connect to the database
 		$this->DB->halt_on_error = FALSE;
@@ -74,7 +74,7 @@ abstract class SiteSettings {
 		if($result == 0)
 			$this->DB = FALSE;
 		else
-			$this->DB->halt_on_error = TRUE;
+			$this->DB->halt_on_error(TRUE);
 	}
 
 	final function &GetDBH() {
