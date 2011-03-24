@@ -197,10 +197,11 @@ $drawing=$DB->SingleQuery("SELECT * FROM drawings WHERE id=".Request('version_id
 $DB->Update('drawing_main',$update,$drawing['parent_id']);
 
 function chlog($msg) {
-	$fp = fopen('c/log.txt','a');
-	fwrite($fp,date("Y-m-d H:i:s").' u:'.$_SESSION['user_id'].':'.$_SESSION['full_name'].' d:'.Request('version_id').' '.$msg."\n");
-	fclose($fp);
+	$fn = '/tmp/pathways-log.txt';
+	if(is_writable($fn)) {
+		$fp = fopen($fn,'a');
+		fwrite($fp,date("Y-m-d H:i:s").' u:'.$_SESSION['user_id'].':'.$_SESSION['full_name'].' d:'.Request('version_id').' '.$msg."\n");
+		fclose($fp);
+	}
 }
 
-
-?>

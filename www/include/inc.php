@@ -1,7 +1,9 @@
 <?php
 date_default_timezone_set('America/Los_Angeles');
 
-include("firstinclude.inc.php");
+include("database.inc.php");
+include("template.inc.php");
+include("sitesettings.inc.php");
 
 if(array_key_exists('CONFIG_FILE', $_SERVER))
 	include($_SERVER['CONFIG_FILE']);

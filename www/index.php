@@ -13,7 +13,7 @@ This is the dashboard page that every user is taken to after logging in. It is a
 before they log in, so needs to modify its behavior based on the current userlevel.
 */
 
-$wiki =& new Text_Wiki();
+$wiki = new Text_Wiki();
 
 
 PrintHeader();

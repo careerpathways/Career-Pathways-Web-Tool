@@ -33,8 +33,15 @@ define("USER_ADMIN", 127);
 $SITE = new ThisSite();
 $DB = $SITE->GetDBH();
 
-
 $TEMPLATE = new ThisSiteTemplate();
+
+
+if($DB == FALSE) {
+	PrintHeader();
+	echo 'Could not connect to the database. Verify your database username and password are set properly.';
+	die();
+	PrintFooter();
+}
 
 
 function PrintHeader() {

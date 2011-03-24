@@ -13,6 +13,7 @@ class common_db
 
 	var $logging=false;
 	var $display_errors=true;
+	var $halt_on_error=true;
 
 	var $error;
 
@@ -24,13 +25,13 @@ class common_db
 
 	function Connect() {
 		$this->db = new HDB_Sql;
-		$this->db->Halt_On_Error = "yes";
+		$this->db->Halt_On_Error = ($this->halt_on_error ? "yes" : "no");
 		$this->db->DisplayErrors = $this->display_errors;
 		$this->db->Host = $this->host;
 		$this->db->User = $this->user;
 		$this->db->Password = $this->pass;
 		$this->db->Database = $this->name;
-		$this->db->Connect();
+		return $this->db->Connect();
 	}
 
 	//************************//
@@ -910,8 +911,8 @@ class HDB_Sql {
     $this->haltmsg($msg);
 
     if ($this->Halt_On_Error != "report") {
-		if( is_writable('/www/dberrors.log') ) {
-		  $fp = fopen("/www/dberrors.log","a");
+		if( is_writable('/tmp/dberrors.log') ) {
+		  $fp = fopen("/tmp/dberrors.log","a");
 		  fwrite($fp, date("Y-m-d H:i:s")." ".$_SERVER['REMOTE_ADDR']." ".$_SERVER['REQUEST_URI']."\n");
 		  fwrite($fp, trim($this->sql_string));
 		  fwrite($fp, $this->Error."\n");

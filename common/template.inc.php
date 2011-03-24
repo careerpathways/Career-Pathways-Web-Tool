@@ -62,7 +62,6 @@ echo $this->tag_doctype()."\n";
 <html<?= $this->tag_htmlprops() ?>>
 <head>
 <title><?= $this->CreatePageTitle() ?></title>
-<link rel="stylesheet" href="<?= $SITE->root() ?>mainstyles.css" type="text/css" />
 <script src="<?= $SITE->root() ?>common/functions.js" type="text/javascript"></script>
 <?php
 		$this->HeaderScripts();

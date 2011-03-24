@@ -1,5 +1,7 @@
+php_value include_path ".:/Users/aaronpk/Sites/pathways-git/www/include:/Users/aaronpk/Sites/pathways-git/common"
 Options +FollowSymLinks
-AddHandler php5-script .php .js .htm .html .rss .xml .css
 AddType text/css .css
 AddType text/javascript .js
 
+RewriteEngine on
+RewriteRule ^styles.css$ styles.css.php [QSA,L]
