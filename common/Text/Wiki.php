@@ -478,8 +478,7 @@ class Text_Wiki {
             }
         }
 
-        $obj =& new $class($rules);
-        return $obj;
+        return new $class($rules);
     }
 
     /**
@@ -1329,7 +1328,7 @@ class Text_Wiki {
             }
         }
 
-        $this->parseObj[$rule] =& new $class($this);
+        $this->parseObj[$rule] = new $class($this);
 
     }
 
@@ -1365,7 +1364,7 @@ class Text_Wiki {
             }
         }
 
-        $this->renderObj[$rule] =& new $class($this);
+        $this->renderObj[$rule] = new $class($this);
     }
 
 
@@ -1398,7 +1397,7 @@ class Text_Wiki {
             }
         }
 
-        $this->formatObj[$format] =& new $class($this);
+        $this->formatObj[$format] = new $class($this);
     }
 
 
