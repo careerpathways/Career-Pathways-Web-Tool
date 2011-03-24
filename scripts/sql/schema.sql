@@ -359,18 +359,14 @@ CREATE TABLE `schools` (
   `school_abbr` varchar(50) default NULL,
   `school_website` varchar(255) default NULL,
   `school_addr` varchar(255) default NULL,
-  `school_city` varchar(100) default NULL,     
-  `school_state` varchar(2) default NULL,      
-  `school_zip` varchar(12) default NULL,    
-  `school_phone` varchar(20) default NULL,    
+  `school_city` varchar(100) default NULL,
+  `school_state` varchar(2) default NULL,
+  `school_zip` varchar(12) default NULL,
+  `school_county` varchar(100) default NULL,
+  `school_phone` varchar(20) default NULL,
+  `organization_type` enum('HS','CC','Other') default NULL,
   `date_created` datetime default NULL,
   PRIMARY KEY  (`id`)
-);
-
-CREATE TABLE `school_options` (
-	`school_id` int(11) NOT NULL,
-	`show_banner` tinyint(1) NOT NULL default '1',
-	PRIMARY KEY  (`school_id`)
 );
 
 CREATE TABLE `users` (
