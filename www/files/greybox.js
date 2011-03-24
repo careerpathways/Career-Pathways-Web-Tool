@@ -1,6 +1,3 @@
-<?php
-header("Content-type: text/javascript");
-?>
 
 var chGreybox = {
 

@@ -1,6 +1,3 @@
-<?php
-header("Content-type: text/javascript");
-?>
 
 FCKConfig.ToolbarSets["BasicHTML"] = [
         ['Bold','Italic','-','OrderedList','UnorderedList','-','Link','Unlink']

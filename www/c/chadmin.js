@@ -1,7 +1,3 @@
-<?php
-header("Content-type: text/javascript");
-?>
-
 /****************************************************************
 Charts -- the full canvas for a particular drawing, on which chart items can 
 be placed

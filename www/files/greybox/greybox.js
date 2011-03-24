@@ -1,6 +1,3 @@
-<?php
-	header("Content-type: text/javascript");
-?>
 /* Greybox Redux Part Deux
  * Required: http://jquery.com/
  * Written by: Torgie

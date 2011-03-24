@@ -1,6 +1,3 @@
-<?php 
-header("Content-type: text/xml");
-echo <<<EOD
 <?xml version="1.0" encoding="utf-8" ?>
 <Styles>
 	<Style name="Title H1" element="h1" />
@@ -8,5 +5,3 @@ echo <<<EOD
 	<Style name="Title H3" element="h3" />
 	<Style name="Title H4" element="h4" />
 </Styles>
-EOD;
-?>
