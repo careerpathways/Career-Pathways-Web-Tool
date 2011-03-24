@@ -451,7 +451,6 @@ a.edit:hover, a.edit:visited:hover {
 
 #title_value, .drawing_title
 {
-  font-size: 14pt;
   color: #<?= $D_GREY ?>;
 }
 .version_title

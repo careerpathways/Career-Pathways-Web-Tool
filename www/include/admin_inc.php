@@ -136,7 +136,9 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 	else
 		$tp = '';
 	
-	$drawing = $DB->SingleQuery('SELECT *, M.school_id'.($mode=='post'?', M.type':'').' FROM '.$tp.'drawings D, '.$tp.'drawing_main M WHERE D.id='.$drawing_id.' AND D.parent_id=M.id');
+	$drawing = $DB->SingleQuery('SELECT *, M.school_id'.($mode=='post'?', M.type':'').' 
+		FROM '.$tp.'drawings D, '.$tp.'drawing_main M 
+		WHERE D.id='.$drawing_id.' AND D.parent_id=M.id');
 
 	if( $check_published ) {
 		// ignore the fact that the drawing may be published
@@ -155,6 +157,11 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 	}
 
 	return $_SESSION['school_id'] == $drawing['school_id'];
+}
+
+function IsAffiliatedWith($school_id) {
+	$affl = GetAffiliatedSchools();
+	return array_key_exists($school_id, $affl);
 }
 
 function GetAffiliatedSchools() {

@@ -32,7 +32,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 	<th width="120"><?=l('program name label')?></th>
 	<td><div id="program"><?php
 		$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = ' . $drawing['program_id']);
-		echo ($drawing['program_id'] ? $program['name'] : 'Not Listed');
+		echo ($drawing['program_id'] ? $program['title'] : 'Not Listed');
 	?></div></td>
 </tr>
 <tr class="editable">
@@ -54,6 +54,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 	<td><b><?= $DB->GetValue('school_name','schools',$drawing['school_id']) ?></b></td>
 </tr>
 <?php
+$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $drawing['school_id']);
 if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array($published) ) {
 ?>
 <tr class="editable">
