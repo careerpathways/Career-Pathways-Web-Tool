@@ -1,7 +1,3 @@
-<?
-header("Content-type: text/javascript");
-?>
-
 Charts = {
   whichi: function() { return 'view'; },
   draw: function(canvas_container, toolbar_container) {
