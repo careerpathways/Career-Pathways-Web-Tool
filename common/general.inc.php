@@ -37,10 +37,20 @@ $TEMPLATE = new ThisSiteTemplate();
 
 
 if($DB == FALSE) {
-	PrintHeader();
-	echo 'Could not connect to the database. Verify your database username and password are set properly.';
+	if(substr($_SERVER['REQUEST_URI'], -3) == '.js' || substr($_SERVER['REQUEST_URI'], -4) == '.css') {
+?>
+/**
+ * Error: Could not connect to the database.
+ * Verify the database username and password are set properly in the configuration file.
+ */
+<?php
+	} else {
+		PrintHeader();
+		echo '<div style="font-size: 15pt; margin-bottom: 9px; color: #900;">Error: Could not connect to the database.</div>';
+		echo '<div style="font-size: 8pt;">Verify the database username and password are set properly in the configuration file.</div>';
+		PrintFooter();
+	}
 	die();
-	PrintFooter();
 }
 
 
@@ -329,5 +339,3 @@ global $DB;
 function SilkIcon($name) {
 	return '<img src="/common/silk/'.$name.'" width="16" height="16" />';
 }
-
-?>
