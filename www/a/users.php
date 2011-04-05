@@ -445,6 +445,19 @@ global $DB;
 	function deleteCancel() {
 		getLayer('delete_confirm').innerHTML = '';
 	}
+	function schoolChanged(sel) {
+		if(sel[sel.selectedIndex].className == "hs") {
+			document.getElementById("user_level_cc").style.display = "none";
+			document.getElementById("user_level_hs").style.display = "";
+			document.getElementById("user_level_cc").name = "user_level_";
+			document.getElementById("user_level_hs").name = "user_level";
+		} else {
+			document.getElementById("user_level_cc").style.display = "";
+			document.getElementById("user_level_hs").style.display = "none";
+			document.getElementById("user_level_cc").name = "user_level";
+			document.getElementById("user_level_hs").name = "user_level_";
+		}
+	}
 </script>
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br>
@@ -521,17 +534,22 @@ global $DB;
 				} else {
 					$addl = array();
 				}
-				if(IsAdmin())
-					echo GenerateSelectBoxDB('schools','school_id','id','school_name','school_name',$user['school_id'],$addl);
+				echo '<select name="school_id" id="school_id" onchange="schoolChanged(this)">';
+				if(IsAdmin()) 
+				{
+					foreach($DB->MultiQuery('SELECT * FROM schools ORDER BY school_name') as $school)
+						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $_SESSION['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
+					foreach($addl as $id=>$val)
+						echo '<option value="' . $id . '">' . $val . '</option>' . "\n";
+				}
 				else
 				{
 					$tmp = GetHSAffiliations($_SESSION['school_id']);
 					$tmp[] = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
-					$school_list = array();
-					foreach($tmp as $t)
-						$school_list[$t['id']] = $t['school_name'];
-					echo GenerateSelectBox($school_list, 'school_id',$user['school_id']);
+					foreach($tmp as $school)
+						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $_SESSION['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
 				}
+				echo '</select>';
 			?>
 	<?php } else { 
 		$school = $DB->SingleQuery('SELECT school_name FROM schools WHERE id = ' . $user['school_id']);
@@ -543,13 +561,29 @@ global $DB;
 		<td class="noborder">User Level:</td>
 		<td class="noborder">
 		<?php
-			// should only be able to create users with equal or less privileges than oneself
-			if( IsAdmin() )
-				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level']);
-			elseif( IsStaff() )
-				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level'],array(),"level>=16 AND level<=".$_SESSION['user_level']);
-			else
-				echo GenerateSelectBoxDB('admin_user_levels','user_level','level','name','level',$user['user_level'],array(),"level<=".$_SESSION['user_level']);
+			$cc_levels = array();
+			$hs_levels = array();
+			
+			// should only be able to create users with privileges equal to or less than oneself
+			foreach($DB->MultiQuery('SELECT * FROM admin_user_levels WHERE level <= ' . $_SESSION['user_level'] . ' ORDER BY level') as $level) {
+				if($level['level'] < 16)
+					$hs_levels[] = $level;
+				else
+					$cc_levels[] = $level;
+			}
+			
+			echo '<select name="user_level' . ($_SESSION['user_level'] < 16 ? '' : '_') . '" id="user_level_hs" style="' . ($_SESSION['user_level'] < 16 ? '' : 'display: none;' ) . '">';
+			foreach($hs_levels as $level) {
+				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+			}
+			echo '</select>';
+
+			echo '<select name="user_level' . ($_SESSION['user_level'] >= 16 ? '' : '_') . '" id="user_level_cc" style="' . ($_SESSION['user_level'] >= 16 ? '' : 'display: none;' ) . '">';
+			foreach($cc_levels as $level) {
+				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+			}
+			echo '</select>';
+			
 		?>
 		</td>
 	</tr>
