@@ -172,6 +172,10 @@ require_once("POSTChart.inc.php");
 			echo getHSFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
+			tinyMCE.init({
+				mode : "textareas",
+				theme : "simple"
+			});
 			$("#postFormContent").focus();
 
 			$(".postGreyboxContent input").keydown(function(e) {
@@ -189,7 +193,7 @@ require_once("POSTChart.inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: { content: ($("#postFormContent").val()),
+					data: { content: (tinyMCE.activeEditor.getContent()),
 							href: $("#postFormURL").val(),
 							legend: legendData
 					},
@@ -210,6 +214,10 @@ require_once("POSTChart.inc.php");
 			echo getCCFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
+		tinyMCE.init({
+			mode : "textareas",
+			theme : "simple"
+		});
 			$("#postFormSubject").focus();
 
 			$("#postFormSubject").keyup(function(){
@@ -264,7 +272,8 @@ require_once("POSTChart.inc.php");
 					data: {	subject: $("#postFormSubject").val(),
 							number: $("#postFormNumber").val(),
 							title: ($("#postFormTitle").val()),
-							content: ($("#postFormContent").val()),
+							content: (tinyMCE.activeEditor.getContent()),
+							// content: ($("#postFormContent").val()),
 							credits: ($("#postFormCredits").val()),
 							href: $("#postFormURL").val(),
 							legend: legendData
@@ -339,8 +348,8 @@ require_once("POSTChart.inc.php");
 
 		echo getFooterHTML($cell);
 ?>
-		<script language="JavaScript" type="text/javascript">
-			$(".postGreyboxContent input").keydown(function(e) {
+			<script language="JavaScript" type="text/javascript">		
+		$(".postGreyboxContent input").keydown(function(e) {
 				if( e.keyCode == 13 ) $("#postFormSave").click();
 			});
 
@@ -348,7 +357,8 @@ require_once("POSTChart.inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=footer&id=<?=$id?>",
-					data: {text: $("#postFormContent").val(), link: $("#postFormURL").val()},
+						data: {text: $("#postFormContent").val()
+						link: $("#postFormURL").val()},
 					success: function(data){
 						$("#post_footer_<?=$id?>").html(data);
 						chGreybox.close();
@@ -615,7 +625,7 @@ require_once("POSTChart.inc.php");
 		<br />
 		<form action="javascript:void(0);">
 			<div style="font-weight: bold;">Course Content:</div>
-			<input type="text" id="postFormContent" style="width: 400px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
+			<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;" class="editorWindow"><?=$cell['content']?></textarea>
 			<br /><br />
 			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
@@ -691,7 +701,8 @@ require_once("POSTChart.inc.php");
 					</td>
 					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
 						<div style="font-weight: bold;">Course Content:</div>
-						<input type="text" id="postFormContent" style="width: 340px; border: 1px #AAA solid;" value="<?=$cell['content']?>" />
+									<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
+						<!-- <input type="text" id="postFormContent" style="width: 340px; border: 1px #AAA solid;" value="<?=$cell['content']?>" /> -->
 						<br /><br />
 						<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
 						URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
@@ -801,6 +812,8 @@ require_once("POSTChart.inc.php");
 		else
 			$("#legend_icon_" + id).attr("src", "/c/images/legend/b" + id + ".png");
 	});
+	
+
 
 		</script>
 <?php

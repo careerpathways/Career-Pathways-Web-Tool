@@ -272,6 +272,7 @@ function showVersion() {
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.contextMenu.js';
 		$TEMPLATE->addl_scripts[] = '/c/postedit.js';
+		$TEMPLATE->addl_scripts[] = '/common/tinymce/tiny_mce.js';
 		$TEMPLATE->addl_styles[]  = '/common/jquery/jquery.contextMenu.css';
 	}
 

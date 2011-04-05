@@ -72,7 +72,7 @@ $(document).ready(function()
 	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers .post_sidebar_right").css({cursor: "pointer"});
 
 	// Suppress link following
-	$(".post_cell a, .post_footer a, .post_headers a").attr("href", "javascript:void(0);");
+	$(".post_cell a, .post_footer a, .post_headers a").attr("href", "javascript:void(0);").removeAttr('target');
 });
 
 /******************************/
