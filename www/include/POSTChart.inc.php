@@ -380,7 +380,7 @@ abstract class POSTChart
 		}
 	}
 
-	public function display()
+	public function display($chartTitle='')
 	{
 		if( !is_array($this->_cells) )
 		{
@@ -389,7 +389,8 @@ abstract class POSTChart
 		}
 		
 		echo '<table border="1" class="post_chart school_', $this->_school_id,'">', "\n";
-		$this->_printHeaderRow();
+		
+		$this->_printHeaderRow($chartTitle);
 
 		// Draw the header notes
 		if ($this->_header_state == 1) {
@@ -505,11 +506,11 @@ class POSTChart_HS extends POSTChart
 		return ($cell->content != '');
 	}
 	
-	protected function _printHeaderRow()
+	protected function _printHeaderRow($title='')
 	{
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '"></td>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . ($title ? $title : $this->schoolName) . '</th>', "\n";
 			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '<tr>', "\n";
@@ -611,11 +612,11 @@ class POSTChart_CC extends POSTChart
 		return $cell->content != '' || $cell->course_subject != '';		
 	}
 
-	protected function _printHeaderRow()
+	protected function _printHeaderRow($title='')
 	{
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '"></td>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . '</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . ($title ? $title : $this->schoolName) . '</th>', "\n";
 			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 	}

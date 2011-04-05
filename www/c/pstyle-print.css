@@ -1,6 +1,4 @@
-<?php
-header('Content-type: text/css');
-?>
+
 #tabshs, #tabscc {
 	border: 0;
 }
@@ -15,4 +13,8 @@ header('Content-type: text/css');
 
 .post_chart {
 	page-break-inside: avoid;
+}
+
+.ui-tabs .ui-tabs-hide.tabs_hs, .ui-tabs .ui-tabs-hide.tabs_cc {
+	display: block !important;
 }

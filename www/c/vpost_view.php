@@ -123,11 +123,11 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 		<?php
 		foreach( $ds as $i=>$d )
 		{
-			echo '<div id="tabs'.$type.'-'.($i+1).'" class="tabs_hs">';
+			echo '<div id="tabs'.$type.'-'.($i+1).'" class="tabs_'.$type.'">';
 			try
 			{
 				$p = POSTChart::create($d['version_id']);
-				$p->display();
+				$p->display($d['tab_name']);
 			}
 			catch( Exception $e )
 			{
