@@ -143,6 +143,10 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 	echo '</div>';
 }
 
+if(array_key_exists('print', $_GET)) {
+	echo '<div class="footnote">Printed on ' . date('n/j/Y g:ia') . '</div>';
+}
+
 include('view/course_description_include.php');
 ?>
 <script type="text/javascript">
