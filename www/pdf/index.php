@@ -58,7 +58,7 @@ switch(request('mode'))
 		die('error');
 }
 
-$fullPath = 'pdf/tmp/' . $filename;
+$fullPath = $SITE->cache_path("pdf").$filename;
 
 if(!file_exists($fullPath) || filemtime($fullPath))
 	shell_exec('/usr/bin/wkhtmltopdf-i386 "' . $url . '" ' . $fullPath);
@@ -69,4 +69,3 @@ header('Content-type: application/pdf');
 header('Content-disposition: attachment; filename="' . addslashes($name) . '"');
 readfile($fullPath);
 
-?>
