@@ -63,7 +63,8 @@ $fullPath = $SITE->cache_path("pdf").$filename;
 if(!file_exists($fullPath) || filemtime($fullPath))
 	shell_exec('/usr/bin/wkhtmltopdf-i386 "' . $url . '" ' . $fullPath);
 
-$name = preg_replace('/[^A-Za-z0-9 -]/', '', $name) . '.pdf';
+$amp_repl = preg_replace( '/[$&]/', 'and', $name);
+$name = preg_replace('/[^A-Za-z0-9 -]/', '', $amp_repl) . '.pdf';
 
 header('Content-type: application/pdf');
 header('Content-disposition: attachment; filename="' . addslashes($name) . '"');
