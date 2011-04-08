@@ -36,8 +36,8 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 <p>
 <table>
 <tr>
-	<th width="80">Occupation/Program</th>
-	<td><span class="drawing_title"><?= $drawing_main['name'] ?></span>
+	<th width="135">Occupation/Program</th>
+	<td><span class="drawing_title" style="font-size: 12pt;"><?= $drawing_main['name'] ?></span>
 		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>" title="Drawing Properties"><img src="/common/silk/cog.png" width="16" height="16" /></a></td>
 </tr>
 <tr>
