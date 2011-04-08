@@ -11,8 +11,9 @@
 	margin-bottom: 20px;
 }
 
-.post_chart {
+table.post_chart {
 	page-break-inside: avoid;
+	margin: 0;
 }
 
 .ui-tabs .ui-tabs-hide.tabs_hs, .ui-tabs .ui-tabs-hide.tabs_cc {

@@ -36,7 +36,7 @@
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
 						$drawViewText = 'Draw/Edit Version';
-						if( CanEditVersion($v['id']) ) {
+						if( CanEditVersion($v['id'], 'post') ) {
 							if( $v['published'] == 1 || $v['frozen'] == 1 ) {
 								$link = SilkIcon('picture.png');
 								$action = 'view';

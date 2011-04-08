@@ -510,7 +510,7 @@ class POSTChart_HS extends POSTChart
 	{
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '"></td>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . ($title ? $title : $this->schoolName) . '</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . ' - ' . $title . '</th>', "\n";
 			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 		echo '<tr>', "\n";
@@ -616,7 +616,7 @@ class POSTChart_CC extends POSTChart
 	{
 		echo '<tr>', "\n";
 			echo '<td class="post_sidebar_left" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '"></td>', "\n";
-			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . ($title ? $title : $this->schoolName) . '</th>', "\n";
+			echo '<th class="post_head_main post_head post_head_noClick" colspan="' . (count($this->_cols)+1) . '">' . $this->schoolName . ' - ' . $title . '</th>', "\n";
 			echo '<td id="postsidebarright_'.$this->_id.'" class="post_sidebar_right" valign="middle" rowspan="' . ($this->totalRows + $this->_header_state + $this->_footer_state - 1) . '">' . $this->verticalText($this->_sidebar_right) . '</td>', "\n";
 		echo '</tr>', "\n";
 	}
