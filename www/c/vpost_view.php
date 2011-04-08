@@ -31,7 +31,7 @@ foreach( $drawings as $d )
 	else
 		$hs[] = $d;
 	
-	$page_title = $d['view_name'];
+	$page_title = $d['school_name'] . ' - Plan of Study - ' . $d['view_name'];
 }
 
 if( Request('format') == 'html' )

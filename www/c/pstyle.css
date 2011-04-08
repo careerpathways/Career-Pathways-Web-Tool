@@ -29,11 +29,11 @@ td {
 table.post_chart {
 	border-collapse: collapse;
 	border-spacing: 0;
+	margin: 0 auto;
 }
 
-table.post_chart, table.post_chart td, table.post_chart th {
+table.post_chart td, table.post_chart th {
 	border: 1px #999999 solid;
-	margin: 0 auto;
 }
 
 table.post_chart th {
