@@ -57,19 +57,26 @@ if( $id == "" ) {
 	<th width="80">Organization</th>
 	<td>
 	<?php
-	if( IsAdmin() || (IsStaff() && Request('type') == 'hs') ) {
+
 		if( Request('type') == 'cc' )
 		{
-			$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
+			$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+
+			if($user_school['organization_type'] == 'Other')
+				$these_schools = GetAffiliatedSchools('CC');
+
+			$these_schools[$school_id] = $user_school['school_name'];
 		}
 		else
 		{
 			$these_schools = GetAffiliatedSchools();
 		}
-		echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
-	} else {
-		echo '<b>'.$schools[$school_id].'</b>';
-	}
+
+		if(count($these_schools) == 1)
+			echo '<b>'.$these_schools[$school_id].'</b>';
+		else
+			echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
+
 	?>
 	</td>
 </tr>
