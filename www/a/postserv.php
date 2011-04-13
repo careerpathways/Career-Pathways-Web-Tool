@@ -172,10 +172,8 @@ require_once("POSTChart.inc.php");
 			echo getHSFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
-			tinyMCE.init({
-				mode : "textareas",
-				theme : "simple"
-			});
+			<?= tinyMCEInitScript() ?>
+			
 			$("#postFormContent").focus();
 
 			$(".postGreyboxContent input").keydown(function(e) {
@@ -214,10 +212,8 @@ require_once("POSTChart.inc.php");
 			echo getCCFormHTML($cell);
 ?>
 		<script language="JavaScript" type="text/javascript">
-		tinyMCE.init({
-			mode : "textareas",
-			theme : "simple"
-		});
+			<?= tinyMCEInitScript() ?>
+
 			$("#postFormSubject").focus();
 
 			$("#postFormSubject").keyup(function(){
@@ -297,6 +293,29 @@ require_once("POSTChart.inc.php");
 
 		echo ob_get_clean();
 	}//end function printCellForm
+
+	function tinyMCEInitScript()
+	{
+		ob_start();
+?>
+			tinyMCE.init({
+				mode : "textareas",
+				theme : "advanced",
+				plugins : "spellchecker,style",
+				theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code,spellchecker",
+				theme_advanced_buttons2 : "",
+				theme_advanced_buttons3 : "",
+				theme_advanced_buttons4 : "",
+				theme_advanced_toolbar_location : "top",
+				theme_advanced_toolbar_align : "left",
+				theme_advanced_statusbar_location : false,
+				theme_advanced_advanced_resizing : false,
+				spellchecker_languages : "+English=en",
+				spellchecker_rpc_url : "/common/tinymce/plugins/spellchecker/rpc.php",
+			});
+<?php
+		return ob_get_clean();
+	}
 
 	function printHeadForm($id)
 	{
@@ -626,10 +645,7 @@ require_once("POSTChart.inc.php");
 		<form action="javascript:void(0);">
 			<div style="font-weight: bold;">Course Content:</div>
 			<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;" class="editorWindow"><?=$cell['content']?></textarea>
-			<br /><br />
-			<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
-			URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
-			<br /><br />
+			<br />
 <?php
 		$legend = explode('-', $cell['legend']);
 		getLegendHTML($legend);
@@ -701,15 +717,10 @@ require_once("POSTChart.inc.php");
 					</td>
 					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
 						<div style="font-weight: bold;">Course Content:</div>
-									<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
-						<!-- <input type="text" id="postFormContent" style="width: 340px; border: 1px #AAA solid;" value="<?=$cell['content']?>" /> -->
-						<br /><br />
-						<div style="font-weight: bold;">Link this Content: <span style="color: #777777; font-size: 10px; font-weight: normal;">(Optional)</span></div>
-						URL: <input type="text" id="postFormURL" style="width: 300px; border: 1px #AAA solid;" value="<?=$cell['href']?>" />
+						<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
 					</td>
 				</tr>
 			</table>
-			<br />
 <?php
 		$legend = explode("-",$cell['legend']);
 		getLegendHTML($legend);
@@ -774,7 +785,8 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		echo '<div style="margin-bottom: 5px;"><p>To single space, hold down SHIFT + Enter/Return key for a new single spaced line of content.</p><br />Legend Symbols: (select one or more)</div>', "\n";
+		echo '<div style="margin-bottom: 5px; margin-left: 40px; font-style: italic;"><p>To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>';
+		echo '<div>Legend Symbols: (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)
 		{
