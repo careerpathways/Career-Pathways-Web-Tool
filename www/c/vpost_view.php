@@ -180,7 +180,7 @@ elseif( Request('format') == 'js' )
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'postContainer')?>");
 		if( typeof VBArray != "undefined" ) {
-			var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
+			var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
 			fr.setAttribute("width", pc.style.width);
