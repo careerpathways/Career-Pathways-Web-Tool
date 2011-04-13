@@ -29,7 +29,10 @@ if( PostRequest() && $school_id )
 	{
 		$data = array();
 		$data['cc_id'] = $school_id;
-		$data['hs_id'] = $_POST['hs_id'];
+		if($_POST['hs_id'])
+			$data['hs_id'] = $_POST['hs_id'];
+		else
+			$data['hs_id'] = $_POST['cc_id'];
 		$DB->Insert('hs_affiliations', $data);
 	}
 	
@@ -127,16 +130,12 @@ global $DB;
 	}
 	
 	echo '<h2>' . $school['school_name'] . '</h2>';
-	/*
-	?>
-		<p><span class="red">NOTE:</span> Changes are saved automatically. Changes to the default column headers will affect any drawings created in the future.</p>
-	<?php
-	*/
+
 	echo '<h3>Affiliated High Schools</h3>';
 	
 	$affiliations = $DB->MultiQuery('SELECT s.*, a.id AS af_id
 		FROM hs_affiliations AS a
-		JOIN schools AS s on s.id=hs_id
+		JOIN schools AS s ON s.id=hs_id AND s.organization_type = "HS"
 		WHERE cc_id='.$id.'
 		ORDER BY school_name');
 	?>
@@ -163,14 +162,58 @@ global $DB;
 		<?php
 			$highschools = array(0=>'') + $highschools;
 			echo GenerateSelectBox($highschools, 'hs_id', 0);
-			echo '<a href="javascript:save_header()" style="float:none"><img src="/common/silk/add.png" width="16" height="16"></a>';
+			echo '<a href="javascript:save_header(\'hs\')" style="float:left; margin-right: 3px;"><img src="/common/silk/add.png" width="16" height="16"></a>';
 		?>
 	</li>
 	<?php
 	}
 	?>
 	</ul>
-
+	
+	<?php
+	if($school['organization_type'] == 'Other') {
+		echo '<h3>Affiliated Community Colleges</h3>';
+		
+		$affiliations = $DB->MultiQuery('SELECT s.*, a.id AS af_id
+			FROM hs_affiliations AS a
+			JOIN schools AS s ON s.id=hs_id AND s.organization_type = "CC"
+			WHERE cc_id='.$id.'
+			ORDER BY school_name');
+		?>
+		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="header_form">
+		<ul class="sortable_header">
+		<?php
+		$cclist = '0';
+		foreach($affiliations as $d)
+		{
+			?>
+			<li id="head_<?= $d['af_id'] ?>">
+			<a href="javascript:delete_header(<?= $d['af_id'] ?>)"><img src="/common/silk/cross.png" width="16" height="16" /></a>
+			<?= $d['school_name'] ?>
+			</li>
+			<?php
+			$cclist .= ',' . $d['id'];
+		}
+	
+		$colleges = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type="CC" AND id NOT IN ('.$cclist.') ORDER BY school_name', 'school_name', 'id');
+		if( count($colleges) > 0 )
+		{
+		?>
+		<li class="addnew">
+			<?php
+				$colleges = array(0=>'') + $colleges;
+				echo GenerateSelectBox($colleges, 'cc_id', 0);
+				echo '<a href="javascript:save_header(\'cc\')" style="float:left; margin-right: 3px;"><img src="/common/silk/add.png" width="16" height="16"></a>';
+			?>
+		</li>
+		<?php
+		}
+		?>
+		</ul>
+	<?php
+	} // end if org type is "Other"
+	?>
+	
 	<input type="hidden" name="school_id" value="<?= $id ?>" />
 	<input type="hidden" name="create" value="1" />
 	</form>

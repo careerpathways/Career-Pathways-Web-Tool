@@ -164,12 +164,15 @@ function IsAffiliatedWith($school_id) {
 	return array_key_exists($school_id, $affl);
 }
 
-function GetAffiliatedSchools() {
+function GetAffiliatedSchools($type='HS') {
 	global $DB;
 	
 	$hsids = $DB->SingleQuery('SELECT GROUP_CONCAT(hs_id) AS hs FROM hs_affiliations WHERE cc_id='.$_SESSION['school_id']);
 	if( $hsids['hs'] == '' ) $hsids['hs'] = 0;
-	return $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="HS" '.(IsAdmin()?'':'AND id IN (0,'.$hsids['hs'].')').' ORDER BY school_name', 'school_name', 'id');
+	if(IsAdmin())
+		return $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="' . $type . '" ORDER BY school_name', 'school_name', 'id');
+	else	
+		return $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type="' . $type . '" AND id IN (0,'.$hsids['hs'].') ORDER BY school_name', 'school_name', 'id');
 }
 
 ?>

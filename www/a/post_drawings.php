@@ -159,7 +159,7 @@ if( KeyInRequest('drawing_id') ) {
 		$content['last_modified'] = $DB->SQLDate();
 		$content['last_modified_by'] = $_SESSION['user_id'];
 
-		if( IsAdmin() || (IsStaff() && Request('type') == 'hs') )
+		if(Request('school_id'))
 			$school_id = $_REQUEST['school_id'];
 		else
 			$school_id = $_SESSION['school_id'];
