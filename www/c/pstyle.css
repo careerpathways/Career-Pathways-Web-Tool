@@ -55,7 +55,7 @@ table.post_chart th {
 	padding: 0 10px;
 }
 
-.post_cell ol {
+.post_cell ol, .post_cell ul {
 	text-align: left;
 }
 .post_cell_hover {
