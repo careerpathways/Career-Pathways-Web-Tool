@@ -785,8 +785,8 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		echo '<div style="margin-bottom: 5px; margin-left: 40px; font-style: italic;"><p>To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>';
-		echo '<div>Legend Symbols: (select one or more)</div>', "\n";
+		echo '<div style="margin-bottom: 5px; margin-left: 40px; margin-right: 30px; font-style: italic;"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>';
+		echo '<div><span style="font-weight: bold;">Legend Symbols:</span> (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)
 		{
