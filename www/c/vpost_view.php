@@ -45,12 +45,12 @@ if( Request('format') == 'html' )
 <html>
 <head>
 	<title><?= $page_title ?></title>
-	<link rel="stylesheet" href="/c/pstyle.css" />
 	<script type="text/javascript" src="/files/js/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" src="/files/js/jquery.ui.core.js"></script>
 	<script type="text/javascript" src="/files/js/jquery.ui.tabs.js"></script>
 	<link rel="stylesheet" href="/files/js/jquery/ui.tabs.css" />
 	<link rel="stylesheet" href="/files/js/jquery/ui.all.css" />
+	<link rel="stylesheet" href="/c/pstyle.css" />
 	<link rel="stylesheet" href="/c/pstyle-print.css"<?=(array_key_exists('print', $_GET) ? '' : ' media="print"')?> />
 <?php
 	if(!array_key_exists('print', $_GET))

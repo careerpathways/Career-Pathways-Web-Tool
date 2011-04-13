@@ -124,3 +124,8 @@ table.post_chart th {
 	padding: 10px;
 	color: #FF3333;
 }
+
+
+#tabscc .ui-tabs-nav li.ui-tabs-selected {
+	padding-bottom: 0;
+}
