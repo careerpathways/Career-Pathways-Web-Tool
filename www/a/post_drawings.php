@@ -63,6 +63,12 @@ if (KeyInRequest('action')) {
 		case 'include_header':
 			showHeader(intval($_REQUEST['id']));
 			die();
+		case 'commit_changes':
+			saveRowsAndColumnChanges($_REQUEST['id']);
+			die();
+		case 'cancel_changes':
+			cancelRowsAndColumnChanges($_REQUEST['id']);
+			die();
 	}
 }
 
@@ -426,7 +432,7 @@ function showConfigureRowColForm($version_id) {
 	$headerState = $DB->SingleQuery("SELECT header_state FROM post_drawings WHERE id = ". $version_id ." ");
 	$footerState = $DB->SingleQuery("SELECT footer_state FROM post_drawings WHERE id = ". $version_id ." ");
 
-	$post = POSTChart::create($version_id);
+	$post = POSTChart::create($version_id, TRUE);
 
 	if(	$post->type == 'CC' )
 	{
@@ -561,6 +567,28 @@ function showConfigureRowColForm($version_id) {
 				}, "HTML");
 			})
 		}
+		
+		function saveConfigureDrawingForm() {
+			$("#config_submit, #config_cancel").attr("disabled","disabled");
+			
+			jQuery.post("/a/post_drawings.php", {
+				action: "commit_changes",
+				id: <?= $version_id ?>
+			}, function(data) {
+				chGreybox.close();
+			}, "HTML");
+		}
+
+		function cancelConfigureDrawingForm() {
+			$("#config_submit, #config_cancel").attr("disabled","disabled");
+			
+			jQuery.post("/a/post_drawings.php", {
+				action: "cancel_changes",
+				id: <?= $version_id ?>
+			}, function(data) {
+				chGreybox.close();
+			}, "HTML");
+		}
 	</script>
 	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
 	<table><tr>
@@ -639,7 +667,8 @@ function showConfigureRowColForm($version_id) {
 	</tr></table>
 	
 	<div style="text-align:right; margin-right: 10px;">
-		<input type="button" onclick="chGreybox.close()" value="Close" class="submit" />
+		<input type="button" onclick="saveConfigureDrawingForm()" value="Save" class="submit" id="config_submit" />
+		<input type="button" onclick="cancelConfigureDrawingForm()" value="Cancel" class="submit" id="config_cancel" />
 	</div>
 
 	<div style="color:#666666; margin-top:10px;"><span class="red">Warning:</span> Changing the number of rows or columns of your drawing is a <b>destructive</b> operation. For example, if you change your drawing from 7 columns to 6 columns, the contents of the far-right (seventh) column will be permanently erased.</div>
@@ -664,6 +693,44 @@ function showRowsInDrawing(&$post)
 	}
 }
 
+function saveRowsAndColumnChanges($id)
+{
+	global $DB;
+	
+	$version_id = intval($id);
+	if( CanEditVersion($version_id) )
+	{
+		// Delete all the items marked for deletion
+		$DB->Query('DELETE FROM post_row WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
+		$DB->Query('DELETE FROM post_cell WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
+		$DB->Query('DELETE FROM post_col WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
+		
+		// Mark all added items as committed
+		$DB->Query('UPDATE post_row SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+		$DB->Query('UPDATE post_cell SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+		$DB->Query('UPDATE post_col SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+	}
+}
+
+function cancelRowsAndColumnChanges($id)
+{
+	global $DB;
+	
+	$version_id = intval($id);
+	if( CanEditVersion($version_id) )
+	{
+		// Delete all the items that were added
+		$DB->Query('DELETE FROM post_row WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
+		$DB->Query('DELETE FROM post_cell WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
+		$DB->Query('DELETE FROM post_col WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
+		
+		// Un-mark all deleted items
+		$DB->Query('UPDATE post_row SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+		$DB->Query('UPDATE post_cell SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+		$DB->Query('UPDATE post_col SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+	}
+}
+
 function configureDeleteCol()
 {
 	global $DB;
@@ -671,13 +738,18 @@ function configureDeleteCol()
 	$version_id = Request('id');
 	if( CanEditVersion($version_id) )
 	{
-		$col = $DB->SingleQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num DESC LIMIT 1');
-		$DB->Query('DELETE FROM post_cell WHERE col_id='.$col['id']);
-		$DB->Query('DELETE FROM post_col WHERE id='.$col['id']);
+		$col = $DB->SingleQuery('SELECT * FROM post_col 
+			WHERE drawing_id='.$version_id.' 
+				AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
+			ORDER BY num DESC 
+			LIMIT 1');
+		$DB->Query('UPDATE post_cell SET edit_txn = 1, edit_action = "delete" WHERE col_id='.$col['id']);
+		$DB->Query('UPDATE post_col SET edit_txn = 1, edit_action = "delete" WHERE id='.$col['id']);
 	}
 
-	$post = POSTChart::create($version_id);
-	$post->displayMini();
+	// TODO
+	$post = POSTChart::create($version_id, TRUE);
+	$post->displayMini(TRUE);
 }
 
 function configureAddCol()
@@ -688,16 +760,27 @@ function configureAddCol()
 	if( CanEditVersion($version_id) )
 	{
 		$last_col = $DB->SingleQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num DESC LIMIT 1');
-		$col_id = $DB->Insert('post_col', array('drawing_id'=>$version_id, 'title'=>'', 'num'=>$last_col['num']+1));
+		$col_id = $DB->Insert('post_col', array(
+			'drawing_id'=>$version_id, 
+			'title'=>'',
+			'edit_txn'=>1,
+			'edit_action'=>'add',
+			'num'=>$last_col['num']+1)
+		);
 
 		$rows = $DB->MultiQuery('SELECT id FROM post_row WHERE drawing_id='.$version_id);
 		foreach( $rows as $r )
-		{
-			$DB->Insert('post_cell', array('drawing_id'=>$version_id, 'row_id'=>$r['id'], 'col_id'=>$col_id));
-		}
+			$DB->Insert('post_cell', array(
+				'drawing_id'=>$version_id, 
+				'row_id'=>$r['id'], 
+				'col_id'=>$col_id,
+				'edit_txn'=>1,
+				'edit_action'=>'add'
+			));
 	}
 	
-	$post = POSTChart::create($version_id);
+	// TODO
+	$post = POSTChart::create($version_id, TRUE);
 	$post->displayMini();
 }
 
@@ -710,9 +793,16 @@ function configureDeleteRow()
 	$version_id = $DB->GetValue('drawing_id', 'post_row', Request('row_id'));
 	if( CanEditVersion($version_id) )
 	{
-		$DB->Query('DELETE FROM post_cell WHERE row_id='.$row_id);
-		$DB->Query('DELETE FROM post_row WHERE id='.$row_id);
-		$post = POSTChart::create($version_id);
+		$current = $DB->SingleQuery('SELECT edit_txn, edit_action FROM post_row WHERE id='.$row_id);
+		if($current['edit_txn'] == 1 && $current['edit_action'] == 'add') {
+			// If the row was new, then just delete it, don't stage it
+			$DB->Query('DELETE FROM post_cell WHERE row_id='.$row_id);
+			$DB->Query('DELETE FROM post_row WHERE id='.$row_id);
+		} else {
+			$DB->Query('UPDATE post_cell SET edit_txn=1, edit_action="delete" WHERE row_id='.$row_id);
+			$DB->Query('UPDATE post_row SET edit_txn=1, edit_action="delete" WHERE id='.$row_id);
+		}
+		$post = POSTChart::create($version_id, TRUE);
 		showRowsInDrawing($post);
 	}
 }
@@ -751,6 +841,9 @@ function configureAddRow()
 			default:
 				return FALSE;
 		}
+		
+		$row_data['edit_txn'] = 1;
+		$row_data['edit_action'] = 'add';
 
 		// create the row record and all the blank cells
 		$row_id = $DB->Insert('post_row', $row_data);
@@ -758,17 +851,23 @@ function configureAddRow()
 		$cols = $DB->MultiQuery('SELECT id FROM post_col WHERE drawing_id='.$id);
 		foreach( $cols as $c )
 		{
-			$DB->Insert('post_cell', array('drawing_id'=>$id, 'row_id'=>$row_id, 'col_id'=>$c['id']));
-		}
-		
-		$post = POSTChart::create($id);
+			$DB->Insert('post_cell', array(
+				'drawing_id'=>$id, 
+				'row_id'=>$row_id, 
+				'col_id'=>$c['id'],
+				'edit_txn'=>1,
+				'edit_action'=>'add'
+			));
+		}		
+		// TODO
+		$post = POSTChart::create($id, TRUE);
 		showRowsInDrawing($post);
 	}
 }
 
 function showMiniDrawing($id)
 {
-	$post = POSTChart::create($id);
+	$post = POSTChart::create($id, TRUE);
 	$post->displayMini();
 }
 

@@ -258,6 +258,8 @@ CREATE TABLE `post_cell` (
   `course_title` VARCHAR(255) DEFAULT NULL,
   `course_description` TEXT,
   `course_description_cachedate` DATETIME DEFAULT NULL,
+  `edit_txn` int(10) unsigned NOT NULL DEFAULT '0',
+  `edit_action` enum('add','delete') DEFAULT NULL,
   PRIMARY KEY  (`id`)
 );
 
@@ -266,6 +268,8 @@ CREATE TABLE `post_col` (
   `drawing_id` INT(10) UNSIGNED DEFAULT NULL,
   `title` VARCHAR(255) DEFAULT NULL,
   `num` INT(11) DEFAULT NULL,
+  `edit_txn` int(10) unsigned NOT NULL DEFAULT '0',
+  `edit_action` enum('add','delete') DEFAULT NULL,
   PRIMARY KEY  (`id`)
 );
 
@@ -330,6 +334,8 @@ CREATE TABLE `post_row` (
   `row_year` ENUM('1','2','3','4','5','6','7','8','9','10','11','12') DEFAULT NULL,
   `row_term` ENUM('M','F','W','S','U') DEFAULT NULL,
   `row_qtr` TINYINT(4) NOT NULL DEFAULT '0',
+  `edit_txn` int(10) unsigned NOT NULL DEFAULT '0',
+  `edit_action` enum('add','delete') DEFAULT NULL,
   PRIMARY KEY  (`id`)
 );
 
