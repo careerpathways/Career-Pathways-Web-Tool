@@ -642,9 +642,11 @@ require_once("POSTChart.inc.php");
 
 ?>
 		<br />
+		<div class="postEditHS">
 		<form action="javascript:void(0);">
 			<div style="font-weight: bold;">Course Content:</div>
 			<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;" class="editorWindow"><?=$cell['content']?></textarea>
+			<div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
 			<br />
 <?php
 		$legend = explode('-', $cell['legend']);
@@ -654,6 +656,7 @@ require_once("POSTChart.inc.php");
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
 		</form>
+		</div>
 <?php
 		return ob_get_clean();
 	}//end function printHSFormHTML
@@ -674,6 +677,7 @@ require_once("POSTChart.inc.php");
 			'</h3>';
 ?>
 		<br />
+		<div class="postEditCC">
 		<form action="javascript:void(0);">
 			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
 				<tr id="ccDetailRow">
@@ -718,6 +722,7 @@ require_once("POSTChart.inc.php");
 					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
 						<div style="font-weight: bold;">Course Content:</div>
 						<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
+						<div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
 					</td>
 				</tr>
 			</table>
@@ -729,6 +734,7 @@ require_once("POSTChart.inc.php");
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
 		</form>
+		</div>
 <?php
 		return ob_get_clean();	
 	}//end function printCCFormHTML
@@ -785,7 +791,6 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		echo '<div style="margin-bottom: 5px; margin-left: 40px; margin-right: 30px; font-style: italic;"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>';
 		echo '<div><span style="font-weight: bold;">Legend Symbols:</span> (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)
