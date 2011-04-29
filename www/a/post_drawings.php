@@ -432,6 +432,9 @@ function showConfigureRowColForm($version_id) {
 	$headerState = $DB->SingleQuery("SELECT header_state FROM post_drawings WHERE id = ". $version_id ." ");
 	$footerState = $DB->SingleQuery("SELECT footer_state FROM post_drawings WHERE id = ". $version_id ." ");
 
+	// Cancel any changes that may have been left open if the window was closed without hitting "cancel" previously	
+	cancelRowsAndColumnChanges($version_id);
+
 	$post = POSTChart::create($version_id, TRUE);
 
 	if(	$post->type == 'CC' )
