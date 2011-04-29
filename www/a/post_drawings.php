@@ -440,7 +440,7 @@ function showConfigureRowColForm($version_id) {
 	if(	$post->type == 'CC' )
 	{
 		$years = array(1=>1, 2, 3, 4, 5, 6);
-		$terms = array('F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer (after Spring)', 'M'=>'Summer (before Fall)');
+		$terms = array('M'=>'Summer', 'F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer');
 		$quarters = array(1=>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	}
 	
@@ -466,7 +466,8 @@ function showConfigureRowColForm($version_id) {
 		}
 		#addRowTable td {
 			vertical-align: middle;
-			height: 30px;
+			border-bottom: 1px #ddd solid;
+			padding: 6px;
 		}
 		.colButton {
 			background-color: #888888;
@@ -521,6 +522,9 @@ function showConfigureRowColForm($version_id) {
 						data.type = type;
 						data.year = jQuery("#addYear").val();
 						data.term = jQuery("#addTerm").val();
+						break;
+					case "qtr":
+						data.type = type;
 						data.qtr  = jQuery("#addQtr").val();
 						break;
 					default:
@@ -625,38 +629,39 @@ function showConfigureRowColForm($version_id) {
 		<?php if( $post->type == 'CC' ) { ?>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Prereq</div></div></td>
+				<td><div class="addRowText">Custom (Top)</div></div></td>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
 				<td>
-					<?php 
-					if(l('post row type') == 'year/term')
-						echo '<div class="addRowText">Year: ' . GenerateSelectBox($years, 'addYear') . ' Term: ' . GenerateSelectBox($terms, 'addTerm') . '</div></td>';
-					else
-						echo '<div class="addRowText">Quarter: ' . GenerateSelectBox($quarters, 'addQtr') . '</td>';
-					?>
+					<div class="addRowText">
+						Year: <?= GenerateSelectBox($years, 'addYear') ?><br />
+						Term: <?= GenerateSelectBox($terms, 'addTerm') ?>
+					</div>
+				</td>
 			</tr>
 			<tr>
-				<td><a href="javascript:void(0);" id="addRow_electives" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Electives</div></td>
+				<td><a href="javascript:void(0);" id="addRow_qtr" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td>
+					<div class="addRowText">Term: <?= GenerateSelectBox($quarters, 'addQtr') ?>
+				</td>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Blank</div></td>
+				<td><div class="addRowText">Custom (Bottom)</div></td>
 			</tr>
 		<?php } else { ?>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Custom (Top)</div></div></td>
+			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
 				<td><div class="addRowText">Year: <?= GenerateSelectBox(array(9=>9, 10, 11, 12), 'addYear') ?></div></td>
 			</tr>
 			<tr>
-				<td><a href="javascript:void(0);" id="addRow_electives" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Electives</div></td>
-			</tr>
-			<tr>
 				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Blank</div></td>
+				<td><div class="addRowText">Custom (Bottom)</div></td>
 			</tr>
 		<?php } ?>
 		</table>
@@ -687,7 +692,7 @@ function showRowsInDrawing(&$post)
 	{
 		echo '<div class="rowName">';
 			echo '<a href="javascript:void(0);" id="deleteRow_'.$r['id'].'" class="deleteBtn">' . SilkIcon('cross.png') . '</a> ';
-			if( $r['row_type'] == 'unlabeled' )
+			if( $r['rowName'] == '' )
 				echo '(blank)';
 			else
 				echo str_replace('<br />', ' ', $r['rowName']);
@@ -829,15 +834,16 @@ function configureAddRow()
 				break;
 
 			case 'term':
-				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'));
-				if(l('post row type') == 'year/term')
+			case 'qtr':
+				$row_data = array('drawing_id'=>$id, 'row_type'=>'term');
+				if(Request('qtr'))
 				{
-					$row_data['row_year'] = Request('year');
-					$row_data['row_term'] = Request('term');
+					$row_data['row_qtr'] = Request('qtr');
 				}
 				else
 				{
-					$row_data['row_qtr'] = Request('qtr');
+					$row_data['row_year'] = Request('year');
+					$row_data['row_term'] = Request('term');
 				}
 				break;
 

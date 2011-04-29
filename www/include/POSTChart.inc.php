@@ -93,7 +93,7 @@ abstract class POSTChart
 					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="delete"))
 				ORDER BY num');
 			$this->_rows = $DB->MultiQuery('
-				SELECT id, row_type, row_year, row_term, row_qtr 
+				SELECT id, title, row_type, row_year, row_term, row_qtr 
 				FROM post_row 
 				WHERE drawing_id='.$version_id.' 
 					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="delete"))
@@ -106,7 +106,7 @@ abstract class POSTChart
 					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
 				ORDER BY num');
 			$this->_rows = $DB->MultiQuery('
-				SELECT id, row_type, row_year, row_term, row_qtr 
+				SELECT id, title, row_type, row_year, row_term, row_qtr 
 				FROM post_row 
 				WHERE drawing_id='.$version_id.' 
 					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
@@ -582,7 +582,7 @@ class POSTChart_HS extends POSTChart
 			case 'electives':
 				return 'Electives';
 			default:
-				return '';
+				return $row['title'];
 		}
 	}
 
@@ -675,18 +675,15 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return l()->term_name($row);
-
-			case 'prereq':
-				return 'Prereqs';
-			
-			case 'electives':
-				return 'Electives';
-			
-			case 'unlabeled':
-				return '';
+				return self::term_name($row);
 
 			default:
+				if($row['title'])
+					return $row['title'];
+				if($row['row_type'] == 'prereq')
+					return 'Prereqs';
+				if($row['row_type'] == 'electives')
+					return 'Electives';
 				return '';
 		}
 	}
@@ -697,19 +694,40 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return l()->term_name_short($row);
-
-			case 'prereq':
-				return 'P';
-			
-			case 'electives':
-				return 'E';
-			
-			case 'unlabeled':
-				return '';
+				return self::term_name_short($row);
 
 			default:
-				return '';
+				return substr(self::rowNameFromData($row), 0, 1);
+		}
+	}
+
+	protected function term_name(&$row)
+	{
+		if($row['row_qtr'] == 0)
+		{
+			$terms['F'] = 'Fall';
+			$terms['W'] = 'Winter';
+			$terms['S'] = 'Spring';
+			$terms['U'] = 'Summer';
+			$terms['M'] = 'Summer';
+	
+			return '<nobr>' . ordinalize($row['row_year'], true) . ' Yr</nobr><br />' . $terms[$row['row_term']];
+		} 
+		else 
+		{
+			return '<nobr>Term ' . $row['row_qtr'] . '</nobr>';
+		}			
+	}
+	
+	protected function term_name_short(&$row) 
+	{
+		if($row['row_qtr'] == 0)
+		{
+			return $row['row_year'] . $row['row_term'];
+		} 
+		else 
+		{
+			return $row['row_qtr'];
 		}
 	}
 	
