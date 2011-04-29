@@ -99,6 +99,10 @@ table.post_chart th {
 	height: 14px;
 }
 
+.post_row_editable {
+	cursor: pointer;
+}
+
 .postGreyboxWrapper {
 	background: #FFFFFF;
 	border: 1px #777777 solid;

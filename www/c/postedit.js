@@ -97,6 +97,19 @@ function bindEditableCells()
 		}, "html");
 	});
 
+	// Make the row titles editable
+	$(".post_row_editable").unbind("click").click(function(){
+		// Split apart the id into meaningful components
+		var rowID = $(this).attr("id").split("_")[2];
+
+		$.get("/a/postserv.php",
+			{mode: "prompt", type: "rowTitle", id: rowID},
+			function(data){
+				chGreybox.create(data, 450, 300);
+				chGreybox.onClose = function() {bindPostCells()};
+		}, "html");
+	});
+
 	// Make the footer editable
 	$(".post_footer").unbind("click").click(function(){
 		// Split apart the id into meaningful components
@@ -219,7 +232,7 @@ function bindPostCells()
 	});
 
 	// Set up the class to update on hover
-	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers, .post_sidebar_right").hover(function(){
+	$(".post_head_main:not(.post_head_noClick), .post_cell, .post_footer, .post_headers, .post_sidebar_right, .post_row_editable").hover(function(){
 		$(this).addClass("post_cell_hover");
 	},function(){
 		$(this).removeClass("post_cell_hover");

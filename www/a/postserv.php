@@ -38,6 +38,9 @@ require_once("POSTChart.inc.php");
 			elseif($_GET['type'] == 'head')
 				printHeadForm($_GET['id']);
 
+			elseif($_GET['type'] == 'rowTitle')
+				printRowTitleForm($_GET['id']);
+
 			elseif($_GET['type'] == 'footer')
 				printFooterForm($_GET['id']);
 				
@@ -66,6 +69,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'head':
 					$version_id = $DB->GetValue('drawing_id', 'post_col', intval($_GET['id']));
+					break;
+				case 'rowTitle':
+					$version_id = $DB->GetValue('drawing_id', 'post_row', intval($_GET['id']));
 					break;
 				case 'footer':
 				case 'header':
@@ -109,6 +115,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'head':
 					commitHead($_GET['id']);
+					break;
+				case 'rowTitle':
+					commitRowTitle($_GET['id']);
 					break;
 				case 'header':
 					commitHeader($_GET['id']);
@@ -325,7 +334,7 @@ require_once("POSTChart.inc.php");
 		ob_start();
 ?>
 		<form action="javascript:void(0);">
-			<div style="font-weight: bold;">Header Description:</div>
+			<div style="font-weight: bold;">Header Title:</div>
 			<input type="text" id="postFormTitle" style="width: 400px; border: 1px #AAA solid;" value="<?=$cell['title']?>" />
 			<br /><br />
 			<div style="text-align: right;">
@@ -353,6 +362,50 @@ require_once("POSTChart.inc.php");
 <?php
 		echo ob_get_clean();
 	}//end function printHeadForm
+
+	function printRowTitleForm($id)
+	{
+		global $DB;
+		$cell = $DB->SingleQuery("SELECT `title`, `row_type` FROM `post_row` WHERE `id` = '" . intval($id) . "'");
+
+		if($cell['title'])
+			$title = $cell['title'];
+		else if($cell['row_type'] == 'unlabeled')
+			$title = '';
+		else 
+			$title = ucfirst($cell['row_type']);
+ 
+		ob_start();
+?>
+		<form action="javascript:void(0);">
+			<div style="font-weight: bold;">Row Title:</div>
+			<input type="text" id="postFormTitle" style="width: 400px; border: 1px #AAA solid;" value="<?=$title?>" />
+			<br /><br />
+			<div style="text-align: right;">
+				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
+			</div>
+		</form>
+		<script language="JavaScript" type="text/javascript">
+			$("#postFormTitle").focus().bind("keydown", function(e){
+				if(e.keyCode == 13){
+					$("#postFormSave").click();
+				}
+			});
+			$("#postFormSave").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/a/postserv.php?mode=commit&type=rowTitle&id=<?=$id?>",
+					data: "title=" + $("#postFormTitle").val(),
+					success: function(data){
+						$("#post_row_<?=$id?>").html(data);
+						chGreybox.close();
+					}
+				});
+			});
+		</script>
+<?php
+		echo ob_get_clean();
+	}//end function printRowTitleForm
 
 	function printFooterForm( $id)
 	{
@@ -535,6 +588,13 @@ require_once("POSTChart.inc.php");
 		$DB->Update('post_col', array('title' => $_POST['title']), intval($id));
 		echo $_POST['title'];
 	}//end function commitHeader
+
+	function commitRowTitle($id)
+	{
+		global $DB;
+		$DB->Update('post_row', array('title' => $_POST['title']), intval($id));
+		echo $_POST['title'];
+	}
 
 	function commitFooter($id)
 	{

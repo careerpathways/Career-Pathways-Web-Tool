@@ -444,7 +444,7 @@ abstract class POSTChart
 		foreach( $this->_cells as $rowNum=>$row )
 		{
 			echo '<tr>', "\n";
-			echo '<td class="post_head_row post_head" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
+			echo '<td class="post_head_row post_head' . ($this->_rows[$rowNum]['row_type'] != 'term' ? ' post_row_editable' : '') . '" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
 				list($titleTag, $image) = $this->_gatherLegend($cell->legend);
@@ -579,10 +579,15 @@ class POSTChart_HS extends POSTChart
 		{
 			case 'term':
 				return $row['row_year'];
-			case 'electives':
-				return 'Electives';
+
 			default:
-				return $row['title'];
+				if($row['title'])
+					return $row['title'];
+				if($row['row_type'] == 'prereq')
+					return 'Prereqs';
+				if($row['row_type'] == 'electives')
+					return 'Electives';
+				return '';
 		}
 	}
 
