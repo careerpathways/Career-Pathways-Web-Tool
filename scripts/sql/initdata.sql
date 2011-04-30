@@ -16,7 +16,7 @@ VALUES
 	(20,'--','--','--',1,300),
 	(15,'dashboard','Dashboard','Dashboard',1,10),
 	(16,'post_drawings','POST Drawings','POST Drawings',1,30),
-	(17,'hs_settings','High School Settings','High School Settings',1,205),
+	(17,'post_settings','POST Settings','POST Settings',1,205),
 	(18,'configure_post_legend','Configure POST Legend','Configure POST Legend',1,230),
 	(19,'--','--','--',1,200),
 	(22,'post_views','POST Views','POST Views',1,35),

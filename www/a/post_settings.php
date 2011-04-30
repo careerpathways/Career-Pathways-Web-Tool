@@ -2,7 +2,7 @@
 chdir('..');
 include('inc.php');
 
-ModuleInit('hs_settings');
+ModuleInit('post_settings');
 
 if( IsAdmin() ) {
 	// Allow admins to edit headers for any schools
