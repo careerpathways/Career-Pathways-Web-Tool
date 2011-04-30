@@ -5,7 +5,7 @@ include('inc.php');
 ModuleInit('post_settings');
 
 if( IsAdmin() ) {
-	// Allow admins to edit headers for any schools
+	// Allow admins to edit defaults for any schools
 	if( Request('school_id') ) {
 		$school_id = $_REQUEST['school_id'];
 	} else {
@@ -79,7 +79,7 @@ else
 			});
 	
 			function switch_school(id) {
-				window.location.href = "/a/hs_settings.php?school_id="+id;
+				window.location.href = "/a/post_settings.php?school_id="+id;
 			}
 
 			function delete_header(id)
@@ -99,7 +99,17 @@ else
 			
 			function save_header()
 			{
-				$('#header_form').submit();	
+				$.ajax({
+					type: 'POST',
+					url: '<?= $_SERVER['PHP_SELF'] ?>?school_id=<?= $school_id ?>',
+					data: {
+						school_id: <?= $school_id ?>,
+						new_title: $("#new_title").val()
+					}, 
+					complete: function(http, status) {
+						window.location.href = '<?= $_SERVER['PHP_SELF'] ?>?school_id=<?= $school_id ?>';
+					}
+				});
 			}
 
 		</script>
@@ -142,7 +152,28 @@ else
 		<?php
 
 		ShowSchoolChooser();
-		if( $school_id ) ShowSchoolForm($school_id);
+		if( $school_id ) 
+		{
+			$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
+			if( !is_array($school) ) {
+				echo 'Specified record does not exist.';
+				die();
+			}
+
+			echo '<h2>' . $school['school_name'] . '</h2>';
+			
+			?>
+			<p><span class="red">NOTE:</span> Changes are saved automatically. Changes to the default column headers will affect any drawings created in the future.</p>
+			<p>Existing drawings will not be affected by changes made here. Existing versions copied into NEW versions will retain the columns of the existing drawing.</p>
+			<?php
+			
+			if($school['organization_type'] == 'HS')
+				ShowSchoolHeaderForm($school);
+
+			ShowSchoolColumnForm($school);
+
+			echo '<input type="hidden" name="school_id" value="' . $school['id'] . '" />';
+		}
 	PrintFooter();
 }
 
@@ -150,26 +181,15 @@ else
 
 
 
-function ShowSchoolForm($id="") {
-global $DB;
+function ShowSchoolHeaderForm($school) {
+	global $DB;
 	
-	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$id");
-	if( !is_array($school) ) {
-		echo 'Specified record does not exist.';
-		return false;
-	}
-	
-	echo '<h2>' . $school['school_name'] . '</h2>';
-	?>
-		<p><span class="red">NOTE:</span> Changes are saved automatically. Changes to the default column headers will affect any drawings created in the future.</p>
-		<p>Existing drawings will not be affected by changes made here. Existing versions copied into NEW versions will retain the columns of the existing drawing.</p>
-		<p>Click and drag to re-order the columns</p>
-	<?php
+	echo '<p>Click and drag to re-order the columns</p>';
+
 	echo '<h3>Default Column Headers</h3>';
 	
-	$defaults = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$id.' ORDER BY num');
+	$defaults = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$school['id'].' ORDER BY num');
 	?>
-	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="header_form">
 	<div class="sortable_container">
 	<ul class="sortable_header">
 	<?php
@@ -186,8 +206,33 @@ global $DB;
 	<li class="addnew"><a href="javascript:save_header()"><img src="/common/silk/add.png" width="16" height="16"></a><input type="textbox" size="30" name="new_title" id="new_title" /></li>
 	</ul>
 	</div>
-	<input type="hidden" name="school_id" value="<?= $id ?>" />
-	</form>
+	<?php
+}
+
+function ShowSchoolColumnForm($school) 
+{
+	global $DB;
+	
+	echo '<h3>Default Rows</h3>';
+	
+	$defaults = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$school['id'].' ORDER BY num');
+	?>
+	<div class="sortable_container">
+	<ul class="sortable_header">
+	<?php
+	foreach($defaults as $d)
+	{
+	?>
+		<li id="head_<?= $d['id'] ?>">
+		<a href="javascript:delete_header(<?= $d['id'] ?>)"><img src="/common/silk/cross.png" width="16" height="16" /></a>
+		<?= $d['title'] ?>
+		</li>
+	<?php
+	}
+	?>
+	<li class="addnew"><a href="javascript:save_header()"><img src="/common/silk/add.png" width="16" height="16"></a><input type="textbox" size="30" name="new_title" id="new_title" /></li>
+	</ul>
+	</div>
 	<?php
 }
 
@@ -198,10 +243,16 @@ function ShowSchoolChooser()
 
 	if( IsAdmin() ) {
 		echo '<div style="margin-bottom:10px;">';
-		echo 'Choose School: ';
-		$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type="HS" ORDER BY school_name','school_name','id');
-		$schools = array("-1"=>'') + $schools_;
-		echo GenerateSelectBox($schools,'ss',-1,'switch_school(this.value)');
+			echo 'Select High School: ';
+			$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type="HS" ORDER BY school_name','school_name','id');
+			$schools = array("-1"=>'') + $schools_;
+			echo GenerateSelectBox($schools,'ss',-1,'switch_school(this.value)');
+		echo '</div>';
+		echo '<div style="margin-bottom:10px;">';
+			echo 'Select College or Other Org: ';
+			$schools_ = $DB->VerticalQuery('SELECT id, school_name FROM schools WHERE organization_type!="HS" ORDER BY school_name','school_name','id');
+			$schools = array("-1"=>'') + $schools_;
+			echo GenerateSelectBox($schools,'ss',-1,'switch_school(this.value)');
 		echo '</div>';
 	}
 
