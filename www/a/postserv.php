@@ -38,6 +38,9 @@ require_once("POSTChart.inc.php");
 			elseif($_GET['type'] == 'head')
 				printHeadForm($_GET['id']);
 
+			elseif($_GET['type'] == 'rowTitle')
+				printRowTitleForm($_GET['id']);
+
 			elseif($_GET['type'] == 'footer')
 				printFooterForm($_GET['id']);
 				
@@ -66,6 +69,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'head':
 					$version_id = $DB->GetValue('drawing_id', 'post_col', intval($_GET['id']));
+					break;
+				case 'rowTitle':
+					$version_id = $DB->GetValue('drawing_id', 'post_row', intval($_GET['id']));
 					break;
 				case 'footer':
 				case 'header':
@@ -109,6 +115,9 @@ require_once("POSTChart.inc.php");
 					break;
 				case 'head':
 					commitHead($_GET['id']);
+					break;
+				case 'rowTitle':
+					commitRowTitle($_GET['id']);
 					break;
 				case 'header':
 					commitHeader($_GET['id']);
@@ -325,7 +334,7 @@ require_once("POSTChart.inc.php");
 		ob_start();
 ?>
 		<form action="javascript:void(0);">
-			<div style="font-weight: bold;">Header Description:</div>
+			<div style="font-weight: bold;">Header Title:</div>
 			<input type="text" id="postFormTitle" style="width: 400px; border: 1px #AAA solid;" value="<?=$cell['title']?>" />
 			<br /><br />
 			<div style="text-align: right;">
@@ -353,6 +362,50 @@ require_once("POSTChart.inc.php");
 <?php
 		echo ob_get_clean();
 	}//end function printHeadForm
+
+	function printRowTitleForm($id)
+	{
+		global $DB;
+		$cell = $DB->SingleQuery("SELECT `title`, `row_type` FROM `post_row` WHERE `id` = '" . intval($id) . "'");
+
+		if($cell['title'])
+			$title = $cell['title'];
+		else if($cell['row_type'] == 'unlabeled')
+			$title = '';
+		else 
+			$title = ucfirst($cell['row_type']);
+ 
+		ob_start();
+?>
+		<form action="javascript:void(0);">
+			<div style="font-weight: bold;">Row Title:</div>
+			<input type="text" id="postFormTitle" style="width: 400px; border: 1px #AAA solid;" value="<?=$title?>" />
+			<br /><br />
+			<div style="text-align: right;">
+				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
+			</div>
+		</form>
+		<script language="JavaScript" type="text/javascript">
+			$("#postFormTitle").focus().bind("keydown", function(e){
+				if(e.keyCode == 13){
+					$("#postFormSave").click();
+				}
+			});
+			$("#postFormSave").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/a/postserv.php?mode=commit&type=rowTitle&id=<?=$id?>",
+					data: "title=" + $("#postFormTitle").val(),
+					success: function(data){
+						$("#post_row_<?=$id?>").html(data);
+						chGreybox.close();
+					}
+				});
+			});
+		</script>
+<?php
+		echo ob_get_clean();
+	}//end function printRowTitleForm
 
 	function printFooterForm( $id)
 	{
@@ -536,6 +589,13 @@ require_once("POSTChart.inc.php");
 		echo $_POST['title'];
 	}//end function commitHeader
 
+	function commitRowTitle($id)
+	{
+		global $DB;
+		$DB->Update('post_row', array('title' => $_POST['title']), intval($id));
+		echo $_POST['title'];
+	}
+
 	function commitFooter($id)
 	{
 		global $DB;
@@ -642,9 +702,11 @@ require_once("POSTChart.inc.php");
 
 ?>
 		<br />
+		<div class="postEditHS">
 		<form action="javascript:void(0);">
 			<div style="font-weight: bold;">Course Content:</div>
 			<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;" class="editorWindow"><?=$cell['content']?></textarea>
+			<div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
 			<br />
 <?php
 		$legend = explode('-', $cell['legend']);
@@ -654,6 +716,7 @@ require_once("POSTChart.inc.php");
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
 		</form>
+		</div>
 <?php
 		return ob_get_clean();
 	}//end function printHSFormHTML
@@ -674,6 +737,7 @@ require_once("POSTChart.inc.php");
 			'</h3>';
 ?>
 		<br />
+		<div class="postEditCC">
 		<form action="javascript:void(0);">
 			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
 				<tr id="ccDetailRow">
@@ -718,6 +782,7 @@ require_once("POSTChart.inc.php");
 					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
 						<div style="font-weight: bold;">Course Content:</div>
 						<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
+						<div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
 					</td>
 				</tr>
 			</table>
@@ -729,6 +794,7 @@ require_once("POSTChart.inc.php");
 				<input type="button" id="postFormSave" value="Save" style="padding: 3px; background: #E0E0E0; border: 1px #AAA solid; font-weight: bold;" />
 			</div>
 		</form>
+		</div>
 <?php
 		return ob_get_clean();	
 	}//end function printCCFormHTML
@@ -785,7 +851,6 @@ require_once("POSTChart.inc.php");
 	{
 		global $DB;
 
-		echo '<div style="margin-bottom: 5px; margin-left: 40px; margin-right: 30px; font-style: italic;"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>';
 		echo '<div><span style="font-weight: bold;">Legend Symbols:</span> (select one or more)</div>', "\n";
 		$legendList = $DB->MultiQuery("SELECT * FROM `post_legend` WHERE `text` != '' ORDER BY `id` ASC");
 		foreach($legendList as $item)

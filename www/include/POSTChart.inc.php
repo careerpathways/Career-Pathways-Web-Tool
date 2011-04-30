@@ -32,7 +32,7 @@ abstract class POSTChart
 
 	// Create from the a database record
 	// factory method to create an object of the correct type
-	public static function create($id)
+	public static function create($id, $preview=FALSE)
 	{
 		global $DB;
 		
@@ -56,7 +56,7 @@ abstract class POSTChart
 				default:
 					throw new Exception('No drawing type was found in the record.');
 			}
-			$post->loadDataFromDB($id);
+			$post->loadDataFromDB($id, $preview);
 			$post->name = $drawing['name'];
 			$post->school_id = $drawing['school_id'];
 			$post->_footer_state = $drawing['footer_state'];
@@ -81,12 +81,37 @@ abstract class POSTChart
 		
 	}
 	
-	public function loadDataFromDB($version_id)
+	public function loadDataFromDB($version_id, $preview=FALSE)
 	{
 		global $DB;
-		
-		$this->_cols = $DB->MultiQuery('SELECT id, title, num FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num');
-		$this->_rows = $DB->MultiQuery('SELECT id, row_type, row_year, row_term, row_qtr FROM post_row WHERE drawing_id='.$version_id.' ORDER BY row_type, row_year, row_term, row_qtr, id');
+
+		if($preview == FALSE) {		
+			$this->_cols = $DB->MultiQuery('
+				SELECT id, title, num 
+				FROM post_col 
+				WHERE drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="delete"))
+				ORDER BY num');
+			$this->_rows = $DB->MultiQuery('
+				SELECT id, title, row_type, row_year, row_term, row_qtr 
+				FROM post_row 
+				WHERE drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="delete"))
+				ORDER BY row_type, row_year, row_term, row_qtr, id');
+		} else {
+			$this->_cols = $DB->MultiQuery('
+				SELECT id, title, num 
+				FROM post_col 
+				WHERE drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
+				ORDER BY num');
+			$this->_rows = $DB->MultiQuery('
+				SELECT id, title, row_type, row_year, row_term, row_qtr 
+				FROM post_row 
+				WHERE drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
+				ORDER BY row_type, row_year, row_term, row_qtr, id');
+		}
 		
 		$colmap = array();
 		foreach( $this->_cols as $i=>$a )
@@ -95,8 +120,20 @@ abstract class POSTChart
 		$rowmap = array();
 		foreach( $this->_rows as $i=>$a )
 			$rowmap[$a['id']] = $i;
-		
-		$cells = $DB->MultiQuery('SELECT id, row_id, col_id, content, href, legend, course_subject, course_number, course_title, course_credits FROM post_cell WHERE row_id > 0 AND col_id > 0 AND drawing_id='.$version_id);
+	
+		if($preview == FALSE) {
+			$cells = $DB->MultiQuery('
+				SELECT id, row_id, col_id, content, href, legend, course_subject, course_number, course_title, course_credits 
+				FROM post_cell 
+				WHERE row_id > 0 AND col_id > 0 AND drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="delete"))');
+		} else {
+			$cells = $DB->MultiQuery('
+				SELECT id, row_id, col_id, content, href, legend, course_subject, course_number, course_title, course_credits 
+				FROM post_cell
+				WHERE row_id > 0 AND col_id > 0 AND drawing_id='.$version_id.' 
+					AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))');
+		}
 
 		foreach( $cells as $c )
 		{
@@ -407,7 +444,7 @@ abstract class POSTChart
 		foreach( $this->_cells as $rowNum=>$row )
 		{
 			echo '<tr>', "\n";
-			echo '<td class="post_head_row post_head" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
+			echo '<td class="post_head_row post_head' . ($this->_rows[$rowNum]['row_type'] != 'term' ? ' post_row_editable' : '') . '" id="post_row_'.$this->_rows[$rowNum]['id'].'">' . $this->_rowName($rowNum) . '</td>', "\n";
 			foreach( $row as $cell )
 			{
 				list($titleTag, $image) = $this->_gatherLegend($cell->legend);
@@ -451,7 +488,8 @@ abstract class POSTChart
 		echo '</table>', "\n";
 	}
 
-	public function displayMini()
+	// $preview - In preview mode, shows the results after the current transaction is applied
+	public function displayMini($preview=FALSE)
 	{
 		echo '<table class="post_chart_mini">', "\n";
 		$this->_printHeaderRowMini();
@@ -541,9 +579,14 @@ class POSTChart_HS extends POSTChart
 		{
 			case 'term':
 				return $row['row_year'];
-			case 'electives':
-				return 'Electives';
+
 			default:
+				if($row['title'])
+					return $row['title'];
+				if($row['row_type'] == 'prereq')
+					return 'Prereqs';
+				if($row['row_type'] == 'electives')
+					return 'Electives';
 				return '';
 		}
 	}
@@ -637,18 +680,15 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return l()->term_name($row);
-
-			case 'prereq':
-				return 'Prereqs';
-			
-			case 'electives':
-				return 'Electives';
-			
-			case 'unlabeled':
-				return '';
+				return self::term_name($row);
 
 			default:
+				if($row['title'])
+					return $row['title'];
+				if($row['row_type'] == 'prereq')
+					return 'Prereqs';
+				if($row['row_type'] == 'electives')
+					return 'Electives';
 				return '';
 		}
 	}
@@ -659,19 +699,40 @@ class POSTChart_CC extends POSTChart
 		switch( $row['row_type'] )
 		{
 			case 'term':
-				return l()->term_name_short($row);
-
-			case 'prereq':
-				return 'P';
-			
-			case 'electives':
-				return 'E';
-			
-			case 'unlabeled':
-				return '';
+				return self::term_name_short($row);
 
 			default:
-				return '';
+				return substr(self::rowNameFromData($row), 0, 1);
+		}
+	}
+
+	protected function term_name(&$row)
+	{
+		if($row['row_qtr'] == 0)
+		{
+			$terms['F'] = 'Fall';
+			$terms['W'] = 'Winter';
+			$terms['S'] = 'Spring';
+			$terms['U'] = 'Summer';
+			$terms['M'] = 'Summer';
+	
+			return '<nobr>' . ordinalize($row['row_year'], true) . ' Yr</nobr><br />' . $terms[$row['row_term']];
+		} 
+		else 
+		{
+			return '<nobr>Term ' . $row['row_qtr'] . '</nobr>';
+		}			
+	}
+	
+	protected function term_name_short(&$row) 
+	{
+		if($row['row_qtr'] == 0)
+		{
+			return $row['row_year'] . $row['row_term'];
+		} 
+		else 
+		{
+			return $row['row_qtr'];
 		}
 	}
 	

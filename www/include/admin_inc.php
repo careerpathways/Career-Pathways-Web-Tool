@@ -149,9 +149,9 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 	if( IsAdmin() ) return true;
 
 	// all staff can edit HS drawings in their affiliated list
-	if( $mode == 'post' && IsStaff() && $drawing['type'] == 'HS' ) 
+	if( $mode == 'post' && IsStaff() ) 
 	{
-		$affl = GetAffiliatedSchools();
+		$affl = GetAffiliatedSchools($drawing['type']);
 		if( array_key_exists($drawing['school_id'], $affl) )
 			return true;
 	}
