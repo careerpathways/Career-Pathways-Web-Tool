@@ -600,14 +600,7 @@ class POSTChart_HS extends POSTChart
 	{
 		global $DB;
 
-		for( $i=9; $i<=12; $i++ )
-		{
-			$row = array();
-			$row['row_type'] = 'term';
-			$row['row_year'] = $i;
-			$row['row_term'] = '';
-			$this->_rows[] = $row;
-		}
+		$this->_rows = GetDefaultPOSTRows($this->school_id);
 
 		// copy the default columns to this drawing
 		$cols = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$this->_school_id.' ORDER BY num');
