@@ -1,6 +1,7 @@
 <?php
 chdir('..');
 include('inc.php');
+require_once("POSTChart.inc.php");
 
 ModuleInit('post_settings');
 
@@ -18,6 +19,57 @@ if( IsAdmin() ) {
 
 if( PostRequest() && $school_id )
 {
+	if( Request('action') == 'add_default_row' )
+	{
+		$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+		
+		switch(Request('type'))
+		{
+			case 'prereq':
+			case 'electives':
+			case 'unlabeled':
+				// find the last row of this type
+				$last_row = $DB->SingleQuery('SELECT * FROM post_default_row WHERE school_id='.$school_id.' AND row_type="'.Request('type').'" ORDER BY row_year DESC LIMIT 1');
+				$next_row = $last_row['row_year']+1;
+				$row_data = array('school_id'=>$school_id, 'row_type'=>Request('type'), 'row_year'=>$next_row);
+				break;
+
+			case 'term':
+			case 'qtr':
+				$row_data = array('school_id'=>$school_id, 'row_type'=>'term');
+				if(Request('qtr'))
+				{
+					$row_data['row_qtr'] = Request('qtr');
+				}
+				else
+				{
+					$row_data['row_year'] = Request('year');
+					$row_data['row_term'] = Request('term');
+				}
+				break;
+
+			default:
+				die();
+		}
+		
+		$row_id = $DB->Insert('post_default_row', $row_data);
+		
+		ShowDefaultRows($school);
+		die();
+	}
+	
+	if( Request('action') == 'delete_default_row' )
+	{
+		$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+	
+		$DB->Query('DELETE FROM post_default_row WHERE school_id = ' . $school_id . ' AND id = ' . intval(Request('row_id')));
+
+		ShowDefaultRows($school);
+		die();
+	}
+
+
+
 	if( trim(Request('new_title')) )
 	{
 		$max = $DB->SingleQuery('SELECT MAX(num) as max FROM post_default_col WHERE school_id=' . intval($school_id));
@@ -167,10 +219,12 @@ else
 			<p>Existing drawings will not be affected by changes made here. Existing versions copied into NEW versions will retain the columns of the existing drawing.</p>
 			<?php
 			
-			if($school['organization_type'] == 'HS')
+			if($school['organization_type'] == 'HS') {
 				ShowSchoolHeaderForm($school);
+				echo '<div style="margin-top: 20px;"></div>';
+			}
 
-			ShowSchoolColumnForm($school);
+			ShowSchoolRowForm($school);
 
 			echo '<input type="hidden" name="school_id" value="' . $school['id'] . '" />';
 		}
@@ -209,32 +263,177 @@ function ShowSchoolHeaderForm($school) {
 	<?php
 }
 
-function ShowSchoolColumnForm($school) 
+function ShowSchoolRowForm($school) 
 {
 	global $DB;
 	
-	echo '<h3>Default Rows</h3>';
-	
 	$defaults = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$school['id'].' ORDER BY num');
+
+	$years = array(1=>1, 2, 3, 4, 5, 6);
+	$terms = array('M'=>'Summer', 'F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer');
+	$quarters = array(1=>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
 	?>
-	<div class="sortable_container">
-	<ul class="sortable_header">
-	<?php
-	foreach($defaults as $d)
-	{
-	?>
-		<li id="head_<?= $d['id'] ?>">
-		<a href="javascript:delete_header(<?= $d['id'] ?>)"><img src="/common/silk/cross.png" width="16" height="16" /></a>
-		<?= $d['title'] ?>
-		</li>
-	<?php
-	}
-	?>
-	<li class="addnew"><a href="javascript:save_header()"><img src="/common/silk/add.png" width="16" height="16"></a><input type="textbox" size="30" name="new_title" id="new_title" /></li>
-	</ul>
-	</div>
+	<style type="text/css">
+		#rowList {
+			border-top: 1px #999999 solid;
+			margin-top: 10px;
+		}
+		.rowName {
+			font-size: 1.3em;
+			padding: 2px;
+			border-bottom: 1px #999999 solid;
+		}
+		.rowConfigHead {
+			font-weight:bold;
+			font-size: 1.4em;
+		}
+		.addRowText {
+			font-size: 1.3em;
+			margin-left: 10px;
+		}
+		#addRowTable td {
+			vertical-align: middle;
+			border-bottom: 1px #ddd solid;
+			padding: 6px;
+		}
+		.colButton {
+			background-color: #888888;
+			color: white;
+			margin-right: 10px;
+			font-size: 13px;
+		}
+	</style>
+	<script type="text/javascript">
+		jQuery(document).ready(function(){
+			bindDeleteButtons();
+			
+			jQuery(".addRowLink").click(function(){
+				var type = jQuery(this).attr("id").split("_")[1];
+				var data = {
+					action: "add_default_row", 
+					school_id: <?= $school['id'] ?>
+				};
+
+				switch( type ) {
+					case "prereq":
+					case "unlabeled":
+					case "electives":
+						data.type = type;
+						break;
+					case "term":
+						data.type = type;
+						data.year = jQuery("#addYear").val();
+						data.term = jQuery("#addTerm").val();
+						break;
+					case "qtr":
+						data.type = type;
+						data.qtr  = jQuery("#addQtr").val();
+						break;
+					default:
+						return false;
+				}
+				
+				jQuery.post("/a/post_settings.php", data,
+					function(data){
+						jQuery("#rowList").html(data);
+						bindDeleteButtons();
+					}, "HTML");
+			});
+		});
+
+		function bindDeleteButtons() {
+			jQuery(".deleteBtn").click(function(){
+				jQuery.post("/a/post_settings.php", {
+					action: "delete_default_row",
+					row_id: jQuery(this).attr("id").split("_")[1],
+					school_id: <?= $school['id'] ?>
+				},
+				function(data){
+					jQuery("#rowList").html(data);
+					bindDeleteButtons();
+				}, "HTML");
+			})
+		}
+	</script>
+	<table><tr>
+	<td valign="top" style="padding-left:10px; width: 300px;">
+		<div class="rowConfigHead">Default Rows</div>
+		<div id="rowList">
+		<?php
+		ShowDefaultRows($school);
+		?>
+		</div>
+	</td>
+	<td valign="top" style="padding-left:30px">
+	
+		<div class="rowConfigHead">Add Row</div>
+		<table id="addRowTable">
+		<?php if( $school['organization_type'] != 'HS' ) { ?>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Custom (Top)</div></div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td>
+					<div class="addRowText">
+						Year: <?= GenerateSelectBox($years, 'addYear') ?><br />
+						Term: <?= GenerateSelectBox($terms, 'addTerm') ?>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_qtr" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td>
+					<div class="addRowText">Term: <?= GenerateSelectBox($quarters, 'addQtr') ?>
+				</td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Custom (Bottom)</div></td>
+			</tr>
+		<?php } else { ?>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Custom (Top)</div></div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Year: <?= GenerateSelectBox(array(9=>9, 10, 11, 12), 'addYear') ?></div></td>
+			</tr>
+			<tr>
+				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td><div class="addRowText">Custom (Bottom)</div></td>
+			</tr>
+		<?php } ?>
+		</table>
+
+	</td>
+	</tr></table>
+
 	<?php
 }
+
+
+function ShowDefaultRows(&$school)
+{
+	global $DB;
+
+	$rows = GetDefaultPOSTRows($school['id']);
+	
+	foreach( $rows as $r )
+	{
+		echo '<div class="rowName">';
+			echo '<a href="javascript:void(0);" id="deleteRow_'.$r['id'].'" class="deleteBtn">' . SilkIcon('cross.png') . '</a> ';
+			if( $r['rowName'] == '' )
+				echo '(blank)';
+			else
+				echo str_replace('<br />', ' ', $r['rowName']);
+		echo '</div>';
+	}
+}
+
 
 
 function ShowSchoolChooser()
@@ -257,6 +456,3 @@ function ShowSchoolChooser()
 	}
 
 }
-
-
-?>
