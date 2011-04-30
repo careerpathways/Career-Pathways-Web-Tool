@@ -1,6 +1,5 @@
 <?php
 
-
 // abstractions to work with USER_ definitions in general.inc.php
 function IsAdmin() {
 	return $_SESSION['user_level'] >= CPUSER_STATEADMIN;
@@ -50,6 +49,76 @@ global $DB;
 	}
 }
 
+function GetDefaultPOSTRows($school_id) {
+	global $DB;
+	
+	$rows = $DB->MultiQuery('SELECT * FROM post_default_row 
+		WHERE school_id = ' . $school_id . '
+		ORDER BY row_type, row_year, row_term, row_qtr, id');
+	$school = $DB->SingleQuery("SELECT * FROM schools WHERE id = ". $school_id);
+
+	if(count($rows) == 0) 
+	{
+		$rows = array();
+
+		if($school['organization_type'] == 'HS') {
+			for( $i=9; $i<=12; $i++ )
+			{
+				$row = array();
+				$row['school_id'] = $school_id;
+				$row['row_type'] = 'term';
+				$row['row_year'] = $i;
+				$row['row_term'] = '';
+				$rows[] = $row;
+			}
+		}
+		else {
+			if(l('post row type') == 'year/term')
+			{
+				for( $i=1; $i<=6; $i++ )
+				{
+					$row = array();
+					$row['school_id'] = $school_id;
+					$row['row_type'] = 'term';
+					$row['row_year'] = floor(($i-1) / 3) + 1;
+					$row['row_term'] = (($i-1) % 3) + 2;
+					$row['row_qtr'] = 0;
+					$rows[] = $row;
+				}
+			}
+			else
+			{
+				for( $i=1; $i<=8; $i++ )
+				{
+					$row = array();
+					$row['school_id'] = $school_id;
+					$row['row_type'] = 'term';
+					$row['row_year'] = 0;
+					$row['row_term'] = '';
+					$row['row_qtr'] = $i;
+					$rows[] = $row;
+				}
+			}
+		}
+		
+		foreach($rows as $r) {
+			$DB->Insert('post_default_row', $r);
+		}
+
+		$rows = $DB->MultiQuery('SELECT * FROM post_default_row WHERE school_id = ' . $school_id);
+	}
+	
+	if($school['organization_type'] == 'HS')
+		$postChart = new POSTChart_HS();
+	else 
+		$postChart = new POSTChart_CC();
+	
+	foreach($rows as $i=>$row) {
+		$rows[$i]['rowName'] = $postChart->rowNameFromData($row);
+	}
+
+	return $rows;
+}
 
 function GetCategoriesForUser($id, $where="", $get_inverse=FALSE) {
 global $DB;

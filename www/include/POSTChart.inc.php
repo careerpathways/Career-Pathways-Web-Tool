@@ -600,14 +600,7 @@ class POSTChart_HS extends POSTChart
 	{
 		global $DB;
 
-		for( $i=9; $i<=12; $i++ )
-		{
-			$row = array();
-			$row['row_type'] = 'term';
-			$row['row_year'] = $i;
-			$row['row_term'] = '';
-			$this->_rows[] = $row;
-		}
+		$this->_rows = GetDefaultPOSTRows($this->school_id);
 
 		// copy the default columns to this drawing
 		$cols = $DB->MultiQuery('SELECT * FROM post_default_col WHERE school_id='.$this->_school_id.' ORDER BY num');
@@ -738,17 +731,12 @@ class POSTChart_CC extends POSTChart
 	
 	protected function _createEmptyChart()
 	{
+		$this->_rows = GetDefaultPOSTRows($this->school_id);
+
 		if(l('post row type') == 'year/term')
 		{
 			for( $i=1; $i<=6; $i++ )
 			{
-				$row = array();
-				$row['row_type'] = 'term';
-				$row['row_year'] = floor(($i-1) / 3) + 1;
-				$row['row_term'] = (($i-1) % 3) + 2;
-				$row['row_qtr'] = 0;
-				$this->_rows[] = $row;
-				
 				$col = array();
 				$col['title'] = '';
 				$col['num'] = $i;
