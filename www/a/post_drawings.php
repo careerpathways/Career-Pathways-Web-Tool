@@ -344,9 +344,11 @@ function copyVersion($version_id) {
 	// first get the title information
 	$drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=" . $drawing['parent_id']);
 
+	$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') : 'same_school';
-	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) ) {
+	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) || $user_school['organization_type'] == 'Other') {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
 			if ($copy_to !== 'same_school') {
 				$different_school = false;

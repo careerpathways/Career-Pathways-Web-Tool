@@ -44,10 +44,17 @@ fieldset {
 			else
 				$schools = GetAffiliatedSchools();
 		} else {
+
 			if( IsAdmin() )
 				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
-			else
-				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id'] . ' ORDER BY school_name', 'school_name', 'id');
+			else {
+				$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+	
+				if($user_school['organization_type'] == 'Other')
+					$schools = GetAffiliatedSchools('CC');
+	
+				$schools[$_SESSION['school_id']] = $user_school['school_name'];
+			}
 		}
 	} else {
 		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
@@ -65,7 +72,7 @@ fieldset {
 	<?php if( IsAdmin() || $version['school_id'] == $_SESSION['school_id']  || array_key_exists($version['school_id'], $schools)) { ?>
 		<input class="radio" type="radio" name="copy_to" value="same_school" id="copy_to_same_school"/> <label for="copy_to_same_school"><?=$version["school_name"]?></label><br/>
 	<?php } ?>
-	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS' ) ) { ?>
+	<?php if( IsAdmin() || (IsStaff() && $POST && $version['type'] == 'HS') || (IsStaff() && $POST && count($schools) > 1) ) { ?>
 		<input class="radio" type="radio" name="copy_to" value="othr_school" id="copy_to_othr_school"/> <label for="copy_to_othr_school">Select Organization</label><br/>
 	<?php } ?>
 </fieldset>
