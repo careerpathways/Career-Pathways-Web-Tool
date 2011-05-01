@@ -36,7 +36,10 @@ abstract class POSTChart
 	{
 		global $DB;
 		
-		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_state`, `d`.`footer_text`, `d`.`footer_link`,`d`.`header_state`, `d`.`header_text`, `d`.`header_link`, `d`.`sidebar_text_right`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, 
+				`d`.`footer_state`, `d`.`footer_state_preview`, `d`.`footer_text`, `d`.`footer_link`,
+				`d`.`header_state`, `d`.`header_state_preview`, `d`.`header_text`, `d`.`header_link`, 
+				`d`.`sidebar_text_right`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -59,10 +62,10 @@ abstract class POSTChart
 			$post->loadDataFromDB($id, $preview);
 			$post->name = $drawing['name'];
 			$post->school_id = $drawing['school_id'];
-			$post->_footer_state = $drawing['footer_state'];
+			$post->_footer_state = $drawing['footer_state'.($preview?'_preview':'')];
 			$post->footer_link = $drawing['footer_link'];
 			$post->footer_text = $drawing['footer_text'];
-			$post->_header_state = $drawing['header_state'];
+			$post->_header_state = $drawing['header_state'.($preview?'_preview':'')];
 			$post->header_link = $drawing['header_link'];
 			$post->header_text = $drawing['header_text'];
 			$post->sidebar_right = $drawing['sidebar_text_right'];

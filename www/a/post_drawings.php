@@ -52,16 +52,16 @@ if (KeyInRequest('action')) {
 			showPublishForm('post');
 			die();
 		case 'hide_footer':
-			hideFooter(intval($_REQUEST['id']));
+			hideFooter(intval($_REQUEST['id']), TRUE);
 			die();
 		case 'include_footer':
-			showFooter(intval($_REQUEST['id']));
+			showFooter(intval($_REQUEST['id']), TRUE);
 			die();
 		case 'hide_header':
-			hideHeader(intval($_REQUEST['id']));
+			hideHeader(intval($_REQUEST['id']), TRUE);
 			die();
 		case 'include_header':
-			showHeader(intval($_REQUEST['id']));
+			showHeader(intval($_REQUEST['id']), TRUE);
 			die();
 		case 'commit_changes':
 			saveRowsAndColumnChanges($_REQUEST['id']);
@@ -210,30 +210,30 @@ if( KeyInRequest('drawing_id') ) {
 
 
 
-function showFooter($id) {
+function showFooter($id, $preview=FALSE) {
 	global $DB;
-	$DB->SingleQuery("UPDATE post_drawings SET footer_state=1 WHERE id = ". $id ." ");
+	$DB->SingleQuery("UPDATE post_drawings SET footer_state".($preview?'_preview':'')."=1 WHERE id = ". $id);
 	$post = POSTChart::create($id);
 	$post->displayMini();
 }
 
-function hideFooter($id) {
+function hideFooter($id, $preview=FALSE) {
 	global $DB;
-	$DB->SingleQuery("UPDATE post_drawings SET footer_state=0 WHERE id = ". $id ." ");
+	$DB->SingleQuery("UPDATE post_drawings SET footer_state".($preview?'_preview':'')."=0 WHERE id = ". $id);
 	$post = POSTChart::create($id);
 	$post->displayMini();
 }
 
-function showHeader($id) {
+function showHeader($id, $preview=FALSE) {
 	global $DB;
-	$DB->SingleQuery("UPDATE post_drawings SET header_state=1 WHERE id = ". $id ." ");
+	$DB->SingleQuery("UPDATE post_drawings SET header_state".($preview?'_preview':'')."=1 WHERE id = ". $id);
 	$post = POSTChart::create($id);
 	$post->displayMini();
 }
 
-function hideHeader($id) {
+function hideHeader($id, $preview=FALSE) {
 	global $DB;
-	$DB->SingleQuery("UPDATE post_drawings SET header_state=0 WHERE id = ". $id ." ");
+	$DB->SingleQuery("UPDATE post_drawings SET header_state".($preview?'_preview':'')."=0 WHERE id = ". $id);
 	$post = POSTChart::create($id);
 	$post->displayMini();
 }
@@ -434,6 +434,9 @@ function showConfigureRowColForm($version_id) {
 
 	// Cancel any changes that may have been left open if the window was closed without hitting "cancel" previously	
 	cancelRowsAndColumnChanges($version_id);
+	
+	// Pre-load the header/footer state
+	$DB->Query('UPDATE post_drawings SET header_state_preview=header_state, footer_state_preview=footer_state WHERE id = ' . $version_id);
 
 	$post = POSTChart::create($version_id, TRUE);
 
@@ -722,6 +725,9 @@ function saveRowsAndColumnChanges($id)
 		$DB->Query('UPDATE post_row SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
 		$DB->Query('UPDATE post_cell SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
 		$DB->Query('UPDATE post_col SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
+		
+		// Commit the header/footer state changes
+		$DB->Query('UPDATE post_drawings SET header_state=header_state_preview, footer_state=footer_state_preview WHERE id = ' . $version_id);	
 	}
 }
 
