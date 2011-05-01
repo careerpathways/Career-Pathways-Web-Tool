@@ -36,7 +36,10 @@ abstract class POSTChart
 	{
 		global $DB;
 		
-		$drawing = $DB->SingleQuery('SELECT main.*, `d`.`footer_state`, `d`.`footer_text`, `d`.`footer_link`,`d`.`header_state`, `d`.`header_text`, `d`.`header_link`, `d`.`sidebar_text_right`, `d`.`id`
+		$drawing = $DB->SingleQuery('SELECT main.*, 
+				`d`.`footer_state`, `d`.`footer_state_preview`, `d`.`footer_text`, `d`.`footer_link`,
+				`d`.`header_state`, `d`.`header_state_preview`, `d`.`header_text`, `d`.`header_link`, 
+				`d`.`sidebar_text_right`, `d`.`id`
 			FROM post_drawing_main AS main, post_drawings AS d, schools
 			WHERE d.parent_id = main.id
 				AND main.school_id = schools.id
@@ -59,10 +62,10 @@ abstract class POSTChart
 			$post->loadDataFromDB($id, $preview);
 			$post->name = $drawing['name'];
 			$post->school_id = $drawing['school_id'];
-			$post->_footer_state = $drawing['footer_state'];
+			$post->_footer_state = $drawing['footer_state'.($preview?'_preview':'')];
 			$post->footer_link = $drawing['footer_link'];
 			$post->footer_text = $drawing['footer_text'];
-			$post->_header_state = $drawing['header_state'];
+			$post->_header_state = $drawing['header_state'.($preview?'_preview':'')];
 			$post->header_link = $drawing['header_link'];
 			$post->header_text = $drawing['header_text'];
 			$post->sidebar_right = $drawing['sidebar_text_right'];
@@ -621,15 +624,19 @@ class POSTChart_CC extends POSTChart
 	{
 		if( $cell->course_subject )
 		{
-			#return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			$text = '';
-			if(!array_key_exists('hidecoursedescription', $_GET))
-				$text .= '<a href="javascript:void(0);" class="course">';
-			$text .= '<span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span>';
-			if(!array_key_exists('hidecoursedescription', $_GET))
-				$text .= '</a>';
-			$text .= ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			return $text;
+			// TODO: Turning off course description links for now, in the future enable on a per-school basis as we start to get descriptions from the schools
+			if(FALSE) {
+				$text = '';
+				if(!array_key_exists('hidecoursedescription', $_GET))
+					$text .= '<a href="javascript:void(0);" class="course">';
+				$text .= '<span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span>';
+				if(!array_key_exists('hidecoursedescription', $_GET))
+					$text .= '</a>';
+				$text .= ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+				return $text;
+			} else {
+				return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+			}
 		}
 		else
 		{

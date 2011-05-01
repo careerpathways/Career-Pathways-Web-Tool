@@ -11,3 +11,7 @@ CREATE TABLE `post_default_row` (
   `row_qtr` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 );
+
+UPDATE post_row SET title = "Prereqs" WHERE row_type = "prereq";
+UPDATE post_row SET title = "Electives" WHERE row_type = "electives";
+
