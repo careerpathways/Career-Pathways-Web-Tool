@@ -58,10 +58,10 @@ if( $id == "" ) {
 	<td>
 	<?php
 
+		$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+
 		if( Request('type') == 'cc' )
 		{
-			$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
-
 			if($user_school['organization_type'] == 'Other')
 				$these_schools = GetAffiliatedSchools('CC');
 
@@ -70,6 +70,11 @@ if( $id == "" ) {
 		else
 		{
 			$these_schools = GetAffiliatedSchools();
+
+			// Add the user's school if their school is the same type as the new drawing
+			if( strtolower(Request('type')) == strtolower($user_school['organization_type']) )
+				$these_schools[$school_id] = $user_school['school_name'];
+				
 		}
 
 		if(count($these_schools) == 1)
