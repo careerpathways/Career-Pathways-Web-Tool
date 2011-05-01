@@ -434,6 +434,7 @@ global $DB;
 	if( Request('id') == "" ) {
 		// adding a new user. set defaults
 		$user['user_active'] = 1;
+		$user['user_level'] = $_SESSION['user_level'];
 		$user['school_id'] = $_SESSION['school_id'];
 	}
 
@@ -572,15 +573,15 @@ global $DB;
 					$cc_levels[] = $level;
 			}
 			
-			echo '<select name="user_level' . ($_SESSION['user_level'] < 16 ? '' : '_') . '" id="user_level_hs" style="' . ($_SESSION['user_level'] < 16 ? '' : 'display: none;' ) . '">';
+			echo '<select name="user_level' . ($user['user_level'] < 16 ? '' : '_') . '" id="user_level_hs" style="' . ($user['user_level'] < 16 ? '' : 'display: none;' ) . '">';
 			foreach($hs_levels as $level) {
-				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+				echo '<option value="' . $level['level'] . '" ' . ($user['user_level'] == $level['level'] ? ' selected="selected"' : '') . '>' . $level['name'] . '</option>';
 			}
 			echo '</select>';
 
-			echo '<select name="user_level' . ($_SESSION['user_level'] >= 16 ? '' : '_') . '" id="user_level_cc" style="' . ($_SESSION['user_level'] >= 16 ? '' : 'display: none;' ) . '">';
+			echo '<select name="user_level' . ($user['user_level'] >= 16 ? '' : '_') . '" id="user_level_cc" style="' . ($user['user_level'] >= 16 ? '' : 'display: none;' ) . '">';
 			foreach($cc_levels as $level) {
-				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+				echo '<option value="' . $level['level'] . '"' . ($user['user_level'] == $level['level'] ? ' selected="selected"' : '') . '>' . $level['name'] . '</option>';
 			}
 			echo '</select>';
 			

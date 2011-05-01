@@ -1,6 +1,6 @@
 <?php
 
-$_SERVER['CONFIG_FILE'] = 'test.settings.php';
+$_SERVER['CONFIG_FILE'] = 'default.settings.php';
 
 $dir = preg_split('~[/\\\]~', dirname(__FILE__));
 array_pop($dir);
