@@ -286,6 +286,8 @@ abstract class POSTChart
 			$post_row['row_year'] = ($row['row_year']?$row['row_year']:"");
 			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
 			$post_row['row_qtr'] = ($row['row_qtr']?$row['row_qtr']:"");
+			if($row['rowName'])
+				$post_row['title'] = $row['rowName'];
 			$post_row_id = $DB->Insert('post_row', $post_row);
 			$rowmap[$i] = $post_row_id;
 		}
@@ -578,18 +580,16 @@ class POSTChart_HS extends POSTChart
 	
 	public function rowNameFromData(&$row)
 	{
-		switch( $row['row_type'] )
-		{
-			case 'term':
-				return $row['row_year'];
+		if( $row['row_type'] == 'term')
+			return $row['row_year'];
 
-			default:
-				if($row['title'])
-					return $row['title'];
-				if($row['row_type'] == 'electives')
-					return 'Electives';
-				return '';
-		}
+		if($row['title'])
+			return $row['title'];
+
+		if($row['row_type'] == 'electives')
+			return 'Electives';
+
+		return '';
 	}
 
 	protected function _rowNameMini($num)

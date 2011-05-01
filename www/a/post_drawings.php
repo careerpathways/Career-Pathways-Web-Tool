@@ -663,7 +663,7 @@ function showConfigureRowColForm($version_id) {
 		<?php } else { ?>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Custom (Top)</div></div></td>
+				<td><div class="addRowText"><input type="text" id="addRow_prereq_title" style="width: 120px;" /></div></div></td>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
