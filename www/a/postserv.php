@@ -370,10 +370,8 @@ require_once("POSTChart.inc.php");
 
 		if($cell['title'])
 			$title = $cell['title'];
-		else if($cell['row_type'] == 'unlabeled')
+		else
 			$title = '';
-		else 
-			$title = ucfirst($cell['row_type']);
  
 		ob_start();
 ?>
