@@ -575,13 +575,13 @@ global $DB;
 			
 			echo '<select name="user_level' . ($user['user_level'] < 16 ? '' : '_') . '" id="user_level_hs" style="' . ($user['user_level'] < 16 ? '' : 'display: none;' ) . '">';
 			foreach($hs_levels as $level) {
-				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+				echo '<option value="' . $level['level'] . '" ' . ($user['user_level'] == $level['level'] ? ' selected="selected"' : '') . '>' . $level['name'] . '</option>';
 			}
 			echo '</select>';
 
 			echo '<select name="user_level' . ($user['user_level'] >= 16 ? '' : '_') . '" id="user_level_cc" style="' . ($user['user_level'] >= 16 ? '' : 'display: none;' ) . '">';
 			foreach($cc_levels as $level) {
-				echo '<option value="' . $level['level'] . '">' . $level['name'] . '</option>';
+				echo '<option value="' . $level['level'] . '"' . ($user['user_level'] == $level['level'] ? ' selected="selected"' : '') . '>' . $level['name'] . '</option>';
 			}
 			echo '</select>';
 			
