@@ -624,15 +624,19 @@ class POSTChart_CC extends POSTChart
 	{
 		if( $cell->course_subject )
 		{
-			#return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			$text = '';
-			if(!array_key_exists('hidecoursedescription', $_GET))
-				$text .= '<a href="javascript:void(0);" class="course">';
-			$text .= '<span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span>';
-			if(!array_key_exists('hidecoursedescription', $_GET))
-				$text .= '</a>';
-			$text .= ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
-			return $text;
+			// TODO: Turning off course description links for now, in the future enable on a per-school basis as we start to get descriptions from the schools
+			if(FALSE) {
+				$text = '';
+				if(!array_key_exists('hidecoursedescription', $_GET))
+					$text .= '<a href="javascript:void(0);" class="course">';
+				$text .= '<span class="course_subject">' . trim($cell->course_subject) . '</span> <span class="course_number">' . trim($cell->course_number) . '</span>';
+				if(!array_key_exists('hidecoursedescription', $_GET))
+					$text .= '</a>';
+				$text .= ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+				return $text;
+			} else {
+				return $cell->course_subject . ' ' . $cell->course_number . ($cell->course_credits > 0 ? ' (' . $cell->course_credits . ')' : '') . '<br />' . $cell->course_title;
+			}
 		}
 		else
 		{
