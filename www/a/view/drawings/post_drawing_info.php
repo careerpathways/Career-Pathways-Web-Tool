@@ -118,7 +118,7 @@ if($SITE->oregon_skillset_enabled){
 		<th><?=l('program name label')?></th>
 		<td>
 			<div id="title_fixed"><span id="title_value" style="font-size: 12pt;"><?= $drawing['name'] ?></span> 
-				<?=(IsAffiliatedWith($drawing['school_id']) ? '<a href="javascript:showTitleChange()" class="tiny">edit</a>' : '')?></div>
+				<?=(IsAffiliatedWith($drawing['school_id']) || $drawing['school_id']==$_SESSION['school_id'] ? '<a href="javascript:showTitleChange()" class="tiny">edit</a>' : '')?></div>
 			<div id="title_edit" style="display:none">
 				<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
 				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">

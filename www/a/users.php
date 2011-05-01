@@ -538,7 +538,7 @@ global $DB;
 				if(IsAdmin()) 
 				{
 					foreach($DB->MultiQuery('SELECT * FROM schools ORDER BY school_name') as $school)
-						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $_SESSION['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
+						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $user['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
 					foreach($addl as $id=>$val)
 						echo '<option value="' . $id . '">' . $val . '</option>' . "\n";
 				}
@@ -547,7 +547,7 @@ global $DB;
 					$tmp = GetHSAffiliations($_SESSION['school_id']);
 					$tmp[] = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
 					foreach($tmp as $school)
-						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $_SESSION['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
+						echo '<option value="' . $school['id'] . '" class="' . strtolower($school['organization_type']) . '" ' . ($school['id'] == $user['school_id'] ? 'selected="selected"' : '') . '>' . $school['school_name'] . '</option>' . "\n";
 				}
 				echo '</select>';
 			?>

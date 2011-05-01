@@ -366,7 +366,7 @@ function copyVersion($version_id) {
 	}
 
 	if( $create == 'new_drawing' ) {
-		if( $copy_to == 'othr_school' && (IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff())) ) {
+		if( $copy_to == 'othr_school' && (IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) || $user_school['organization_type'] == 'Other') ) {
 			$newdrawing['school_id'] = Request('target_org_id');
 			$post->school_id = $newdrawing['school_id'];
 		} elseif ($copy_to == 'same_school') {
