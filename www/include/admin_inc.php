@@ -229,7 +229,9 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 }
 
 function IsAffiliatedWith($school_id) {
-	$affl = GetAffiliatedSchools();
+	global $DB;
+	$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+	$affl = GetAffiliatedSchools($school['organization_type']);
 	return array_key_exists($school_id, $affl);
 }
 
