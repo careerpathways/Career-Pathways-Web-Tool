@@ -68,5 +68,11 @@ $name = preg_replace('/[^A-Za-z0-9 -]/', '', $amp_repl) . '.pdf';
 
 header('Content-type: application/pdf');
 header('Content-disposition: attachment; filename="' . addslashes($name) . '"');
+header('Cache-control: no-cache');
+if( function_exists('header_remove') ) {
+	header_remove('Pragma');
+} else {
+	header('Pragma:');
+}
 readfile($fullPath);
 
