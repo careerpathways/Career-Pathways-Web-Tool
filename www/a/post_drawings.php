@@ -366,7 +366,7 @@ function copyVersion($version_id) {
 	}
 
 	if( $create == 'new_drawing' ) {
-		if( $copy_to == 'othr_school' && (IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff())) ) {
+		if( $copy_to == 'othr_school' && (IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) || $user_school['organization_type'] == 'Other') ) {
 			$newdrawing['school_id'] = Request('target_org_id');
 			$post->school_id = $newdrawing['school_id'];
 		} elseif ($copy_to == 'same_school') {
@@ -663,7 +663,7 @@ function showConfigureRowColForm($version_id) {
 		<?php } else { ?>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Custom (Top)</div></div></td>
+				<td><div class="addRowText"><input type="text" id="addRow_prereq_title" style="width: 120px;" /></div></div></td>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
