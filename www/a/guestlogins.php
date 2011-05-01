@@ -8,11 +8,11 @@ ModuleInit('guestlogins');
 
 PrintHeader();
 
-$num_recs = $DB->SingleQuery("SELECT COUNT(*) AS num FROM guest_logins");
+$num_recs = $DB->SingleQuery("SELECT COUNT(*) AS num FROM guest_logins WHERE download = 0");
 
 $params = array(
 	'mode'		=> 'Sliding',
-	'perPage'	=> 20,
+	'perPage'	=> 40,
 	'delta'		=> 2,
 	'totalItems'=> $num_recs['num'],
 	'spacesBeforeSeparator' => 1,
@@ -29,7 +29,8 @@ $pager = &Pager::factory($params);
 $offset = $pager->getOffsetByPageId();
 
 
-$logins = $DB->MultiQuery('SELECT * FROM guest_logins 
+$logins = $DB->MultiQuery('SELECT * FROM guest_logins
+	WHERE download = 0
 	ORDER BY date DESC
 	LIMIT '.($offset[0]-1).', '.($params['perPage']));
 
