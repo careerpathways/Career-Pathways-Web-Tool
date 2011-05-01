@@ -44,10 +44,17 @@ fieldset {
 			else
 				$schools = GetAffiliatedSchools();
 		} else {
+
 			if( IsAdmin() )
 				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
-			else
-				$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id'] . ' ORDER BY school_name', 'school_name', 'id');
+			else {
+				$user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+	
+				if($user_school['organization_type'] == 'Other')
+					$schools = GetAffiliatedSchools('CC');
+	
+				$schools[$_SESSION['school_id']] = $user_school['school_name'];
+			}
 		}
 	} else {
 		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
