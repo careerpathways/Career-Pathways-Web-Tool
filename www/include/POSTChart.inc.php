@@ -583,8 +583,6 @@ class POSTChart_HS extends POSTChart
 			default:
 				if($row['title'])
 					return $row['title'];
-				if($row['row_type'] == 'prereq')
-					return 'Prereqs';
 				if($row['row_type'] == 'electives')
 					return 'Electives';
 				return '';
@@ -678,8 +676,6 @@ class POSTChart_CC extends POSTChart
 			default:
 				if($row['title'])
 					return $row['title'];
-				if($row['row_type'] == 'prereq')
-					return 'Prereqs';
 				if($row['row_type'] == 'electives')
 					return 'Electives';
 				return '';

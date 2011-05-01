@@ -517,6 +517,11 @@ function showConfigureRowColForm($version_id) {
 					case "unlabeled":
 					case "electives":
 						data.type = type;
+						if(type == "prereq") {
+							data.title = $("#addRow_prereq_title").val();
+						} else {
+							data.title = $("#addRow_unlabeled_title").val();
+						}
 						break;
 					case "term":
 						data.type = type;
@@ -629,7 +634,7 @@ function showConfigureRowColForm($version_id) {
 		<?php if( $post->type == 'CC' ) { ?>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_prereq" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Custom (Top)</div></div></td>
+				<td><div class="addRowText"><input type="text" id="addRow_prereq_title" style="width: 120px;" /></div></td>
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
@@ -648,7 +653,7 @@ function showConfigureRowColForm($version_id) {
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Custom (Bottom)</div></td>
+				<td><div class="addRowText"><input type="text" id="addRow_unlabeled_title" style="width: 120px;" /></div></td>
 			</tr>
 		<?php } else { ?>
 			<tr>
@@ -661,7 +666,7 @@ function showConfigureRowColForm($version_id) {
 			</tr>
 			<tr>
 				<td><a href="javascript:void(0);" id="addRow_unlabeled" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td><div class="addRowText">Custom (Bottom)</div></td>
+				<td><div class="addRowText"><input type="text" id="addRow_unlabeled_title" style="width: 120px;" /></div></td>
 			</tr>
 		<?php } ?>
 		</table>
@@ -830,7 +835,7 @@ function configureAddRow()
 				// find the last row of this type
 				$last_row = $DB->SingleQuery('SELECT * FROM post_row WHERE drawing_id='.$id.' AND row_type="'.Request('type').'" ORDER BY row_year DESC LIMIT 1');
 				$next_row = $last_row['row_year']+1;
-				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'), 'row_year'=>$next_row);
+				$row_data = array('drawing_id'=>$id, 'row_type'=>Request('type'), 'row_year'=>$next_row, 'title'=>Request('title'));
 				break;
 
 			case 'term':
