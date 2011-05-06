@@ -62,10 +62,14 @@ if( $id == "" ) {
 
 		if( Request('type') == 'cc' )
 		{
-			if($user_school['organization_type'] == 'Other')
-				$these_schools = GetAffiliatedSchools('CC');
-
-			$these_schools[$school_id] = $user_school['school_name'];
+			if(IsAdmin()) {
+				$these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
+			} else {
+				if($user_school['organization_type'] == 'Other')
+					$these_schools = GetAffiliatedSchools('CC');
+	
+				$these_schools[$school_id] = $user_school['school_name'];
+			}
 		}
 		else
 		{

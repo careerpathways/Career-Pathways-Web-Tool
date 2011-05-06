@@ -380,18 +380,18 @@ function ShowSchoolRowForm($school)
 				<td><div class="addRowText"><input type="text" id="addRow_prereq_title" style="width: 120px;" /></div></td>
 			</tr>
 			<tr>
+				<td><a href="javascript:void(0);" id="addRow_qtr" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
+				<td>
+					<div class="addRowText">Term: <?= GenerateSelectBox($quarters, 'addQtr') ?>
+				</td>
+			</tr>
+			<tr>
 				<td><a href="javascript:void(0);" id="addRow_term" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
 				<td>
 					<div class="addRowText">
 						Year: <?= GenerateSelectBox($years, 'addYear') ?><br />
 						Term: <?= GenerateSelectBox($terms, 'addTerm') ?>
 					</div>
-				</td>
-			</tr>
-			<tr>
-				<td><a href="javascript:void(0);" id="addRow_qtr" class="addRowLink"><?= SilkIcon('arrow_left.png') ?></a></td>
-				<td>
-					<div class="addRowText">Term: <?= GenerateSelectBox($quarters, 'addQtr') ?>
 				</td>
 			</tr>
 			<tr>

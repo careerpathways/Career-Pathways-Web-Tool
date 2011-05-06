@@ -748,15 +748,6 @@ class POSTChart_CC extends POSTChart
 		}
 		else
 		{
-			for( $i=1; $i<=8; $i++ )
-			{
-				$row = array();
-				$row['row_type'] = 'term';
-				$row['row_year'] = 0;
-				$row['row_term'] = '';
-				$row['row_qtr'] = $i;
-				$this->_rows[] = $row;
-			}
 			for( $i=1; $i<=6; $i++ )
 			{
 				$col = array();

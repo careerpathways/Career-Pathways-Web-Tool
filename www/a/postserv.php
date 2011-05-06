@@ -427,8 +427,10 @@ require_once("POSTChart.inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=footer&id=<?=$id?>",
-						data: {text: $("#postFormContent").val()
-						link: $("#postFormURL").val()},
+					data: {
+						text: $("#postFormContent").val(),
+						link: $("#postFormURL").val()
+					},
 					success: function(data){
 						$("#post_footer_<?=$id?>").html(data);
 						chGreybox.close();
