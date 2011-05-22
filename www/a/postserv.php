@@ -190,7 +190,7 @@ require_once("POSTChart.inc.php");
 			});
 
 			$("#postFormSave").click(function(){
-				var legendData = ''
+				var legendData = '';
 				$.each($(".post_legend_input"), function() {
 					if( $(this).val() == 1 ) {
 						var id = $(this).attr("id").split("_")[2];
@@ -201,7 +201,6 @@ require_once("POSTChart.inc.php");
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
 					data: { content: (tinyMCE.activeEditor.getContent()),
-							href: $("#postFormURL").val(),
 							legend: legendData
 					},
 					success: function(data){
@@ -524,7 +523,7 @@ require_once("POSTChart.inc.php");
 		// Decide if we are drawing a link or not
 		$href = $_POST['href'];
 		$link = FALSE;
-		if(isset($_POST['href']) && $_POST['href'] != '')
+		if(isset($_POST['href']) && $_POST['href'] != '' && $_POST['href'] != 'undefined')
 		{
 			$link = TRUE;
 			if(substr($href, 0, 7) != 'http://' && substr($href, 0, 8) != 'https://')
