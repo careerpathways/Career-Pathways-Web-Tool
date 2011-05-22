@@ -1,7 +1,8 @@
 <?php
 chdir("..");
 include("inc.php");
-include("recaptcha-php/recaptchalib.php");
+
+$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 
 RedirectSecure();
 
@@ -12,11 +13,7 @@ PrintHeader();
 
 if( PostRequest() ) {
 
-	$cap = recaptcha_check_answer( $SITE->recaptcha_privatekey(),
-									$_SERVER['REMOTE_ADDR'],
-									Request('recaptcha_challenge_field'),
-									Request('recaptcha_response_field') );
-	if( $cap->is_valid ) {
+	if( Request('ref') == 20 ) {
 
 		$check = $DB->SingleQuery('SELECT * FROM users WHERE email="'.Request('email').'"');
 		if( is_array($check) ) {
@@ -100,7 +97,7 @@ if( PostRequest() ) {
 		}
 
 	} else {
-		echo '<p>Sorry, the reCAPTCHA was not solved correctly. Go back and try again.</p>';
+		echo '<p>Sorry, there was an error. Go back and try again.</p>';
 	}
 
 
@@ -130,7 +127,7 @@ global $SITE;
 
 	?>
 
-	<form action="<?= $form_action; ?>" method="post">
+	<form action="<?= $form_action; ?>" method="post" id="theForm">
 	<table>
 	<tr>
 		<td colspan="2"><h1>New Account Request</h1><br></td>
@@ -171,18 +168,22 @@ global $SITE;
 			<input type="checkbox" name="referral[]" value="Other">Other: <input type="textbox" name="referral_other" size="20"> &nbsp;
 	</tr>
 	<tr>
-		<th>Anti-Spam*</th>
-		<td>(not case-sensitive)<br>
-			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
-		</td>
-	</tr>
-	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" value="Submit Application" class="submit"></td>
+		<td><input type="submit" value="Submit Application" class="submit" id="submitButton"></td>
 	</tr>
 	</table>
+	<input type="hidden" name="ref" id="ref" value="10" />
 	</form>
 	<br><br><br>
+
+	<script type="text/javascript">
+		$(function(){
+			$("#submitButton").click(function(){
+				$("#ref").val(20);
+				$("#theForm").submit();
+			});
+		});
+	</script>
 
 	<?php
 	echo str_repeat('<br>',20);
