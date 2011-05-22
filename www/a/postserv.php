@@ -521,7 +521,7 @@ require_once("POSTChart.inc.php");
 		global $DB;
 
 		// Decide if we are drawing a link or not
-		$href = $_POST['href'];
+		$href = array_key_exists('href', $_POST) ? $_POST['href'] : '';
 		$link = FALSE;
 		if(isset($_POST['href']) && $_POST['href'] != '' && $_POST['href'] != 'undefined')
 		{
