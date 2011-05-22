@@ -1,8 +1,8 @@
 <?php
 chdir("..");
 include("inc.php");
-include("recaptcha-php/recaptchalib.php");
 
+$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 
 // guest login:
 // provide a short survey to capture user information, then log them in
@@ -11,79 +11,74 @@ include("recaptcha-php/recaptchalib.php");
 
 if( PostRequest() ) {
 
-	$cap = recaptcha_check_answer( $SITE->recaptcha_privatekey(),
-									$_SERVER['REMOTE_ADDR'],
-									Request('recaptcha_challenge_field'),
-									Request('recaptcha_response_field') );
-	
-	if( $cap->is_valid ) 
-	{
-		$requiredFields = array('first_name', 'last_name', 'email', 'school');
-		
-		$valid = true;
-		foreach($requiredFields as $f)
-			if(Request($f) == false)
-				$valid = false;
-		
-		if(!$valid)
-		{
-			PrintHeader();
-			echo '<p>Please enter your name, email address and organization in order to log in.</p>';
-			PrintFooter();
-			die();
-		}
-		
-		if(Request('download') && Request('license') == FALSE)
-		{
-			PrintHeader();
-			echo '<p>You must agree to the license agreement before downloading the source code.</p>';
-			PrintFooter();
-			die();
-		}
-		
-		// log the info
-		$guest = array();
-		$guest['date'] = $DB->SQLDate();
-		$guest['first_name'] = Request('first_name');
-		$guest['last_name'] = Request('last_name');
-		$guest['email'] = Request('email');
-		$guest['school'] = Request('school');
-		$referral = '';
-		if(Request('referral'))
-		{
-			$referral = csl(Request('referral'));
-			if( in_array('Other',Request('referral')) ) {
-				$referral .= ' "'.Request('referral_other').'"';
-			}
-		}
-		$guest['referral'] = $referral;
-		$guest['ipaddr'] = $_SERVER['REMOTE_ADDR'];
-		
-		if(Request('download'))
-			$guest['download'] = 1;
-
-		$DB->Insert('guest_logins', $guest);						
-		
-	
-		$user = $DB->SingleQuery('SELECT * FROM users WHERE email="guest"');
-		$_SESSION['user_id'] = $user['id'];
-		$_SESSION['first_name'] = $user['first_name'];
-		$_SESSION['last_name'] = $user['last_name'];
-		$_SESSION['full_name'] = $user['first_name'].' '.$user['last_name'];
-		$_SESSION['email'] = $user['email'];
-		$_SESSION['user_level'] = $user['user_level'];
-		$_SESSION['school_id'] = $user['school_id'];
-
-		if(Request('download'))
-			header("Location: /p/licensing?download");
-		else
-			header("Location: /");
-		die();
-	} else {
+	if(Request('ref') != 20) {
 		PrintHeader();
-		echo '<p>Sorry, the reCAPTCHA was not solved correctly. Go back and try again.</p>';
+		echo '<p>Sorry there was an error.</p>';
 		PrintFooter();
+		die();
 	}
+
+	$requiredFields = array('first_name', 'last_name', 'email', 'school');
+	
+	$valid = true;
+	foreach($requiredFields as $f)
+		if(Request($f) == false)
+			$valid = false;
+	
+	if(!$valid)
+	{
+		PrintHeader();
+		echo '<p>Please enter your name, email address and organization in order to log in.</p>';
+		PrintFooter();
+		die();
+	}
+	
+	if(Request('download') && Request('license') == FALSE)
+	{
+		PrintHeader();
+		echo '<p>You must agree to the license agreement before downloading the source code.</p>';
+		PrintFooter();
+		die();
+	}
+	
+	// log the info
+	$guest = array();
+	$guest['date'] = $DB->SQLDate();
+	$guest['first_name'] = Request('first_name');
+	$guest['last_name'] = Request('last_name');
+	$guest['email'] = Request('email');
+	$guest['school'] = Request('school');
+	$referral = '';
+	if(Request('referral'))
+	{
+		$referral = csl(Request('referral'));
+		if( in_array('Other',Request('referral')) ) {
+			$referral .= ' "'.Request('referral_other').'"';
+		}
+	}
+	$guest['referral'] = $referral;
+	$guest['ipaddr'] = $_SERVER['REMOTE_ADDR'];
+	
+	if(Request('download'))
+		$guest['download'] = 1;
+
+	$DB->Insert('guest_logins', $guest);						
+	
+
+	$user = $DB->SingleQuery('SELECT * FROM users WHERE email="guest"');
+	$_SESSION['user_id'] = $user['id'];
+	$_SESSION['first_name'] = $user['first_name'];
+	$_SESSION['last_name'] = $user['last_name'];
+	$_SESSION['full_name'] = $user['first_name'].' '.$user['last_name'];
+	$_SESSION['email'] = $user['email'];
+	$_SESSION['user_level'] = $user['user_level'];
+	$_SESSION['school_id'] = $user['school_id'];
+
+	if(Request('download'))
+		header("Location: /p/licensing?download");
+	else
+		header("Location: /");
+	die();
 
 } else {
 
@@ -92,7 +87,7 @@ if( PostRequest() ) {
 
 	?>
 
-	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="theForm">
 	<table>
 	<tr>
 		<td colspan="2">
@@ -138,12 +133,6 @@ if( PostRequest() ) {
 			<input type="checkbox" name="referral[]" value="Web Conference" />Web Conference &nbsp;
 			<input type="checkbox" name="referral[]" value="Other" />Other: <input type="textbox" name="referral_other" size="20" /> &nbsp;
 	</tr>
-	<tr>
-		<th valign="top">Anti-Spam*</th>
-		<td>
-			<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
-		</td>
-	</tr>
 	<?php 
 	if(array_key_exists('download', $_GET))
 	{
@@ -164,11 +153,20 @@ if( PostRequest() ) {
 	?>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" value="Log In" class="submit"></td>
+		<td><input id="submitButton" type="button" value="Log In" class="submit"></td>
 	</tr>
 	</table>
+	<input type="hidden" name="ref" id="ref" value="10" />
 	</form>
 	<br><br><br>
+	<script type="text/javascript">
+		$(function(){
+			$("#submitButton").click(function(){
+				$("#ref").val(20);
+				$("#theForm").submit();
+			});
+		});
+	</script>
 
 	<?php
 	echo str_repeat('<br>',20);
