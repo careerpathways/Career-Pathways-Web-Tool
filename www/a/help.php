@@ -1,27 +1,23 @@
 <?php
 chdir("..");
 include("inc.php");
-include("recaptcha-php/recaptchalib.php");
 
 
 //ModuleInit('help');
 
+$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
+
 
 if( PostRequest() ) {
 
-	if( IsGuestUser() || !IsLoggedIn() ) {
-		$cap = recaptcha_check_answer( $SITE->recaptcha_privatekey(),
-										$_SERVER['REMOTE_ADDR'],
-										Request('recaptcha_challenge_field'),
-										Request('recaptcha_response_field') );
-		
-		if( !$cap->is_valid ) {
-			PrintHeader();
-			echo '<p>Sorry, the CAPTCHA was not solved correctly. Go back and try again.</p>';
-			PrintFooter();
-			die();
-		}
+	if(Request('ref') != 20) {
+		PrintHeader();
+		echo '<p>Sorry there was an error.</p>';
+		PrintFooter();
+		die();
+	}
 
+	if( IsGuestUser() || !IsLoggedIn() ) {
 		if( Request('message') == '' || Request('email') == '' || Request('name') == '' ) {
 			PrintHeader();
 			echo '<p>Please go back and fill out all the required fields.</p>';
@@ -131,7 +127,7 @@ http://oregon.ctepathways.org/....
 		echo '<p>Thank you, your message has been sent to ' . $SITE->email() . '. We will respond to your inquiry within one business day.<br><br>Pathways Web Tool User Support</p>';
 	} else {
 		?>
-		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+		<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="theForm">
 
 		<h1><?= $page_title ?></h1>
 		<?= $helptext ?>
@@ -175,21 +171,21 @@ http://oregon.ctepathways.org/....
 			<th valign="top">Message*</th>
 			<td><textarea style="width: 500px; height: 400px;" name="message"><?= $message ?></textarea></td>
 		</tr>
-		<?php if( IsGuestUser() || !IsLoggedIn() ) { ?>
-		<tr>
-			<th>Anti-Spam*</th>
-			<td>(not case-sensitive)<br>
-				<?= recaptcha_get_html($SITE->recaptcha_publickey(), '', true) ?>
-			</td>
-		</tr>
-		<?php } ?>
 		<tr>
 			<th>&nbsp;</th>
-			<td><input type="submit" class="submit" value="Submit" id="submitButton"></td>
+			<td><input type="button" class="submit" value="Submit" id="submitButton"></td>
 		</tr>
 		</table>
-
+		<input type="hidden" name="ref" id="ref" value="10" />
 		</form>
+		<script type="text/javascript">
+			$(function(){
+				$("#submitButton").click(function(){
+					$("#ref").val(20);
+					$("#theForm").submit();
+				});
+			});
+		</script>
 
 		<?php
 	}
