@@ -3,7 +3,7 @@
 	border: 0;
 }
 
-#tabshs ul, #tabscc ul {
+#tabshs ul.ui-tabs-nav, #tabscc ul.ui-tabs-nav {
 	display: none;
 }
 
