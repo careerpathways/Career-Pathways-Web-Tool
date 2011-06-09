@@ -641,7 +641,7 @@ class POSTChart_CC extends POSTChart
 		else
 		{
 			// Is there a link?
-			$link = ($cell->href != '');
+			$link = ($cell->href != '' && $cell->href != 'undefined');
 	
 			// Draw the item inside the post_cell
 			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?($cell->content):'') . ($link?'</a>':'');
