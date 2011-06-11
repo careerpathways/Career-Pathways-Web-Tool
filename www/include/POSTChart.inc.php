@@ -286,8 +286,8 @@ abstract class POSTChart
 			$post_row['row_year'] = ($row['row_year']?$row['row_year']:"");
 			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
 			$post_row['row_qtr'] = ($row['row_qtr']?$row['row_qtr']:"");
-			if($row['rowName'])
-				$post_row['title'] = $row['rowName'];
+			if($row['title'])
+				$post_row['title'] = $row['title'];
 			$post_row_id = $DB->Insert('post_row', $post_row);
 			$rowmap[$i] = $post_row_id;
 		}
