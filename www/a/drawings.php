@@ -363,7 +363,7 @@ function copyVersion($version_id) {
 		if( $copy_to !== 'same_school' )
 		$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		$newobj['content'] = serialize($obj);
-		$newobj['color'] = $obj['config']['color'];
+		$newobj['color'] = ($obj['config']['color'] ? $obj['config']['color'] : '333333');
 
 		$DB->Insert('objects',$newobj);
 	}

@@ -529,6 +529,8 @@ require_once("POSTChart.inc.php");
 			if(substr($href, 0, 7) != 'http://' && substr($href, 0, 8) != 'https://')
 				$href = 'http://' . $_POST['href'];
 		}
+		if(array_key_exists('href',$_POST) && $_POST['href'] == 'undefined')
+			$href = '';
 
 		$subject = (isset($_POST['subject']))?$_POST['subject']:'';
 		$number = (isset($_POST['number']))?$_POST['number']:'';

@@ -57,6 +57,7 @@ table.post_chart th {
 
 .post_cell ol, .post_cell ul {
 	text-align: left;
+	margin-left: -20px;
 }
 .post_cell_hover {
 	background-color: #FFFFAA !important;

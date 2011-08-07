@@ -286,8 +286,8 @@ abstract class POSTChart
 			$post_row['row_year'] = ($row['row_year']?$row['row_year']:"");
 			$post_row['row_term'] = ($row['row_term']?$row['row_term']:"");
 			$post_row['row_qtr'] = ($row['row_qtr']?$row['row_qtr']:"");
-			if($row['rowName'])
-				$post_row['title'] = $row['rowName'];
+			if($row['title'])
+				$post_row['title'] = $row['title'];
 			$post_row_id = $DB->Insert('post_row', $post_row);
 			$rowmap[$i] = $post_row_id;
 		}
@@ -641,7 +641,7 @@ class POSTChart_CC extends POSTChart
 		else
 		{
 			// Is there a link?
-			$link = ($cell->href != '');
+			$link = ($cell->href != '' && $cell->href != 'undefined');
 	
 			// Draw the item inside the post_cell
 			return ($link?'<a href="' . $cell->href . '" target="_blank">':'') . (($cell->content)?($cell->content):'') . ($link?'</a>':'');
