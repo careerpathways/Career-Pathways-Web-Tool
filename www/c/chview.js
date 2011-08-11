@@ -2,8 +2,8 @@ Charts = {
   whichi: function() { return 'view'; },
   draw: function(canvas_container, toolbar_container) {
 	// in IE 8, this has to happen BEFORE we use a canvas
-	if (/MSIE/.test(navigator.userAgent) && !window.opera && G_vmlCanvasManager) {
-		G_vmlCanvasManager.init_(document);
+	if (window.G_vmlCanvasManager) {
+		window.G_vmlCanvasManager.init_(document);
 	}
 		
     if (canvas_container) {
@@ -75,7 +75,7 @@ Charts = {
 		if (!Charts._realCanvas) {
 			Charts.canvas.id = Charts.element.id + '_canvas';
 			Charts.element.appendChild(Charts.canvas);
-			Charts.canvas = G_vmlCanvasManager.initElement(Charts.canvas);
+			Charts.canvas = window.G_vmlCanvasManager.initElement(Charts.canvas);
 		}
 		else {
 			Charts.element.appendChild(Charts.canvas);
