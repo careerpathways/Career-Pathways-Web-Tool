@@ -66,6 +66,7 @@ if( KeyInRequest('id') || Request('key') ) {
 
 		// get the school_id of the requested user
 		$school_id = $DB->GetValue('school_id','users', Request('id'));
+		if(!$school_id) $school_id = 0;
 		// check if the logged in user is affiliated with the requested user
 		$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $school_id);
 		if( $school_id != $_SESSION['school_id'] && $affiliation['num'] == 0) {
@@ -388,7 +389,7 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '<tr>';
 
 				if( !IsGuestUser() ) {
-					$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $u['school_id']);
+					$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . ($u['school_id'] ? $u['school_id'] : 0));
 					$edit_text = 'view';
 					if( $_SESSION['user_id'] == $u['id'] || IsAdmin()
 						|| IsWebmaster() &&
@@ -525,7 +526,7 @@ global $DB;
 		<td class="noborder">Organization:</td>
 		<td class="noborder">
 	<?php
-	$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . $user['school_id']);
+	$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . ($user['school_id'] ? $user['school_id'] : 0));
 	if( IsAdmin() || ((IsWebmaster() || IsSchoolAdmin()) && ($user['id'] == '' || $affiliation['num'])) ) { ?>
 			<?php
 				if( $user['school_id'] == 0 ) {
