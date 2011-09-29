@@ -26,15 +26,19 @@ if( Request('from_date') ) {
 					ORDER BY school_id) tmp
 		GROUP BY org_type, school_name WITH ROLLUP
 	');
-	$str = '<table width="300">';
-	foreach( $d as $org ) 
-	{
-		$str .= '<tr>';
-		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
-		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
-		$str .= '</tr>';
+	if(count($d) > 0) {
+		$str = '<table width="300">';
+		foreach( $d as $org ) 
+		{
+			$str .= '<tr>';
+			$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+			$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+			$str .= '</tr>';
+		}
+		$str .= '</table>';
+	} else {
+		$str = 'None';
 	}
-	$str .= '</table>';
 	$response['active_users'] = $str;
 	
 
@@ -44,19 +48,23 @@ if( Request('from_date') ) {
 		FROM (
 			SELECT DISTINCT(u.id) AS user_id, school_id, school_name, organization_type AS org_type
 			FROM users u
-			LEFT JOIN schools s ON u.school_id=s.id
+			JOIN schools s ON u.school_id=s.id
 			WHERE u.date_created >= "'.$from.'" AND u.date_created <= "'.$to.' 23:59:59"
 		) temp
 		GROUP BY org_type, school_name WITH ROLLUP');
-	$str = '<table width="300">';
-	foreach( $d as $org ) 
-	{
-		$str .= '<tr>';
-		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
-		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
-		$str .= '</tr>';
+	if(count($d) > 0) {
+		$str = '<table width="300">';
+		foreach( $d as $org ) 
+		{
+			$str .= '<tr>';
+			$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+			$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+			$str .= '</tr>';
+		}
+		$str .= '</table>';
+	} else {
+		$str = 'None';
 	}
-	$str .= '</table>';
 	$response['users_added'] = $str;
 
 
@@ -67,15 +75,19 @@ if( Request('from_date') ) {
 		WHERE date_created>="'.$from.'" AND date_created<="'.$to.' 23:59:59"
 		GROUP BY organization_type, school_name WITH ROLLUP
 		');
-	$str = '<table width="300">';
-	foreach( $d as $org ) 
-	{
-		$str .= '<tr>';
-		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['organization_type'] . ' Total</b>') . '</td>';
-		$str .= '<td width="30">' . ($org['school_name'] ? '' : '<b>' . $org['num'] . '</b>') . '</td>';
-		$str .= '</tr>';
+	if(count($d) > 0) {
+		$str = '<table width="300">';
+		foreach( $d as $org ) 
+		{
+			$str .= '<tr>';
+			$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['organization_type'] . ' Total</b>') . '</td>';
+			$str .= '<td width="30">' . ($org['school_name'] ? '' : '<b>' . $org['num'] . '</b>') . '</td>';
+			$str .= '</tr>';
+		}
+		$str .= '</table>';
+	} else {
+		$str = 'None';
 	}
-	$str .= '</table>';
 	$response['orgs_added'] = $str;
 
 
@@ -90,15 +102,19 @@ if( Request('from_date') ) {
 				AND school_name IS NOT NULL
 		) temp
 		GROUP BY org_type, school_name WITH ROLLUP');
-	$str = '<table width="300">';
-	foreach( $d as $org ) 
-	{
-		$str .= '<tr>';
-		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
-		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
-		$str .= '</tr>';
+	if(count($d) > 0) {
+		$str = '<table width="300">';
+		foreach( $d as $org ) 
+		{
+			$str .= '<tr>';
+			$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+			$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+			$str .= '</tr>';
+		}
+		$str .= '</table>';
+	} else {
+		$str = 'None';
 	}
-	$str .= '</table>';
 	$response['rdmp_added'] = $str;
 		
 	
@@ -113,15 +129,19 @@ if( Request('from_date') ) {
 				AND school_name IS NOT NULL
 		) temp
 		GROUP BY org_type, school_name WITH ROLLUP');
-	$str = '<table width="300">';
-	foreach( $d as $org ) 
-	{
-		$str .= '<tr>';
-		$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
-		$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
-		$str .= '</tr>';
+	if(count($d) > 0) {
+		$str = '<table width="300">';
+		foreach( $d as $org ) 
+		{
+			$str .= '<tr>';
+			$str .= '<td>' . ($org['school_name'] ? $org['school_name'] : '<b>' . $org['org_type'] . ' Total</b>') . '</td>';
+			$str .= '<td width="30">' . ($org['school_name'] ? $org['num'] : '<b>' . $org['num'] . '</b>') . '</td>';
+			$str .= '</tr>';
+		}
+		$str .= '</table>';
+	} else {
+		$str = 'None';
 	}
-	$str .= '</table>';
 	$response['post_added'] = $str;
 	
 
