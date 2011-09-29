@@ -1,4 +1,6 @@
 <?php
+define('AWS_KEY', 'AKIAJTYFFWRURSGGNJ5Q');
+define('AWS_SECRET_KEY', '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');
 
 class ThisSite extends SiteSettings {
 
@@ -11,9 +13,9 @@ class ThisSite extends SiteSettings {
 	
 	function name() { return "Career Pathways Web Tool"; }
 	function email_name() { return "Oregon CTE Pathways"; }
-	function email() { return "aaron@sivecki.com"; }
+	function email() { return "helpdesk@washingtoncareerpathways.org"; }
 
-	function recipient_email() { return "aaron@sivecki.com"; }
+	function recipient_email() { return "helpdesk@washingtoncareerpathways.org"; }
 
 	function __construct() {
 		$this->DBname = 'pathways_pierce';

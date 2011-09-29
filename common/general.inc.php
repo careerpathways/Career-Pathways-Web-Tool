@@ -67,11 +67,13 @@ function PrintFooter() {
 include("dborder.inc.php");
 $DBO = new DB_order($DB);
 
-class MyMailer extends PHPMailer {
+require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
+
+class MyMailer extends AmazonSESMailer {
 	var $From;
 	var $FromName;
-	var $Host = "mail.parecki.com";
-	var $Mailer = "smtp";
+	#var $Host = "mail.parecki.com";
+	var $Mailer = "amazonses";
 	var $WordWrap = 75;
 
 	function MyMailer() {
