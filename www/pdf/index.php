@@ -70,6 +70,8 @@ $name = preg_replace('/[^A-Za-z0-9 -]/', '', $name) . '.pdf';
 header('Content-type: application/pdf');
 header('Content-disposition: attachment; filename="' . addslashes($name) . '"');
 header('Cache-control: no-cache');
+header("X-Download-Options: noopen"); // For IE8
+header("X-Content-Type-Options: nosniff"); // For IE8
 if( function_exists('header_remove') ) {
 	header_remove('Pragma');
 } else {
