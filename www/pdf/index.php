@@ -72,10 +72,14 @@ header('Content-disposition: attachment; filename="' . addslashes($name) . '"');
 header('Cache-control: no-cache');
 header("X-Download-Options: noopen"); // For IE8
 header("X-Content-Type-Options: nosniff"); // For IE8
+/*
 if( function_exists('header_remove') ) {
 	header_remove('Pragma');
 } else {
 	header('Pragma:');
 }
+*/
+// added "Pragma: public" to fix downloads in IE 8 -aaronpk 12/6
+header('Pragma: public');
 readfile($fullPath);
 
