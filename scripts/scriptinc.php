@@ -7,7 +7,7 @@ array_pop($dir);
 $basedir = implode("/", $dir);
 
 chdir($basedir);
-set_include_path('.' . PATH_SEPARATOR . './www/include' . PATH_SEPARATOR . './common');
+set_include_path('.' . PATH_SEPARATOR . './www/include' . PATH_SEPARATOR . './common' . PATH_SEPARATOR . '/usr/share/pear');
 define("NOSESSION", true);
 include('inc.php');
 

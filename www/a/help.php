@@ -47,7 +47,7 @@ if( PostRequest() ) {
 		$content['message'] .= 'Email: '.Request('email')."\n";
 	}
 	if( Request('phone') ) {
-		$content['message'] .= 'Phone: '.Request('school')."\n";
+		$content['message'] .= 'Phone: '.Request('phone')."\n";
 	}
 	if( Request('school') ) {
 		$content['message'] .= 'School/Business: '.Request('school')."\n";

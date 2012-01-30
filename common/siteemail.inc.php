@@ -5,7 +5,7 @@ class SiteEmail extends MyMailer {
 	var $info;
 	var $vars = array();
 
-	function SiteEmail($email_id) {
+	function __construct($email_id) {
 	global $DB;
 		$this->info = $DB->SingleQuery('SELECT * FROM email_text WHERE id="'.$email_id.'"');
 		if( !array_key_exists('bcc',$this->info) ) {
@@ -18,6 +18,7 @@ class SiteEmail extends MyMailer {
 		$this->vars['WEBSITE_EMAIL'] = "";
 
 		$this->IsHTML(true);
+		parent::__construct();
 	}
 
 	function Assign($var, $content) {

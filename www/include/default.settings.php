@@ -1,4 +1,6 @@
 <?php
+define('AWS_KEY', 'AKIAJTYFFWRURSGGNJ5Q');
+define('AWS_SECRET_KEY', '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');
 
 class ThisSite extends SiteSettings {
 
@@ -13,7 +15,7 @@ class ThisSite extends SiteSettings {
 	function email_name() { return "Oregon CTE Pathways"; }
 	function email() { return "helpdesk@ctepathways.org"; }
 
-	function recipient_email() { return "info@ctepathways.org"; }
+	function recipient_email() { return "helpdesk@ctepathways.org"; }
 
 	function __construct() {
 		$this->DBname = 'pathways';

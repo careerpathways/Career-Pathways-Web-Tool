@@ -69,17 +69,19 @@ $DBO = new DB_order($DB);
 
 require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
 
-class MyMailer extends AmazonSESMailer {
+class MyMailer extends PHPMailerLite {
 	var $From;
 	var $FromName;
-	#var $Host = "mail.parecki.com";
-	var $Mailer = "amazonses";
+	var $Host = "mail.parecki.com";
+	#var $Mailer = "amazonses";
 	var $WordWrap = 75;
 
-	function MyMailer() {
+	function __construct() {
 	global $SITE;
 		$this->From = $SITE->email();
 		$this->FromName = $SITE->email_name();
+		#parent::__construct(AWS_KEY, AWS_SECRET_KEY);
+		parent::__construct();
 	}
 }
 
