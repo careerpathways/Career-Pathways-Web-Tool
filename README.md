@@ -4,6 +4,7 @@ Configure Apache
 ---
 
 Configure apache to serve files from the "www" folder in the project. This is usually accomplished with a VirtualHost definition like the following.
+
 ```
 <VirtualHost *:80>
 	ServerName test.ctepathways.org
@@ -27,6 +28,7 @@ Filesystem
 ---
 
 If it doesn't already exist, create a `cache` folder next to the `www` and `scripts` folders, and make it writable by apache.
+
 ```
 drwxr-xr-x  3 apache   apache    4096 2011-03-24 14:35 cache
 drwxr-xr-x  7 pathways pathways  4096 2011-03-24 14:15 common
