@@ -8,12 +8,10 @@ if(array_key_exists('download', $_GET))
 	PrintHeader();
 	?>
 	<div style="width: 600px;">	
-		<p>This zip file contains the source code to the Career Pathways Roadmap Web Tool.</p>
+		<p>You can find the source code to the Career Pathways Roadmap Web Tool on Github.</p>
 		
-		<p><a href="source/career-pathways-web-tool.zip">career-pathways-web-tool.zip</a> (5mb)</p>
+		<p><a href="https://github.com/careerpathways/Career-Pathways-Web-Tool">github.com/careerpathways/Career-Pathways-Web-Tool</a></p>
 	
-		<p>You can also browse the source code, see release note and change logs at <a href="http://cpwebtool.org/trac/browser/trunk">cpwebtool.org</a></p>
-
 		<?php printConsultingInfo()?>
 	</div>
 	<?php
@@ -99,8 +97,8 @@ function printConsultingInfo()
 
 <h3>Code Modification</h3>
 <p>According to <a href="license_agreement#section-3c">section 3 C</a> of the license agreement, you are required to provide a copy of any 
-modifications you make back to us. Please send us your changes to <a href="mailto:code@ctepathways.org">code@ctepathways.org</a> or contact
-us at this address to arrange other delivery options.</p>
+modifications you make back to us. Please <a href="https://github.com/careerpathways/Career-Pathways-Web-Tool">fork the code on Github</a> and send a pull request with your changes, or contact
+us at <a href="mailto:code@ctepathways.org">code@ctepathways.org</a> to arrange other delivery options.</p>
 <?php
 }
 
