@@ -25,6 +25,7 @@ function PrintStatsMenu()
 				<li><a href="/a/stats/editing_history.php">Editing History</a></li>
 				<li><a href="/a/stats/olmis_links.php">OLMIS Links</a></li>
 				<li><a href="/a/stats/olmis_not_linked.php">OLMIS - Unlinked Roadmaps</a></li>
+				<li><a href="/a/stats/post_reports.php">POST Reports</a></li>
 				<li><a href="/a/stats/broken_links.php">Broken Links</a></li>
 				<li><a href="/a/stats/traffic_logs.php">Traffic Logs</a></li>
 			</ul>
