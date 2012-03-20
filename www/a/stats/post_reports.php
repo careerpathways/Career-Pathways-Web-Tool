@@ -209,15 +209,16 @@ foreach($sections as $row) {
 echo '</table>';
 echo '</div>';
 
-$CCPostDrawingsInAView = $DB->SingleQuery('
-SELECT COUNT(1) AS num
+$CCPostDrawingsInAView = $DB->MultiQuery('
+SELECT dm.id
 FROM post_drawing_main dm
 JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
 JOIN schools s ON s.id = dm.school_id
 JOIN vpost_links ON vpost_links.post_id = dm.id
 WHERE s.organization_type = "CC"
+GROUP BY dm.id
 ');
-$CCPostDrawingsInAView = $CCPostDrawingsInAView['num'];
+$CCPostDrawingsInAView = count($CCPostDrawingsInAView);
 $CCPostDrawingsPublished = $DB->SingleQuery('
 SELECT COUNT(1) AS num
 FROM post_drawing_main dm
@@ -233,11 +234,10 @@ echo '<p>Included in a POST View: ' . $CCPostDrawingsInAView . '</b><br />';
 echo '</p>';
 # Provide a breakdown of how many published POST Drawings for each CC (such as Lane Community College, 20)
 $publishedCCDrawingsForSchools = $DB->MultiQuery('
-SELECT s.school_name, COUNT(dm.id) AS num_drawings, COUNT(vpost_links.id) AS num_views
+SELECT s.school_name, COUNT(dm.id) AS num_drawings
 FROM post_drawing_main dm
 JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
 JOIN schools s on dm.school_id = s.id AND s.organization_type = "CC"
-LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
 GROUP BY dm.school_id
 ORDER BY num_drawings DESC
 ');
@@ -246,13 +246,11 @@ echo '<table>';
 echo '<tr class="drawing_main">';
   echo '<th>School</th>';
   echo '<th>Published</th>';
-  echo '<th>Views</th>';
 echo '</tr>';
 foreach($publishedCCDrawingsForSchools as $row) {
   echo '<tr class="' . $trClass . '">';
     echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
     echo '<td>' . $row['num_drawings'] . '</td>';
-    echo '<td>' . $row['num_views'] . '</td>';
   echo '</tr>';
 }
 echo '</table>';
