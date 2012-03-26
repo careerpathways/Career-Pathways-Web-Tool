@@ -136,7 +136,8 @@ $sections = $DB->MultiQuery('
   SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
     u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name, 
     ds.school_name, ds.id AS school_id,
-    SUM(d.published) AS published
+    SUM(d.published) AS published,
+    COUNT(vpost_links.id) AS num_views
   FROM post_drawing_main dm
   JOIN post_drawings d ON dm.id = d.parent_id
   JOIN users u ON dm.created_by = u.id
@@ -151,6 +152,7 @@ $sections = $DB->MultiQuery('
 echo '<p>';
   echo '<b>Total: ' . count($sections) . '</b><br />';
   echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
+  echo '<b>In a POST View: ' . count(array_filter($sections, 'count_drawings_in_a_view')) . '</b>';
 echo '</p>';
 
 $trClass = new Cycler('row_light', 'row_dark');
