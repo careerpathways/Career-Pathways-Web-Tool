@@ -136,8 +136,7 @@ $sections = $DB->MultiQuery('
   SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
     u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name, 
     ds.school_name, ds.id AS school_id,
-    SUM(d.published) AS published,
-    COUNT(vpost_links.id) AS num_views
+    SUM(d.published) AS published
   FROM post_drawing_main dm
   JOIN post_drawings d ON dm.id = d.parent_id
   JOIN users u ON dm.created_by = u.id
@@ -152,7 +151,6 @@ $sections = $DB->MultiQuery('
 echo '<p>';
   echo '<b>Total: ' . count($sections) . '</b><br />';
   echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
-  echo '<b>In a POST View: ' . count(array_filter($sections, 'count_drawings_in_a_view')) . '</b>';
 echo '</p>';
 
 $trClass = new Cycler('row_light', 'row_dark');
@@ -160,7 +158,6 @@ echo '<table>';
 echo '<tr class="drawing_main">';
   echo '<th>Drawing</th>';
   echo '<th>Published</th>';
-  echo '<th>In Views</th>';
   echo '<th>Organization</th>';
   echo '<th>User</th>';
   echo '<th>Last Modified</th>';
@@ -169,7 +166,6 @@ foreach($sections as $row) {
   echo '<tr class="' . $trClass . '">';
     echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
     echo '<td>' . ($row['published'] ? 'Yes' : 'No') . '</td>';
-    echo '<td>' . $row['num_views'] . '</td>';
     echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
     echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
     echo '<td>' . $row['last_modified'] . '</td>';
@@ -215,8 +211,9 @@ FROM post_drawing_main dm
 JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
 JOIN schools s ON s.id = dm.school_id
 JOIN vpost_links ON vpost_links.post_id = dm.id
+JOIN vpost_views ON vpost_links.vid = vpost_views.id
 WHERE s.organization_type = "CC"
-GROUP BY dm.id
+GROUP BY vpost_views.id
 ');
 $CCPostDrawingsInAView = count($CCPostDrawingsInAView);
 $CCPostDrawingsPublished = $DB->SingleQuery('
@@ -230,7 +227,7 @@ $CCPostDrawingsPublished = $CCPostDrawingsPublished['num'];
 
 echo '<div class="section">';
 echo '<h3>There are ' . $CCPostDrawingsPublished . ' Published CC POST Drawings</h3>';
-echo '<p>Included in a POST View: ' . $CCPostDrawingsInAView . '</b><br />';
+echo '<p>POST Views with a published CC drawing: ' . $CCPostDrawingsInAView . '</b><br />';
 echo '</p>';
 # Provide a breakdown of how many published POST Drawings for each CC (such as Lane Community College, 20)
 $publishedCCDrawingsForSchools = $DB->MultiQuery('
@@ -258,49 +255,47 @@ echo '</div>';
 
 
 echo '<div class="section">';
+
 $num = $DB->SingleQuery('
-SELECT 
-(SELECT COUNT(1) AS num
+SELECT COUNT(1) AS num
 FROM post_drawing_main dm
 JOIN users u ON u.id = dm.created_by
 JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-) + (
+');
+$num_post_drawings = $num['num'];
+
+$num = $DB->SingleQuery('
 SELECT COUNT(1) AS num
 FROM vpost_views v
 JOIN users u ON u.id = v.created_by
 JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-) AS num
 ');
-$num = $num['num'];
-echo '<h3>' . $num . ' POST Drawings/Views have been created by an ESD (Other org)</h3>';
+$num_post_views = $num['num'];
+echo '<h3>' . $num_post_drawings . ' POST Drawings and ' . $num_post_views . ' POST Views have been created by an ESD (Other org)</h3>';
+
 
 echo '<div class="section">';
-echo '<h4>How many and for which HSs?</h4>';
+
+echo '<table width="100%"><tr>';
+echo '<td width="50%" valign="top">';
+echo '<h4>POST Drawings Created for HSs</h4>';
+
 $drawings = $DB->MultiQuery('
-SELECT school_name, school_id, COUNT(1) AS num
-FROM (
-  SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id
-    FROM post_drawing_main dm
-    JOIN users u ON u.id = dm.created_by
-    JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-    JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-  UNION
-  SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id
-    FROM vpost_views v
-    JOIN users u ON u.id = v.created_by
-    JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-    JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
-) tmp
+SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+  FROM post_drawing_main dm
+  JOIN users u ON u.id = dm.created_by
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
 GROUP BY school_id
 ORDER BY num DESC
 ');
-echo '<b>Total: ' . count($drawings) . '</b>';
+echo '<b>Total Schools: ' . count($drawings) . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
   echo '<table>';
   echo '<tr class="drawing_main">';
     echo '<th>School</th>';
-    echo '<th>Drawings/Views</th>';
+    echo '<th>Drawings</th>';
   echo '</tr>';
   foreach($drawings as $row) {
     echo '<tr class="' . $trClass . '">';
@@ -310,35 +305,27 @@ if(count($drawings) > 0) {
   }
   echo '</table>';
 }
-echo '</div>';
 
-echo '<div class="section">';
-echo '<h4>How many and for which CCs?</h4>';
+echo '</td>';
+echo '<td width="50%" valign="top">';
+echo '<h4>POST Views Created for HSs</h4>';
+
 $drawings = $DB->MultiQuery('
-SELECT school_name, school_id, COUNT(1) AS num
-FROM (
-  SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id
-    FROM post_drawing_main dm
-    JOIN users u ON u.id = dm.created_by
-    JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-    JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "CC"
-  UNION
-  SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id
-    FROM vpost_views v
-    JOIN users u ON u.id = v.created_by
-    JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-    JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
-) tmp
+SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+  FROM vpost_views v
+  JOIN users u ON u.id = v.created_by
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+  JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
 GROUP BY school_id
 ORDER BY num DESC
 ');
-echo '<b>Total: ' . count($drawings) . '</b>';
+echo '<b>Total Schools: ' . count($drawings) . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
   echo '<table>';
   echo '<tr class="drawing_main">';
     echo '<th>School</th>';
-    echo '<th>Drawings/Views</th>';
+    echo '<th>Views</th>';
   echo '</tr>';
   foreach($drawings as $row) {
     echo '<tr class="' . $trClass . '">';
@@ -348,14 +335,89 @@ if(count($drawings) > 0) {
   }
   echo '</table>';
 }
+
+echo '</tr></table>';
 echo '</div>';
+
+
+
+
+echo '<div class="section">';
+echo '<table width="100%"><tr>';
+echo '<td width="50%" valign="top">';
+echo '<h4>POST Drawings Created for CCs or Others</h4>';
+
+$drawings = $DB->MultiQuery('
+SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+  FROM post_drawing_main dm
+  JOIN users u ON u.id = dm.created_by
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type IN ("CC","Other")
+GROUP BY school_id
+ORDER BY num DESC
+');
+echo '<b>Total Schools: ' . count($drawings) . '</b>';
+if(count($drawings) > 0) {
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<table>';
+  echo '<tr class="drawing_main">';
+    echo '<th>School</th>';
+    echo '<th>Drawings</th>';
+  echo '</tr>';
+  foreach($drawings as $row) {
+    echo '<tr class="' . $trClass . '">';
+      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+      echo '<td>' . $row['num'] . '</td>';
+    echo '</tr>';
+  }
+  echo '</table>';
+}
+
+echo '</td>';
+echo '<td width="50%" valign="top">';
+echo '<h4>POST Views Created for CCs or Others</h4>';
+
+$drawings = $DB->MultiQuery('
+SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+  FROM vpost_views v
+  JOIN users u ON u.id = v.created_by
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+  JOIN schools ds ON ds.id = v.school_id AND ds.organization_type IN ("CC", "Other")
+GROUP BY school_id
+ORDER BY num DESC
+');
+echo '<b>Total Schools: ' . count($drawings) . '</b>';
+if(count($drawings) > 0) {
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<table>';
+  echo '<tr class="drawing_main">';
+    echo '<th>School</th>';
+    echo '<th>Views</th>';
+  echo '</tr>';
+  foreach($drawings as $row) {
+    echo '<tr class="' . $trClass . '">';
+      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+      echo '<td>' . $row['num'] . '</td>';
+    echo '</tr>';
+  }
+  echo '</table>';
+}
+
+echo '</tr></table>';
+echo '</div>';
+
+
+
+
+
 
 echo '<div class="section">';
 $esdPOSTViews = $DB->MultiQuery('
-  SELECT v.id, v.name, s.id AS school_id, s.school_name, CONCAT(u.first_name, " ", u.last_name) AS user_name, u.id AS user_id
+  SELECT v.id, v.name, vs.id AS school_id, vs.school_name, CONCAT(u.first_name, " ", u.last_name) AS user_name, u.id AS user_id
   FROM vpost_views v
   JOIN users u ON u.id = v.created_by
   JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+  JOIN schools vs ON vs.id = v.school_id
 ');
 echo '<h4>' . count($esdPOSTViews) . ' POST Views have been created by ESDs</h4>';
 $trClass = new Cycler('row_light', 'row_dark');
@@ -545,7 +607,7 @@ function getActiveUsers($type) {
   SELECT user_id, CONCAT(u.first_name, " ", u.last_name) AS name, school_name, SUM(num) AS num, MAX(last_activity) AS last_activity
     FROM 
       (SELECT last_modified_by AS user_id, COUNT(1) AS num, MAX(last_modified) AS last_activity
-        FROM post_drawings
+        FROM post_drawing_main
         WHERE last_modified > "' . $oldestActiveYear . '-01-01"
         GROUP BY last_modified_by
       UNION 
@@ -574,7 +636,7 @@ function getTopPOSTUsers() {
   SELECT user_id, CONCAT(u.first_name, " ", u.last_name) AS name, school_name, SUM(num) AS num, MAX(last_activity) AS last_activity
     FROM 
       (SELECT last_modified_by AS user_id, COUNT(1) AS num, MAX(last_modified) AS last_activity
-        FROM post_drawings
+        FROM post_drawing_main
         WHERE last_modified > "' . $oldestActiveYear . '-01-01"
         GROUP BY last_modified_by
       UNION 

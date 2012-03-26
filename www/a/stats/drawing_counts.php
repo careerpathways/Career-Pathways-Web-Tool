@@ -53,7 +53,7 @@ foreach( $tables as $t )
 	{
 		$snapshot = $DB->SingleQuery('SELECT *
 		FROM
-			(SELECT COUNT(*) AS published FROM post_drawings d JOIN post_drawing_main m ON d.parent_id=m.id WHERE published=1 AND type="' . $t['type'] . '") published_versions,
+			(SELECT COUNT(*) AS published FROM post_drawings d JOIN post_drawing_main m ON d.parent_id=m.id JOIN schools s ON s.id = m.school_id WHERE published=1 AND s.organization_type="' . $t['type'] . '") published_versions,
 			(SELECT COUNT(*) AS total_drawings FROM post_drawing_main WHERE type="' . $t['type'] . '") f,
 			(SELECT COUNT(*) AS total_versions FROM post_drawings d JOIN post_drawing_main m ON d.parent_id=m.id WHERE type="' . $t['type'] . '") e');
 		$versions = $DB->MultiQuery('SELECT IF(num_versions>7,8,num_versions) AS versions, COUNT(*) AS num_drawings FROM
