@@ -34,10 +34,6 @@ $numCCUsers = $numCCUsers['num'];
 
 
 
-echo '<h2>Active Users</h2>';
-# Looking for regular activity. Search for all 2011-2012 dates. Active means that they are doing more than just 
-# logging on, and that they are actually creating POST Drawings. Drawings that haven't been created or edited 
-# since 2009 shouldn't be counted. 
 echo '<h2>POST Reports - Active Users</h2>';
 # Looking for regular activity. Searches for current year, minus 2 calendar years. Active means that they are doing more
 # than just logging on, and that they are actually creating POST Drawings. Drawings that haven't been created or edited
@@ -45,8 +41,6 @@ echo '<h2>POST Reports - Active Users</h2>';
 
 $oldestActiveYear = date('Y') - 2;
 
-echo '<p><i>Active means that they are doing more than just logging on, and that they are actually creating POST Drawings. 
-Only drawings created or edited in ' . $oldestActiveYear . ' or after are counted.</i></p>';
 echo '<p><i>Active means that they are doing more than just logging on, and that they are actually creating POST Drawings. Only drawings created or edited in ' . $oldestActiveYear . ' or after are counted.</i></p>';
 
 # Active High School Users
@@ -75,7 +69,6 @@ foreach($activeHSUsers as $row) {
 }
 echo '</table>';
 echo '</div>';
-
 
 # Active Community College Users
 echo '<div class="section">';
@@ -132,7 +125,6 @@ echo '</table>';
 echo '</div>';
 
 
-
 # Development of POST Drawings
 echo '<br /><br />';
 echo '<h2>Development of POST Drawings</h2>';
@@ -157,6 +149,20 @@ $sections = $DB->MultiQuery('
   WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
   GROUP BY dm.id
   ORDER BY dm.last_modified DESC
+SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
+u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+ds.school_name, ds.id AS school_id,
+SUM(d.published) AS published,
+COUNT(vpost_links.id) AS num_views
+FROM post_drawing_main dm
+JOIN post_drawings d ON dm.id = d.parent_id
+JOIN users u ON dm.created_by = u.id
+JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
+JOIN schools ds ON ds.id = u.school_id
+LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
+WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+GROUP BY dm.id
+ORDER BY dm.last_modified DESC
 ');
 
 echo '<p>';
@@ -187,19 +193,8 @@ echo '</div>';
 
 # High School POST Drawing sections in POST Views
 echo '<div class="section">';
-echo '<h4>Of the published HS portions, how many have been included in POST Views? Which HSs?</h4>';
 echo '<h4>Of the published HS sections, how many have been included in a POST View? For which HSs?</h4>';
 $sections = $DB->MultiQuery('
-  SELECT ds.school_name, dm.name AS drawing_name, dm.id, COUNT(vpost_links.id) AS num_views, ds.id AS school_id
-  FROM post_drawing_main dm
-  JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
-  JOIN users u ON dm.created_by = u.id
-  JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
-  JOIN schools ds ON ds.id = u.school_id
-  JOIN vpost_links ON vpost_links.post_id = dm.id
-  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-  GROUP BY dm.id
-  ORDER BY ds.school_name
 ');
 
 $HSPostDrawingsInAView = $DB->MultiQuery('
@@ -243,7 +238,9 @@ echo '</div>';
 echo '<div class="section">';
 
 echo '<table width="100%"><tr>';
+echo '<td width="50%" valign="top">';
 echo '<h4>POST Drawings Created for HSs by a Community College</h4>';
+
 $sections = $DB->MultiQuery('
 SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name, 
 SUM(d.published) AS published,
@@ -378,7 +375,6 @@ ORDER BY num_drawings DESC
 $trClass = new Cycler('row_light', 'row_dark');
 echo '<table>';
 echo '<tr class="drawing_main">';
-  echo '<th>School</th>';
   echo '<th>Organization</th>';
   echo '<th>Published</th>';
 echo '</tr>';
@@ -390,7 +386,6 @@ foreach($publishedCCDrawingsForSchools as $row) {
 }
 echo '</table>';
 echo '</div>';
-
 
 # Breakdown of POST Drawings and POST Views created by an ESD
 echo '<div class="section">';
@@ -412,7 +407,6 @@ JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
 $num_post_views = $num['num'];
 echo '<h3>' . $num_post_drawings . ' POST Drawings and ' . $num_post_views . ' POST Views have been created by an ESD (Other org)</h3>';
 
-
 # HS POST Drawings created by an ESD
 echo '<div class="section">';
 
@@ -422,10 +416,6 @@ echo '<h4>POST Drawings Created for HSs</h4>';
 
 $drawings = $DB->MultiQuery('
 SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-  FROM post_drawing_main dm
-  JOIN users u ON u.id = dm.created_by
-  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
 GROUP BY school_id
 ORDER BY num DESC
 ');
@@ -465,10 +455,6 @@ echo '<h4>POST Views Created for HSs</h4>';
 
 $drawings = $DB->MultiQuery('
 SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-  FROM vpost_views v
-  JOIN users u ON u.id = v.created_by
-  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-  JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
 GROUP BY school_id
 ORDER BY num DESC
 ');
@@ -504,8 +490,6 @@ echo '</tr></table>';
 echo '</div>';
 
 
-
-
 # CC POST Drawings created by an ESD
 echo '<div class="section">';
 echo '<table width="100%"><tr>';
@@ -514,10 +498,6 @@ echo '<h4>POST Drawings Created for CCs or Others</h4>';
 
 $drawings = $DB->MultiQuery('
 SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-  FROM post_drawing_main dm
-  JOIN users u ON u.id = dm.created_by
-  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type IN ("CC","Other")
 GROUP BY school_id
 ORDER BY num DESC
 ');
@@ -557,10 +537,6 @@ echo '<h4>POST Views Created for CCs or Others</h4>';
 
 $drawings = $DB->MultiQuery('
 SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-  FROM vpost_views v
-  JOIN users u ON u.id = v.created_by
-  JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-  JOIN schools ds ON ds.id = v.school_id AND ds.organization_type IN ("CC", "Other")
 GROUP BY school_id
 ORDER BY num DESC
 ');
@@ -598,11 +574,6 @@ echo '</div>';
 # Total POST Views created by an ESD
 echo '<div class="section">';
 $esdPOSTViews = $DB->MultiQuery('
-  SELECT v.id, v.name, vs.id AS school_id, vs.school_name, CONCAT(u.first_name, " ", u.last_name) AS user_name, u.id AS user_id
-  FROM vpost_views v
-  JOIN users u ON u.id = v.created_by
-  JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-  JOIN schools vs ON vs.id = v.school_id
 ');
 echo '<h4>' . count($esdPOSTViews) . ' POST Views have been created by ESDs</h4>';
 $trClass = new Cycler('row_light', 'row_dark');
@@ -628,8 +599,6 @@ echo '</div>';
 echo '<div class="section">';
 $emptyPOSTViews = $DB->MultiQuery('
 SELECT v.id, v.name, v.last_modified,
-	s.id AS school_id, s.school_name,
-	u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
 FROM vpost_views v
 LEFT JOIN vpost_links l ON l.vid = v.id
 JOIN schools s ON v.school_id = s.id
@@ -664,6 +633,8 @@ $testPOSTViews = $DB->MultiQuery('
 SELECT v.id, v.name, v.last_modified,
 	s.id AS school_id, s.school_name,
 	u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
+s.id AS school_id, s.school_name,
+u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
 FROM vpost_views v
 JOIN schools s ON v.school_id = s.id
 JOIN users u ON v.created_by = u.id
@@ -696,8 +667,6 @@ echo '<div class="section">';
 echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
 $postViews = $DB->MultiQuery('
 SELECT v.id, v.name, v.last_modified,
-	s.id AS school_id, s.school_name,
-	u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
 FROM vpost_views v
 JOIN vpost_links l ON v.id = l.vid
 JOIN schools s ON v.school_id = s.id
@@ -708,15 +677,6 @@ ORDER BY v.last_modified DESC
 $fullPOSTViews = array();
 foreach($postViews as $row) {
   $numTypes = $DB->MultiQuery('
-    SELECT organization_type, COUNT(1) AS num_types
-    FROM vpost_links l
-    JOIN post_drawing_main dm ON l.post_id = dm.id
-    JOIN schools s ON s.id = dm.school_id
-    WHERE vid = ' . $row['id'] . '
-    AND organization_type IN ("HS","CC")
-    GROUP BY organization_type
-  ');
-  if(count($numTypes) == 2){  
     // Skip rows that don't have both CC and HS drawings
     $row['num_types'] = count($numTypes);
     $fullPOSTViews[] = $row;
@@ -756,11 +716,7 @@ echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedd
 
 $embedded = $DB->MultiQuery('
 SELECT s.id AS school_id, s.school_name, COUNT(tmp.id) AS num
-FROM 
 (SELECT e.id, e.drawing_id
-  FROM external_links e
-  WHERE e.`type` = "post"
-  GROUP BY e.drawing_id
 ) tmp
 JOIN vpost_views v ON v.id = tmp.drawing_id
 JOIN schools s ON s.id = v.school_id
