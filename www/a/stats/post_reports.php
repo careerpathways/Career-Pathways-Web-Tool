@@ -560,7 +560,7 @@ SELECT COUNT(1) AS num
 FROM vpost_views v
 JOIN users u ON u.id = v.created_by
 JOIN schools s ON us.id = u.school_id AND us.organization_type = "Other"
-JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
+JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
 ');
 $num_post_CCviews = $numCCviews['num'];
 
