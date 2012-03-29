@@ -242,8 +242,9 @@ echo '<h4>POST Drawings Created for HSs by a Community College</h4>';
 $sections = $DB->MultiQuery('
 SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name, 
 SUM(d.published) AS published,
-COUNT(vpost_links.id) AS num_views
+COUNT(1) AS num_views
 FROM post_drawing_main dm
+JOIN post_drawings d ON dm.id = d.parent_id
 JOIN users u ON u.id = dm.created_by
 JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
 JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
@@ -426,7 +427,7 @@ $numHSdwgs = $DB->SingleQuery('
 SELECT COUNT(1) AS num
 FROM post_drawing_main dm
 JOIN users u ON u.id = dm.created_by
-JOIN schools s ON us.id = u.school_id AND us.organization_type = "Other"
+JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
 JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
 ');
 $num_post_HSdwgs = $numHSdwgs['num'];
@@ -469,7 +470,7 @@ $numHSviews = $DB->SingleQuery('
 SELECT COUNT(1) AS num
 FROM vpost_views v
 JOIN users u ON u.id = v.created_by
-JOIN schools s ON us.id = u.school_id AND us.organization_type = "Other"
+JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
 JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
 ');
 $num_post_HSviews = $numHSviews['num'];
@@ -559,7 +560,7 @@ $numCCviews = $DB->SingleQuery('
 SELECT COUNT(1) AS num
 FROM vpost_views v
 JOIN users u ON u.id = v.created_by
-JOIN schools s ON us.id = u.school_id AND us.organization_type = "Other"
+JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
 JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
 ');
 $num_post_CCviews = $numCCviews['num'];
