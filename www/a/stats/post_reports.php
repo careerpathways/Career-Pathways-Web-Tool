@@ -432,7 +432,7 @@ JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
 ');
 $num_post_HSdwgs = $numHSdwgs['num'];
 
-echo '<b>Total High Schools: ' . count($drawings) . '</b>';
+echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
 echo '<b>Total Drawings: ' . $num_post_HSdwgs . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
@@ -475,7 +475,7 @@ JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
 ');
 $num_post_HSviews = $numHSviews['num'];
 
-echo '<b>Total High Schools: ' . count($drawings) . '</b>';
+echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
 echo '<b>Total Views: ' . $num_post_HSviews . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
@@ -522,8 +522,8 @@ JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "CC"
 ');
 $num_post_CCdwgs = $numCCdwgs['num'];
 
-echo '<b>Total Organizations: ' . count($drawings) . '</b>';
-echo '<b>Total Drawings: ' . $num_post_HSdwgs . '</b>';
+echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
+echo '<b>Total Drawings: ' . $num_post_CCdwgs . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
   echo '<table>';
@@ -565,7 +565,7 @@ JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
 ');
 $num_post_CCviews = $numCCviews['num'];
 
-echo '<b>Total Organizations: ' . count($drawings) . '</b>';
+echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
 echo '<b>Total Views: ' . $num_post_CCviews . '</b>';
 if(count($drawings) > 0) {
   $trClass = new Cycler('row_light', 'row_dark');
