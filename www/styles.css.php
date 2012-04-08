@@ -408,7 +408,7 @@ a.edit:hover, a.edit:visited:hover {
 
 #main {
 	position: absolute;
-	top: 74px;
+	top: 75px;
 	left: 180px;
 	margin-right: 30px;
 }
