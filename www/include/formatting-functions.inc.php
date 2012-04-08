@@ -164,17 +164,17 @@ function ShowBrowserNotice()
 	$browser = $_SERVER['HTTP_USER_AGENT'];
 	$notice = '';
 
-	if( preg_match('~Firefox/(1|2)~', $browser) )
-		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the <a href=\"http://www.mozilla.com/firefox/\">latest version of Firefox</a> in order to have full access to the web tool.";
+	if( preg_match('~Firefox/(10|9)~', $browser) )
+		$notice = "You appear to be using an old version of Firefox. We recommend you upgrade to the <a href=\"http://www.mozilla.com/firefox/\">latest version of Firefox</a> or <a href=\"https://www.google.com/chrome\">Google Chrome</a> in order to have full access to the Web Tool.";
 
 	if( preg_match('~Firefox~', $browser) == 0 )
-		$notice = "We recommend using <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> for the best experience with the web tool.";
+		$notice = "We recommend using <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> or <a href=\"https://www.google.com/chrome\">Google Chrome</a> for the best experience with the Web Tool.";
 
 	if( preg_match('~MSIE (6|5)~', $browser) )
-		$notice = "Internet Explorer 6 is not supported by this website. Most features should work, but you may experience glitches. To avoid this, we recommend using the latest version of <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> or <a href=\"http://www.microsoft.com/windows/Internet-explorer/default.aspx\">Internet Explorer</a>";
+		$notice = "Internet Explorer 6 is not supported by this website. Most features should work, but you may experience glitches. To avoid this, we recommend using the latest version of <a href=\"http://www.mozilla.com/firefox/\">Firefox</a>, <a href=\"http://www.microsoft.com/windows/Internet-explorer/default.aspx\">Internet Explorer</a>, or <a href=\"https://www.google.com/chrome\">Google Chrome</a>.";
 
 	if( preg_match('~MSIE 7~', $browser) )
-		$notice = "You appear to be using Internet Explorer. We recommend you use <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> for the best experience with the web tool.";
+		$notice = "You appear to be using Internet Explorer. We recommend you use <a href=\"http://www.mozilla.com/firefox/\">Firefox</a> or <a href=\"https://www.google.com/chrome\">Google Chrome</a> for the best experience with the Web Tool.";
 
 	if( $notice != '' )
 	{
