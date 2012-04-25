@@ -87,6 +87,10 @@ if( PostRequest() ) {
 		</table>
 
 		<br><br><br><br><br><br><br><br><br>
+		
+		<b>Formatting Help</b>
+		<br>
+		<em>Resource pages are formatted with wiki syntax: </em> <a href="/a/formatting.php">click here for tips and techniques</a> 
 
 		<?php
 		PrintFooter();
