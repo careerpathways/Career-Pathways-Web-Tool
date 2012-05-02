@@ -43,7 +43,7 @@ if( KeyInRequest('id') ) {
 				$content = $DB->MultiQuery('SELECT content
 					FROM objects
 					WHERE drawing_id = ' . $d['id'] . '
-					AND (content LIKE "%http://%qualityinfo.org%" OR content LIKE "%http://%olmis.emp.state.or.us%")');
+					AND (content LIKE "%http://%qualityinfo.org%" OR content LIKE "%http://%olmis.org%" OR content LIKE "%http://%olmis.emp.state.or.us%")');
 				foreach( $content as $c )
 				{
 					$soc = array_merge($soc, SearchForOLMISLinks($c['content']));
