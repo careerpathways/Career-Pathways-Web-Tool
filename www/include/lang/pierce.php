@@ -1,6 +1,6 @@
 <?php 
 class Localize_Strings extends Localize
-{
+{	
 	public function __construct()
 	{
 		$this->add('drawing head post 1', 'PROGRAM');
