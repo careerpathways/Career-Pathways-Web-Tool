@@ -151,12 +151,6 @@ class ThisSiteTemplate extends SiteTemplate {
 		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.0/build/menu/menu-min.js"></script>
 		
 		<?php
-	    header("Content-type: text/javascript");
-		include('include/googleTracking.js');
-		}
-		?>
-
-		<?php
 		if( $this->is_chart_page ) {
 			//echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
 			echo '<script type="text/javascript" src="/common/tinymce/tiny_mce.js"></script>'."\n";
@@ -170,6 +164,23 @@ class ThisSiteTemplate extends SiteTemplate {
 		{
 			echo '<script type="text/javascript" src="' . $js. '"></script>'."\n";
 		}
+		
+		?>
+	
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', "<?=l('google analytics drawings')?>"]);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		
+		</script>
+		<?php
 
 	}
 
