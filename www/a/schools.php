@@ -126,14 +126,9 @@ if( KeyInRequest('id') ) {
 	
 				$users = $DB->SingleQuery("SELECT COUNT(*) AS num FROM users WHERE school_id=".$s['id']." AND user_active=1");
 				echo '<td>'.($users['num']==0?'&nbsp;':$users['num']).'</td>';
-
-+				//JGD: Added POST Drawing count to total Drawing count in Configure Organizations page
-+				$postDrawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawing_main WHERE school_id=".$s['id']."");	
+	
 				$drawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main WHERE school_id=".$s['id']."");
-				$drawingsNum = $drawings['num'] + $postDrawings['num'];
-				
-				//JGD: replaced this line with whats shown below --> echo '<td>'.($drawings['num']==0?'&nbsp;':$drawings['num']).'</td>';
-				echo '<td>'.($drawingsNum==0?'&nbsp;':$drawingsNum).'</td>';
+				echo '<td>'.($drawings['num']==0?'&nbsp;':$drawings['num']).'</td>';
 	
 				echo '<td>';
 	
