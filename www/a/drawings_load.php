@@ -116,10 +116,12 @@ switch( Request('mode') ) {
 			$school_ids = implode('","', array_filter(explode(',',Request('school_id')), 'is_numeric'));
 			$org_types = strtoupper(implode('","', array_filter(explode(',',Request('school_id')), 'is_not_numeric')));
 			
+			//JGD Add user_active condition
 			$sql = 'SELECT users.id, CONCAT(first_name," ",last_name) AS name
 					FROM users
 					JOIN schools ON users.school_id = schools.id
 					WHERE ' . (strlen($school_ids)>0 ? 'school_id IN ("'.$school_ids.'")' : 'organization_type IN ("'.$org_types.'")' ) . '
+					AND user_active=1
 					ORDER BY last_name, first_name';
 			$people_school = $DB->VerticalQuery($sql,'name','id');
 			$people = $people_school;
@@ -131,9 +133,11 @@ switch( Request('mode') ) {
 
 		} elseif( Request('categories')=="" && Request('school_id')=="" ) {
 			// if neither search is requested, return all people
+			//JGD Add user_active condition
 			$people = $DB->VerticalQuery("
 				SELECT id, CONCAT(first_name,' ',last_name) AS name
 				FROM users
+				WHERE user_active=1
 				ORDER BY last_name, first_name"
 			,'name','id');
 		}
