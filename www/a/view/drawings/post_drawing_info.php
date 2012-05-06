@@ -81,10 +81,19 @@ if( $id == "" ) {
 				
 		}
 
-		if(count($these_schools) == 1)
+		// REPLACED THIS CODE BELOW --> if(count($these_schools) == 1)
+		//JGD: I don't know how this happens, but I ran into a case where these_schools only had one entry, but it didn't match the school id.
+		//JGD: So I show the selection box if that is the case. Not sure if that's the perfect solution...
+		//logmsg( "school_id: $school_id\n" );
+		//logmsg( "these_schools: ".varDumpString($these_schools)."\n" );
+		if( (count($these_schools) == 1) && (isset($these_schools[$school_id])) )
+		{
 			echo '<b>'.$these_schools[$school_id].'</b>';
+		}
 		else
+		{
 			echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
+		}
 
 	?>
 	</td>
