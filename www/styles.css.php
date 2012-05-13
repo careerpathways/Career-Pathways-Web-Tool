@@ -233,43 +233,44 @@ vertical-align: top;
 
 td.form
 {
-  background-color:#FFFFFF;
+border: 0px #<?= $GREY; ?> solid;
+padding:5px;
+background-color:#<?= $WHITE; ?>;
 }
 
 td.list
 {
-  font-size:8pt;
-  border: 0px;
-  padding:2px;
-  padding-right:20px;
+font-size:8pt;
+border: 0px;
+padding:2px;
+padding-right:20px;
 }
 
 
 td.head
 {
-  border: 1px #<?= $GREY; ?> solid;
-  background-color:#<?= $LT_GREY ?>;
-  color:#000000;
-  padding:5px;
-  font-weight:bold;
+border: 1px #<?= $GREY; ?> solid;
+background-color:#<?= $LT_GREY ?>;
+color:#<?= $BLACK; ?>;
+padding:5px;
+font-weight:bold;
 }
 
 td.multidate
 {
-  padding: 2px;
+padding: 2px;
 }
 
-textarea.code 
+textarea.code
 {
-	font-family: courier new, courier, sans-serif;
+font-family: courier new, courier, sans-serif;
 }
 
 
-.row0 { 
-	background-color: #DDDDDD;
+.row0 {
+background-color: #<?= $XL_GREY; ?>;
 }
 .row1 {
-	background-color: #FFFFFF;
 }
 
 tr.drawing_main {
