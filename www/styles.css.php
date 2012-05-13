@@ -195,46 +195,44 @@ color:#<?= $WHITE; ?>;
 
 table.template
 {
-  border: 1px #FFFFFF solid;
-  border-collapse: collapse;
-  border-spacing: 0px;
+border: 1px #<?= $WHITE; ?> solid;
+border-collapse: collapse;
+border-spacing: 0px;
 }
 
 table
 {
-  border-spacing: 0px;
-  border-collapse: collapse;
+border-spacing: 0px;
+border-collapse: collapse;
 }
 
 td.noborder
 {
-  border: 0px;
+border: 0px;
 }
 
 td
 {
-  border: 0px;
-  font-size:8pt;
+border: 0px;
+font-size:8pt;
 }
 
 td.border, table.bordered td, table.bordered th
 {
-  border: 1px #<?= $GREY; ?> solid;
-  padding:3px;
+border: 1px #<?= $GREY; ?> solid;
+padding:3px;
 }
 
 th
 {
-  font-weight:bold;
-  color:#<?= $BLUE; ?>;
-  text-align: left;
-  vertical-align: top;
+font-weight:bold;
+color:#<?= $D_BLUE; ?>;
+text-align: left;
+vertical-align: top;
 }
 
 td.form
 {
-  border: 0px #<?= $GREY; ?> solid;
-  padding:5px;
   background-color:#FFFFFF;
 }
 
