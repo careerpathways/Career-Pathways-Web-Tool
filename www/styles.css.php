@@ -311,45 +311,45 @@ color:#<?= $D_GREY; ?>;
 
 a.edit, a.edit:visited {
 font-weight:normal;
+color:#<?= $D_GREY; ?>;
+text-decoration: none;
 }
 
 a.edit:hover, a.edit:visited:hover {
-	color: #777777;
+color: #<?= $MD_GREY; ?>;
 }
 
 
 .publish_link, .publish_link_inactive {
-	text-decoration: none;
-	font-size: 14pt;
-	padding: 3px;
+text-decoration: none;
+font-size: 14pt;
+padding: 3px;
 }
 
 .publish_link {
-	border: 1px #<?= $D_GOLD ?> solid;
-	background-color: #<?= $L_GOLD ?>;
+border: 1px #<?= $GREEN ?> solid;
+background-color: #<?= $L_GREEN ?>;
 }
 .publish_link_inactive {
-	border: 1px #666666 solid;
-	background-color: #<?= $LT_GREY ?>;
-	color: #666666;
+border: 1px #<?= $XD_GREY ?> solid;
+background-color: #<?= $LT_GREY ?>;
+color: #<?= $XD_GREY ?>;
 }
 
 .error {
-	color: red;
+color: #<?= $RED ?>;
 }
 
 
 
 
 #header {
-	height:61px;
-	background-color: white;
+height:61px;
+background-color: #<?= $WHITE; ?>;
 }
 
 #topbar {
-	background-color: #444444;
-	width: 100%;
-	text-align: right;
+background-color: #<?= $G_BLUE ?>;
 }
 #topbar_inside {
 	color: white;
