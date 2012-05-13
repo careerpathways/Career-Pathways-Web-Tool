@@ -509,126 +509,82 @@ padding: 5px;
 }
 
 #module_name {
-	color: #<?= $BLACK ?>;
-	background-color: #<?= $GOLD ?>;
-	font-size: 19px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-left: 5px;
-	letter-spacing: 3px;
+color: #<?= $BLACK ?>;
+background-color: #<?= $GREEN ?>;
+font-size: 19px;
+padding-top: 2px;
+padding-bottom: 2px;
+padding-left: 5px;
+letter-spacing: 3px;
 }
 
 
 
 #title_value, .drawing_title
 {
-  color: #<?= $D_GREY ?>;
+color: #<?= $D_GREY ?>;
 }
-.version_title
-{
-  font-size: 13pt;
-  color: #<?= $D_GOLD ?>;
+.drawinglist_name {
+font-size: 1.2em;
+}
+#drawing_list a {
+text-decoration: none;
 }
 
+.version_title
+{
+font-size: 13pt;
+color: #<?= $G_BLUE ?>;
+}
+
+.version_list_published {
+background-color: #<?= $L_GREEN ?>;
+}
 
 
 .crosshair area {
-	cursor: crosshair;
+cursor: crosshair;
 }
 
 
 .row_light {
-	background-color: #FFFFFF;
+background-color: #<?= $WHITE; ?>;
 }
 .row_dark {
-	background-color: #e4e4e4;
+background-color: #<?= $XXL_GREY; ?>;
 }
 .row_hilite {
-	background-color: #FFFFBB;
+background-color: #<?= $YELLOW; ?>;
 }
 
 
 .table_title {
-	font-size: 11pt;
-	color: #<?= $D_GOLD ?>;
-	font-weight: bold;
+font-size: 11pt;
+color: #<?= $D_BLUE ?>;
+font-weight: bold;
 }
 
 .header_cell {
-	font-weight: bold;
+font-weight: bold;
 }
 .header_cell, .content_cell {
-	border: 1px #CCCCCC solid;
+border: 1px  #<?= $LT_GREY; ?> solid;
 }
 .user_table {
-	margin-bottom: 20px;
+margin-bottom: 20px;
 }
 
 a.chart_header {
-	text-decoration: none;
-}
-
-#toolbar, #helpbar, #infobar, #resourcebar {
-	background: url("/images/navbox-br.gif") bottom right;
-	background-repeat: no-repeat;	
-	background-color: #<?= $GOLD ?>;
-	width: 170px;
-}
-#toolbar, #helpbar, #infobar, #resourcebar, #navbox {
-	margin-bottom: 20px;
-}
-
-#toolbar_header, #helpbar_header, #infobar_header, #resourcebar_header {
-	background-repeat: no-repeat;
-	background-color: #<?= $D_GOLD ?>;
-	height: 30px;
-}
-#toolbar_header {
-	background-image: url("/images/toolbar-head.gif");
-}
-#helpbar_header {
-	background-image: url("/images/helpbar-head.gif");
-}
-#infobar_header {
-	background-image: url("/images/infobar-head.gif");
-}
-#resourcebar_header {
-	background-image: url("/images/resources-head.gif");
-}
-
-#toolbar_content, #helpbar_content, #infobar_content {
-	margin: 10px;
-	padding-bottom: 10px;
-}
-
-#toolbar a.toolbarButton {
-	text-decoration: none;	
-	display: block;
-	padding: 5px;
-	margin: 2px;
-	border: 1px #<?= $D_GOLD ?> solid; 
-}
-#toolbar a.publish:hover {
-	background-color: white;	
-	color: black;
-}
-
-#helpbar p {
-	margin-top: 6px;
-	margin-bottom: 6px;
-}
-
-#helpbar a {
-	text-decoration: none;
+text-decoration: none;
 }
 
 #drawing_canvas {
-	background: url('/c/grid.png');
-	position: absolute;
-	left: 180px;
-	top:74px;
-	height: 1200px;
-	width: 1600px;
+background: url('/c/grid.png');
+position: absolute;
+left: 180px;
+top:74.5px;
+height: 1200px;
+width: 1600px;
 }
 
 #search_box {
