@@ -457,7 +457,7 @@ $j(document).ready(function(){
 	});
 
 	$j("#search_olmis").click(function(){
-		$j("#olmis_search").html('Please wait while we search your drawing for OLMIS links. This may take a while depending on how many versions of your drawing exist.<br /><img src="/images/horiz-gold.gif" />');
+		$j("#olmis_search").html('Please wait while we search your drawing for OLMIS links. This may take a while depending on how many versions of your drawing exist.<br /><img src="/images/horiz-green.gif" />');
 		$j.post("/a/drawings_post.php",
 			{id: '<?=intval($drawing['id'])?>',
 			 action: "olmis",

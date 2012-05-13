@@ -38,7 +38,7 @@ var categories = "<?= $categories ?>";
 var loaded_with_search_value = "";
 
 function load_data(selectbox, search) {
-	jQuery("#"+selectbox).siblings(".ajaxloader").append('<img src="/images/cf9d2b_loader.gif" />');
+	jQuery("#"+selectbox).siblings(".ajaxloader").append('<img src="/images/859fba_loader.gif" />');
 	var url = "/a/drawings_load.php?mode="+selectbox+"&"+search+'&type='+MODE;
 	ajaxCallback(load_cb, url);
 }
@@ -113,7 +113,7 @@ function selectDefaultsGrp() {
 function init() {
 	var url = "/a/drawings_load.php?mode=list_schools&selectdefault&type="+MODE;
 
-	jQuery(".ajaxloader").append('<img src="/images/cf9d2b_loader.gif" />');
+	jQuery(".ajaxloader").append('<img src="/images/859fba_loader.gif" />');
 
 	if(getLayer('search_box').value != ""){
 		loaded_with_search_value = getLayer('search_box').value;
