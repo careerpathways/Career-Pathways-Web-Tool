@@ -271,47 +271,46 @@ font-family: courier new, courier, sans-serif;
 background-color: #<?= $XL_GREY; ?>;
 }
 .row1 {
+background-color: #<?= $WHITE; ?>;
 }
 
 tr.drawing_main {
-    background-color: #<?= $GOLD ?>;
+background-color: #<?= $GREEN ?>;
 }
 tr.published {
-	background-color: #<?= $L_GOLD ?>;
+background-color: #<?= $L_GREEN ?>;
 }
 
 
 .linkhead
 {
-  font-size:11pt;
-  color:#<?= $GREY; ?>;
-  font-weight:bold;
+font-size:11pt;
+color:#<?= $GREY; ?>;
+font-weight:bold;
 }
 
 .linksubhead
 {
-  font-size:8pt;
-  color:#<?= $BLUE; ?>;
-  font-weight:bold;
-  text-decoration: none;
+font-size:8pt;
+color:#<?= $D_BLUE; ?>;
+font-weight:bold;
+text-decoration: none;
 }
 
 a.linksubhead
 {
-  color:#<?= $BLUE; ?>;
+color:#<?= $D_BLUE; ?>;
 }
 
 a.linksubhead:hover
 {
-  color:#<?= $D_GREY; ?>;
+color:#<?= $D_GREY; ?>;
 }
 
 
 
 a.edit, a.edit:visited {
-  font-weight:normal;
-  color:#<?= $D_GREY; ?>;
-  text-decoration: none;
+font-weight:normal;
 }
 
 a.edit:hover, a.edit:visited:hover {
