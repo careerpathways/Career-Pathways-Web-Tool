@@ -34,7 +34,6 @@ margin: 0px;
 }
 
 #sandbox_border {
-	height: 15px;
 position: fixed;
 width: 100%;
 background: url(/images/sandbox.gif) repeat-x;
@@ -45,33 +44,33 @@ height: 15px;
 
 h1
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 13pt;
-  color:#<?= $D_GREY; ?>;
-  margin: 0px;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 13pt;
+color:#<?= $D_BLUE; ?>;
+margin: 0px;
 }
 
 h2
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 13pt;
-  color:#<?= $D_GOLD; ?>;
-  margin: 0px;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 13pt;
+color:#<?= $D_BLUE; ?>;
+margin: 0px;
 }
 .h2
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 13pt;
-  color:#<?= $D_GOLD; ?>;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 13pt;
+color:#<?= $D_BLUE; ?>;
 }
 
 
 h3
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 10pt;
-  color:#<?= $D_GREY; ?>;
-  margin-bottom: 2px;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 10pt;
+color:#<?= $D_GREY; ?>;
+margin-bottom: 2px;
 }
 
 h4
