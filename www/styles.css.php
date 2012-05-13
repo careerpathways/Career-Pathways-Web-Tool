@@ -710,6 +710,7 @@ margin-bottom: 4px;
 
 #live_lists .live_list {
 overflow:auto;
+border: 1px #<?= $G_BLUE ?> solid;
 }
 
 #live_lists .ajaxloader {
@@ -772,229 +773,222 @@ height: 600px;
 }
 
 #copyPopup {
-	background-color: #ffffff;
-	width: 400px;
-	height: 300px;
-	margin-left: auto;
-	margin-right: auto;
+background-color: #<?= $WHITE; ?>;
+width: 400px;
+height: 300px;
+margin-left: auto;
+margin-right: auto;
 }
 
 #copyPopup iframe {
-	width: 400px;
-	height: 300px;
-}
-
-.drawinglist_name {
-	font-size: 1.2em;
-}
-#drawing_list a {
-	text-decoration: none;
+width: 400px;
+height: 300px;
 }
 
 .fwfont {
-  font-family: lucida console, monaco;
-  font-size: 8pt;
-  white-space: pre;
+font-family: lucida console, monaco;
+font-size: 8pt;
+white-space: pre;
 }
 
 
 #greybox {
-	position: absolute;
-	z-index: 1000;
-	top: 0px;
-	left: 0px;
-	background: url("/images/greybox-overlay.png");
+position: absolute;
+z-index: 1000;
+top: 0px;
+left: 0px;
+background: url("/images/greybox-overlay.png");
 
 }
 
 #greybox table {
-	border-collapse: collapse;	
+border-collapse: collapse;
 }
 #greybox td {
-	border: 0px;
-	margin: 0px;
-	padding: 0px;
+border: 0px;
+margin: 0px;
+padding: 0px;
 }
 
 #greybox_inset {
-	margin-left: auto;
-	margin-right: auto;
+margin-left: auto;
+margin-right: auto;
 }
 
 #greybox_container {
-	background-color: #<?= $GOLD ?>;
+background-color: #<?= $GREEN ?>;
 }
 
 #greybox_bottom {
-	height: 30px;	
+height: 30px;
 }
 
 #greybox_bottomleft {
-	background-color: #<?= $GOLD ?>;
+background-color: #<?= $GREEN ?>;
 }
 
 #greybox_bottomright {
-	background: url("/images/greybox-corner.png") bottom right;
-	background-repeat: no-repeat;	
-	height: 30px;
-	width: 30px;
+background: url("/images/greybox-corner.png") bottom right;
+background-repeat: no-repeat;
+height: 30px;
+width: 30px;
 }
 
 #greybox_clear {
-	clear: both;	
+clear: both;
 }
 
 #greybox_xbutton {
-	text-align: right;
-	margin-right: 15px;
+text-align: right;
+margin-right: 15px;
 }
 
 #greybox_xbutton a {
-	font-size: 18pt;
-	text-decoration: none;
+font-size: 18pt;
+text-decoration: none;
 }
 
 #greybox_contents {
-  margin-left: 15px;
-  margin-right: 15px;
-  background-color: white;
+margin-left: 15px;
+margin-right: 15px;
+background-color: #<?= $WHITE; ?>;
 }
 
 
 
 #search_form {
-	margin-bottom: 5px;
+margin-bottom: 5px;
 }
 #search_form input.submit {
-	font-size:9px;
+font-size:9px;
 }
 
 
 #my_drawings_link {
-	text-align:right;
+text-align:right;
 }
 #my_drawings_link a {
-	border: 1px #<?= $GOLD ?> solid;
-	padding: 2px;
-	background-color: #<?= $D_GOLD ?>;
-	color: #FFFFFF;
+border: 1px #<?= $GREEN ?> solid;
+padding: 2px;
+background-color: #<?= $GREEN ?>;
+color: #<?= $WHITE; ?>;
 }
 #my_drawings_link a:hover {
-	color: #<?= $GOLD ?>;
+color: #<?= $L_GREEN ?>;
 }
 
 
 
 .login_button {
-	border: 1px #000000 solid;
-	background-color: #<?= $D_GOLD ?>;
-	padding-top: 3px;
-	padding-bottom: 2px;
-	padding-right: 8px;
-	padding-left: 8px;
+border: 1px #<?= $BLACK; ?> solid;
+background-color: #<?= $GREEN ?>;
+padding-top: 3px;
+padding-bottom: 2px;
+padding-right: 8px;
+padding-left: 8px;
 }
 
 .login_button a {
-	color: white;
-	text-decoration: none;
-	font-size: 11px;
+color: #<?= $WHITE; ?>;
+text-decoration: none;
+font-size: 11px;
 }
 
 .login_button a, .login_button a:hover,.login_button a:visited, .login_button a:visited:hover {
-	color: white;
+color: #<?= $WHITE; ?>;
 }
 
 .button_link {
-	padding-top: 3px;
-	padding-bottom: 2px;
-	padding-right: 8px;
-	padding-left: 8px;
-	border: 1px #<?= $GREY ?> solid;
-	background-color: #<?= $D_GREY ?>;
+padding-top: 3px;
+padding-bottom: 2px;
+padding-right: 8px;
+padding-left: 8px;
+border: 1px #<?= $GREY ?> solid;
+background-color: #<?= $D_GREY ?>;
 }
 .button_link a, .button_link a:hover {
-	color: white;
-	text-decoration: none;
+color: #<?= $WHITE; ?>;
+text-decoration: none;
 }
 
 
 
 .pager_links {
-	border-top: 1px #<?= $GOLD ?> dashed;
-	border-bottom: 1px #<?= $GOLD ?> dashed;
+border-top: 1px #<?= $GREEN ?> dashed;
+border-bottom: 1px #<?= $GREEN ?> dashed;
 }
 .pager_links a {
-	text-decoration: none;
+text-decoration: none;
 }
 .pager_links .active {
-	color: #<?=$D_GOLD?>;
+color: #<?=$GREEN ?>;
 }
 
 
 .percent_bar {
-	border: 1px #<?=$D_GOLD?> solid;
-	height: 13px;
+border: 1px #<?=$GREEN ?> solid;
+height: 13px;
 }
 
 .percent_inside {
-	background-color: #<?= $GOLD ?>;
-	height: 13px;
+background-color: #<?= $L_GREEN ?>;
+height: 13px;
 }
 
 .log_scrollbox {
-	overflow:auto; 
-	border: 1px #cf9d2b solid;
+overflow:auto;
+border: 1px #<?= $GREEN ?> solid;
 }
 
 
 #browserNotice {
-    width: 250px;
-	float: right;
-	margin-bottom: 20px;
-	padding: 6px;
-	border: 4px #CC6666 solid;
+width: 250px;
+float: right;
+margin-bottom: 20px;
+padding: 6px;
+border: 4px #<?= $D_RED ?> solid;
 }
 
 
 #dash_links {
-	width: 200px;
-	border: 1px #<?= $D_GOLD ?> solid;
-	float: right;
+width: 200px;
+border: 1px #<?= $G_BLUE ?> solid;
+float: right;
 }
 #dash_links_title {
-	background-color: #<?= $D_GOLD ?>;
-	text-align: center;
-	text-transform: uppercase;
-	color: white;
-	font-weight: bold;
-	padding-bottom: 2px;
+background-color: #<?= $G_BLUE ?>;
+text-align: center;
+text-transform: uppercase;
+color: #<?= $WHITE; ?>;
+font-weight: bold;
+padding-bottom: 2px;
 }
 #dash_links ul {
-	list-style-type: none;
-	margin: 0px;
-	padding: 0px;
+list-style-type: none;
+margin: 0px;
+padding: 0px;
 }
 #dash_links li {
-	background-color: #efefef;
-	margin-top: 10px;
-	text-align: center;
+background-color: #<?= $XXL_GREY ?>;
+margin-top: 10px;
+text-align: center;
 }
 #dash_links a {
-	text-decoration: none;
-	font-size: 10pt;
-	display: block;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	color: black;
+text-decoration: none;
+font-size: 10pt;
+display: block;
+padding-top: 8px;
+padding-bottom: 8px;
+color: #<?= $BLACK; ?>;
 }
 #dash_links a:hover {
-	background-color: #<?= $GOLD ?>;
-	color: black;
+background-color: #<?= $L_GREEN ?>;
+color: #<?= $BLACK; ?>;
 }
 
 
 .dlist_link {
-  margin-right: 10px;
+margin-right: 10px;
 }
 
 
@@ -1002,141 +996,141 @@ height: 600px;
 
 .post_mini_full
 {
-  background-color: #CCCCCC;
+background-color: #<?= $LT_GREY ?>;
 }
-.post_chart_mini 
+.post_chart_mini
 {
-  width: 300px;
+width: 300px;
 }
 .post_chart_mini td, .post_chart_mini th
 {
-  border: 1px #999999 solid !important;
+border: 1px #<?= $GREY ?> solid !important;
 }
 .post_chart_mini .post_head_row
 {
-  width: 14px;
-  text-align: center;
-  font-size: 8px;
+width: 14px;
+text-align: center;
+font-size: 8px;
 }
 .post_chart_mini .post_cell
 {
-  height: 24px;
+height: 24px;
 }
 .post_chart_mini .post_head_main, .post_chart_mini .post_footer
 {
-  height: 5px;
+height: 5px;
 }
 .post_chart_mini .post_sidebar_left, .post_chart_mini .post_sidebar_right
 {
-  width: 2px;
+width: 2px;
 }
 
 .post_large_number
 {
-  font-size: 11pt;
+font-size: 11pt;
 }
 
 .post_import_preview input {
-  margin-bottom: 6px;
+margin-bottom: 6px;
 }
 .post_import_preview .hr {
-  margin-bottom: 20px;
-  padding-top: 10px;
-  border-bottom: 1px #<?= $D_GREY ?> solid;
+margin-bottom: 20px;
+padding-top: 10px;
+border-bottom: 1px #<?= $D_GREY ?> solid;
 }
-ol.import_instructions 
+ol.import_instructions
 {
-  list-style-type: none;
-  margin: 0 auto 30px auto;
-  padding: 0;
-  width: 500px;
+list-style-type: none;
+margin: 0 auto 30px auto;
+padding: 0;
+width: 500px;
 }
 ol.import_instructions > li
 {
-  margin: 0;
-  padding: 15px 0 15px 40px;
+margin: 0;
+padding: 15px 0 15px 40px;
 }
 
 .import_instructions li.l1 {
-  background: url(/images/numbers/01.png) left no-repeat;
+background: url(/images/numbers/01.png) left no-repeat;
 }
 .import_instructions li.l2 {
-  background: url(/images/numbers/02.png) left no-repeat;
+background: url(/images/numbers/02.png) left no-repeat;
 }
 .import_instructions li.l3 {
-  background: url(/images/numbers/03.png) left no-repeat;
+background: url(/images/numbers/03.png) left no-repeat;
 }
 .import_instructions li.l4 {
-  background: url(/images/numbers/04.png) left no-repeat;
+background: url(/images/numbers/04.png) left no-repeat;
 }
 
 .drawing_select_hover {
-  background-color: #FFFFAA;
+background-color: #<?= $YELLOW ?>;
 }
 
 #connectionForm #submit_btn {
-  border: 1px #999999 solid;
-  background-color: #<?= $D_GOLD ?>;
-  font-size: 13pt;
-  width: 70px;
-  text-align: center;
-  margin-left: auto;
-  margin-right: 0;
-  margin-top: 4px;
+border: 1px #<?= $GREY ?> solid;
+background-color: #<?= $G_BLUE ?>;
+font-size: 13pt;
+width: 70px;
+text-align: center;
+margin-left: auto;
+margin-right: 0;
+margin-top: 4px;
 }
 #connectionForm #submit_btn:hover {
-  cursor: pointer;
+cursor: pointer;
 }
 
 #drawing_form #num_columns, #drawing_form #num_terms, #drawing_form #num_extra_rows
 {
-  width: 50px;
+width: 50px;
 }
 
 tr.editable, tr.even {
-	background-color:#<?=$L_GOLD?>;
+background-color:#<?=$L_GREEN?>;
 }
 
 /* stats page */
 .olmis_title {
-  margin-top: 8px;
-  font-size: 1.2em;
+margin-top: 8px;
+font-size: 1.2em;
 }
 .olmis_roadmap {
-  margin-left: 30px;
+margin-left: 30px;
 }
 
 .drawing_schoolname {
-    background-color: #<?= $BLUE ?>;
-	color: white;
+background-color: #<?= $D_BLUE ?>;
+color: #<?= $WHITE; ?>;
 }
 .drawinglist_schoolname {
-	font-size: 1.2em;
-	font-weight: bold;	
-	padding: 4px;
+font-size: 1.2em;
+font-weight: bold;
+padding: 4px;
 }
 
 
 .trim {
-	overflow: hidden;
-	white-space: nowrap;
+overflow: hidden;
+white-space: nowrap;
 }
 .external_links .trim {
-	width: 600px;
+width: 600px;
 }
 .external_links .make_primary {
-	cursor: pointer; 
-	width: 16px; 
-	height: 16px; 
+cursor: pointer;
+width: 16px;
+height: 16px;
 }
 .external_links .make_primary {
-	background: url(/common/silk/link_go.png) no-repeat -16px 0;
+background: url(/common/silk/link_go.png) no-repeat -16px 0;
 }
 .external_links .make_primary.primary {
-	background: url(/common/silk/link_break.png) no-repeat 0 0;
+background: url(/common/silk/link_break.png) no-repeat 0 0;
 }
 .external_link.primary {
-	background-color:#<?=$L_GOLD?>;
+background-color:#<?=$L_GREEN?>;
 }
 
 
