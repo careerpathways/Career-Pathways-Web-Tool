@@ -75,43 +75,43 @@ margin-bottom: 2px;
 
 h4
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 10pt;
-  color:#<?= $GREY; ?>;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 10pt;
+color:#<?= $GREY; ?>;
 }
 
 a, a:visited {
-  color:#<?= $D_BLUE; ?>;
+color:#<?= $D_GREEN; ?>;
 }
 a:hover, a:visited:hover {
-  color:#<?= $GREY; ?>;
+color:#<?= $GREY; ?>;
 }
 
 a.noline {
-	text-decoration: none;
+text-decoration: none;
 }
 
 
 hr
 {
-  border-top: 1px #<?= $D_GREY ?> solid;
-  border-left: 0px;
-  border-right: 0px;
-  border-bottom: 0px;
-  padding-bottom: 5px;
-  margin: 0px;
-  margin-top: 5px;
+border-top: 1px #<?= $D_GREY ?> solid;
+border-left: 0px;
+border-right: 0px;
+border-bottom: 0px;
+padding-bottom: 5px;
+margin: 0px;
+margin-top: 5px;
 }
 
 img {
-  border-width:0px;
+border-width:0px;
 }
 
 input
 {
-  font-family:verdana, arial, sans-serif;
-  font-size:8pt;
-  border:1px #<?= $GREY ?> solid;
+font-family:verdana, arial, sans-serif;
+font-size:8pt;
+border:1px #<?= $GREY ?> solid;
 }
 input.submit
 {
