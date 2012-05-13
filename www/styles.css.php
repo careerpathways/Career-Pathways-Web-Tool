@@ -115,38 +115,38 @@ border:1px #<?= $GREY ?> solid;
 }
 input.submit
 {
-  background-color:#<?= $D_GREY ?>;
-  color:#FFFFFF;
+background-color:#<?= $D_GREY ?>;
+color:#<?= $WHITE; ?>;
 }
 input.submit_disabled
 {
-  background-color:#666666;
-  color:#CCCCCC;
+background-color:#<?= $XD_GREY; ?>;
+color:#<?= $LT_GREY; ?>;
 }
 input.submit, input.submit_disabled {
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 1px;
-  padding-bottom: 1px;
+padding-left: 4px;
+padding-right: 4px;
+padding-top: 1px;
+padding-bottom: 1px;
 }
 input.checkbox, input.radio
 {
-  border-style:none;
-  border-width:0px;
+border-style:none;
+border-width:0px;
 }
 input.image
 {
-  border-style:none;
-  border-width:0px;
+border-style:none;
+border-width:0px;
 }
 
 textarea
 {
-  font-family:verdana, arial, sans-serif;
-  font-size:8pt;
-  border-style:solid;
-  border-width:1px;
-  border-color:#<?= $GREY ?>;
+font-family:verdana, arial, sans-serif;
+font-size:8pt;
+border-style:solid;
+border-width:1px;
+border-color:#<?= $GREY ?>;
 }
 
 select
