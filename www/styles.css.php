@@ -350,25 +350,28 @@ background-color: #<?= $WHITE; ?>;
 
 #topbar {
 background-color: #<?= $G_BLUE ?>;
+width: 100%;
+text-align: right;
 }
 #topbar_inside {
-	color: white;
-	padding-right: 30px;
+color: #<?= $WHITE; ?>;
+padding-right: 30px;
 
 }
 #topbar a {
-	text-decoration: none;
-	color: white;
+text-decoration: none;
+color: #<?= $WHITE; ?>;
 }
 #topbar a:hover {
-	color: #<?= $GOLD ?>;
+color: #<?= $D_BLUE ?>;
 }
 
 #navbox {
-	background: url("/images/navbox-br.gif") bottom right;
-	background-repeat: no-repeat;	
-	background-color: #<?= $GOLD ?>;
-	width: 170px;
+background: url("/images/navbox-br.gif") bottom right;
+background-repeat: no-repeat;
+background-color: #<?= $GREEN ?>;
+width: 170px;
+font-size: 8pt;
 }
 
 .links
@@ -377,14 +380,14 @@ background-color: #<?= $G_BLUE ?>;
 }
 
 .links ul {
-	margin: 0px;
-	padding: 0px;
-	list-style-type: none;
-	padding-top: 20px;
+margin: 0px;
+padding: 0px;
+list-style-type: none;
+padding-top: 20px;
 }
 
 .links ul li {
-	padding-bottom: 4px;
+padding-bottom: 4px;
 }
 
 .links a {
