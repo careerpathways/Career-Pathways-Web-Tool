@@ -151,46 +151,46 @@ border-color:#<?= $GREY ?>;
 
 select
 {
-  font-family:verdana, arial, sans-serif;
-  font-size:8pt;
-  border-style:solid;
-  border-width:1px;
-  border-color:#<?= $GREY ?>;
+font-family:verdana, arial, sans-serif;
+font-size:8pt;
+border-style:solid;
+border-width:1px;
+border-color:#<?= $GREY ?>;
 }
 
 .border, iframe {
-  border:1px #<?= $GREY ?> solid;
+border:1px #<?= $GREY ?> solid;
 }
 
 .small
 {
-  font-size:8pt;
+font-size:8pt;
 }
 
 .tiny {
-  font-size:9px;	
+font-size:9px;
 }
 
 .indent {
-	margin-left: 30px;
+margin-left: 30px;
 }
 .smallindent {
-	margin-left: 10px;
+margin-left: 10px;
 }
 
 .navtext
 {
-  padding-left:28px;
+padding-left:28px;
 }
 
 .grey {
-	color: #999999;
+color: #<?= $GREY; ?>;
 }
 
 
 .index
 {
-  color:#FFFFFF;
+color:#<?= $WHITE; ?>;
 }
 
 table.template
