@@ -588,193 +588,187 @@ width: 1600px;
 }
 
 #search_box {
-  background: url(/common/silk/find.png) left no-repeat;
-  padding-left: 16px;
+background: url(/common/silk/find.png) left no-repeat;
+padding-left: 16px;
 }
 
 .school_color_box {
-	height:40px;
-	width:40px;
-	text-align:right;
+height:40px;
+width:40px;
+text-align:right;
 }
 
 .school_color_box_mini, .school_color_box_small {
-	margin-right: 2px;
-	float:left;
+margin-right: 2px;
+float:left;
 }
 
 .school_color_box_mini {
-	height:12px;
-	width:12px;
+height:12px;
+width:12px;
 }
 .school_color_box_small {
-	height:24px;
-	width:24px;
+height:24px;
+width:24px;
 }
 
 .school_color_grp {
-	display: none;
+display: none;
 }
 
 
 .school_color_x {
-	background-color:white;
-	padding-left:2px;
-	padding-right:2px;
-	padding-bottom: 1px;
-	text-decoration: none;
+background-color:#<?= $WHITE; ?>;
+padding-left:2px;
+padding-right:2px;
+padding-bottom: 1px;
+text-decoration: none;
 }
 
 
 #hiddenContainer {
-	display: none;
+display: none;
 }
 
 
 .news_header {
-	font-size: 13px;
-	font-weight: bold;
-	color: #<?= $D_GOLD ?>;
-	letter-spacing: 2px;
-	border-bottom: 1px #<?= $D_GREY ?> solid;
+font-size: 14px;
+font-weight: bold;
+color: #<?= $D_BLUE ?>;
+letter-spacing: 2px;
+border-bottom: 1px #<?= $D_GREY ?> solid;
 }
 
 .red {
-	color: #<?= $RED ?>;
+color: #<?= $RED ?>;
 }
 
 .news_date {
-	text-align: right;
-	letter-spacing: 1px;
-	font-size: 10px;
+text-align: right;
+letter-spacing: 1px;
+font-size: 10px;
 }
 
 #helplink {
-	text-align: right;
-	margin-right: 30px;
-	font-size: 9px;
+text-align: right;
+margin-right: 30px;
+font-size: 9px;
 }
 #helplink a {
-	text-decoration: none;
-	color: #999999;
+text-decoration: none;
+color: #<?= $GREY ?>;
 }
 #helplink a:hover {
-	color: #AAAAAA;
+color: #<?= $LT_GREY ?>;
 }
-
-.version_list_published {
-	background-color: #<?= $L_GOLD ?>;
-}
-
 
 .imglinkadjust {
-	margin-bottom: 5px;	
+margin-bottom: 5px;
 }
 
 
 @media print {
-	#toolbar, #helpbar, #infobar, #navbox {
-		display: none;
-	}
-	#main {
-		position: relative;
-		top: 0px;
-		left: 0px;	
-	}
-	#main-c {
-		border: 0px;
-		width: 100%;	
-		min-width: 100%;
-	}
+#toolbar, #helpbar, #infobar, #navbox {
+display: none;
+}
+#main {
+position: relative;
+top: 0px;
+left: 0px;
+}
+#main-c {
+border: 0px;
+width: 100%;
+min-width: 100%;
+}
 }
 
 .editorWindow #mceBox {
-	width: 600px;
-	height: 300px;
-	margin-left: auto;
-	margin-right: auto;
+width: 600px;
+height: 300px;
+margin-left: auto;
+margin-right: auto;
 }
 
 .editorWindow .fckOK {
-	background-color: #<?= $L_GOLD ?>;
-	border: 1px #<?= $D_GOLD ?> solid;
-	padding: 4px;
-	text-align: center;
-	width: 70px;
-	margin-top: 3px;
-	margin-left: auto;
-	margin-right: auto;
+background-color: #<?= $L_GREEN ?>;
+border: 1px #<?= $GREEN ?> solid;
+padding: 4px;
+text-align: center;
+width: 70px;
+margin-top: 3px;
+margin-left: auto;
+margin-right: auto;
 }
 
 
 #live_lists {
-	width: 100%;
-	border: 1px #<?= $D_GOLD ?> solid;
-	margin-bottom: 4px;
+width: 100%;
+border: 1px #<?= $G_BLUE ?> solid;
+margin-bottom: 4px;
 }
 
 #live_lists .live_list {
-	overflow:auto;
-	border: 1px #<?= $D_GOLD ?> solid;
+overflow:auto;
 }
 
 #live_lists .ajaxloader {
-	float: right;
-	width: 16px;
-	height: 16px;
+float: right;
+width: 16px;
+height: 16px;
 }
 
 #live_lists .title {
-	display: block;
-	background-color: #<?= $D_GOLD ?>;
-	padding: 2px;
-	font-weight: bold;
-	color: #FFFFFF;
-	margin-bottom: 4px;
+display: block;
+background-color: #<?= $G_BLUE ?>;
+padding: 2px;
+font-weight: bold;
+color: #<?= $WHITE; ?>;
+margin-bottom: 4px;
 }
 
 #live_lists ul {
-	list-style-type: none;
-	margin: 0px;
-	padding: 0px;
+list-style-type: none;
+margin: 0px;
+padding: 0px;
 }
 
 #live_lists ul li {
-	margin: 0px;
-	padding: 0px;
+margin: 0px;
+padding: 0px;
 }
 
 #live_lists .odd {
-	background-color: #eeeeee;
+background-color: #<?= $XXL_GREY ?>;
 }
 
 #live_lists ul li a {
-	text-decoration: none;
-	display: block;
-	padding-left: 16px;
-	color: black;
+text-decoration: none;
+display: block;
+padding-left: 16px;
+color: #<?= $BLACK; ?>;
 }
 
 #live_lists ul li a:hover {
-	background-color: #<?= $L_GOLD ?>;
+background-color: #<?= $LG_BLUE ?>;
 }
 
 #live_lists select {
-	width: 100%;
-	border: 0px;
+width: 100%;
+border: 0px;
 }
 
 #dpcontainer {
-	background-color: #FFFFFF;
-	width: 800px;
-	height: 600px;
-	margin-left: auto;
-	margin-right: auto;
+background-color: #<?= $WHITE; ?>;
+width: 800px;
+height: 600px;
+margin-left: auto;
+margin-right: auto;
 }
 
 #dpcontainer iframe {
-	width: 800px;
-	height: 600px;
+width: 800px;
+height: 600px;
 }
 
 #copyPopup {
