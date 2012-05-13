@@ -3,35 +3,44 @@ header("Content-type: text/css");
 
 $WHITE = "FFFFFF";
 $BLACK = "000000";
-$GREY = "999999";
-$LT_GREY = "CCCCCC";
-$D_GREY = "333333";
-$BLUE = "003366";
-$D_BLUE = "001133";
 
-$GOLD = "e6d09e";
-$D_GOLD = "cf9d2b";
-$L_GOLD = "f2e7ce";
+$YELLOW = "FFFFBB";
+
+$XXL_GREY = "e4e4e4";
+$XL_GREY = "DDDDDD"; 
+$LT_GREY = "CCCCCC"; 
+$GREY = "999999";
+$MD_GREY = "777777";
+$XD_GREY = "666666"; 
+$D_GREY = "333333";
+
+$G_BLUE = "859fba";
+$LG_BLUE = "a4bbd4";
+$D_BLUE = "204a66";
+$GREEN = "c8e07f";
+$L_GREEN = "dfe8c4";
 
 $RED = "EE3300";
+$D_RED = "88191e"; 
 
 ?>
 
 body
 {
-  font-family: verdana, tahoma, arial, sans-serif;
-  font-size: 8pt;
-  color:#<?= $BLACK; ?>;
-  margin: 0px;
+font-family: verdana, tahoma, arial, sans-serif;
+font-size: 8pt;
+color:#<?= $BLACK; ?>;
+margin: 0px;
 }
 
 #sandbox_border {
-	position: fixed;
-	width: 100%;
-	background: url(/images/sandbox.gif) repeat-x;
-	background-color: #FF0000;
-	z-index: 5;
 	height: 15px;
+position: fixed;
+width: 100%;
+background: url(/images/sandbox.gif) repeat-x;
+background-color: #<?= $RED; ?>;
+z-index: 5;
+height: 15px;
 }
 
 h1
