@@ -15,7 +15,7 @@ $XD_GREY = "666666";
 $D_GREY = "333333";
 
 $G_BLUE = "859fba";
-$LG_BLUE = "a4bbd4";
+$LG_BLUE = "B7C7D7";
 $D_BLUE = "204a66";
 $GREEN = "c8e07f";
 $L_GREEN = "dfe8c4";
