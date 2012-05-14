@@ -426,8 +426,12 @@ width: 170px;
 font-size: 8pt;
 }
 
-#navbox, #toolbar, #helpbar, #infobar, #resourcebar {
+#navbox, #toolbar, #helpbar, #infobar {
 margin-bottom: 20px;
+}
+
+#resourcebar {
+margin-bottom: 5px;
 }
 
 #toolbar_header, #helpbar_header, #infobar_header, #resourcebar_header {
