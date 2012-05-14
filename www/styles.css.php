@@ -81,7 +81,7 @@ color:#<?= $GREY; ?>;
 }
 
 a, a:visited {
-color:#<?= $D_GREEN; ?>;
+color:#<?= $D_GREY; ?>;
 }
 a:hover, a:visited:hover {
 color:#<?= $GREY; ?>;
@@ -275,10 +275,10 @@ background-color: #<?= $WHITE; ?>;
 }
 
 tr.drawing_main {
-background-color: #<?= $GREEN ?>;
+background-color: #<?= $G_BLUE ?>;
 }
 tr.published {
-background-color: #<?= $L_GREEN ?>;
+background-color: #<?= $LG_BLUE ?>;
 }
 
 
@@ -534,7 +534,7 @@ text-decoration: none;
 .version_title
 {
 font-size: 13pt;
-color: #<?= $G_BLUE ?>;
+color: #<?= $D_BLUE ?>;
 }
 
 .version_list_published {
