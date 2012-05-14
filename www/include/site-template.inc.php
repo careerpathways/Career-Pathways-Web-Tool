@@ -26,7 +26,7 @@ class ThisSiteTemplate extends SiteTemplate {
 	function Header() {
 		?>
 			<div id="header">
-				<img src="/images/title.gif" width="828" height="61" alt="Career Pathways Web Tool" />
+				<img src="/images/title.gif" width="828" height="61" alt="Washington Career Pathways Web Tool" />
 			</div>
 
 			<div id="topbar"><div id="topbar_inside">
@@ -97,6 +97,10 @@ class ThisSiteTemplate extends SiteTemplate {
 			$this->PublicToolbar();
 			?>
 			</div> <!-- sideboxes -->
+			
+			<div id="logos">
+				<a href="http://www.sbctc.ctc.edu/college/_e-abe_creatingopportunities.aspx" target="_blank"><img src="/images/creatingops-wctc_logo287pms.gif" width="170" height="68" alt="Creating Opportunities for Washington State's Emerging Workforce" /></a>
+			</div> <!-- site logos -->
 
 			<?php
 			if( !$this->is_chart_page ) {
