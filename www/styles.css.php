@@ -982,7 +982,7 @@ padding-bottom: 8px;
 color: #<?= $BLACK; ?>;
 }
 #dash_links a:hover {
-background-color: #<?= $L_GREEN ?>;
+background-color: #<?= $GREEN ?>;
 color: #<?= $BLACK; ?>;
 }
 
