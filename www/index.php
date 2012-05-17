@@ -9,8 +9,8 @@ require_once "Text/Wiki.php";
 
 
 /*
-This is the dashboard page that every user is taken to after logging in. It is also visible to people
-before they log in, so needs to modify its behavior based on the current userlevel.
+  This is the dashboard page that every user is taken to after logging in. It is also visible to people
+  before they log in, so needs to modify its behavior based on the current userlevel.
 */
 
 $wiki = new Text_Wiki();
