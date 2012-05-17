@@ -1,6 +1,5 @@
 <?php
 header("Content-type: text/javascript");
-
 ?>
 
 var clipboard = {
@@ -25,7 +24,7 @@ var clipboard = {
 	paste: function(id){
 		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
 			{content: clipboard.data.content, href: clipboard.data.href, legend: clipboard.data.legend,
-			 number: clipboard.data.course_number, title: clipboard.data.course_title, 
+			 number: clipboard.data.course_number, title: clipboard.data.course_title,
 			 subject: clipboard.data.course_subject, credits: clipboard.data.course_credits},
 			function(data){
 				$("#post_cell_"+id).html(data);
@@ -62,7 +61,7 @@ $(document).ready(function()
 					break;
 				case "clear":
 					clipboard.clear(cellID);
-					break;				
+					break;
 			}
 			bindEditableCells();
 		}
@@ -93,7 +92,10 @@ function bindEditableCells()
 			{mode: "prompt", type: "head", id: headID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+				    bindPostCells();
+				    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				};
 		}, "html");
 	});
 
@@ -106,7 +108,10 @@ function bindEditableCells()
 			{mode: "prompt", type: "rowTitle", id: rowID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+                    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				    bindPostCells();
+				};
 		}, "html");
 	});
 
@@ -119,10 +124,13 @@ function bindEditableCells()
 			{mode: "prompt", type: "footer", id: footerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+				    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				    bindPostCells();
+				};
 		}, "html");
 	});
-	
+
 	// Make the header editable
 	$(".post_headers").unbind("click").click(function(){
 		// Split apart the id into meaningful components
@@ -132,10 +140,13 @@ function bindEditableCells()
 			{mode: "prompt", type: "header", id: headerID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+				    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				    bindPostCells();
+				};
 		}, "html");
 	});
-	
+
 	// Make the sidebar editable
 	$(".post_sidebar_right").unbind("click").click(function(){
 		// Split apart the id into meaningful components
@@ -145,10 +156,13 @@ function bindEditableCells()
 			{mode: "prompt", type: "sidebar_right", id: versionID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+				    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				    bindPostCells();
+				};
 		}, "html");
 	});
-	
+
 }//end function bindEditableCells
 
 function bindPostCells()
@@ -161,7 +175,7 @@ function bindPostCells()
 			// prevent right-clicks from triggering this
 			return false;
 		}
-	
+
 		// Split apart the id into meaningful components
 		var cellID = $(this).find(".post_draggable").attr("id").split("_")[2];
 
@@ -170,7 +184,10 @@ function bindPostCells()
 			{mode: "prompt", type: "cell", id: cellID},
 			function(data){
 				chGreybox.create(data, 450, 300);
-				chGreybox.onClose = function() {bindPostCells()};
+				chGreybox.onClose = function() {
+				    tinyMCE.execCommand('mceRemoveControl', false, 'postFormContent');
+				    bindPostCells();
+				};
 				$(document).keydown( function(e) {
 					if( e.which == 27 )
 					{

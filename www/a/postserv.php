@@ -182,7 +182,7 @@ require_once("POSTChart.inc.php");
 ?>
 		<script language="JavaScript" type="text/javascript">
 			<?= tinyMCEInitScript() ?>
-			
+
 			$("#postFormContent").focus();
 
 			$(".postGreyboxContent input").keydown(function(e) {
@@ -191,20 +191,21 @@ require_once("POSTChart.inc.php");
 
 			$("#postFormSave").click(function(){
 				var legendData = '';
-				$.each($(".post_legend_input"), function() {
+                $.each($(".post_legend_input"), function() {
 					if( $(this).val() == 1 ) {
 						var id = $(this).attr("id").split("_")[2];
 						legendData += id + "-";
 					}
 				});
-				$.ajax({
+                var activeEditorContent = tinyMCE.activeEditor.getContent();
+                $.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
-					data: { content: (tinyMCE.activeEditor.getContent()),
+					data: { content: (activeEditorContent),
 							legend: legendData
 					},
 					success: function(data){
-						$("#post_cell_<?=$id?>").html(data);
+                        $("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
 						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
 						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
@@ -248,13 +249,17 @@ require_once("POSTChart.inc.php");
 				$("#postFormContent, #postFormURL").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFECBF"});
 				$("#ccFreeRow").css({background: "#FFFFFF"});
-			});
+                $(".course_content").addClass( "hidden" );
+                $(".course_info").removeClass( "hidden" );
+            });
 			$("#postBottomRadio").click(function(){
 				$("#postFormContent, #postFormURL").attr("disabled", false).css({"background" : "#FFFFFF"});
 				$("#postFormSubject, #postFormNumber, #postFormTitle, #postFormCredits").attr("disabled", "disabled");
 				$("#ccDetailRow").css({background: "#FFFFFF"});
 				$("#ccFreeRow").css({background: "#FFECBF"});
-			});
+                $(".course_content").removeClass( "hidden" );
+                $(".course_info").addClass( "hidden" );
+            });
 
 			$("#postFormSave").click(function(){
 				if($("#postTopRadio").attr("checked"))
@@ -269,21 +274,22 @@ require_once("POSTChart.inc.php");
 						legendData += id + "-";
 					}
 				});
+                var activeEditorContent = tinyMCE.activeEditor.getContent();
 
-				$.ajax({
+                $.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=cell&id=<?=$id?>",
 					data: {	subject: $("#postFormSubject").val(),
 							number: $("#postFormNumber").val(),
 							title: ($("#postFormTitle").val()),
-							content: (tinyMCE.activeEditor.getContent()),
+							content: (activeEditorContent),
 							// content: ($("#postFormContent").val()),
 							credits: ($("#postFormCredits").val()),
 							href: $("#postFormURL").val(),
 							legend: legendData
 					},
 					success: function(data){
-						$("#post_cell_<?=$id?>").html(data);
+                        $("#post_cell_<?=$id?>").html(data);
 						var bgSwap = $("#post_cell_<?=$id?>").children().css("background");
 						$("#post_cell_<?=$id?>").parent().css({"background" : bgSwap});
 						$("#post_cell_<?=$id?>").children().css({"background" : "none"});
@@ -306,21 +312,26 @@ require_once("POSTChart.inc.php");
 	{
 		ob_start();
 ?>
-			tinyMCE.init({
-				mode : "textareas",
-				theme : "advanced",
-				plugins : "spellchecker,style",
-				theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code,spellchecker",
-				theme_advanced_buttons2 : "",
-				theme_advanced_buttons3 : "",
-				theme_advanced_buttons4 : "",
-				theme_advanced_toolbar_location : "top",
-				theme_advanced_toolbar_align : "left",
-				theme_advanced_statusbar_location : false,
-				theme_advanced_advanced_resizing : false,
-				spellchecker_languages : "+English=en",
-				spellchecker_rpc_url : "/common/tinymce/plugins/spellchecker/rpc.php",
-			});
+			$(document).ready( function() {
+                setTimeout( function() {
+                    tinyMCE.init({
+                        mode : "none",
+                        theme : "advanced",
+                        plugins : "spellchecker,style",
+                        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code,spellchecker",
+                        theme_advanced_buttons2 : "",
+                        theme_advanced_buttons3 : "",
+                        theme_advanced_buttons4 : "",
+                        theme_advanced_toolbar_location : "top",
+                        theme_advanced_toolbar_align : "left",
+                        theme_advanced_statusbar_location : false,
+                        theme_advanced_advanced_resizing : false,
+                        spellchecker_languages : "+English=en",
+                        spellchecker_rpc_url : "/common/tinymce/plugins/spellchecker/rpc.php",
+                    });
+                    tinyMCE.execCommand( "mceAddControl", true, "postFormContent" );
+                }, 1 );
+            });
 <?php
 		return ob_get_clean();
 	}
@@ -352,7 +363,7 @@ require_once("POSTChart.inc.php");
 					url: "/a/postserv.php?mode=commit&type=head&id=<?=$id?>",
 					data: "title=" + $("#postFormTitle").val(),
 					success: function(data){
-						$("#post_header_<?=$id?>").html(data);
+                        $("#post_header_<?=$id?>").html(data);
 						chGreybox.close();
 					}
 				});
@@ -394,7 +405,7 @@ require_once("POSTChart.inc.php");
 					url: "/a/postserv.php?mode=commit&type=rowTitle&id=<?=$id?>",
 					data: "title=" + $("#postFormTitle").val(),
 					success: function(data){
-						$("#post_row_<?=$id?>").html(data);
+                        $("#post_row_<?=$id?>").html(data);
 						chGreybox.close();
 					}
 				});
@@ -431,7 +442,7 @@ require_once("POSTChart.inc.php");
 						link: $("#postFormURL").val()
 					},
 					success: function(data){
-						$("#post_footer_<?=$id?>").html(data);
+                        $("#post_footer_<?=$id?>").html(data);
 						chGreybox.close();
 					}
 				});
@@ -464,7 +475,7 @@ require_once("POSTChart.inc.php");
 					url: "/a/postserv.php?mode=commit&type=header&id=<?=$id?>",
 					data: {text: $("#postFormContent").val(), link: $("#postFormURL").val()},
 					success: function(data){
-						$("#post_headers_<?=$id?>").html(data);
+                        $("#post_headers_<?=$id?>").html(data);
 						chGreybox.close();
 					}
 				});
@@ -504,7 +515,7 @@ require_once("POSTChart.inc.php");
 					url: "/a/postserv.php?mode=commit&type=sidebar_right&id=<?=$id?>",
 					data: {text: $("#sidebar_text").val()},
 					success: function(data){
-						$("#postsidebarright_<?=$id?>").html(data);
+                        $("#postsidebarright_<?=$id?>").html(data);
 						chGreybox.close();
 					}
 				});
@@ -740,12 +751,27 @@ require_once("POSTChart.inc.php");
 		<br />
 		<div class="postEditCC">
 		<form action="javascript:void(0);">
-			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%">
-				<tr id="ccDetailRow">
-					<td valign="top">
-						<input type="radio" class="radio" name="postModeSelector" id="postTopRadio"<?=(($cell['course_subject'] != '' || !$cell['content'])?' checked="checked"':'')?> />
-					</td>
-					<td id="postTopHalf" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;" valign="top">
+            <?php $contentChecked = ($cell['course_subject'] == '' && $cell['content']); ?>
+            <div id="course_details">
+                <div id="course_details_selector">
+                    <p>Step 1: Choose one...</p>
+                    <div class="course_detail">
+                    Course
+                    <span id="course_information_selector" style="font-weight: bold;">
+                        <input type="radio" class="radio" name="postModeSelector" id="postTopRadio"<?=((!$contentChecked)?' checked="checked"':'')?> />
+                        Information
+                    </span>
+                    <span id="course_content_selector" style="font-weight: bold;">
+                        <input type="radio" class="radio" name="postModeSelector" id="postBottomRadio"<?= ($contentChecked ?' checked="checked"':'')?> />
+                        Content
+                    </span>
+                    </div>
+                </div>
+                <div>
+                    <p>Step 2: Enter details...</p>
+                </div>
+                <div id="course_details-1" class="course_detail">
+                        <div class="course_info<?= (!$contentChecked) ? '' : ' hidden'?>">
 						<div>
 							<div style="float: left; width: 150px; height: 20px; font-weight: bold;">Course Subject:</div>
 							<div style="float: left; height: 20px;">
@@ -766,27 +792,15 @@ require_once("POSTChart.inc.php");
 						</div>
 						<div style="clear: both; font-weight: bold;">Course Title:</div>
 							<input id="postFormTitle" maxlength="255" style="width: 340px;" value="<?=$cell['course_title']?>" />
-					</td>
-				</tr>
-				<tr>
-					<td></td>
-					<td>
-						<div style="clear: both; height: 10px;"></div>
-						<div style="width: 100%; font-weight: bold; text-align: center;">&mdash;&mdash;&mdash;&mdash;&mdash; OR &mdash;&mdash;&mdash;&mdash;&mdash;</div>
-						<div style="clear: both; height: 10px;"></div>
-					</td>
-				</tr>
-				<tr id="ccFreeRow">
-					<td valign="top">
-						<input type="radio" class="radio" name="postModeSelector" id="postBottomRadio"<?=(($cell['course_subject'] == '' && $cell['content'])?' checked="checked"':'')?> />
-					</td>
-					<td id="postBottomHalf" valign="top" style="padding-left: 20px; padding-bottom: 5px; padding-top: 5px;">
-						<div style="font-weight: bold;">Course Content:</div>
-						<textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
-						<div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
-					</td>
-				</tr>
-			</table>
+                        </div>
+                </div>
+                <div id="course_details-2" class="course_detail">
+                    <div class="course_content<?= $contentChecked ? '' : ' hidden'?>">
+                        <textarea id="postFormContent" rows="5" cols="40" style="width: 330px; border: 1px #AAA solid;"><?=$cell['content']?></textarea>
+                        <div class="tip"><p>TIP: To single space, hold down <b>Shift + Enter/Return</b> key for a new single spaced line of content.</p></div>
+                    </div>
+                </div>
+            </div>
 <?php
 		$legend = explode("-",$cell['legend']);
 		getLegendHTML($legend);
@@ -896,4 +910,3 @@ require_once("POSTChart.inc.php");
 		</script>
 <?php
 	}//end function getLegendHTML
-?>

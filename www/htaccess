@@ -5,7 +5,7 @@ AddType text/css .css
 AddType text/javascript .js
 
 RewriteEngine on
-RewriteRule ^styles.css$ styles.css.php [QSA,L]
+#RewriteRule ^styles.css$ styles.css.php [QSA,L]
 RewriteRule ^files/drawing_list.js files/drawing_list.js.php [QSA,L]
 
 RewriteRule ^(olmis|view)/(pathways|post)/([0-9]+)$ redirect.php?source=$1&type=$2&id=$3 [L]

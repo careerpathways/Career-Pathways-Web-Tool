@@ -560,7 +560,7 @@ ChartBox = Class.create(Widget, {
 	    this.contentElement.update(this.config.content_html);
 		
 		
-		this.elem.style.zIndex = "1";
+		this.elem.style.zIndex = "0";
 		return this.elem;
     },
   
