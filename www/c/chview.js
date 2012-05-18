@@ -85,7 +85,7 @@ Charts = {
 		Charts.canvas.style.position = "absolute";
 		Charts.canvas.style.top = "0";
 		Charts.canvas.style.left = "0";
-		Charts.canvas.style.zIndex = "0";
+		Charts.canvas.style.zIndex = "-1";
 	    
 	    Charts.ctx = Charts.canvas.getContext('2d');
 	},
