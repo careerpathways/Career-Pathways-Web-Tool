@@ -547,10 +547,22 @@ function processDrawingListRequest()
 			$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . Request('school_id'));
 			if($mySchool['organization_type'] == 'Other' && Request('type') == 'cc')
 			{
-				$schools = $DB->VerticalQuery('SELECT *
+				//JGD We need to grab all the affiliations associated with the id.
+				$query = 'SELECT *
 					FROM schools
 					WHERE organization_type IN ("CC", "Other")
-					ORDER BY id='.Request('school_id').' DESC, school_name', 'school_name', 'id');
+						AND ( schools.id IN (SELECT '.$k2.'_id FROM hs_affiliations WHERE '.$k1.'_id='.Request('school_id').')
+								OR schools.id = '.Request('school_id').' )
+					ORDER BY id='.Request('school_id').' DESC,school_name';
+
+				//$schools = $DB->VerticalQuery('SELECT *
+				//	FROM schools
+				//	WHERE organization_type IN ("CC", "Other")
+				//		AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.Request('school_id').')
+				//				OR schools.id = '.Request('school_id').' )
+				//	ORDER BY id='.Request('school_id').' DESC, school_name', 'school_name', 'id');
+
+				$schools = $DB->VerticalQuery( $query, 'school_name', 'id' );
 			}
 			else
 			{
