@@ -541,7 +541,10 @@ function processDrawingListRequest()
 			$k2 = (Request('type')=='cc'?'hs':'cc');
 
 			// "Other" orgs should be able to choose any CC or Other org, not just their own
-			$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+			//JGD: The session variable for school_id is always 1 as far as I've been able to tell, so I'm changing
+			//JGD: this line to use the school_id from the HTTP_REQUEST.
+			//$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+			$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . Request('school_id'));
 			if($mySchool['organization_type'] == 'Other' && Request('type') == 'cc')
 			{
 				$schools = $DB->VerticalQuery('SELECT *
