@@ -558,6 +558,7 @@ a.chart_header {
 	top:74px;
 	height: 1200px;
 	width: 1600px;
+	z-index: -100;
 }
 
 #search_box {
