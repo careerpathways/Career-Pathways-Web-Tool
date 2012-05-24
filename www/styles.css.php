@@ -589,6 +589,7 @@ left: 180px;
 top:74.5px;
 height: 1200px;
 width: 1600px;
+z-index: -100;
 }
 
 #search_box {
