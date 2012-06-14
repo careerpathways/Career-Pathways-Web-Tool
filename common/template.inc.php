@@ -56,6 +56,8 @@ abstract class SiteTemplate {
 	final public function PrintHeader() {
 	// Main function to print all parts of the whole site header including nav bars
 		global $SITE;
+//JGD: Output buffering
+/*echo "<?php ob_start('ob_postprocess'); ?>";*/
 
 echo $this->tag_doctype()."\n";
 ?>
@@ -80,7 +82,9 @@ echo $this->tag_doctype()."\n";
 		?>
 </body>
 </html>
-		<?php
+<?php
+//JGD: Output buffering.
+//echo "<? php ob_end_flush(); function ob_postprocess(\$buffer){ if(strpos(\$_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE){ \$buffer = gzencode(\$buffer); header('Content-Encoding: gzip'); } return \$buffer;} ? >";
 	}
 
 

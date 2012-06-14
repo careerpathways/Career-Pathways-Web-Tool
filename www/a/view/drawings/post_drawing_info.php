@@ -81,7 +81,6 @@ if( $id == "" ) {
 				
 		}
 
-		// REPLACED THIS CODE BELOW --> if(count($these_schools) == 1)
 		//JGD: I don't know how this happens, but I ran into a case where these_schools only had one entry, but it didn't match the school id.
 		//JGD: So I show the selection box if that is the case. Not sure if that's the perfect solution...
 		//logmsg( "school_id: $school_id\n" );
@@ -99,7 +98,7 @@ if( $id == "" ) {
 	</td>
 </tr>
 <?php
-if($SITE->oregon_skillset_enabled){
+if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr>
 	<th><?=l('skillset name')?></th>
@@ -149,7 +148,7 @@ if($SITE->oregon_skillset_enabled){
 		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
 	<?php
-	if($SITE->oregon_skillset_enabled){
+	if($SITE->hasFeature('oregon_skillset')){
 	?>
 	<tr class="editable">
 		<th><?=l('skillset name')?></th>

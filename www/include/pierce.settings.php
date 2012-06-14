@@ -6,10 +6,34 @@ class ThisSite extends SiteSettings {
 
 	var $debug = true;
 
-	public $olmis_enabled = FALSE;
-	public $oregon_skillset_enabled = TRUE;
-	
-	public $lang_file = 'pierce';
+    /*
+    *  Set site-specific features in this array then use hasFeature
+    *  or feature to access the data.
+    *
+    */
+    private $site_features = array(
+        'olmis' => false,
+        'oregon_skillset' => true,
+        'post_assurances' => true,
+    );
+
+    public function hasFeature( $feature )
+    {
+        return $this->feature( $feature ) !== false;
+    }
+
+    public function feature( $feature )
+    {
+        if (!$feature) return true;
+
+        $featureLC = strtolower( $feature );
+        if (isset($this->site_features[$featureLC])) {
+            return $this->site_features[$featureLC];
+        }
+        return false;
+    }
+
+    public $lang_file = 'pierce';
 	
 	function name() { return "Career Pathways Web Tool"; }
 	function email_name() { return "Oregon CTE Pathways"; }

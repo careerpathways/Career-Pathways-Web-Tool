@@ -4,6 +4,35 @@ include("inc.php");
 
 ModuleInit('users');
 
+function updateSignatureCategories()
+{
+    global $DB;
+
+    $userId = $_REQUEST['id'];
+//    print '<pre>';
+//    print_r( $_REQUEST );
+//    print '</pre>';
+
+    foreach ($_REQUEST['sigCat'] as $catId => $sigCatInfo) {
+        if ($sigCatInfo['old']) {
+            if (isset( $sigCatInfo['new'])) {
+                continue;
+            }
+            // Delete user from $catId
+            print "<p>Delete user $userId from category $catId</p>";
+            $deleteSQL = "DELETE FROM signature_categories_users WHERE user_id = '$userId' AND category_id = '$catId'";
+            $DB->Query($deleteSQL);
+        } else {
+            if (isset( $sigCatInfo['new'])) {
+                // Add user to $catId
+                print "<p>Add user $userId to category $catId</p>";
+                $insertSQL = "INSERT INTO signature_categories_users (user_id, category_id) VALUES ('$userId', '$catId');";
+                $DB->Query($insertSQL);
+            }
+        }
+    }
+//    die;
+}
 
 /*
  ** Main user management page **
@@ -216,7 +245,7 @@ if( KeyInRequest('id') || Request('key') ) {
 			case 'Save Changes':
 				// editing an existing user
 				$DB->Update('users',$content,$_REQUEST['id']);
-
+                updateSignatureCategories();
 				break;
 			case 'Send New Password':
 			
@@ -386,12 +415,15 @@ if( KeyInRequest('id') || Request('key') ) {
 			echo '</td></tr>';
 	
 			foreach( $users as $u ) {
+                $userId = $u['id'];
+                $sigCatSelect = "SELECT COUNT(user_id) AS numCats FROM signature_categories_users WHERE user_id = '$userId'";
+                $sigCats = $DB->SingleQuery( $sigCatSelect );
 				echo '<tr>';
 
 				if( !IsGuestUser() ) {
 					$affiliation = $DB->SingleQuery('SELECT COUNT(1) AS num FROM hs_affiliations WHERE cc_id = ' . $_SESSION['school_id'] . ' AND hs_id = ' . ($u['school_id'] ? $u['school_id'] : 0));
 					$edit_text = 'view';
-					if( $_SESSION['user_id'] == $u['id'] || IsAdmin()
+                    if( $_SESSION['user_id'] == $userId || IsAdmin()
 						|| IsWebmaster() &&
 						(
 							($u['school_id'] == $_SESSION['school_id'] && $u['user_level'] <= $_SESSION['user_level'])
@@ -412,7 +444,13 @@ if( KeyInRequest('id') || Request('key') ) {
 				echo '<td width="180">'.(!IsGuestUser()?'<a href="mailto:'.$u['email'].'">'.$u['email'].'</a>':'&nbsp;').'</td>';
 				echo '<td width="100">'.$u['user_level_name'].'</td>';
 				echo '<td width="140"><div title="'.($u['last_logon_ip']==''?'':$u['last_logon_ip']).'">'.($u['last_logon_ip']==''?'':$DB->Date("n/j/Y g:ia",$u['last_logon'])).'</div></td>';
-
+                echo '<td width="20">';
+                if ($SITE->hasFeature('post_assurances')) {
+                    echo ($sigCats['numCats'] > 0 ? '<img src="/common/silk/script_edit.png" />' : '&nbsp;');
+                } else {
+                    echo '&nbsp;';
+                }
+                echo '</td>';
 				echo '</tr>';
 			}
 		}
@@ -592,7 +630,52 @@ global $DB;
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
-	<?php
+    <?php
+    /*
+     * Trac #35
+     *
+     * Do we want all users who are editing this page to see this?
+     * If not, replace the true below with the appropriate check.
+     */
+    ?>
+    <?php global $SITE; ?>
+    <?php if ($SITE->hasFeature('post_assurances')): ?>
+    <?php
+    $signatureCategoriesSQL = "SELECT `SignatureCategory`.`id` , `SignatureCategory`.`name` , `CrossTable`.`user_id`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signature_categories_users` AS `CrossTable` ON `CrossTable`.`category_id` = `SignatureCategory`.`id`" . " AND `CrossTable`.`user_id` = '" . $_REQUEST['id'] . "'" . " LEFT JOIN `users` AS `User` ON `CrossTable`.`user_id` = `User`.`id`;";
+    $sigCategories          = $DB->MultiQuery($signatureCategoriesSQL); ?>
+<tr>
+    <td>Signature Categories:</td>
+    <td>
+        <?php $count = 0; ?>
+        <?php foreach ($sigCategories as $sigCategory): ?>
+            <?php $checked = $sigCategory['user_id']; ?>
+            <?php if (IsSchoolAdmin()): ?>
+                <?php $count++; ?>
+                <div>
+                    <input type="checkbox" value="1" name="sigCat[<?= $sigCategory['id'] ?>][new]"<?php if ($checked): ?>
+                           checked="checked"<?php endif; ?>> <?= $sigCategory['name'] ?>
+                    <input type="hidden" name="sigCat[<?= $sigCategory['id'] ?>][old]"
+                           value="<?= $sigCategory['user_id'] ? "1" : "0" ?>">
+                </div>
+            <?php elseif ($checked): ?>
+                <?php $count++; ?>
+                <div>
+                    <?= $sigCategory['name'] ?>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        <?php if ($count == 0): ?>
+            None
+        <?php endif; ?>
+    </td>
+</tr>
+<tr>
+    <td colspan="2" class="noborder">
+        <hr>
+    </td>
+</tr>
+    <?php endif; ?>
+    <?php
 	if( $user['new_user'] == 1 ) {
 	?>
 	<tr>
@@ -795,10 +878,36 @@ if( $tried_to_add ) {
 		</td>
 	</tr>
 	<?php } ?>
-
 	<tr>
 		<td colspan="2" class="noborder"><hr></td>
 	</tr>
+    <?php global $SITE; ?>
+    <?php if ($SITE->hasFeature('post_assurances')): ?>
+        <?php
+        $signatureCategoriesSQL = "SELECT `SignatureCategory`.`id` , `SignatureCategory`.`name` , `CrossTable`.`user_id`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signature_categories_users` AS `CrossTable` ON `CrossTable`.`category_id` = `SignatureCategory`.`id`" . " AND `CrossTable`.`user_id` = '" . $_REQUEST['id'] . "'" . " LEFT JOIN `users` AS `User` ON `CrossTable`.`user_id` = `User`.`id`;";
+        $sigCategories          = $DB->MultiQuery($signatureCategoriesSQL); ?>
+        <tr>
+            <td>Signature Categories:</td>
+            <td>
+                <?php $count = 0; ?>
+                <?php foreach ($sigCategories as $sigCategory): ?>
+                <?php $checked = $sigCategory['user_id']; ?>
+                <?php if ($checked): ?>
+                    <div>
+                        <?php $count++; ?>
+                        <?= $sigCategory['name'] ?>
+                    </div>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                <?php if ($count==0): ?>
+                    <div>None</div>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <tr>
+        <td colspan="2" class="noborder"><hr></td>
+    </tr>
+    <?php endif; ?>
 </table>
 <?php
 
