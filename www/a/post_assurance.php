@@ -88,7 +88,7 @@
             <div style="float: left;">
                 <h2>Steps for Identifying a Program of Study</h2>
 
-                <h3>(in preparation for approval)</h3>
+                <h3 style="margin-top:-5px;">In Preparation for Approval)</h3>
                 <ol>
                     <li>When a Cluster, Pathway, and Field or Program of Study has been identified, the
                         groundwork is there for a Program of Study to be developed.
@@ -119,12 +119,12 @@
                         does not need to be as specific as the secondary portion of the template.)
                     </li>
                     <li>Identify those areas of postsecondary study, along with the college where the program
-                        can be found (http://www.sbctc.ctc.edu/college/_e-wkforceproftechprograms.aspx).
+                        can be found. <em>(Refer to <a href="http://www.sbctc.ctc.edu/college/_e-wkforceproftechprograms.aspx" target="_blank">SBCTC Professional-Technical Programs</a>.)</em>
                     </li>
                     <li>Determine who your local Tech Prep Director is. Notify him/her that you have a
-                        program of study that needs to be moved forward for approval. (See
-                        http://www.sbctc.ctc.edu/college/_e-wkforcetechprep.aspx for a list of consortium
-                        directors.) If the Tech Prep director finds that the Program is not offered at one of the
+                        program of study that needs to be moved forward for approval. <em>(Refer to
+                        <a href="http://www.sbctc.ctc.edu/college/_e-wkforcetechprep.aspx" target="_blank">SBCTC Workforce Tech Prep</a> 
+                        for a list of consortium directors.)</em> If the Tech Prep director finds that the Program is not offered at one of the
                         consortium’s colleges, then the director will locate a nearby college where the
                         program is offered, and will contact the Tech Prep director for that college to
                         facilitate the approval.
@@ -145,7 +145,7 @@
                 </ol>
                 <h2>Program of Study Assurances</h2>
 
-                <h3>Minimum Criteria</h3>
+                <h3 style="margin-top:-5px;">Minimum Criteria</h3>
                 <ul>
                     <li>The secondary CTE, academic, and appropriate elective courses are included, as
                         well as the state and local graduation requirements.
@@ -154,8 +154,8 @@
                     <li>The secondary Program of Study includes employability standards, where
                         appropriate.
                     </li>
-                    <li>The Program of Study includes coherent and rigorous coursework in a non-
-                        duplicative sequence of courses from secondary to postsecondary.
+                    <li>The Program of Study includes coherent and rigorous coursework in a non-duplicative 
+                        sequence of courses from secondary to postsecondary.
                     </li>
                     <li>
                         Completion of the secondary Program of Study prepares students for entry into
@@ -171,18 +171,17 @@
                     </li>
                     <li>
                 </ul>
-                <h3>Exceeds Minimum Criteria</h3>
+                <h3 style="margin-top:-5px;">Exceeds Minimum Criteria</h3>
                 <ul>
                     <li>There is a dual credit articulation agreement on file for one or more courses in the
                         secondary/postsecondary Program of Study.
                     </li>
                     <li>
-                        The Program of Study includes multiple entry and/or exit points at the post-
-                        secondary level.
+                        The Program of Study includes multiple entry and/or exit points at the post-secondary level.
                     </li>
                     <li>
-                        The Program of Study offers course work and skill development for self-
-                        employment and/or entrepreneurial opportunities.
+                        The Program of Study offers course work and skill development for self-employment 
+                        and/or entrepreneurial opportunities.
                     </li>
                     <li>
                         The Program of Study is linked to a comprehensive school counseling program,
@@ -201,10 +200,10 @@
         </td>
         <td width="300px" valign="top">
             <div>
-                <?php $data = getSignatureData($viewId); ?><a href="/a/post_views.php?id=<?= $viewId ?>">
+                <?php $data = getSignatureData($viewId); ?>
                 <h1><?= $data['school_name'] ?></h1>
 
-                <h2><?= $data['post_name'] ?> (<?= $data['post_code'] ?>)</h2></a>
+                <h2><a href="/a/post_views.php?id=<?= $viewId ?>"><?= $data['post_name'] ?></a></h2>
                 <?php if ($viewId): ?>
                 <?php
                 $sigPermissionsQuery  = "SELECT category_id FROM signature_categories_users WHERE user_id = '$userId'";
@@ -214,7 +213,7 @@
                     $sigPermissions[$result['category_id']] = true;
                 }
 
-                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
+                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`school`, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
                 $signatures     = $DB->MultiQuery($viewsSigsQuery);
 
                 // If we need to group signatures, this is where we do it.
@@ -226,6 +225,7 @@
                         $sig['date_signed']                     = $signature['date_signed'];
                         $sig['email']                           = $signature['email'];
                         $sig['name']                            = $signature['username'];
+                        $sig['school']                          = $signature['school'];
                         $categories[$signature['id']]['sigs'][] = $sig;
                     }
                 }
@@ -239,19 +239,19 @@
                         <input type="checkbox" enabled="0" disabled="disabled"/>
                         <?php endif; ?>
                         <?= $category['name'] ?>:
-                        <ul>
+                        <ul style="margin-top:-5px;">
                         <?php if (!$sigCount && isset($sigPermissions[$catId])): ?>
                             <?php $signViewLinkUrl = '/a/post_views?assurance=1&action=sign&id=' . $viewId . '&category_id=' . $catId; ?>
-                            <a href="<?= $signViewLinkUrl ?>"><img src="/common/silk/script_edit.png" /> Sign as this role.</a>
+                            <a href="<?= $signViewLinkUrl ?>"><img src="/common/silk/script_edit.png" /></a> <a href="<?= $signViewLinkUrl ?>">Sign as this role.</a>
                         <?php endif; ?>
                     </p>
                     <?php if ($sigCount > 0): ?>
                         <?php foreach ($category['sigs'] as $sig): ?>
-                            Signed by <?= $sig['name'] ?>
-                            on <?=  date_format(new DateTime($sig['date_signed']), 'Y-m-d')?></li>
+                            Signed on <?=  date_format(new DateTime($sig['date_signed']), 'Y-m-d')?> by
+                            <?= $sig['name'] ?>, <?= $sig['school'] ?></li>
                             <?php endforeach; ?>
                     <?php else: ?>
-                        No signatures on file.
+                        <em>No signatures on file.</em>
                     <?php endif; ?>
                   </ul>
                     <?php endforeach; ?>
