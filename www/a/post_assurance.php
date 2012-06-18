@@ -213,7 +213,7 @@
                     $sigPermissions[$result['category_id']] = true;
                 }
 
-                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`organization`, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
+                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`school_name`, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
                 $signatures     = $DB->MultiQuery($viewsSigsQuery);
 
                 // If we need to group signatures, this is where we do it.
@@ -225,7 +225,7 @@
                         $sig['date_signed']                     = $signature['date_signed'];
                         $sig['email']                           = $signature['email'];
                         $sig['name']                            = $signature['username'];
-                        $sig['school']                          = $signature['organization'];
+                        $sig['school']                          = $signature['school_name'];
                         $categories[$signature['id']]['sigs'][] = $sig;
                     }
                 }
