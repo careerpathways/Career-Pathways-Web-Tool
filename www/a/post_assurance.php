@@ -169,7 +169,6 @@
                         Program of Study leads to an industry recognized credential; academic certificate
                         or degree; or employment.
                     </li>
-                    <li>
                 </ul>
                 <h3 style="margin-top:0px;">Exceeds Minimum Criteria</h3>
                 <ul>
