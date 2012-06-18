@@ -88,7 +88,7 @@
             <div style="float: left;">
                 <h2>Steps for Identifying a Program of Study</h2>
 
-                <h3 style="margin-top:-5px;">In Preparation for Approval)</h3>
+                <h3 style="margin-top:0px;">In Preparation for Approval</h3>
                 <ol>
                     <li>When a Cluster, Pathway, and Field or Program of Study has been identified, the
                         groundwork is there for a Program of Study to be developed.
@@ -145,7 +145,7 @@
                 </ol>
                 <h2>Program of Study Assurances</h2>
 
-                <h3 style="margin-top:-5px;">Minimum Criteria</h3>
+                <h3 style="margin-top:0px;">Minimum Criteria</h3>
                 <ul>
                     <li>The secondary CTE, academic, and appropriate elective courses are included, as
                         well as the state and local graduation requirements.
@@ -171,7 +171,7 @@
                     </li>
                     <li>
                 </ul>
-                <h3 style="margin-top:-5px;">Exceeds Minimum Criteria</h3>
+                <h3 style="margin-top:0px;">Exceeds Minimum Criteria</h3>
                 <ul>
                     <li>There is a dual credit articulation agreement on file for one or more courses in the
                         secondary/postsecondary Program of Study.
@@ -213,7 +213,7 @@
                     $sigPermissions[$result['category_id']] = true;
                 }
 
-                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`school`, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
+                $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`organization`, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
                 $signatures     = $DB->MultiQuery($viewsSigsQuery);
 
                 // If we need to group signatures, this is where we do it.
@@ -225,7 +225,7 @@
                         $sig['date_signed']                     = $signature['date_signed'];
                         $sig['email']                           = $signature['email'];
                         $sig['name']                            = $signature['username'];
-                        $sig['school']                          = $signature['school'];
+                        $sig['school']                          = $signature['organization'];
                         $categories[$signature['id']]['sigs'][] = $sig;
                     }
                 }
