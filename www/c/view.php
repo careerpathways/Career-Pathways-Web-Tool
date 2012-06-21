@@ -92,7 +92,17 @@ if( $_REQUEST['page'] == 'text' ) {
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'pathwaysContainer')?>");
 
-		if( typeof VBArray != "undefined" ) {
+        //from MS site on how to detect IE versions
+        var rv = -1; // Return value assumes failure.
+        if (navigator.appName == 'Microsoft Internet Explorer')
+        {
+        var ua = navigator.userAgent;
+        var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+        rv = parseFloat( RegExp.$1 );
+        }
+
+        if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
 			var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/published/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
