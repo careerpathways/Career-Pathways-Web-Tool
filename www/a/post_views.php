@@ -842,8 +842,11 @@ function processCreateRequest()
 function processTabNameRequest()
 {
 	global $DB;
-	
+
+	//JGD: Removed character set restrictions from tab names in POST Views. (per Effie).
+	//$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
 	$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
+	$tab_name = Request('tab_name');
 	$tab_sort = intval(Request('tab_sort'));
 	$DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
 	echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
