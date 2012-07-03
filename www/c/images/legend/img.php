@@ -1,4 +1,8 @@
 <?php
+	require_once('inc.php');
+	//logmsg( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" );
+	//logmsg( "GET ids: ".$_GET['ids']."\n" );
+
 	$checked = FALSE;
 	if(substr($_GET['ids'], 0, 1) == 'c')
 	{
@@ -19,16 +23,23 @@
 	if(!is_array($ids) || count($ids) <= 0)
 		exit();
 
-	require_once('inc.php');
-
 	header('Content-Type: image/png');
 
 	$folder = $SITE->cache_path("legend");
 
 	$finalPath = $folder . "/" . $_GET['ids'] . '.png';
 
-	if(file_exists($finalPath) && !$checked && !$largeMode)
-		die(file_get_contents($finalPath));
+	//logmsg( "FinalPath: $finalPath\n" );
+	//logmsg( "checked: $checked\n" );
+	//logmsg( "largeMode: $largeMode\n\n" );
+
+	//JGD Don't used cached image. Something is causing it to use the cached (checked) image on new POST drawings. Only happens every
+	//JGD once and a while and we're on a fast enuf server now that I don't care to figure it out right now.
+	//if(file_exists($finalPath) && !$checked && !$largeMode)
+	//{
+	//	logmsg( "Using cached image." );
+	//	die(file_get_contents($finalPath));
+	//}
 
 	// Gather the list of graphics requeste by the URL
 	$sql = "SELECT `graphic` FROM `post_legend` WHERE";

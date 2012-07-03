@@ -1,4 +1,6 @@
 <?php
+//JGD Postprocessing
+ob_start( 'ob_postprocess' );
 chdir("..");
 include("inc.php");
 

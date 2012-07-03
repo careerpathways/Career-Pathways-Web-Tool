@@ -358,12 +358,16 @@ function copyVersion($version_id) {
 		$new_id = $table_status['Auto_increment'];
 		$idMap[$obj['id']] = $new_id;
 
+		//logmsg( "obj: " . varDumpString($obj) );
+		//logmsg( "unserializing content begins" );
 		$obj = unserialize($obj['content']);
+		//logmsg( "unserializing content ends" );
 		$obj['id'] = $new_id;
 		if( $copy_to !== 'same_school' )
 		$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		$newobj['content'] = serialize($obj);
 		$newobj['color'] = ($obj['config']['color'] ? $obj['config']['color'] : '333333');
+		//logmsg( "newObj: " . varDumpString($newobj) );
 
 		$DB->Insert('objects',$newobj);
 	}

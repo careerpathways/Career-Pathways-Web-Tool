@@ -43,7 +43,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 	if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr class="editable">
-	<th>Oregon Skill Set</th>
+	<th>Skill Set</th>
 	<td><div id="skillset"><?= $skillset['title'] ?></div></td>
 </tr>
 <?php 

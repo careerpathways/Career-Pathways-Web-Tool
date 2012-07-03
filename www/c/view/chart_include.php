@@ -23,6 +23,9 @@
 <?php require('chart_data_js.php'); ?>
 </script>
 
-<!--[if lte IE 8]><script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/excanvas.js"></script><![endif]--> 
+<?php /* <!--[if lte IE 8]><script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/excanvas.js"></script><![endif]--> */ ?>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/flashcanvas.js"></script>
+<![endif]-->
 <script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/prototype.js"></script>
 <script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/c/chview.js"></script>
