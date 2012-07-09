@@ -179,6 +179,7 @@ elseif( Request('format') == 'js' )
 		document.getElementsByTagName('body')[0].appendChild(s);
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'postContainer')?>");
+
         //from MS site on how to detect IE versions
         var rv = -1; // Return value assumes failure.
         if (navigator.appName == 'Microsoft Internet Explorer') {
@@ -189,7 +190,7 @@ elseif( Request('format') == 'js' )
         }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
-			var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
+            var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
 			fr.setAttribute("width", pc.style.width);

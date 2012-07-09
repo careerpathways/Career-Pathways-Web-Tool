@@ -99,7 +99,7 @@ if( $id == "" ) {
 	</td>
 </tr>
 <?php
-if($SITE->oregon_skillset_enabled){
+if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr>
 	<th><?=l('skillset name')?></th>
@@ -149,7 +149,7 @@ if($SITE->oregon_skillset_enabled){
 		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
 	<?php
-	if($SITE->oregon_skillset_enabled){
+	if($SITE->hasFeature('oregon_skillset')){
 	?>
 	<tr class="editable">
 		<th><?=l('skillset name')?></th>

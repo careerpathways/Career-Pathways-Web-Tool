@@ -31,9 +31,25 @@ global $DB;
 
 
 function UserCanEditCategory($cat_id) {
-global $DB;
-	if( IsAdmin() ) {
-		return TRUE;
+global $DB, $SITE;
+    if( !is_numeric($cat_id) ) {
+        $DB->Query("SELECT id, feature FROM admin_module WHERE name = '$cat_id'");
+        $line = $DB->NextRecord();
+        $cat_id = $line['id'];
+        $feature = $line['feature'];
+    } else {
+        $DB->Query("SELECT feature FROM admin_module WHERE id = '$cat_id'");
+        $line = $DB->NextRecord();
+        $feature = $line['feature'];
+    }
+
+    $moduleEnabled = !$feature || $SITE->hasFeature($feature);
+    if (!$moduleEnabled) {
+        return false;
+    }
+
+    if( IsAdmin() ) {
+        return TRUE;
 	} else {
 		if( $_SESSION['user_level'] >= CPUSER_HIGHSCHOOL ) {
 			if( !is_numeric($cat_id) ) {
@@ -121,7 +137,7 @@ function GetDefaultPOSTRows($school_id) {
 }
 
 function GetCategoriesForUser($id, $where="", $get_inverse=FALSE) {
-global $DB;
+global $DB, $SITE;
 
 	if( $get_inverse == TRUE ) {
 	// get all categories the user is not in
@@ -133,12 +149,12 @@ global $DB;
 		$user = $DB->SingleQuery("SELECT user_level FROM users WHERE id = '$id'");
 
 		if( $user['user_level'] == USER_ADMIN ) {
-			$sql = "SELECT module.id, module.friendly_name AS name, module.name AS internal_name
+			$rawSql = "SELECT module.id, module.friendly_name AS name, module.name AS internal_name, module.feature AS feature
 					FROM admin_module AS module
 					WHERE active = 1
 					ORDER BY `order`";
 		} else {
-			$sql = "SELECT module.id, module.friendly_name AS name, module.name AS internal_name
+			$rawSql = "SELECT module.id, module.friendly_name AS name, module.name AS internal_name, module.feature AS feature
 					FROM admin_level_module AS level_module,
 						admin_module AS module, users AS users
 					WHERE (level_module.level <= ".$user['user_level']."
@@ -148,8 +164,18 @@ global $DB;
 					ORDER BY `order`";
 		}
 	}
-
-	return $DB->MultiQuery($sql);
+    $rawResultSet = $DB->MultiQuery($rawSql);
+//    print '<pre>' . print_r( $rawResultSet, true ) . '</pre>';
+    if ($rawResultSet) {
+        $resultSet = array();
+        foreach ($rawResultSet as $result) {
+            if ($result['feature'] && !$SITE->hasFeature($result['feature'])) continue;
+            $resultSet[] = $result;
+        }
+    } else {
+        $resultSet = $rawResultSet;
+    }
+    return $resultSet;
 }
 
 function ModuleInit($module) {

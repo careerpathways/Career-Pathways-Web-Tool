@@ -318,7 +318,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	if( count($connections) == 0 )
 	{
 		echo '(none)';
-		return;
+		return 0;
 	}
 	echo '<table>';
 	echo '<tr>';
@@ -331,8 +331,10 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 		echo '<th width="180">Organization</th>';
 		echo '<th width="285">Last Modified</th>';
 	echo '</tr>';
+    $count = 0;
 	foreach( $connections as $c )
 	{
+        $count++;
 		$d = $DB->SingleQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by, schools.school_name
 			FROM post_drawing_main M
 			JOIN post_drawings D ON D.parent_id=M.id
@@ -358,6 +360,6 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 		echo '</tr>';
 	}
 	echo '</table>';
-	
+	return $count;
 }
 

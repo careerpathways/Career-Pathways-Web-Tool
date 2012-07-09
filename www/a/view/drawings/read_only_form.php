@@ -40,7 +40,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 	<td><?= $drawing['name'] ?></td>
 </tr>
 <?php
-	if($SITE->oregon_skillset_enabled){
+	if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr class="editable">
 	<th>Oregon Skill Set</th>
@@ -55,7 +55,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 </tr>
 <?php
 $school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $drawing['school_id']);
-if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array($published) ) {
+if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_array($published) ) {
 ?>
 <tr class="editable">
 	<th>OLMIS</th>

@@ -6,9 +6,34 @@ class ThisSite extends SiteSettings {
 
 	public $debug = true;
 	
-	public $olmis_enabled = TRUE;
-	public $oregon_skillset_enabled = TRUE;
+    /*
+    *  Set site-specific features in this array then use hasFeature
+    *  or feature to access the data.
+    *
+    */
+    private $site_features = array(
+        'olmis' => false,
+        'oregon_skillset' => true,
+        'post_assurances' => true,
+    );
 
+    public function hasFeature( $feature )
+    {
+        return $this->feature( $feature ) !== false;
+    }
+
+    public function feature( $feature )
+    {
+        if (!$feature) return true;
+
+        $featureLC = strtolower( $feature );
+        if (isset($this->site_features[$featureLC])) {
+            return $this->site_features[$featureLC];
+        }
+        return false;
+    }
+
+    //JGD: Need to change?:
 	public $lang_file = 'oregon';
 	
 	function name() { return "Career Pathways Web Tool"; }

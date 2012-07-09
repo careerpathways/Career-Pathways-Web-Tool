@@ -336,4 +336,12 @@ function db()
 	return $GLOBALS['DB'];
 }
 
+function varDumpString($var)
+{
+	ob_start();
+	var_dump( $var );
+	$out = ob_get_clean();
+	return $out;
+}
+
 ?>

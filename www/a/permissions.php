@@ -26,6 +26,12 @@ $modules = $DB->MultiQuery('
 	ORDER BY `order`');
 foreach( $modules as $m )
 {
+    // Don't display entries/links for site features that are not enabled.
+    // #44
+    if ($modules['feature'] && !$SITE->hasFeature($modules['feature'])) {
+        continue;
+    }
+
 	echo '<tr>';
 	echo '<td>' . $m['id'] . '</td>';
 	echo '<td>' . $m['friendly_name'] . '</td>';

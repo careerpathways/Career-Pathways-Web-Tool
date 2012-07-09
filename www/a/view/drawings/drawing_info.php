@@ -63,7 +63,7 @@ if( $id == "" ) {
 <div id="existingDrawings" style="float:right; width:330px;"></div>
 <table>
 <?php
-if($SITE->oregon_skillset_enabled){
+if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr>
 	<th><?=l('skillset name')?></th>
@@ -137,7 +137,7 @@ if( $school['organization_type'] != 'Other') {
 	</td>
 </tr>
 <?php
-	if($SITE->oregon_skillset_enabled){
+	if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr class="editable">
 	<th><?=l('skillset name')?></th>
@@ -153,7 +153,7 @@ if( $school['organization_type'] != 'Other') {
 	<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
 </tr>
 <?php
-if( $SITE->olmis_enabled && $school['organization_type'] != 'Other' && is_array($published) ) {
+if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_array($published) ) {
 ?>
 <tr class="editable">
 	<th>OLMIS</th>

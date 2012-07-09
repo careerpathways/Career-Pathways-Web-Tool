@@ -1,4 +1,6 @@
 <?php
+//JGD Postprocessing
+ob_start( 'ob_postprocess' );
 chdir("..");
 include("inc.php");
 
@@ -452,6 +454,25 @@ switch( Request('mode') ) {
 function is_not_numeric($a)
 {
 	return $a != '' && !is_numeric($a);
+}
+
+//JGD Output buffering
+//End output buffering
+ob_end_flush();
+
+//Our custom post processing function
+function ob_postprocess($buffer)
+{
+	//$buffer = trim(preg_replace('/\s+/', ' ', $buffer));
+
+	// check if the browser accepts gzip encoding. Most do, but just in case
+	if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)
+	{
+		$buffer = gzencode($buffer);
+		header('Content-Encoding: gzip');
+	}
+
+	return $buffer;
 }
 
 ?>
