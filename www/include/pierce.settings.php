@@ -14,7 +14,7 @@ class ThisSite extends SiteSettings {
     private $site_features = array(
         'olmis' => false,
         'oregon_skillset' => true,
-        'post_assurances' => true,
+        'post_assurances' => false,
     );
 
     public function hasFeature( $feature )
