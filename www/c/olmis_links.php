@@ -121,6 +121,8 @@ function get_drawing_list($olmis_id) {
  		      JOIN schools ON d.school_id=schools.id
 		WHERE l.olmis_id = {$olmis_id}
 	      AND EXISTS (SELECT id FROM drawings WHERE drawings.published=1 and parent_id=d.id)
+	    ORDER BY schools.school_abbr,  name
+
     ");
     return $drawings;
 }
