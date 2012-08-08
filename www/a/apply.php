@@ -105,7 +105,7 @@ if( PostRequest() ) {
 	if( KeyInRequest('form') ) {
 		ShowApplyForm();
 	} else {
-		echo '<p>Are you affiliated with an Oregon school or business?</p>';
+		echo '<p>Are you affiliated with a Washington school or business?</p>';
 		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?template=outside">No</a></p>';
 	}
 }
