@@ -85,8 +85,8 @@ if( PostRequest() ) {
 		$subject = 'I may have found a bug...';
 		$message = '
 ** This is the URL of the page I was on **
-(Copy & paste from the address bar of Internet Explorer or Firefox)
-http://oregon.ctepathways.org/....
+(Copy & paste from the address bar of Firefox or Internet Explorer)
+http://washingtoncareerpathways.org/....
 
 ** This is what I did **
 
@@ -116,7 +116,7 @@ http://oregon.ctepathways.org/....
 
 	case 'outside':
 		$helptext = '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-		$helptext .= '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink($SITE->email()).'.</p>';
+		$helptext .= '<p>This website is currently only available to Washington schools and state agencies. Please contact us if you would like to use this tool in your school or business outside Washington. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink($SITE->email()).'.</p>';
 
 	}
 
