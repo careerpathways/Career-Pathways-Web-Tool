@@ -852,6 +852,9 @@ function configureAddRow()
 				if(Request('qtr'))
 				{
 					$row_data['row_qtr'] = Request('qtr');
+					//JGD Need to set these to blank (vs leaving them NULL) so the new rows are ordered properly with the existing rows.
+					$row_data['row_year'] = '';
+					$row_data['row_term'] = '';
 				}
 				else
 				{
