@@ -214,7 +214,8 @@ if( Request('drawing_id') )
 {
 	// permissions check
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( !($drawing['school_id'] == $_SESSION['school_id'] 
+	if( isAdmin() 
+		|| !($drawing['school_id'] == $_SESSION['school_id'] 
 		|| $drawing['created_by'] == $_SESSION['user_id'] 
 		|| $drawing['last_modified_by'] == $_SESSION['user_id']) )
 	{
