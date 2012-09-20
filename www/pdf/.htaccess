@@ -1,5 +1,6 @@
 RewriteEngine on
 RewriteRule post-view/([0-9]+)/(.+)\.pdf index.php?mode=post_view&id=$1&name=$2 [L]
+RewriteRule post-view-assurance/([0-9]+)/([0-9]+)\.pdf index.php?mode=post_view_assurance&view_id=$1&assurance_id=$2 [L]
 RewriteRule post/([0-9]+)/([0-9]+)\.pdf index.php?mode=post_version&drawing_id=$1&version_id=$2 [L]
 RewriteRule post/([0-9]+)/(.+)\.pdf index.php?mode=post_drawing&drawing_id=$1&name=$2 [L]
 RewriteRule ([0-9]+)/([0-9]+)\.pdf index.php?mode=version&drawing_id=$1&version_id=$2 [L]

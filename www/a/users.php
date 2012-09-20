@@ -20,13 +20,13 @@ function updateSignatureCategories()
             }
             // Delete user from $catId
             print "<p>Delete user $userId from category $catId</p>";
-            $deleteSQL = "DELETE FROM signature_categories_users WHERE user_id = '$userId' AND category_id = '$catId'";
+            $deleteSQL = "DELETE FROM users_roles WHERE user_id = '$userId' AND role_id = '$catId'";
             $DB->Query($deleteSQL);
         } else {
             if (isset( $sigCatInfo['new'])) {
                 // Add user to $catId
                 print "<p>Add user $userId to category $catId</p>";
-                $insertSQL = "INSERT INTO signature_categories_users (user_id, category_id) VALUES ('$userId', '$catId');";
+                $insertSQL = "INSERT INTO users_roles (user_id, role_id) VALUES ('$userId', '$catId');";
                 $DB->Query($insertSQL);
             }
         }
@@ -416,7 +416,7 @@ if( KeyInRequest('id') || Request('key') ) {
 	
 			foreach( $users as $u ) {
                 $userId = $u['id'];
-                $sigCatSelect = "SELECT COUNT(user_id) AS numCats FROM signature_categories_users WHERE user_id = '$userId'";
+                $sigCatSelect = "SELECT COUNT(user_id) AS numCats FROM users_roles WHERE user_id = '$userId'";
                 $sigCats = $DB->SingleQuery( $sigCatSelect );
 				echo '<tr>';
 
@@ -641,7 +641,14 @@ global $DB;
     <?php global $SITE; ?>
     <?php if ($SITE->hasFeature('post_assurances')): ?>
     <?php
-    $signatureCategoriesSQL = "SELECT `SignatureCategory`.`id` , `SignatureCategory`.`name` , `CrossTable`.`user_id`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signature_categories_users` AS `CrossTable` ON `CrossTable`.`category_id` = `SignatureCategory`.`id`" . " AND `CrossTable`.`user_id` = '" . $_REQUEST['id'] . "'" . " LEFT JOIN `users` AS `User` ON `CrossTable`.`user_id` = `User`.`id`;";
+    $signatureCategoriesSQL = "SELECT 
+    							`SignatureCategory`.`id` , 
+    							`SignatureCategory`.`name`, 
+    							`CrossTable`.`user_id` 
+    						   FROM `roles` AS `SignatureCategory`
+    						   LEFT JOIN `users_roles` AS `CrossTable` ON `CrossTable`.`role_id` = `SignatureCategory`.`id` 
+    						   	AND `CrossTable`.`user_id` = '" . $_REQUEST['id'] . "' 
+    						   LEFT JOIN `users` AS `User` ON `CrossTable`.`user_id` = `User`.`id`;";
     $sigCategories          = $DB->MultiQuery($signatureCategoriesSQL); ?>
 <tr>
     <td>Signature Categories:</td>

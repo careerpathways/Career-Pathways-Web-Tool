@@ -53,6 +53,20 @@ switch(request('mode'))
 			WHERE v.id = ' . request('id'));
 		$name = $drawing['school_name'] . ' - ' . $drawing['name'];
 		break;
+	case 'post_view_assurance':
+		logmsg( "post_view_assurance\n" );
+		$url = 'http://' . $_SERVER['SERVER_NAME'] . '/a/post_assurance.php?id=' . request('view_id') . '&assurance_id='.request('assurance_id').'&pdf_format';
+	    //$command  = '"C:\\Program Files (x86)\\wkhtmltopdf\\wkhtmltopdf" "' . $url . '&session_id='.$session_id.'" ' . $fullPath;
+		
+		$drawing = $DB->SingleQuery('SELECT name, school_name, published, DATE_FORMAT(assurances.created_date,"%m-%d-%Y") as "created_date" 
+			FROM vpost_views v
+                        JOIN assurances on v.id=assurances.vpost_view_id
+			JOIN schools s on v.school_id = s.id
+			WHERE v.id = ' . request('view_id'));
+                $filename = 'post-view-assurance-' . request('view_id') . '-' . $drawing['created_date'] . '.pdf';
+		$name = $drawing['school_name'] . '-' . $drawing['name'] . '('.$drawing['created_date'].')';
+		break;
+		
 		
 	default:
 		die('error');
@@ -60,8 +74,27 @@ switch(request('mode'))
 
 $fullPath = $SITE->cache_path("pdf").$filename;
 
+logmsg( "PDF fullpath: $fullPath\n" );
+
 if(!file_exists($fullPath) || filemtime($fullPath))
-	shell_exec('/usr/bin/wkhtmltopdf-i386 "' . $url . '" ' . $fullPath);
+{
+	logmsg( "Calling shell_exec.\n" );
+	
+	//Closing the session to make it available via remote command below.
+	$session_id = session_id();
+	session_write_close();
+	
+	$command  =  $SITE->wkhtmltopdf_bin() .' "'. $url . '&session_id='.$session_id.'" ' . $fullPath;
+	
+	logmsg ("Shell_exec command: " . $command);
+	$retval = shell_exec($command);
+	//$retval = shell_exec('wkhtmltopdf-amd64 "' . $url . '" ' . $fullPath);
+	logmsg( "Shell_exec retval: $retval\n" );
+}
+else
+{
+	logmsg( "Using cached version.\n" );
+}
 
 $name = str_replace('&', ' and ', $name);
 $name = preg_replace('/[ ]+/', ' ', $name);

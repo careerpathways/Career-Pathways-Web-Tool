@@ -249,6 +249,19 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 	return $_SESSION['school_id'] == $drawing['school_id'];
 }
 
+function CanPublishView($view_id){
+        global $DB;
+	
+	
+	$view = $DB->SingleQuery('SELECT school_id '.
+		'FROM vpost_views '.
+		'WHERE id='.$view_id);
+
+	if( IsAdmin() ) return true;
+
+	return $_SESSION['school_id'] == $view['school_id'];
+}
+
 function IsAffiliatedWith($school_id) {
 	global $DB;
 	$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
