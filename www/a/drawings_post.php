@@ -214,10 +214,10 @@ if( Request('drawing_id') )
 {
 	// permissions check
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( isAdmin() 
-		|| !($drawing['school_id'] == $_SESSION['school_id'] 
-		|| $drawing['created_by'] == $_SESSION['user_id'] 
-		|| $drawing['last_modified_by'] == $_SESSION['user_id']) )
+	if( !($drawing['school_id'] == $_SESSION['school_id'] || 
+		  $drawing['created_by'] == $_SESSION['user_id'] || 
+		  $drawing['last_modified_by'] == $_SESSION['user_id']) &&
+		!isAdmin() )
 	{
 		die('403 Forbidden');
 	}
