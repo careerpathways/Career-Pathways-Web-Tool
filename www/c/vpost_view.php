@@ -1,8 +1,13 @@
 <?php
+//PDF call passes session ID via command line call. see /pdf/index.php
+if(isset($_GET['session_id'])){
+    session_id($_GET['session_id']);
+}
+
 chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
-
+logmsg ("generating view... session_id: ".session_id());
 $drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name, skillset_id
 	FROM vpost_views AS v
 	JOIN vpost_links AS vl ON v.id = vl.vid
@@ -36,10 +41,28 @@ foreach( $drawings as $d )
 
 if( Request('format') == 'html' )
 {
-
-	if(count($drawings) == 0)
+    if(count($drawings) == 0){
 		drawing_not_found('postview', Request('id'));
-	
+    }
+    if ($SITE->hasFeature('post_assurances')){
+        $view = $DB->SingleQuery('SELECT published FROM vpost_views WHERE id='.Request('id'));
+        $userId = $_SESSION['user_id'];
+        //die(print_r($_SESSION));
+        if($userId==-1 && !$view['published']){
+            header('Status: 404 Not Found');?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+            <html>
+            <head>
+            	<title><?= $page_title ?></title>
+            </head>
+            <body>
+            	<h1>This view is unavailable.</h1>
+            </body>
+            </html>
+            <?php
+            die();
+        }
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

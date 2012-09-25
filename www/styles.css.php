@@ -1169,3 +1169,27 @@ tr.postAssuranceReport.schoolName h2 {
 .course_detail {
     margin-left: 10px;
 }
+.category_list {
+	list-style-type:none;
+	overflow: hidden;
+}
+
+.category_list li {
+	padding-bottom:10px;
+}
+
+.category_list div {
+	display:inline;
+	/* float:left;*/ 
+}
+
+.category_list div.checkbox_container {
+	/*width:4%;*/
+        float:left;
+        /* width:30px; */
+}
+
+.category_list div.description_container {
+	padding-top:3px;
+}
+

@@ -52,6 +52,7 @@ $TEMPLATE->toolbar_function = 'ShowSymbolLegend';
 function ShowSymbolLegend() {
 	$helpFile = 'drawing_list';
 	$onlyLegend = TRUE;
+	require('view_toolbar.php');
 	require('view/drawings/helpbar.php');
 }
 
@@ -106,12 +107,14 @@ if( $id )
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>	
+        <?php if($view['published']){?>
 	<tr>
 		<th>Embed Code</th>
 		<td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
+        
 	<tr>
 		<th valign="top">External Link</th>
 		<td>
@@ -131,7 +134,7 @@ if( $id )
 	</tr>
 	<?php 
 		require('view/drawings/external_links.php');
-	?>
+	} //endif (published)?>
 	<tr>
 		<th>HTML Link</th>
 		<td>
@@ -188,11 +191,14 @@ if( $id )
 			</div>
 			
 		</td>
-	</tr><!--
+	</tr>
+	
+	
+	<!--
     <tr><td colspan="2"><hr/></td></tr>
     <?php
     /**
-     * Trac Ticket #38
+     * Trac Ticket #38 HTML IS NOT USED PHP is in use below (could stand to be cleaned up someday).
      */
     ?>
     <tr>
@@ -202,16 +208,24 @@ if( $id )
             <?php if ($viewId): ?>
             <?php
             $userId = $_SESSION['user_id'];
-            $sigPermissionsQuery = "SELECT category_id FROM signature_categories_users WHERE user_id = '$userId'";
+            $sigPermissionsQuery = "SELECT role_id FROM users_roles WHERE user_id = '$userId'";
             $sigPermissionsResult = $DB->MultiQuery($sigPermissionsQuery);
             $sigPermissions = array();
             foreach ($sigPermissionsResult as $result) {
-                $sigPermissions[$result['category_id']] = true;
+                $sigPermissions[$result['role_id']] = true;
             }
 
-            $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.name, `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . " FROM `signature_categories` AS `SignatureCategory`" . " LEFT JOIN `signatures` AS `Signature` ON `SignatureCategory`.`id` = `Signature`.`category_id`" . " AND `Signature`.`vpost_view_id` = '" . $viewId . "'" . " LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`";
+            $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.`description` as 'name', `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . 
+            				 " FROM `requirements` AS `SignatureCategory`" . 
+            				 " LEFT JOIN (`assurance_requirements_ct` AS `Signature`" . 
+            				 " 		INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+            				 " 			AND `assurances`.`vpost_view_id` = '" . $viewId . "'" . 
+            				 " 			AND `assurances`.`valid` = TRUE" . 
+            				 " 		LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`" . 
+                             "		) ON `SignatureCategory`.`id` = `Signature`.`requirement_id`".
+            				 " WHERE `SignatureCategory`.requirement_type = 'stakeholder'";
+            //print($viewsSigsQuery);
             $signatures     = $DB->MultiQuery($viewsSigsQuery);
-
             // If we need to group signatures, this is where we do it.
             $categories = array();
             foreach ($signatures as $signature) {
@@ -572,7 +586,7 @@ else
 		echo '<tr class="row' . ($i%2) . '">';
         echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
 
-        echo '<td>' . $v['name'] . '</td>';
+        echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['name'] . '</td>';
 
         $created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
         $modified = ($v['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
@@ -580,7 +594,15 @@ else
         echo '<td><span class="fwfont">'.($v['date_created']==''?'':$DB->Date('Y-m-d f:i a',$v['date_created'])).'</span> <a href="/a/users.php?id='.$v['created_by'].'">'.$created['name'].'</a></td>';
 
         $viewId = $v['id'];
-        $sigSQL = "SELECT `Category`.`id`, COUNT(`Signature`.`category_id`) AS `count` FROM `signature_categories` AS `Category` LEFT JOIN `signatures` AS `Signature` ON `Signature`.`category_id` = `Category`.`id` AND `Signature`.`vpost_view_id` = '$viewId' GROUP BY `Category`.`id`";
+        $sigSQL = "SELECT `Category`.`id`, COUNT(`Signature`.`requirement_id`) AS `count` ".
+                  "FROM `requirements` AS `Category` " . 
+            	  "LEFT JOIN (`assurance_requirements_ct` AS `Signature` " . 
+            	  " 		INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+            	  " 			AND `assurances`.`vpost_view_id` = '" . $viewId . "' " . 
+            	  " 			AND `assurances`.`valid` = TRUE " . 
+                  "		) ON `Category`.`id` = `Signature`.`requirement_id` ".
+                  "WHERE `Category`.`requirement_type` = 'stakeholder' ".
+                  "GROUP BY `Category`.`id`";
         $sigResults = $DB->MultiQuery( $sigSQL );
         $sigsNeeded = count($sigResults);
         $sigsReceived = 0;
@@ -591,7 +613,14 @@ else
         }
         echo '<td>';
         if ($sigsNeeded == $sigsReceived) {
-            $sigDateSQL = "SELECT `Signature`.`date_signed` AS `date` FROM `signatures` AS `Signature` WHERE `Signature`.`vpost_view_id` = '$viewId' ORDER BY `Signature`.`date_signed` DESC LIMIT 1;";
+            $sigDateSQL = "SELECT `Signature`.`date_signed` AS `date`".
+            			  "FROM `assurance_requirements_ct` AS `Signature` ".
+                          "INNER JOIN `requirements` on `Signature`.requirement_id = `requirements`.`id` ".
+                          "INNER JOIN `assurances` on `Signature`.assurance_id = `assurances`.`id` ".
+            			  "  AND `assurances`.`valid`=TRUE ".
+                          "  AND `assurances`.`vpost_view_id` = '$viewId' " .
+            			  "WHERE `requirements`.`requirement_type` = 'stakeholder' " .
+                          "ORDER BY `Signature`.`date_signed` DESC LIMIT 1;";
             $sigDate = $DB->SingleQuery( $sigDateSQL );
             echo '<img src="/common/silk/script_edit.png" /> ';
             echo date_format(new DateTime($sigDate['date']),'Y-m-d');
@@ -818,7 +847,7 @@ function processChangeNameRequest()
 function processCreateRequest()
 {
 	global $DB;
-	
+	global $SITE;
 	$last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
 	$code = base_convert($last['id']*16, 10, 26);
 
@@ -836,6 +865,16 @@ function processCreateRequest()
 	$view['`code`'] = $newCode;
 	$view_id = $DB->Insert('vpost_views', $view);
 	
+        //Adding an assurance record for ALL views regardless of if the assurance feature is enabled.
+        //This was a conscious decision to avoid issues with enabling/disabling the post_assurance feature.
+        //if($SITE->hasFeature('post_assurances')){
+            $assurance = array();
+            $assurance['vpost_view_id'] = $view_id;
+            $assurance['created_date'] = date('c');
+            $assurance['valid'] = 1;
+            $assurance_id = $DB->Insert('assurances', $assurance);
+        //}
+        
 	header('Location: post_views.php?id='.$view_id);
 }
 
@@ -863,19 +902,29 @@ function processDeleteRequest()
 function processSignViewRequest()
 {
     global $DB;
-    $viewId = $_REQUEST['id'];
-    $categoryId = $_REQUEST['category_id'];
+    $viewId = intval($_REQUEST['id']);
+    $requirement_id = intval($_REQUEST['category_id']);
+    $assurance_id = intval($_REQUEST['assurance_id']);
     $userId = $_SESSION['user_id'];
 //    $userId=45;
 
-//    print "User $userId is going to try to sign view: $viewId under category $categoryId .";
+//    print "User $userId is going to try to sign view: $viewId under category $requirement_id .";
 //    print "ZZ";
-    $pcSQL = "SELECT COUNT(`User`.`id`) AS `count` FROM `signature_categories_users` AS `CrossTable` INNER JOIN `users` AS `User` ON `CrossTable`.`user_id` = `User`.`id` INNER JOIN `vpost_views` AS `PostView` ON `User`.`school_id` = `PostView`.`school_id` WHERE `PostView`.`id` = '$viewId' AND `CrossTable`.`category_id` = '$categoryId' AND `User`.`id` = '$userId'" ;
+    $pcSQL = "
+    SELECT COUNT(*) AS count
+      FROM users_roles
+           INNER JOIN users ON users_roles.user_id = users.id
+           INNER JOIN requirements ON requirements.required_role = users_roles.role_id
+     WHERE requirements.id = $requirement_id AND users.id = $userId
+     " ;
     $permissionsCheck = $DB->SingleQuery( $pcSQL );
     if ($permissionsCheck['count']) {
-//        print 'ALLOWED';
-        $addSignSQL = "INSERT INTO signatures (`category_id`, `vpost_view_id`, `user_id`) VALUES ('$categoryId', '$viewId', '$userId' );";
+        $addSignSQL = "INSERT INTO assurance_requirements_ct 
+                        (`requirement_id`, `assurance_id`, `user_id`, `date_signed`) 
+                        VALUES ('$requirement_id', '$assurance_id', '$userId', NOW());";
         $DB->Query( $addSignSQL );
+        $updateAssuranceSQL = "UPDATE assurances SET last_signed_date = NOW() WHERE id = '$assurance_id';";
+        $DB->Query( $updateAssuranceSQL );
     }
     if (KeyInRequest('assurance')) {
         header('Location: post_assurance.php?id=' . $viewId);
