@@ -361,7 +361,7 @@ require_once("POSTChart.inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=head&id=<?=$id?>",
-					data: "title=" + $("#postFormTitle").val(),
+					data: { title: $("#postFormTitle").val() },
 					success: function(data){
                         $("#post_header_<?=$id?>").html(data);
 						chGreybox.close();
@@ -403,7 +403,7 @@ require_once("POSTChart.inc.php");
 				$.ajax({
 					type: "POST",
 					url: "/a/postserv.php?mode=commit&type=rowTitle&id=<?=$id?>",
-					data: "title=" + $("#postFormTitle").val(),
+					data: { title: $("#postFormTitle").val() },
 					success: function(data){
                         $("#post_row_<?=$id?>").html(data);
 						chGreybox.close();
