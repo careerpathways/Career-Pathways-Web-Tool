@@ -659,7 +659,7 @@ global $DB;
 		</td>
 	</tr>
 	<?php
-		if( IsAdmin() ) {
+		if( IsWebmaster() ) {
 		?>
 		<tr>
 			<td colspan="2" class="noborder"><hr></td>
@@ -681,10 +681,6 @@ global $DB;
 			<input type="submit" name="submit" value="Save Changes" class="submit">
 			</td>
 		</tr>
-		<?php
-		}
-		if( IsWebmaster() ) {
-		?>
 		<tr>
 			<td colspan="2" class="noborder"><hr></td>
 		</tr>
