@@ -1,5 +1,5 @@
 <?php
-if(isset($_REQUEST['id'])):
+if(isset($_REQUEST['id']) && !empty($_REQUEST['id'])):
 global $DB;
 global $SITE;
 $view_id = intval($_REQUEST['id']);
