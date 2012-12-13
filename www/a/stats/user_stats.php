@@ -31,9 +31,12 @@ PrintStatsMenu();
 echo '<h2>User Stats</h2>';
 echo '<br>';
 
-$total_users = $DB->SingleQuery('SELECT COUNT(*) AS num FROM users WHERE user_active=1');
+//Phased out, summation row below
+//$total_users = $DB->SingleQuery('SELECT COUNT(*) AS num FROM users WHERE user_active=1');
 $total_organizations = $DB->VerticalQuery('SELECT COUNT(*) AS num, organization_type FROM schools GROUP BY organization_type', 'num', 'organization_type');
+
 $total_active = $DB->ArrayQuery('
+
 		SELECT organization_type, COUNT(1) AS numOrgs, SUM(num) AS numUsers
 		FROM
 		(
@@ -50,6 +53,7 @@ $caption['HS'] = 'High Schools';
 $caption['CC'] = 'Community Colleges';
 $caption['Other'] = 'Other Organizations';
 
+/*Phased out, summation row below
 echo '<table class="bordered">';
 	echo '<tr>';
 		echo '<th>Total Users</th>';
@@ -57,6 +61,7 @@ echo '<table class="bordered">';
 	echo '</tr>';
 echo '</table>';
 echo '<br />';
+ */
 
 echo '<table class="bordered">';
 	echo '<tr>';
@@ -65,15 +70,24 @@ echo '<table class="bordered">';
 		echo '<th>Orgs with Users</th>';
 		echo '<th>Num Users</th>';
 	echo '</tr>';
-	foreach($caption as $type=>$title)
-	{
+    $orgSum = $userOrgSum = $userSum = 0;
+    foreach($caption as $type=>$title){
 		echo '<tr>';
 			echo '<th>'.$title.'</th>';
 			echo '<td>'.$total_organizations[$type].'</td>';
+            $orgSum += $total_organizations[$type];
 			echo '<td>'.$total_active[$type]['numOrgs'].'</td>';
+            $userOrgSum += $total_active[$type]['numOrgs'];
 			echo '<td>'.$total_active[$type]['numUsers'].'</td>';
+            $userSum += $total_active[$type]['numUsers'];
 		echo '</tr>';
 	}
+        echo '<tr>';
+            echo '<th>Totals</th>';
+            echo '<th>'.$orgSum.'</th>';
+            echo '<th>'.$userOrgSum.'</th>';
+            echo '<th>'.$userSum.'</th>';
+        echo '</tr>';
 echo '</table>';
 echo '<br>';
 

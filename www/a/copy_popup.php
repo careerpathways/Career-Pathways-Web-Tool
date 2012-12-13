@@ -19,7 +19,7 @@ body {
 	padding: 1em;
 }
 
-#drawing_name {
+#drawing_name,#version_note {
 	width: 100%;
 }
 
@@ -100,8 +100,11 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 	<legend><label for="drawing_title">New Drawing Name</label></legend>
 	<input type="text" name="drawing_name" id="drawing_name" value="<?= $version['name'] ?> Copy">
 </fieldset>
-
-<p><input type="submit" value="OK" id="ok"/> <input type="reset" id="cancel" value="Cancel"/>
+<fieldset id="versionNote">
+    <legend><label for="version_note">Version Note</label></legend>
+    <input type="text" maxlength="255" name="version_note" id="version_note" />
+</fieldset>
+<input type="submit" value="OK" id="ok"/> <input type="reset" id="cancel" value="Cancel"/>
 </form>
 <script type="text/javascript">
 var create = $('create');

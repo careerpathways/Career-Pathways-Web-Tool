@@ -101,9 +101,17 @@ switch( $_REQUEST['a'] ) {
 			if($debug) PA($_REQUEST['content']);
 
 			foreach( $_REQUEST['content'] as $key=>$val ) {
+				//print("key:".$key."  value: ".$val."  \n");
 				if( is_array($val) ) {
 					foreach( $val as $key2=>$val2 ) {
+						if($key2=='content_html' || $key2=='content'){
+							$obj[$key][$key2] = absolutePaths($val2);
+							//$_REQUEST['content'][$key][$key2] = $obj[$key][$key2];
+						} else {
 						$obj[$key][$key2] = $val2;
+					}
+						//print("key2:".$key2."  value2: ".$obj[$key][$key2]."  \n");
+						
 					}
 				} else {
 					$obj[$key] = $val;

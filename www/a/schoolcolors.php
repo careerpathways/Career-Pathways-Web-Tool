@@ -393,7 +393,8 @@ if( IsAdmin() ) {
 	<div id="school_colors" class="color_table"></div>
 	<div id="colors_help" class="grey">
 		Changes are saved as soon as you see them here.<br>
-		If you remove a color currently in use by some drawings, you will have a chance to reassign the objects to a new color.
+		If you remove a color currently in use by some roadmaps, you will have a chance to reassign the objects to a new color.<br>
+        The color counts reflects the number of roadmaps that use this color in any version of the roadmap.
 	</div>
 <hr>
 

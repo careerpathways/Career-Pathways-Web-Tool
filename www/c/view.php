@@ -12,7 +12,8 @@ if( KeyInRequest('version_id') ) {
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE drawing_main.id='".$DB->Safe($_REQUEST['id'])."'
-			AND drawings.id=".intval($_REQUEST['version_id']));
+			AND drawings.id=".intval($_REQUEST['version_id'])."
+                        AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {
 		drawing_not_found('roadmap', $_REQUEST['id'], $_REQUEST['version_id']);
@@ -26,7 +27,8 @@ if( KeyInRequest('version_id') ) {
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
-			AND drawings.version_num=".intval($_REQUEST['v']));
+			AND drawings.version_num=".intval($_REQUEST['v'])."
+                        AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {
 		drawing_not_found('roadmap', 0, 0, $_REQUEST['d'], $_REQUEST['v']);
@@ -39,7 +41,8 @@ if( KeyInRequest('version_id') ) {
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE drawing_main.id='".$DB->Safe($_REQUEST['id'])."'
-		AND published=1");
+		AND published=1 
+                AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {
 		drawing_not_found('roadmap', $_REQUEST['id']);
@@ -53,7 +56,8 @@ if( KeyInRequest('version_id') ) {
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
-		AND published=1");
+		AND published=1 
+                AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {
 		drawing_not_found('roadmap', 0, 0, $_REQUEST['d']);

@@ -58,13 +58,20 @@ if( KeyInRequest('drawing_id') ) {
 		}
 
 		if( Request('action') == 'delete' ) {
+			//print("deleting...");
 			if( is_array($drawing) ) {
-				if( IsSchoolAdmin() || $drawing['frozen'] == 0 ) 
+				//print("...drawing is an array...");
+				// IsSchoolAdmin() || $drawing['frozen'] == 0 
+				if(CanDeleteDrawing($drawing['parent_id'], 'pathways')) 
 				{
+					//print(CanDeleteDrawing($drawing['parent_id'], 'pathways')?'true':'false'."Not frozen! or school admin!".$drawing['frozen']);
 					// school admins can delete versions, and anyone can delete a version if it has never been committed
 					$DB->Query("UPDATE drawings SET deleted=1 WHERE id=$drawing_id");
+				} else {
+					//print($drawing_id.(CanDeleteDrawing($drawing_id, 'pathways')?'true':'false')."Not school admin or drawing frozen:".$drawing['frozen']);
 				}
 			}
+			//die("END DELETE ACTION!");
 		}
 
 		if( Request('action') == 'publish' ) {
@@ -342,6 +349,7 @@ function copyVersion($version_id) {
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
 	$content['parent_id'] = $drawing_main['id'];
+        $content['note'] = Request('version_note');
 
 	$new_version_id = $DB->Insert('drawings',$content);
 
