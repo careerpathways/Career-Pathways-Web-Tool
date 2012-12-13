@@ -29,7 +29,28 @@ if( Request('sid') ) {
 		
 		echo '<div style="background-color: white; width: 100%;"><div style="padding-top:5px; padding-left:5px;">';
 
-		$color = $DB->SingleQuery('SELECT * FROM color_schemes WHERE school_id = ' . $school_id . ' AND hex = "' . strtolower($_REQUEST['color']) . '"');
+		//$color = $DB->SingleQuery('SELECT * FROM color_schemes WHERE school_id = ' . $school_id . ' AND hex = "' . strtolower($_REQUEST['color']) . '"');
+
+        $color = $DB->SingleQuery('
+        SELECT count(distinct dcc.id) as num_roadmaps,dcc.hexcolor as hex FROM (
+            SELECT m.id as id , o.color as hexcolor
+            FROM drawing_main as m INNER JOIN drawings as d ON m.id = d.parent_id
+                              INNER JOIN objects as o ON o.drawing_id= d.id
+		    WHERE m.school_id='.$school_id . '
+		     AND o.color = \''. strtolower($_REQUEST['color']) .'\'
+		UNION
+				SELECT m.id as id, c.color as hexcolor
+				FROM connections c
+				INNER JOIN objects o ON c.source_object_id = o.id
+				INNER JOIN drawings d ON o.drawing_id=d.id
+				INNER JOIN drawing_main m ON d.parent_id = m.id
+  				WHERE school_id = ' . $school_id . '
+  		          AND c.color = \''. strtolower($_REQUEST['color']) .'\'
+				) as dcc
+		GROUP BY dcc.hexcolor
+		'
+        );
+
 
 		echo '<div style="padding:20px;">';
 			echo '<div style="background-color:#' . $color['hex'] . '; width:40px; height:40px; margin:0 auto;"></div>';
@@ -95,6 +116,7 @@ if( Request('sid') ) {
 					$drawing_ids[] = $o['drawing_id'];
 			}
 
+            /*
 			$objects = $DB->MultiQuery('
 				SELECT o.*, d.id AS drawing_id
 				FROM objects o
@@ -115,6 +137,7 @@ if( Request('sid') ) {
 				if(!in_array($o['drawing_id'], $drawing_ids))
 					$drawing_ids[] = $o['drawing_id'];
 			}
+            */
 
 			$connections = $DB->MultiQuery('
 				SELECT c.*, d.id AS drawing_id
@@ -160,6 +183,23 @@ if( Request('sid') ) {
 		FROM color_schemes
 		WHERE school_id='.$school_id, 'hex');
 	usort($data, 'hslsort');
+    $object_color_usage = $DB->ArrayQuery('
+        SELECT count(distinct dcc.id) as count,dcc.hexcolor FROM (
+            SELECT m.id as id , o.color as hexcolor
+            FROM drawing_main as m INNER JOIN drawings as d ON m.id = d.parent_id
+                              INNER JOIN objects as o ON o.drawing_id= d.id
+		    WHERE m.school_id='.$school_id . '
+		UNION
+				SELECT m.id as id, c.color as hexcolor
+				FROM connections c
+				INNER JOIN objects o ON c.source_object_id = o.id
+				INNER JOIN drawings d ON o.drawing_id=d.id
+				INNER JOIN drawing_main m ON d.parent_id = m.id
+				WHERE school_id = ' . $school_id . '
+				) as dcc
+		GROUP BY dcc.hexcolor
+				',
+        'hexcolor');
 
 	$data[] = array('hex'=> 'ffffff', 'num_roadmaps'=>'&nbsp;');
 	$data[] = array('hex'=> '333333', 'num_roadmaps'=>'&nbsp;');
@@ -168,7 +208,7 @@ if( Request('sid') ) {
 	$usage = array();
 	foreach( $data as $c ) {
 		$colors[] = $c['hex'];
-		$usage[] = $c['num_roadmaps'];
+		$usage[] = (int)$object_color_usage[$c['hex']]['count'];
 	}
 	echo '({"request_mode":"request","colors":["'.implode('","',$colors).'"],"usage":["'.implode('","',$usage).'"]})';
 }

@@ -8,6 +8,8 @@ abstract class POSTChart
 	protected $_parent_id;
 	
 	protected $_name;
+        //not really protected.
+        protected $_note;
 	protected $_code;
 	protected $_skillset_id;
 	protected $_school_name;
@@ -255,6 +257,7 @@ abstract class POSTChart
 		$post_drawing['header_text'] = "".$this->_header_text;
 		$post_drawing['header_link'] = "".$this->_header_link;
 		$post_drawing['header_state'] = "".$this->_header_state;
+                $post_drawing['note'] = "".$this->_note;
 		$post_drawing['sidebar_text_right'] = "".$this->_sidebar_right;
 		$post_drawing['published'] = 0;
 		$post_drawing['frozen'] = 0;
@@ -348,6 +351,8 @@ abstract class POSTChart
 		
 			case 'name':
 				return $this->_name;
+                        case 'note':
+                                return $this->_note;
 	
 			case 'rows':
 				$rows = $this->_rows;
@@ -408,6 +413,10 @@ abstract class POSTChart
 				$this->_name = $val;
 				break;
 			
+			case 'note':
+				$this->_note = $val;
+				break;
+			
 			case 'code':
 				$this->_code = $val;
 				break;
@@ -439,10 +448,8 @@ abstract class POSTChart
 			echo '<tr>', "\n";
 
 			echo '<td id="post_headers_' . $this->_id . '" class="post_headers" colspan="' . $this->footerCols . '" style="min-height: 20px;">'
-				. ($this->_header_link ? '<a href="'.$this->_header_link.'" target="_blank">' : '')
-				. $this->_header_text
-				. ($this->_header_link ? '</a>' : '')
-				. '</td>', "\n";
+                                . $this->_header_text . 
+                             '</td>', "\n";  
 			echo '</tr>', "\n";
 		}
 		
@@ -469,9 +476,7 @@ abstract class POSTChart
 		{
 			echo '<tr>', "\n";
 			echo '<td id="post_footer_' . $this->_id . '" class="post_footer" colspan="' . $this->footerCols . '">'
-				. ($this->_footer_link ? '<a href="'.$this->_footer_link.'" target="_blank">' : '')
 				. $this->_footer_text
-				. ($this->_footer_link ? '</a>' : '')
 				. '</td>', "\n";
 			echo '</tr>', "\n";
 		}

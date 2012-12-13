@@ -22,10 +22,12 @@ $olmis = $DB->MultiQuery('
 $fp = fopen($SITE->cache_path('olmis').'olmis.csv', 'w');
 foreach( $olmis as $o )
 {
-	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways')){}
-	else
+	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways')){
+		//Do nothing - the url is valid...
+	} else {
 		$url = $o['drawing_url'];
-	
+	}
+	$DB->Query("UPDATE drawing_main SET last_olmis_link='".$url."', last_olmis_update=NOW() WHERE drawing_main.id=".$o['drawing_id'].";");
 	fwrite($fp, $o['school_name'].','.$o['olmis_id'].','.$url.',"'.trim($o['drawing_name']).'"'."\n");
 }
 fclose($fp);

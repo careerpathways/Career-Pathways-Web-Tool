@@ -172,6 +172,15 @@ if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_
 		</div>
 	</td>
 </tr>
+<?php if($drawing['last_olmis_link']) {?>
+<tr class="editable">
+	<th>Last OLMIS Link</th>
+	<td>
+		<a href="<?=$drawing['last_olmis_link']?>"><?=$drawing['last_olmis_link']?></a>
+		last updated on <?php echo(date("m/d/Y",strtotime($drawing['last_olmis_update']))." at ".date("h:ia",strtotime($drawing['last_olmis_update']))); ?>
+	</td>
+</tr>
+<?php } ?>
 <?php
 }
 

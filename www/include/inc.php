@@ -210,10 +210,20 @@ function getExternalDrawingLink($drawing_id, $type)
 			$DB->Update('external_links', array('`primary`'=>1), $links[0]['id']);
 			$url = $links[0]['url'];
 		}
-	}
-	else
+	} else {
 		$url = $link['url'];
-	
+	}
+	if ($url!==FALSE) {	
+		//test the link
+		$result = @get_headers($url);
+		if(!empty($result) && stripos($result[0],"200 OK")!==false){
+			//SUCCESS: Do nothing, the url has been checked and will be returned.
+			//print($result[0]."     ".$url.PHP_EOL);
+		} else {
+			//FAIL: Some header other than the normal 200 status was returned.
+			$url = FALSE;
+		}
+	}
 	return $url;
 }
 
@@ -333,6 +343,22 @@ function dv($value, $default='')
 function db()
 {
 	return $GLOBALS['DB'];
+}
+
+/**
+ *searches the value passed in for anchor tags and adds "http://" to the front of those
+ *that do not have http
+ **/
+function absolutePaths($value){
+	//replace any occurances of href=" that are not followed by http, with href="http://
+	$text = preg_replace('/href="(?!http)/','href="http://',$value);
+	
+	//make sure there was no regex error
+	if(!isset($text)){
+		$text = $value;
+	}
+	
+	return $text;
 }
 
 ?>

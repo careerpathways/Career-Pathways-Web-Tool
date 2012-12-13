@@ -63,7 +63,7 @@
             . " LEFT JOIN `assurances` on `VPostView`.`id` = `assurances`.`vpost_view_id`"
             . " LEFT JOIN `assurance_requirements_ct` AS `Signature`"
             . " ON `Signature`.`assurance_id`=`assurances`.`id` AND `Signature`.`requirement_id`=`Category`.`id`"
-            . " LEFT JOIN `schools` AS `School`"
+            . " JOIN `schools` AS `School`"
             . " ON `School`.`id` = `VPostView`.`school_id`"
             . " WHERE `VPostView`.`name` IS NOT NULL AND `VPostView`.`name` != ''"
             . " AND requirement_type = 'stakeholder'";

@@ -14,6 +14,8 @@ if( KeyInRequest('id') ) {
 		if( Request('delete') == 'delete' ) {
 
 			$DB->Query("DELETE FROM color_schemes WHERE school_id=".intval($_REQUEST['id']));
+                        $DB->Query("UPDATE drawings INNER JOIN drawing_main on drawings.parent_id=drawing_main.id SET deleted = 1 WHERE drawing_main.school_id=".intval($_REQUEST['id']));
+			$DB->Query("UPDATE post_drawings INNER JOIN post_drawing_main on post_drawings.parent_id=post_drawing_main.id SET deleted = 1 WHERE post_drawing_main.school_id=".intval($_REQUEST['id']));
 			$DB->Query("DELETE FROM schools WHERE id=".intval($_REQUEST['id']));
 
 		} else {
