@@ -50,6 +50,9 @@ class ThisSite extends SiteSettings {
 	}
 
 	function base_url() { return $_SERVER['SERVER_NAME']; }
+	function wkhtmltopdf_bin() {
+		return '/usr/bin/wkhtmltopdf-i386';
+	}
 	function cache_path($folder="") { 
 		$base_dir = '/web/pierce.sivecki.com/cache/';
 		

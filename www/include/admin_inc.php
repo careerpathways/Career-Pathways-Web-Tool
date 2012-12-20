@@ -50,16 +50,16 @@ global $DB, $SITE;
 
     if( IsAdmin() ) {
         return TRUE;
-	} else {
-		if( $_SESSION['user_level'] >= CPUSER_HIGHSCHOOL ) {
-			if( !is_numeric($cat_id) ) {
-				$DB->Query("SELECT id FROM admin_module WHERE name = '$cat_id'");
-				$line = $DB->NextRecord();
-				$cat_id = $line['id'];
-			}
-			$sql = "SELECT * FROM admin_level_module WHERE level<=".$_SESSION['user_level']." AND module_id=$cat_id";
-			return (count($DB->MultiQuery($sql)) > 0);
-		} else {
+        } else {
+                if( $_SESSION['user_level'] >= CPUSER_HIGHSCHOOL ) {
+                        if( !is_numeric($cat_id) ) {
+                                $DB->Query("SELECT id FROM admin_module WHERE name = '$cat_id'");
+                                $line = $DB->NextRecord();
+                                $cat_id = $line['id'];
+                        }
+                        $sql = "SELECT * FROM admin_level_module WHERE level<=".$_SESSION['user_level']." AND module_id=$cat_id";
+                        return (count($DB->MultiQuery($sql)) > 0);
+                } else {
 			return FALSE;
 		}
 	}
@@ -196,17 +196,16 @@ global $DB, $TEMPLATE, $MODULE_NAME, $MODULE_PAGETITLE;
 function CanDeleteDrawing($drawing_id, $type='post') {
 	global $DB;
 
-	if( $type == 'post' ) {
-		//POST Drawings
-
-		//All staff can delete HS drawings in their affiliated list
-		if( $type == 'post' && IsStaff() && strtolower($drawing['type']) == 'hs' ) 
-		{
+        if( $type == 'post' ) {
+                //POST Drawings
+                $drawing = $DB->SingleQuery('SELECT * FROM post_drawing_main WHERE id='.$drawing_id);
+                // all staff can delete HS drawings in their affiliated list
+                if( $type == 'post' && IsStaff() && strtolower($drawing['type']) == 'hs' ) 
+                {
 			$affl = GetAffiliatedSchools();
 			if( array_key_exists($drawing['school_id'], $affl) )
 				return true;
 		}
-
 		// school admins can delete any drawing at their school
 		if($_SESSION['school_id'] == $drawing['school_id']){
 			if( IsSchoolAdmin() ) return true;
@@ -261,12 +260,25 @@ function CanEditVersion($drawing_id, $mode='post', $check_published=true) {
 			return true;
 	}
 
-	return $_SESSION['school_id'] == $drawing['school_id'];
+        return $_SESSION['school_id'] == $drawing['school_id'];
+}
+
+function CanPublishView($view_id){
+        global $DB;
+        
+        
+        $view = $DB->SingleQuery('SELECT school_id '.
+                'FROM vpost_views '.
+                'WHERE id='.$view_id);
+
+        if( IsAdmin() ) return true;
+
+        return $_SESSION['school_id'] == $view['school_id'];
 }
 
 function IsAffiliatedWith($school_id) {
-	global $DB;
-	$school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+        global $DB;
+        $school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
 	$affl = GetAffiliatedSchools($school['organization_type']);
 	return array_key_exists($school_id, $affl);
 }

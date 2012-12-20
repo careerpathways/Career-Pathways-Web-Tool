@@ -95,12 +95,12 @@ class ThisSiteTemplate extends SiteTemplate {
 			}
 
 			$this->PublicToolbar();
-			?>
-			</div> <!-- sideboxes -->
-
-			<?php
-			if( !$this->is_chart_page ) {
-			?>
+                        ?>
+                        </div> <!-- sideboxes -->
+                        
+                        <?php
+                        if( !$this->is_chart_page ) {
+                        ?>
 			<div id="main">
 				<div id="main-c">
 					<div id="module_name"><? $this->PrintPageTitle(); ?></div>
@@ -126,11 +126,11 @@ class ThisSiteTemplate extends SiteTemplate {
 			<li class="copy"><a href="#copy">Copy</a></li>
 			<li class="paste"><a href="#paste">Paste</a></li>
 			<li class="delete"><a href="#clear">Clear</a></li>
-		</ul>
+                </ul>
 
-		<?php
-		if( $_SERVER['SERVER_NAME'] == 'oregon.ctepathways.org' ) {
-		?>
+                <?php
+                if( $_SERVER['SERVER_NAME'] == 'oregon.ctepathways.org' ) {
+                ?>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -140,7 +140,7 @@ try {
 var pageTracker = _gat._getTracker("UA-8726801-2");
 pageTracker._trackPageview();
 } catch(err) {}</script>
-		<?php
+                <?php
 		}
 
 	}
@@ -195,13 +195,17 @@ pageTracker._trackPageview();
 		else
 			$p = $_SERVER['REQUEST_URI'];
 
-		echo '<div id="resourcebar">';
-		if( IsLoggedIn() ) {
-			echo '<div id="resourcebar_header"></div>';
-		}
-		echo '<div id="resourcebar_content" class="links">';
-		echo '<ul>';
-			echo '<li' . ( $p == '/p/tutorial' ? ' class="active"' : '' ) . '><a href="/p/tutorial">Tutorial</a></li>';
+                echo '<div id="resourcebar">';
+                if( IsLoggedIn() ) {
+                        echo '<div id="resourcebar">';
+                        echo '<div id="resourcebar_header"></div>';
+                }
+                else {
+                        echo '<div id="navbox">';
+                        }
+                echo '<div id="resourcebar_content" class="links">';
+                echo '<ul>';
+                        echo '<li' . ( $p == '/p/tutorial' ? ' class="active"' : '' ) . '><a href="/p/tutorial">Tutorial</a></li>';
 			echo '<li' . ( $p == '/p/release_info' ? ' class="active"' : '' ) . '><a href="/p/release_info">Release Info</a></li>';
 			echo '<li' . ( $p == '/p/ada' ? ' class="active"' : '' ) . '><a href="/p/ada">ADA Compliance</a></li>';
 			echo '<li' . ( $p == '/p/licensing' ? ' class="active"' : '' ) . '><a href="/p/licensing">Licensing</a></li>';
