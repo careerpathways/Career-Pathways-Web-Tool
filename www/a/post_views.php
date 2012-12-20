@@ -34,12 +34,15 @@ if (KeyInRequest('action')) {
 		case 'save_tab_name':
 			processTabNameRequest();
 			die();
-		case 'delete':
-			processDeleteRequest();
-			die();
-		default:
-			die('unknown action');
-	}
+                case 'delete':
+                        processDeleteRequest();
+                        die();
+                case 'sign':
+                        processSignViewRequest();
+                        die();
+                default:
+                        die('unknown action');
+        }
 }
 
 $TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
@@ -47,9 +50,10 @@ $TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
 $TEMPLATE->toolbar_function = 'ShowSymbolLegend';
 
 function ShowSymbolLegend() {
-	$helpFile = 'drawing_list';
-	$onlyLegend = TRUE;
-	require('view/drawings/helpbar.php');
+        $helpFile = 'drawing_list';
+        $onlyLegend = TRUE;
+        require('view_toolbar.php');
+        require('view/drawings/helpbar.php');
 }
 
 PrintHeader();
@@ -100,15 +104,17 @@ if( $id )
 		</td>
 	</tr>
 	<tr class="editable">
-		<th width="80">Organization</th>
-		<td><b><?= $schools[$school_id] ?></b></td>
-	</tr>	
-	<tr>
-		<th>Embed Code</th>
-		<td>
+                <th width="80">Organization</th>
+                <td><b><?= $schools[$school_id] ?></b></td>
+        </tr>
+        <?php if($view['published']){?>
+        <tr>
+                <th>Embed Code</th>
+                <td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
+        
 	<tr>
 		<th valign="top">External Link</th>
 		<td>
@@ -125,13 +131,13 @@ if( $id )
 			?>
 			<br />
 		</td>
-	</tr>
-	<?php 
-		require('view/drawings/external_links.php');
-	?>
-	<tr>
-		<th>HTML Link</th>
-		<td>
+        </tr>
+        <?php 
+                require('view/drawings/external_links.php');
+        } //endif (published)?>
+        <tr>
+                <th>HTML Link</th>
+                <td>
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
 			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
@@ -158,35 +164,154 @@ if( $id )
 				<p>Are you sure? <a href="javascript:void(0);">yes</a></p>
 			</div><br />
 			<br />
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
-			<h3 style="display:inline">High School Programs</h3>
-			<div id="connected_drawing_list_HS">
-			<?php
-				ShowSmallDrawingConnectionList($id, 'HS', array(
-					'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
-				));
-			?>
+                </td>
+        </tr>
+        <tr>
+        <?php $count = 0; ?>
+                <td colspan="2">
+                        <div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
+                        <h3 style="display:inline">High School Programs</h3>
+                        <div id="connected_drawing_list_HS">
+                        <?php
+                                $count += ShowSmallDrawingConnectionList($id, 'HS', array(
+                                        'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
+                                ));
+                        ?>
 			</div>
 			<br />
 			
 			<div style="display:inline"><a href="javascript:addDrawingToView('cc')"><?= SilkIcon('add.png') ?></a></div>
-			<h3 style="display:inline">Community College Pathways</h3>
-			<div id="connected_drawing_list_CC">
-			<?php
-				ShowSmallDrawingConnectionList($id, 'CC', array(
-					'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
-				));
-			?>
+                        <h3 style="display:inline">Community College Pathways</h3>
+                        <div id="connected_drawing_list_CC">
+                        <?php
+                $count += ShowSmallDrawingConnectionList($id, 'CC', array(
+                                        'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
+                                ));
+                        ?>
 			</div>
-			
-		</td>
-	</tr>
-	</table>
-	<script type="text/javascript">
+                        
+                </td>
+        </tr>
+        
+        
+        <!--
+    <tr><td colspan="2"><hr/></td></tr>
+    <?php
+    /**
+     * Trac Ticket #38 HTML IS NOT USED PHP is in use below (could stand to be cleaned up someday).
+     */
+    ?>
+    <tr>
+        <?php $viewId = $_REQUEST['id']; ?>
+        <td><a href="/a/post_assurance.php?id=<?= $viewId ?>">Signatures:</a></td>
+        <td>
+            <?php if ($viewId): ?>
+            <?php
+            $userId = $_SESSION['user_id'];
+            $sigPermissionsQuery = "SELECT role_id FROM users_roles WHERE user_id = '$userId'";
+            $sigPermissionsResult = $DB->MultiQuery($sigPermissionsQuery);
+            $sigPermissions = array();
+            foreach ($sigPermissionsResult as $result) {
+                $sigPermissions[$result['role_id']] = true;
+            }
+
+            $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.`description` as 'name', `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . 
+                                         " FROM `requirements` AS `SignatureCategory`" . 
+                                         " LEFT JOIN (`assurance_requirements_ct` AS `Signature`" . 
+                                         "              INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+                                         "                      AND `assurances`.`vpost_view_id` = '" . $viewId . "'" . 
+                                         "                      AND `assurances`.`valid` = TRUE" . 
+                                         "              LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`" . 
+                             "          ) ON `SignatureCategory`.`id` = `Signature`.`requirement_id`".
+                                         " WHERE `SignatureCategory`.requirement_type = 'stakeholder'";
+            //print($viewsSigsQuery);
+            $signatures     = $DB->MultiQuery($viewsSigsQuery);
+            // If we need to group signatures, this is where we do it.
+            $categories = array();
+            foreach ($signatures as $signature) {
+                $categories[$signature['id']]['name'] = $signature['name'];
+                $categories[$signature['id']]['sigs'] = array();
+                if ( $signature['email'] ) {
+                    $sig['date_signed'] = $signature['date_signed'];
+                    $sig['email'] = $signature['email'];
+                    $sig['name'] = $signature['username'];
+                    $categories[$signature['id']]['sigs'][] = $sig;
+                }
+            }
+            ?>
+            <table>
+            <?php
+                $signaturesReceived = 0;
+                $signaturesRequired = 0;
+                $recentDate = null;
+            ?>
+            <?php foreach ($categories as $catId => $category): ?>
+                <tr>
+                    <td><?= $category['name'] ?> (<?= $catId ?>):</td>
+                    <td>&nbsp;&nbsp;&nbsp;</td>
+                    <td width="600px">
+                    <?php $sigCount = count($category['sigs']); ?>
+                    <?php if ($sigCount > 0): ?>
+                        <?php $signaturesReceived++; ?>
+                        <?php foreach ($category['sigs'] as $sig): ?>
+                            <?php
+                                if ($recentDate == null || $sig['date_signed'] > $recentDate) {
+                                    $recentDate = $sig['date_signed'];
+                                }
+                            ?>
+                        <p>Signed by <?= $sig['name'] ?> on <?=  date_format(new DateTime($sig['date_signed']),'d M y')?></p>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php $signaturesRequired++ ?>
+                        No signatures on file.
+                    <?php endif; ?></td>
+                    <td>&nbsp;&nbsp;&nbsp;</td>
+                    <td>
+                        <?php if (!$sigCount && isset($sigPermissions[$catId])): ?>
+                            <?php $signViewLinkUrl = $_SERVER['PHP_SELF'] . '?action=sign&id=' . $viewId . '&category_id=' . $catId; ?>
+                            <a href="<?= $signViewLinkUrl ?>">Sign this View</a>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </table>
+            <?php else: ?>&nbsp
+            <?php endif;?>
+        </td>
+    </tr>-->
+        <?php if ($SITE->hasFeature('post_assurances')): ?>
+            <tr><td colspan="2"><hr/></td></tr>
+            <tr>
+                <td colspan="2">
+                    <?php if ($count > 0): ?>
+                        <a href="/a/post_assurance.php?id=<?= $id ?>">Signature Assurance Agreement:</a>
+                    <?php else: ?>
+                        Since there are no drawings, there is no Signature Assurance Agreement available.
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php if ($count > 0): ?>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <?php if ($signaturesRequired): ?>
+                        <?php if ($signaturesReceived): ?>
+                            <p>There <?= $signaturesReceived>1 ? 'are' : 'is' ?> currently <strong><?= $signaturesReceived ?></strong> assurance signature<?= $signaturesReceived>1 ? 's' : '' ?> on file (<?= $signaturesReceived>1 ? 'the most recent ' : '' ?>dated <?= date_format(new DateTime($recentDate),'Y-m-d') ?>)
+                            and <strong><?= $signaturesRequired ?></strong> still pending.</p>
+                        <?php else: ?>
+                            <p>There are currently no assurance signatures on file.</p>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <p>All <?= $signaturesReceived ?> assurance signatures have been recorded as of <?= date_format(new DateTime($recentDate),'Y-m-d') ?>.</p>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endif; ?>
+        <?php endif; ?>
+        </table>
+        <script type="text/javascript">
 
 	var $j = jQuery.noConflict();
 
@@ -451,24 +576,63 @@ else
 	echo '<table width="100%">';
 		echo '<tr>';
 			echo '<th width="20">&nbsp;</th>';
-			echo '<th>Occupation/Program</th>';
-			echo '<th width="240">Last Modified</th>';
-			echo '<th width="240">Created</th>';
-		echo '</tr>';
-	foreach( $views as $i=>$v )
-	{
-		echo '<tr class="row' . ($i%2) . '">';
-			echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
-	
-			echo '<td>' . $v['name'] . '</td>';
-	
-			$created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
-			$modified = ($v['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
-			echo '<td><span class="fwfont">'.($v['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$v['last_modified'])).'</span> <a href="/a/users.php?id='.$v['last_modified_by'].'">'.$modified['name'].'</a></td>';
-			echo '<td><span class="fwfont">'.($v['date_created']==''?'':$DB->Date('Y-m-d f:i a',$v['date_created'])).'</span> <a href="/a/users.php?id='.$v['created_by'].'">'.$created['name'].'</a></td>';
-		echo '</tr>';
-	}
-	if( count($views) == 0 )
+                        echo '<th>Occupation/Program</th>';
+                        echo '<th width="240">Last Modified</th>';
+            echo '<th width="240">Created</th>';
+            echo '<th>Signatures</th>';
+    echo '</tr>';
+        foreach( $views as $i=>$v )
+        {
+                echo '<tr class="row' . ($i%2) . '">';
+        echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
+
+        echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['name'] . '</td>';
+
+        $created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
+        $modified = ($v['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
+        echo '<td><span class="fwfont">'.($v['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$v['last_modified'])).'</span> <a href="/a/users.php?id='.$v['last_modified_by'].'">'.$modified['name'].'</a></td>';
+        echo '<td><span class="fwfont">'.($v['date_created']==''?'':$DB->Date('Y-m-d f:i a',$v['date_created'])).'</span> <a href="/a/users.php?id='.$v['created_by'].'">'.$created['name'].'</a></td>';
+
+        $viewId = $v['id'];
+        $sigSQL = "SELECT `Category`.`id`, COUNT(`Signature`.`requirement_id`) AS `count` ".
+                  "FROM `requirements` AS `Category` " . 
+                  "LEFT JOIN (`assurance_requirements_ct` AS `Signature` " . 
+                  "             INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+                  "                     AND `assurances`.`vpost_view_id` = '" . $viewId . "' " . 
+                  "                     AND `assurances`.`valid` = TRUE " . 
+                  "             ) ON `Category`.`id` = `Signature`.`requirement_id` ".
+                  "WHERE `Category`.`requirement_type` = 'stakeholder' ".
+                  "GROUP BY `Category`.`id`";
+        $sigResults = $DB->MultiQuery( $sigSQL );
+        $sigsNeeded = count($sigResults);
+        $sigsReceived = 0;
+        foreach ($sigResults as $result) {
+            if ($result['count'] > 0) {
+                $sigsReceived++;
+            }
+        }
+        echo '<td>';
+        if ($sigsNeeded == $sigsReceived) {
+            $sigDateSQL = "SELECT `Signature`.`date_signed` AS `date`".
+                                  "FROM `assurance_requirements_ct` AS `Signature` ".
+                          "INNER JOIN `requirements` on `Signature`.requirement_id = `requirements`.`id` ".
+                          "INNER JOIN `assurances` on `Signature`.assurance_id = `assurances`.`id` ".
+                                  "  AND `assurances`.`valid`=TRUE ".
+                          "  AND `assurances`.`vpost_view_id` = '$viewId' " .
+                                  "WHERE `requirements`.`requirement_type` = 'stakeholder' " .
+                          "ORDER BY `Signature`.`date_signed` DESC LIMIT 1;";
+            $sigDate = $DB->SingleQuery( $sigDateSQL );
+            echo '<img src="/common/silk/script_edit.png" /> ';
+            echo date_format(new DateTime($sigDate['date']),'Y-m-d');
+        } else {
+            echo '<a style="text-decoration: none;" href="/a/post_assurance.php?id=' . $viewId . '">';
+            echo '<span style="color: red;">' . ($sigsNeeded - $sigsReceived) . ' PENDING</span>';
+            echo '</a>';
+        }
+        echo '</td>'; // <pre>' . print_r( $sigResults, true ) . '</pre>
+                echo '</tr>';
+        }
+        if( count($views) == 0 )
 	{
 		echo '<tr class="row0"><td colspan="4">No views exist yet for your school</td></tr>';
 	}
@@ -541,29 +705,29 @@ function processDrawingListRequest()
 			$k2 = (Request('type')=='cc'?'hs':'cc');
 
 			// "Other" orgs should be able to choose any CC or Other org, not just their own
-			//JGD: The session variable for school_id is always 1 as far as I've been able to tell, so I'm changing
-			//JGD: this line to use the school_id from the HTTP_REQUEST.
-			//$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
-			$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . Request('school_id'));
-			if($mySchool['organization_type'] == 'Other' && Request('type') == 'cc')
+            //JGD: The session variable for school_id is always 1 as far as I've been able to tell, so I'm changing
+            //JGD: this line to use the school_id from the HTTP_REQUEST.
+            //$mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $_SESSION['school_id']);
+            $mySchool = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . Request('school_id'));
+            if($mySchool['organization_type'] == 'Other' && Request('type') == 'cc')
 			{
-				//JGD We need to grab all the affiliations associated with the id.
-				$query = 'SELECT *
+                //JGD We need to grab all the affiliations associated with the id.
+                $query = 'SELECT *
 					FROM schools
 					WHERE organization_type IN ("CC", "Other")
-						AND ( schools.id IN (SELECT '.$k2.'_id FROM hs_affiliations WHERE '.$k1.'_id='.Request('school_id').')
-								OR schools.id = '.Request('school_id').' )
+					AND ( schools.id IN (SELECT '.$k2.'_id FROM hs_affiliations WHERE '.$k1.'_id='.Request('school_id').')
+					OR schools.id = '.Request('school_id').' )
 					ORDER BY id='.Request('school_id').' DESC,school_name';
 
-				//$schools = $DB->VerticalQuery('SELECT *
-				//	FROM schools
-				//	WHERE organization_type IN ("CC", "Other")
-				//		AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.Request('school_id').')
-				//				OR schools.id = '.Request('school_id').' )
-				//	ORDER BY id='.Request('school_id').' DESC, school_name', 'school_name', 'id');
+                //$schools = $DB->VerticalQuery('SELECT *
+                // FROM schools
+                // WHERE organization_type IN ("CC", "Other")
+                // AND ( schools.id IN (SELECT '.$k1.'_id FROM hs_affiliations WHERE '.$k2.'_id='.Request('school_id').')
+                // OR schools.id = '.Request('school_id').' )
+                // ORDER BY id='.Request('school_id').' DESC, school_name', 'school_name', 'id');
 
-				$schools = $DB->VerticalQuery( $query, 'school_name', 'id' );
-			}
+                $schools = $DB->VerticalQuery( $query, 'school_name', 'id' );
+            }
 			else
 			{
 				$schools = $DB->VerticalQuery('SELECT *
@@ -682,10 +846,10 @@ function processChangeNameRequest()
 
 function processCreateRequest()
 {
-	global $DB;
-	
-	$last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
-	$code = base_convert($last['id']*16, 10, 26);
+        global $DB;
+        global $SITE;
+        $last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
+        $code = base_convert($last['id']*16, 10, 26);
 
 	$newCode = '';
 	for( $i=0; $i<strlen($code); $i++ )
@@ -698,22 +862,32 @@ function processCreateRequest()
 	$view['last_modified'] = $DB->SQLDate();
 	$view['created_by'] = $_SESSION['user_id'];
 	$view['last_modified_by'] = $_SESSION['user_id'];
-	$view['`code`'] = $newCode;
-	$view_id = $DB->Insert('vpost_views', $view);
-	
-	header('Location: post_views.php?id='.$view_id);
+        $view['`code`'] = $newCode;
+        $view_id = $DB->Insert('vpost_views', $view);
+        
+        //Adding an assurance record for ALL views regardless of if the assurance feature is enabled.
+        //This was a conscious decision to avoid issues with enabling/disabling the post_assurance feature.
+        //if($SITE->hasFeature('post_assurances')){
+            $assurance = array();
+            $assurance['vpost_view_id'] = $view_id;
+            $assurance['created_date'] = date('c');
+            $assurance['valid'] = 1;
+            $assurance_id = $DB->Insert('assurances', $assurance);
+        //}
+        
+        header('Location: post_views.php?id='.$view_id);
 }
 
 function processTabNameRequest()
 {
-	global $DB;
-	
-	//JGD: Don't restrict the character set of the tab name. Per Effie.
-	//$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
-	$tab_name = Request('tab_name');
-	$tab_sort = intval(Request('tab_sort'));
-	$DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
-	echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
+        global $DB;
+        
+        //JGD: Don't restrict the character set of the tab name. Per Effie.
+        //$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
+        $tab_name = Request('tab_name');
+        $tab_sort = intval(Request('tab_sort'));
+        $DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
+        echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
 }
 
 
@@ -721,7 +895,39 @@ function processDeleteRequest()
 {
 	global $DB;
 	
-	$DB->Query('DELETE FROM vpost_views WHERE id = '.intval(Request('id')));	
+        $DB->Query('DELETE FROM vpost_views WHERE id = '.intval(Request('id')));        
 }
 
-?>
+function processSignViewRequest()
+{
+    global $DB;
+    $viewId = intval($_REQUEST['id']);
+    $requirement_id = intval($_REQUEST['category_id']);
+    $assurance_id = intval($_REQUEST['assurance_id']);
+    $userId = $_SESSION['user_id'];
+//    $userId=45;
+
+//    print "User $userId is going to try to sign view: $viewId under category $requirement_id .";
+//    print "ZZ";
+    $pcSQL = "
+    SELECT COUNT(*) AS count
+      FROM users_roles
+           INNER JOIN users ON users_roles.user_id = users.id
+           INNER JOIN requirements ON requirements.required_role = users_roles.role_id
+     WHERE requirements.id = $requirement_id AND users.id = $userId
+     " ;
+    $permissionsCheck = $DB->SingleQuery( $pcSQL );
+    if ($permissionsCheck['count']) {
+        $addSignSQL = "INSERT INTO assurance_requirements_ct 
+                        (`requirement_id`, `assurance_id`, `user_id`, `date_signed`) 
+                        VALUES ('$requirement_id', '$assurance_id', '$userId', NOW());";
+        $DB->Query( $addSignSQL );
+        $updateAssuranceSQL = "UPDATE assurances SET last_signed_date = NOW() WHERE id = '$assurance_id';";
+        $DB->Query( $updateAssuranceSQL );
+    }
+    if (KeyInRequest('assurance')) {
+        header('Location: post_assurance.php?id=' . $viewId);
+    } else {
+        header('Location: post_views.php?id=' . $viewId);
+    }
+}

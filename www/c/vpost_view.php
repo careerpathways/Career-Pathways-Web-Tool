@@ -1,4 +1,9 @@
 <?php
+//PDF call passes session ID via command line call. see /pdf/index.php
+if(isset($_GET['session_id'])){
+    session_id($_GET['session_id']);
+}
+
 chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
@@ -37,7 +42,7 @@ foreach( $drawings as $d )
 if( Request('format') == 'html' )
 {
     if(count($drawings) == 0){
-                drawing_not_found('postview', Request('id'));
+		drawing_not_found('postview', Request('id'));
     }
     if ($SITE->hasFeature('post_assurances')){
         $view = $DB->SingleQuery('SELECT published FROM vpost_views WHERE id='.Request('id'));
@@ -48,10 +53,10 @@ if( Request('format') == 'html' )
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html>
             <head>
-                <title><?= $page_title ?></title>
+            	<title><?= $page_title ?></title>
             </head>
             <body>
-                <h1>This view is unavailable.</h1>
+            	<h1>This view is unavailable.</h1>
             </body>
             </html>
             <?php
