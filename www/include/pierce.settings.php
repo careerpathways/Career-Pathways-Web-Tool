@@ -12,7 +12,7 @@ class ThisSite extends SiteSettings {
     *
     */
     private $site_features = array(
-        'olmis' => false,
+        'olmis' => true,
         'oregon_skillset' => true,
         'post_assurances' => false,
     );
