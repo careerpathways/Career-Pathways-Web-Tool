@@ -317,6 +317,8 @@ require_once("POSTChart.inc.php");
                     tinyMCE.init({
                         mode : "none",
                         theme : "advanced",
+                        convert_urls : false,
+                        relative_urls : false,
                         plugins : "spellchecker,style",
                         theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code,spellchecker",
                         theme_advanced_buttons2 : "",
