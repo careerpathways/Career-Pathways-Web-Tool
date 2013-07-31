@@ -781,7 +781,6 @@ global $DB;
 			</td>
 		</tr>
 		<?php
-		}
 	}
 	?>
 
