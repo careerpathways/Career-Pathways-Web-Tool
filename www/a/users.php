@@ -748,9 +748,6 @@ global $DB;
 		?>
                 </td>
         </tr>
-        <?php
-                if( IsWebmaster() ) {
-                ?>
                 <tr>
                         <td colspan="2" class="noborder"><hr></td>
 		</tr>
@@ -758,18 +755,21 @@ global $DB;
 			<td valign="top" class="noborder">Reassign Drawings:</td>
 			<td><input type="checkbox" name="chown" value="1" /> Check this box, then choose a user:<br />
 			<?php
-			$allusers_ = $DB->MultiQuery('SELECT id, CONCAT(first_name," ",last_name) AS name FROM users ORDER BY first_name, last_name');
-			$allusers[''] = '';
-			foreach( $allusers_ as $u )
-			{
-				$allusers[$u['id']] = $u['name'];
-			}
-			echo GenerateSelectBox($allusers,'to_id','');
-			?><br />
-			Note: There is no undo! This will merge this user's drawings with the target user's drawings, and you will be unable to separate them again.
-			<br />
-                        <input type="submit" name="submit" value="Save Changes" class="submit">
-                        </td>
+            //$_SESSION['school_id']
+            
+                $query = 'SELECT id, CONCAT(first_name," ",last_name) AS name FROM users WHERE users.user_active=1 AND users.school_id='.$user['school_id'].' ORDER BY first_name, last_name;';
+		$reasignRaw = $DB->MultiQuery($query);
+		$reasign[''] = '';
+		foreach( $reasignRaw as $u )
+		{
+			$reasign[$u['id']] = $u['name'];
+		}
+		echo GenerateSelectBox($reasign,'to_id','');
+		?><br />
+		Note: There is no undo! This will merge this user's drawings with the target user's drawings, and you will be unable to separate them again.
+		<br />
+		<input type="submit" name="submit" value="Save Changes" class="submit">
+		</td>
                 </tr>
                 <?php
                 }
