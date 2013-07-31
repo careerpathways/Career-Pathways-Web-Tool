@@ -46,12 +46,17 @@ if( PostRequest() ) {
 			$recipients = '';
 			if( Request('school') != 0 && is_numeric(Request('school')) ) {
 				$user['school_id'] = Request('school');
+				
 				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64 AND user_active=1');
+				//print('http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']."<pre>".print_r($admins,true)."<pre>");
 				foreach( $admins as $m ) {
 					$recipients .= $m['email'].', ';
 				}
 				$user['other_school'] = '';
-				$school = $DB->SingleQuery('SELECT school_name FROM schools WHERE id='.$user['school_id']);
+				$school = $DB->SingleQuery('SELECT school_name,organization_type FROM schools WHERE id='.$user['school_id']);
+				if($school['organization_type']=='HS'){
+					$user['user_level'] = 8;
+				}
 				$school_name = $school['school_name'];
 			/*
 			// disable requests from schools not in the system
