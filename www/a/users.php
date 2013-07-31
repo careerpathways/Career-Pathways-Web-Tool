@@ -772,7 +772,6 @@ global $DB;
 		</td>
                 </tr>
                 <?php
-                }
                 if( IsWebmaster() ) {
                 ?>
                 <tr>
