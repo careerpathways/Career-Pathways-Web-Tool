@@ -579,7 +579,9 @@ else
                         echo '<th>Occupation/Program</th>';
                         echo '<th width="240">Last Modified</th>';
             echo '<th width="240">Created</th>';
-            echo '<th>Signatures</th>';
+            if ($SITE->hasFeature('post_assurances')) {
+                echo '<th>Signatures</th>';
+            }
     echo '</tr>';
         foreach( $views as $i=>$v )
         {
@@ -611,25 +613,27 @@ else
                 $sigsReceived++;
             }
         }
-        echo '<td>';
-        if ($sigsNeeded == $sigsReceived) {
-            $sigDateSQL = "SELECT `Signature`.`date_signed` AS `date`".
-                                  "FROM `assurance_requirements_ct` AS `Signature` ".
-                          "INNER JOIN `requirements` on `Signature`.requirement_id = `requirements`.`id` ".
-                          "INNER JOIN `assurances` on `Signature`.assurance_id = `assurances`.`id` ".
-                                  "  AND `assurances`.`valid`=TRUE ".
-                          "  AND `assurances`.`vpost_view_id` = '$viewId' " .
-                                  "WHERE `requirements`.`requirement_type` = 'stakeholder' " .
-                          "ORDER BY `Signature`.`date_signed` DESC LIMIT 1;";
-            $sigDate = $DB->SingleQuery( $sigDateSQL );
-            echo '<img src="/common/silk/script_edit.png" /> ';
-            echo date_format(new DateTime($sigDate['date']),'Y-m-d');
-        } else {
-            echo '<a style="text-decoration: none;" href="/a/post_assurance.php?id=' . $viewId . '">';
-            echo '<span style="color: red;">' . ($sigsNeeded - $sigsReceived) . ' PENDING</span>';
-            echo '</a>';
-        }
-        echo '</td>'; // <pre>' . print_r( $sigResults, true ) . '</pre>
+        if ($SITE->hasFeature('post_assurances')) {
+            echo '<td>';
+	    if ($sigsNeeded == $sigsReceived) {
+		$sigDateSQL = "SELECT `Signature`.`date_signed` AS `date`".
+				      "FROM `assurance_requirements_ct` AS `Signature` ".
+			      "INNER JOIN `requirements` on `Signature`.requirement_id = `requirements`.`id` ".
+			      "INNER JOIN `assurances` on `Signature`.assurance_id = `assurances`.`id` ".
+				      "  AND `assurances`.`valid`=TRUE ".
+			      "  AND `assurances`.`vpost_view_id` = '$viewId' " .
+				      "WHERE `requirements`.`requirement_type` = 'stakeholder' " .
+			      "ORDER BY `Signature`.`date_signed` DESC LIMIT 1;";
+		$sigDate = $DB->SingleQuery( $sigDateSQL );
+		echo '<img src="/common/silk/script_edit.png" /> ';
+		echo date_format(new DateTime($sigDate['date']),'Y-m-d');
+	    } else {
+		echo '<a style="text-decoration: none;" href="/a/post_assurance.php?id=' . $viewId . '">';
+		echo '<span style="color: red;">' . ($sigsNeeded - $sigsReceived) . ' PENDING</span>';
+		echo '</a>';
+	    }
+	    echo '</td>'; // <pre>' . print_r( $sigResults, true ) . '</pre>
+	}
                 echo '</tr>';
         }
         if( count($views) == 0 )
