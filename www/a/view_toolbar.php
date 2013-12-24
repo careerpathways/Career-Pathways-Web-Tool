@@ -35,6 +35,7 @@ foreach($results as $row){
                     <a href="javascript:viewAssurancePopup(<?=$_REQUEST['id']?>, '<?=$_SERVER['PHP_SELF']?>?id=<?=$view_id?>')" class="noline"><?= SilkIcon('add.png') ?> add assurance agreement</a>
                     <?php } 
                 }?>
+                <a href="javascript:copyViewPopup('view', <?=$_REQUEST['id']?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this view</a>
                 </div>
         </div>
 </div>

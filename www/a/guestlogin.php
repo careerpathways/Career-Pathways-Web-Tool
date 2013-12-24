@@ -64,7 +64,6 @@ if( PostRequest() ) {
 
 	$DB->Insert('guest_logins', $guest);						
 	
-
 	$user = $DB->SingleQuery('SELECT * FROM users WHERE email="guest"');
 	$_SESSION['user_id'] = $user['id'];
 	$_SESSION['first_name'] = $user['first_name'];
@@ -132,6 +131,7 @@ if( PostRequest() ) {
 			<input type="checkbox" name="referral[]" value="National Conference" />National Conference &nbsp;
 			<input type="checkbox" name="referral[]" value="Web Conference" />Web Conference &nbsp;
 			<input type="checkbox" name="referral[]" value="Other" />Other: <input type="textbox" name="referral_other" size="20" /> &nbsp;
+        </td>
 	</tr>
 	<?php 
 	if(array_key_exists('download', $_GET))

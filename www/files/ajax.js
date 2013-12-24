@@ -83,6 +83,10 @@ function copyPopup(mode, version_id) {
 	chGreybox.create('<div id="copyPopup"><iframe src="/a/copy_popup.php?mode='+mode+'&version_id='+version_id+'" style="width:400px;height:300px;"></iframe></div>', 400, 300, null, 'Copy This Version');
 }
 
+function copyViewPopup(mode, view_id) {
+	chGreybox.create('<div id="copyViewPopup"><iframe src="/a/copy_view_popup.php?action=copy_view_form&view_id=' + view_id + '" style="width:400px; height:70px; margin-left:15px;"></iframe></div>', 400, 70, null, 'Copy This View');
+}
+
 function publishPopup(mode, version_id) {
   var url;
   if( mode == "post" ) {
