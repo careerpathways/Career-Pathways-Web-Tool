@@ -490,6 +490,7 @@ font-size: 8pt;
 }
 
 #logos a {
+        display:block;
 	text-decoration:none;
 	}
 
