@@ -96,12 +96,12 @@ class ThisSiteTemplate extends SiteTemplate {
 
 			$this->PublicToolbar();
 			?>
-			</div> <!-- sideboxes -->
-			
 			<div id="logos">
 				<a href="http://www.sbctc.ctc.edu/college/_e-abe_creatingopportunities.aspx" target="_blank"><img src="/images/creatingops-wctc_logo287pms.gif" width="170" height="68" alt="Creating Opportunities for Washington State's Emerging Workforce" /></a>
 			</div> <!-- site logos -->
 
+			</div> <!-- sideboxes -->
+			
 			<?php
 			if( !$this->is_chart_page ) {
 			?>
