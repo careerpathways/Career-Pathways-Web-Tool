@@ -1,6 +1,6 @@
 <?php
-define('AWS_KEY', 'AKIAJTYFFWRURSGGNJ5Q');
-define('AWS_SECRET_KEY', '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');
+define('AWS_KEY', '');
+define('AWS_SECRET_KEY', '');
 
 class ThisSite extends SiteSettings {
 
