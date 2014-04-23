@@ -463,7 +463,9 @@ abstract class POSTChart
 
 				// Write the cell to the page
 				echo '<td class="post_cell"><div class="cell_container">';
-					echo ($image ? '<img src="' . $image . '" height="12" class="legend" />' : '');
+				        //create alt tag
+				        $altTag = str_replace('title','alt',$titleTag);
+					echo ($image ? '<img src="' . $image . '" height="12" class="legend" ' . $titleTag . ' ' . $altTag .' />' : '');
 					echo '<div id="post_cell_' . $cell->id . '"' . $titleTag . ' class="post_draggable">';
 						echo $this->_cellContent($cell);
 					echo '</div>';

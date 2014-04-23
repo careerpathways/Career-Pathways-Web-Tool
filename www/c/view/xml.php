@@ -1,15 +1,20 @@
 <?php
 header("Content-type: text/xml");
 $drawing = $DB->SingleQuery("
-			SELECT drawings.*, drawing_main.name, schools.school_name, schools.school_abbr
+			SELECT drawings.*,drawing_main.program_id, drawing_main.name, schools.school_name, schools.school_abbr
 			FROM drawings, drawing_main, schools
 			WHERE drawing_main.id=drawings.parent_id
 				AND school_id=schools.id
 				AND drawings.id=".intval($_REQUEST['id']));
 $objects = $DB->MultiQuery("SELECT * FROM objects WHERE drawing_id=".$drawing['id']);
+$title = $drawing['name'];
+if( $drawing['name'] == '' ) {
+	$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
+	$title = $program['title'];
+}
 ?>
 <drawing id="<?= $drawing['parent_id'] ?>">
-	<name><?= htmlspecialchars($drawing['name']) ?></name>
+	<name><?= htmlspecialchars($title) ?></name>
 	<schoolName><?= htmlspecialchars($drawing['school_name']) ?></schoolName>
 	<schoolAbbr><?= htmlspecialchars($drawing['school_abbr']) ?></schoolAbbr>
 	<version id="<?= $drawing['id'] ?>" number="<?= $drawing['version_num'] ?>" published="<?= $drawing['published'] ? 'true' : 'false' ?>">

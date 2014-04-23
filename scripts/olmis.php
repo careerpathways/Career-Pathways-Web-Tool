@@ -1,5 +1,8 @@
 #!/usr/bin/php
 <?php
+$error_reporting = E_ALL & ~E_NOTICE;
+error_reporting($error_reporting);  
+
 include('scriptinc.php');
 
 $olmis = $DB->MultiQuery('
@@ -22,6 +25,8 @@ $olmis = $DB->MultiQuery('
 $fp = fopen($SITE->cache_path('olmis').'olmis.csv', 'w');
 foreach( $olmis as $o )
 {
+	//print "==============================================\n";
+	//print "Testing: {$o['drawing_id']}\n";
 	if($url=getExternalDrawingLink($o['drawing_id'], 'pathways')){
 		//Do nothing - the url is valid...
 	} else {
@@ -29,6 +34,7 @@ foreach( $olmis as $o )
 	}
 	$DB->Query("UPDATE drawing_main SET last_olmis_link='".$url."', last_olmis_update=NOW() WHERE drawing_main.id=".$o['drawing_id'].";");
 	fwrite($fp, $o['school_name'].','.$o['olmis_id'].','.$url.',"'.trim($o['drawing_name']).'"'."\n");
+	//print "==============================================\n";
 }
 fclose($fp);
 

@@ -14,6 +14,7 @@ $drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS vie
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
 	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
+	LEFT JOIN oregon_skillsets ON v.oregon_skillsets_id = oregon_skillsets.id
 	WHERE v.id = '.intval(Request('id')).'
 		AND version.published = 1
 	ORDER BY vl.sort, vl.tab_name');
@@ -209,7 +210,12 @@ elseif( Request('format') == 'js' )
             var ua = navigator.userAgent;
             var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(ua) != null)
-            rv = parseFloat( RegExp.$1 );
+                rv = parseFloat( RegExp.$1 );
+        }  else if (navigator.appName == 'Netscape') {
+            var ua = navigator.userAgent;
+            var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+            if (re.exec(ua) != null)
+              rv = parseFloat( RegExp.$1 );
         }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9

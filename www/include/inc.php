@@ -178,6 +178,64 @@ function GetHSAffiliations($cc_id)
 		ORDER BY school_name');
 }
 
+$getLinkHeaders_cache = array();
+
+function getLinkHeaders($link)
+{
+    //print "processingg: {$link}\n";
+    global $getLinkHeaders_cache;
+    if (!isset($getLinkHeaders_cache)) {
+      $getLinkHeaders_cache = array();
+    }
+    if (isset($getLinkHeaders_cache[$link])) {
+      //print "using cache\n";
+      return $getLinkHeaders_cache[$link];
+    }
+    
+    $returnArray = array(
+        'connected' => false,
+        'http_code' => 404,
+        'url' => $link,
+        'redirect_url' => '',
+        'error' => 'Empty Link',
+    );
+    if (empty($link)) {
+        //print "got empty!!!\n";
+        $getLinkHeaders_cache[$link] = $returnArray;
+        return $returnArray;
+    }
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $link);
+    curl_setopt($ch, CURLOPT_HEADER, true);
+    curl_setopt($ch, CURLOPT_NOBODY, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+
+    $curlReturn = curl_exec ($ch);
+    if(curl_errno($ch)) {
+        $returnArray['error'] = curl_error($ch);
+        $getLinkHeaders_cache[$link] = $returnArray;
+        return $returnArray;
+    }
+    
+    $info = curl_getinfo($ch);
+    curl_close ($ch);
+
+    $returnArray =  array(
+      'connected' => true,
+      'http_code' => $info['http_code'],
+      'url' => $info[$link],
+      'redirect_url' => $info['redirect_url'],
+    );
+    $getLinkHeaders_cache[$link] = $returnArray;
+    return $returnArray;
+
+}
+
 /**
  * Tries to find the external link to the specified drawing in the external_links table.
  * Filters out things like file:/// links and known testing URLs.
@@ -189,6 +247,7 @@ function GetHSAffiliations($cc_id)
 function getExternalDrawingLink($drawing_id, $type)
 {
 	global $DB;
+	$time_start = microtime(true);
 	
 	$drawing_id = intval($drawing_id);
 	$type = ($type == 'pathways' ? 'pathways' : 'post');
@@ -203,8 +262,7 @@ function getExternalDrawingLink($drawing_id, $type)
 
 	// If there was no "best link" marked in the database, find one and mark it
 	$url = FALSE;
-	if($link == FALSE || count($link) == 0)
-	{
+	if ($link == FALSE || count($link) == 0) {
 		$links = getExternalDrawingLinks($drawing_id, $type);
 		if(array_key_exists(0, $links))
 		{
@@ -214,8 +272,28 @@ function getExternalDrawingLink($drawing_id, $type)
 	} else {
 		$url = $link['url'];
 	}
-	if ($url!==FALSE) {	
+	if ($url!==FALSE) {
 		//test the link
+		$result = getLinkHeaders($url);
+		if ($result['connected']) {
+		    if($result['http_code'] == 200){
+			    //SUCCESS: Do nothing, the url has been checked and will be returned.
+			    //print($result[0]."     ".$url.PHP_EOL);
+		    } elseif($result['http_code'] == 404 || $result['http_code'] == 403) {
+			    //FAIL: Not found
+			    $url = FALSE;
+		    } else {
+                var_dump($result);
+			    //FAIL: Some header other than the normal 200 status was returned.
+			    $url = FALSE;
+		    }
+		} else {
+			//FAIL: We could not even connect to the URL
+			$url = FALSE;
+		}
+		
+		
+		/*
 		$result = @get_headers($url);
 		if(!empty($result) && stripos($result[0],"200 OK")!==false){
 			//SUCCESS: Do nothing, the url has been checked and will be returned.
@@ -224,6 +302,7 @@ function getExternalDrawingLink($drawing_id, $type)
 			//FAIL: Some header other than the normal 200 status was returned.
 			$url = FALSE;
 		}
+		*/
 	}
 	return $url;
 }

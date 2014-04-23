@@ -2,11 +2,11 @@
 require_once "inc.php";
 require_once "gd_color.inc.php";
 
-$title_font = 'verdanab.ttf';
-$cp_font = 'TCCB____.TTF';
+$title_font = './/verdanab.otf';
+$cp_font = './/TCCB____.TTF';
 
-$font_thick = 'EuropaGroNr2SB-Ult.ttf';
-$font_thin = 'EuropaGroNr2SB-XLig.ttf';
+$font_thick = './/EuropaGroNr2SB-Ult.otf';
+$font_thin = './/EuropaGroNr2SB-XLig.otf';
 $font_size = 13;
 
 if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {

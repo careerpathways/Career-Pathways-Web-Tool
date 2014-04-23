@@ -4,36 +4,46 @@ header("Content-type: text/javascript");
 
 var clipboard = {
 	clear: function(id){
-		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
-			{content: "", href:"", legend: ""},
-			function(data){
+		$.ajax({
+		   type: "POST",
+		   url: "/a/postserv.php?mode=commit&type=cell&id="+id,
+		   data: {content: "", href:"", legend: ""},
+		   success: function(data){
 				$("#post_cell_"+id).html(data);
 				$("#post_cell_"+id).parent().css("background", "none");
 				bindPostCells();
-			}
-		);
+			},
+		   async: false
+		});
 	},
 	copy: function(id){
-		$.get("/a/postserv.php?mode=fetch&type=cell&id="+id,
-			  {},
-			  function(cell){
+		$.ajax({
+		   type: "GET",
+		   url: "/a/postserv.php?mode=fetch&type=cell&id="+id,
+		   data: {},
+		   success: function(cell){
 				clipboard.data = cell;
 			  },
-			  "json");
+		   dataType: 'json',
+		   async: false
+		});
 	},
 	paste: function(id){
-		$.post("/a/postserv.php?mode=commit&type=cell&id="+id,
-			{content: clipboard.data.content, href: clipboard.data.href, legend: clipboard.data.legend,
+		$.ajax({
+		   type: "POST",
+		   url: "/a/postserv.php?mode=commit&type=cell&id="+id,
+		   data: {content: clipboard.data.content, href: clipboard.data.href, legend: clipboard.data.legend,
 			 number: clipboard.data.course_number, title: clipboard.data.course_title,
 			 subject: clipboard.data.course_subject, credits: clipboard.data.course_credits},
-			function(data){
+		   success: function(data){
 				$("#post_cell_"+id).html(data);
 				var bgSwap = $("#post_cell_"+id).children().css("background");
 				$("#post_cell_"+id).parent().css({"background" : bgSwap});
 				$("#post_cell_"+id).children().css({"background" : "none"});
 				bindPostCells();
-			}
-		);
+			},
+		   async: false
+		});
 	},
 	data: {content: '', href: '', legend: '', course_number: '', course_title: '', course_subject:'', course_credits:''}
 };
