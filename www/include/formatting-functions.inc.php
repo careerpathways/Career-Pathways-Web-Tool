@@ -211,7 +211,7 @@ function ShowPostHeader($drawing_id)
 		JOIN schools ON m.school_id=schools.id
 		LEFT JOIN programs AS p ON m.program_id=p.id
 		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+	return '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
 }
 
 function ShowPostViewHeader($view_id)
