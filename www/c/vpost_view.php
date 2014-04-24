@@ -38,6 +38,8 @@ foreach( $drawings as $d )
 		$hs[] = $d;
 	
 	$page_title = $d['school_name'] . ' - Plan of Study - ' . $d['view_name'];
++       $main_skillset = $d['view_skillset'];
+
 }
 
 if( Request('format') == 'html' )
@@ -98,6 +100,14 @@ echo '<div style="margin-bottom: 10px">';
 echo '<div id="post_title">';
 	echo ShowPostViewHeader(intval(Request('id')));
 echo '</div>';
+
+if( $main_skillset )
+       {
+               echo '<div id="skillset">';
+                       echo $main_skillset;
+               echo '</div>';
+       }
+
 /*
 if( count($skillsets) > 0 )
 {

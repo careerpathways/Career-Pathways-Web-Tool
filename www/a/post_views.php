@@ -40,6 +40,9 @@ if (KeyInRequest('action')) {
                 case 'sign':
                         processSignViewRequest();
                         die();
+               case 'change_skillSet':
+                       processChangeSkillSetRequest();
+                       die();
                 default:
                         die('unknown action');
         }
@@ -107,6 +110,37 @@ if( $id )
                 <th width="80">Organization</th>
                 <td><b><?= $schools[$school_id] ?></b></td>
         </tr>
+<?php
+if($SITE->hasFeature('oregon_skillset')){
+       if (empty($view['oregon_skillsets_id'])) {
+               $skillSet = array('title'=>'');
+       } else {
+               $skillSet = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id='.$view['oregon_skillsets_id']);
+       }
+?>
+<tr class="editable">
+       <th><?=l('skillset name')?></th>
+       <td valign="top">
+               <div id="skillSet_fixed">
+                       <span id="skillSet_value"><?= $skillSet['title'] ?></span>
+                       <a href="javascript:showSkillSetChange()" class="tiny">edit</a>
+               </div>
+
+       <div id="skillSet_edit" style="display:none">
+               <?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
+               <?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
+               <input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
+               <span id="checkSkillSetResponse" class="error"></span>
+       </div>
+
+       <?php
+               //echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+       ?>
+       </td>
+</tr>
+<?php
+}
+?>
         <?php if($view['published']){?>
         <tr>
                 <th>Embed Code</th>
@@ -352,6 +386,26 @@ if( $id )
 		
 	});
 
+       function showSkillSetChange() {
+               getLayer('skillSet_edit').style.display = 'block';
+               getLayer('skillSet_fixed').style.display = 'none';
+       }
+
+       function saveskillSet() {
+               $j.get("post_views.php",
+                       {id: <?= $id ?>,
+                        skillSet_id: $j('#drawing_skill_set').val(),
+                        action: "change_skillSet"
+                       },
+                       function(data) {
+                               getLayer('skillSet_value').innerHTML = data;
+                               getLayer('skillSet_edit').style.display = 'none';
+                               getLayer('skillSet_fixed').style.display = 'block';
+                       }
+               );
+       }
+
+
 	function showTitleChange() {
 		getLayer('title_edit').style.display = 'block';
 		getLayer('title_fixed').style.display = 'none';
@@ -544,6 +598,20 @@ elseif( KeyInRequest('id') )
 		?>
 		</td>
 	</tr>
+
+<?php
+if($SITE->hasFeature('oregon_skillset')){
+?>
+<tr>
+       <th><?=l('skillset name')?></th>
+       <td valign="top"><span id="skillset"><?php
+               echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+       ?></span>(optional)</td>
+</tr>
+<?php
+}
+?>
+
 	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="submit" value="Create" id="submitButton"></td>
@@ -833,6 +901,21 @@ function processDrawingListRequest()
 	
 }
 
+
+function processChangeSkillSetRequest()
+{
+       global $DB;
+       
+       $view = array();
+       $view['oregon_skillsets_id'] = Request('skillSet_id');
+       $view['last_modified'] = $DB->SQLDate();
+       $view['last_modified_by'] = $_SESSION['user_id'];
+       $DB->Update('vpost_views', $view, Request('id'));
+       //We need to return the actual string value. Passed Id is the foreign key to oregon_skillsets table.
+       $row = $DB->SingleQuery("SELECT * FROM oregon_skillsets WHERE id = ".intval(Request('skillSet_id')));
+       echo $row['title'];
+}
+
 function processChangeNameRequest()
 {
 	global $DB;
@@ -865,6 +948,7 @@ function processCreateRequest()
 	$view['created_by'] = $_SESSION['user_id'];
 	$view['last_modified_by'] = $_SESSION['user_id'];
         $view['`code`'] = $newCode;
+        $view['oregon_skillsets_id'] = Request('skillset_id');
         $view_id = $DB->Insert('vpost_views', $view);
         
         //Adding an assurance record for ALL views regardless of if the assurance feature is enabled.
