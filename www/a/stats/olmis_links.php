@@ -25,7 +25,8 @@ echo count($olmis) . ' OLMIS reports currently link to published roadmaps';
 echo '<table>';
 foreach( $olmis as $o )
 {
-	$a = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">';
+    $url = BuildOlmisLink($o['olmis_id']);
+	$a = '<a href="'.$url.'" target="_blank">';
 	echo '<tr class="drawing_main">';
 		echo '<td>' . $a . '<img src="/images/olmis-16.gif" width="16" height="16" /></a></td>';
 		echo '<td class="drawinglist_name" colspan="5">' . $o['job_title'] . '</td>';

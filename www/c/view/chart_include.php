@@ -1,5 +1,5 @@
 <style type="text/css">
-@import 'http://<?= $_SERVER['SERVER_NAME'] ?>/c/chstyle.css';
+@import '/c/chstyle.css';
 .chVDivider { 
 	background: #ccc;
 	height: 100%;
@@ -24,11 +24,11 @@
 </script>
 
 <?php if(isset($_GET['action'])){ ?>
-<!--[if lt IE 9]><script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/excanvas.js"></script><![endif]-->
+<!--[if lt IE 9]><script type="text/javascript" src="/files/excanvas.js"></script><![endif]-->
 <?php } else { ?>
 <!--[if lt IE 9]>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/flashcanvas.js"></script>
+<script type="text/javascript" src="/files/flashcanvas.js"></script>
 <![endif]-->
 <?php } ?>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/prototype.js"></script>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/c/chview.js"></script>
+<script type="text/javascript" src="/files/prototype.js"></script>
+<script type="text/javascript" src="/c/chview.js"></script>

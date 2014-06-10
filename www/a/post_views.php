@@ -642,13 +642,15 @@ else
 	
 	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id.' ORDER BY name');
 	echo '<table width="100%">';
-		echo '<tr>';
-			echo '<th width="20">&nbsp;</th>';
-                        echo '<th>Occupation/Program</th>';
-                        echo '<th width="240">Last Modified</th>';
+	    echo '<tr>';
+	    echo '<th width="20">&nbsp;</th>';
+            echo '<th>Occupation/Program</th>';
+            echo '<th width="240">Last Modified</th>';
             echo '<th width="240">Created</th>';
+            if ($SITE->hasFeature('post_assurances')) {
                 echo '<th>Signatures</th>';
-    echo '</tr>';
+            }
+            echo '</tr>';
         foreach( $views as $i=>$v )
         {
                 echo '<tr class="row' . ($i%2) . '">';

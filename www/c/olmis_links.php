@@ -130,7 +130,8 @@ function get_drawing_list($olmis_id) {
 function html_occupation($o)
 {	
 	ob_start();
-	echo '<div class="olmis_title"><a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11" target="_blank">' . $o['job_title'] . '</a></div>' . "\n";
+        $url = BuildOlmisLink($o['olmis_id']);
+	echo '<div class="olmis_title"><a href="'.$url.'" target="_blank">' . $o['job_title'] . '</a></div>' . "\n";
 	$drawings = get_drawing_list($o['olmis_id']);
 	foreach( $drawings as $d ) {
 		echo '<div class="olmis_roadmap"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank"><span title="' . $d['school_name'] . '">' . $d['school_abbr'] . '</span>: ' . $d['name'] . '</a></div>' . "\n";
@@ -142,7 +143,8 @@ function json_occupation($o)
 {	
 	$program = array(
 		'title'=>$o['job_title'], 
-		'url'=>'http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11'
+		'url'=> BuildOlmisLink($o['olmis_id']),
+        //'http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11'
 	);
 	$drawings = get_drawing_list($o['olmis_id']);
 	foreach( $drawings as $d ) 
