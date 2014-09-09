@@ -43,7 +43,7 @@ if( KeyInRequest('id') ) {
 				$content = $DB->MultiQuery('SELECT content
 					FROM objects
 					WHERE drawing_id = ' . $d['id'] . '
-					AND (content LIKE "%http://%qualityinfo.org%" OR content LIKE "%http://%olmis.emp.state.or.us%")');
+					AND (content LIKE "%qualityinfo.org%"  OR content LIKE "%olmis.org%" OR content LIKE "%olmis.emp.state.or.us%")');
 				foreach( $content as $c )
 				{
 					$soc = array_merge($soc, SearchForOLMISLinks($c['content']));
@@ -60,7 +60,7 @@ if( KeyInRequest('id') ) {
 
 			$checkboxes = ShowOlmisCheckboxes($soc);
 			if( $checkboxes == '' )
-				$html = '<div style="">No OLMIS links were found in this drawing</div>';
+				$html = '<div style="">No new OLMIS links were found in this drawing</div>';
 			else
 			{	
 				$html = '<div style="margin-top:15px;font-weight: bold;">Add this roadmap to one or more occupational reports</div>';

@@ -210,6 +210,11 @@ elseif( Request('format') == 'js' )
             var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(ua) != null)
             rv = parseFloat( RegExp.$1 );
+        }  else if (navigator.appName == 'Netscape') {
+			var ua = navigator.userAgent;
+			var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+			if (re.exec(ua) != null)
+			rv = parseFloat( RegExp.$1 );
         }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9

@@ -80,6 +80,9 @@ function showPublishForm($mode)
 	<?php
 }
 
+function BuildOlmisLink($socCode) {
+    return "https://new.qualityinfo.org/jc-oprof/?at=1&t1={$socCode}~{$socCode}~4101000000~0";
+}
 
 function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $readonly=false)
 {
@@ -98,7 +101,8 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $read
 				$html .= '<div id="olmischk_'.$o['olmis_id'].'">';
 				if(!$readonly)
 					$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" '.($defaultChecked?'checked="checked"':'').'/> ';
-				$html .= '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">'.$o['title'].'</a></div>';
+                $url = BuildOlmisLink($o['olmis_id']);
+				$html .= '<a href="'.$url.'">'.$o['title'].'</a></div>';
 			}
 		}
 	}
@@ -115,7 +119,8 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $read
 		}
 		foreach( $olmis as $o )
 		{
-			$link = '<a href="http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue" target="_blank">';
+            $url = BuildOlmisLink($o['olmis_id']);
+			$link = '<a href="'.$url.'" target="_blank">';
 			$html .= '<div id="olmischk_'.$o['olmis_id'].'">';
 			if(!$readonly)
 				$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> ';
@@ -134,7 +139,7 @@ function SearchForOLMISLinks($content)
 	// 3. return an array of IDs
 	
 	$soc = array();
-	if( preg_match_all('~(qualityinfo\.org|olmis\.emp\.state\.or\.us)/olmisj/OIC?.*?occ=([0-9]{6})~', $content, $matches) )
+	if( preg_match_all('/(qualityinfo\.org|olmis\.emp\.state\.or\.us)[^"]*t1=[^~]+~([0-9]{6})~/', $content, $matches) )
 	foreach( $matches[2] as $m )
 		if( !in_array($m, $soc) )
 		{
@@ -146,7 +151,8 @@ function SearchForOLMISLinks($content)
 		$query = $DB->SingleQuery('SELECT * FROM olmis_codes WHERE olmis_id = "'.$s.'"');
 		if( !is_array($query) )
 		{
-			$content = file_get_contents('http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$s.'&go=Continue');
+            $url = BuildOlmisLink($s);
+			$content = file_get_contents($url);
 			if( preg_match('|"reportSubTitle">for ([^0-9\(\)]+) \(|', $content, $match) )
 			{
 				$title = $match[1];
@@ -211,7 +217,7 @@ function ShowPostHeader($drawing_id)
 		JOIN schools ON m.school_id=schools.id
 		LEFT JOIN programs AS p ON m.program_id=p.id
 		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+	return '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
 }
 
 function ShowPostViewHeader($view_id)
