@@ -75,8 +75,8 @@ apt-get install -y build-essential git curl g++ libssl-dev apache2-utils
 # ------------------
 export DEBIAN_FRONTEND=noninteractive
 # Install MySQL without prompt
-debconf-set-selections <<< 'mysql-server mysql-server/root_password password devsu'
-debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password devsu'
+debconf-set-selections <<< 'mysql-server mysql-server/root_password password mypassword'
+debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password mypassword'
 apt-get install -y mysql-server 2> /dev/null
 apt-get install -y mysql-client 2> /dev/null
 #sudo apt-get install -y php5-mysqlnd 2> /dev/null
@@ -84,10 +84,8 @@ apt-get install -y php5-mysql 2> /dev/null
 apt-get install -y php5-pspell 2> /dev/null
 apt-get install -y php5-imagick 2> /dev/null
 
-mysqladmin -pdevsu create pathways_pierce
-mysql -pdevsu pathways_pierce < /var/sql_dump/pathways_pierce.sql
-#sed -i 's#mysql://root:devsu@localhost/lunar_bakershoe#mysql://root:dev@localhost/lunar_bakershoe#g' /home/webroot/guaranty_drupal/sites/default/settings.php
-#echo "use mysql; UPDATE user SET Host = '%' WHERE User = 'root' AND Host = '::1'" | mysql
+mysqladmin -pmypassword create pathways_pierce
+mysql -pmypassword pathways_pierce < /var/sql_dump/pathways_pierce.sql
 
 apt-get install -y phpmyadmin
 echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/httpd.conf
