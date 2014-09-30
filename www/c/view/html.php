@@ -17,15 +17,11 @@
 		Charts.draw();
 	</script>
 
-	<script type="text/javascript">
-	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-	</script>
-	<script type="text/javascript">
-	try {
-	var pageTracker = _gat._getTracker("<?=l('google analytics drawings')?>");
-	pageTracker._trackPageview();
-	} catch(err) {}</script>
+	<?php
+	if(isset($SITE) && method_exists($SITE, 'google_analytics')){
+		echo $SITE->google_analytics(l('google analytics drawings'));
+	}
+	?>
 
   </body>
 </html>

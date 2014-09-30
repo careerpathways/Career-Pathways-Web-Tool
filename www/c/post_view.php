@@ -120,5 +120,11 @@ include('view/course_description_include.php');
 	});
 </script>
 
+<?php
+if(isset($SITE) && method_exists($SITE, 'google_analytics')){
+	echo $SITE->google_analytics(l('google analytics drawings'));
+}
+?>
+
 </body>
 </html>
