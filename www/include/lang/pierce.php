@@ -12,7 +12,7 @@ class Localize_Strings extends Localize
 		$this->add('skillset name', 'Career Cluster');
 		$this->add('program name label', 'Career Cluster Pathway');
 		$this->add('show program name for post', TRUE);
-		$this->add('google analytics drawings', '');
+		$this->add('google analytics drawings', 'UA-8726801-9');
 	}
 	
 	public function term_name($row)
