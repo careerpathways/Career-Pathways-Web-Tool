@@ -81,7 +81,7 @@ function showPublishForm($mode)
 }
 
 function BuildOlmisLink($socCode) {
-    return "https://new.qualityinfo.org/jc-oprof/?at=1&t1={$socCode}~{$socCode}~4101000000~0";
+    return "https://www.qualityinfo.org/jc-oprof/?at=1&t1={$socCode}~{$socCode}~4101000000~0";
 }
 
 function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $readonly=false)
