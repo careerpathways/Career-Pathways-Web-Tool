@@ -5,8 +5,8 @@ require_once "gd_color.inc.php";
 $title_font = dirname(__FILE__) . '/verdanab.otf';
 $cp_font = dirname(__FILE__) . '/TCCB____.TTF';
 
-$font_thick = dirname(__FILE__) . '/EuropaGroNr2SB-Ult.otf';
-$font_thin = dirname(__FILE__) . '/EuropaGroNr2SB-XLig.otf';
+$font_thick = dirname(__FILE__) . '/EuropaGroNr2SB-Ult.ttf';
+$font_thin = dirname(__FILE__) . '/EuropaGroNr2SB-XLig.ttf';
 $font_size = 13;
 
 if( $i=strpos($_SERVER['REQUEST_URI'],'?') ) {
