@@ -259,6 +259,13 @@ sed -i "s#DBuser\s\?=\s\?'\w\+'#DBuser = 'root'#g" /home/project/$projectName/ww
 sed -i "s#DBpass\s\?=\s\?'[^']\+'#DBpass = 'devsu'#g" /home/project/$projectName/www/include/default.settings.php
 ln -s /home/project/$projectName/www/include/default.settings.php /home/project/$projectName/www/include/settings.php
 
+
+#TODO change:
+#public $lang_file = 'humboldt';
+#to:
+#public $lang_file = 'pierce';
+# in default.settings.php
+
 # TODO sed this:
 # In general.inc.php change:
 #  require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
