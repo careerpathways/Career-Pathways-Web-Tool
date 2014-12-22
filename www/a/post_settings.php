@@ -106,6 +106,7 @@ else
 	$TEMPLATE->addl_styles[]  = '/c/pstyle.css';
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
+    $TEMPLATE->addl_scripts[] = '/common/APN.js';
 	PrintHeader();
 		?>
 		<script type="text/javascript">

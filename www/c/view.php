@@ -65,8 +65,9 @@ if( KeyInRequest('version_id') ) {
 
 }
 
-if( $drawing['program_id'] == 0 )
+if( $drawing['program_id'] == 0 ){
 	$drawing_name = $drawing['name'];
+}
 else
 {
 	$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);

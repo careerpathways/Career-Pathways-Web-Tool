@@ -5,6 +5,7 @@ PrintHeader();
 ?>
 
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<script type="text/javascript" src="/common/APN.js"></script>
 <script type="text/javascript">
 	jQuery.noConflict();
 	var MODE = '<?= $MODE ?>';

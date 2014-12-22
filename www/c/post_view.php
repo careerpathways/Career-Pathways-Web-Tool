@@ -31,7 +31,14 @@ if( Request('version_id') ) {
 		WHERE published = 1
 			AND deleted = 0
 			AND main.id='.intval(Request('drawing_id')));
+
+
 	if( is_array($drawing) ) {
+		if( $drawing['program_id'] > 0 ){
+			$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
+			$drawing['name'] = $program['title'];
+		}
+		
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}

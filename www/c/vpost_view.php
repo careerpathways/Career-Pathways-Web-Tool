@@ -7,10 +7,11 @@ if(isset($_GET['session_id'])){
 chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
-
-$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name, skillset_id
-        FROM vpost_views AS v
-        JOIN vpost_links AS vl ON v.id = vl.vid
+//logmsg ("generating view... session_id: ".session_id());
+$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name,
+	     version.id AS version_id, tab_name, skillset_id,oregon_skillsets.title as view_skillset
+	FROM vpost_views AS v
+	JOIN vpost_links AS vl ON v.id = vl.vid
 	JOIN post_drawing_main AS d ON vl.post_id=d.id
 	JOIN post_drawings AS version ON version.parent_id=d.id
 	JOIN schools AS s ON d.school_id=s.id
@@ -38,8 +39,7 @@ foreach( $drawings as $d )
 		$hs[] = $d;
 	
 	$page_title = $d['school_name'] . ' - Plan of Study - ' . $d['view_name'];
-+       $main_skillset = $d['view_skillset'];
-
+	$main_skillset = $d['view_skillset'];
 }
 
 if( Request('format') == 'html' )
@@ -102,12 +102,11 @@ echo '<div id="post_title">';
 echo '</div>';
 
 if( $main_skillset )
-       {
-               echo '<div id="skillset">';
-                       echo $main_skillset;
-               echo '</div>';
-       }
-
+	{
+		echo '<div id="skillset">';
+			echo $main_skillset;
+		echo '</div>';
+	}
 /*
 if( count($skillsets) > 0 )
 {
@@ -220,19 +219,19 @@ elseif( Request('format') == 'js' )
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'postContainer')?>");
 
-        //from MS site on how to detect IE versions
-        var rv = -1; // Return value assumes failure.
-        if (navigator.appName == 'Microsoft Internet Explorer') {
-            var ua = navigator.userAgent;
-            var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-            if (re.exec(ua) != null)
-                rv = parseFloat( RegExp.$1 );
-        }  else if (navigator.appName == 'Netscape') {
-            var ua = navigator.userAgent;
-            var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
-            if (re.exec(ua) != null)
-              rv = parseFloat( RegExp.$1 );
-        }
+    //from MS site on how to detect IE versions
+    var rv = -1; // Return value assumes failure.
+    if (navigator.appName == 'Microsoft Internet Explorer') {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+    rv = parseFloat( RegExp.$1 );
+    }  else if (navigator.appName == 'Netscape') {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+    rv = parseFloat( RegExp.$1 );
+    }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
             var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');

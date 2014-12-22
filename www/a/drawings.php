@@ -149,7 +149,8 @@ if( KeyInRequest('drawing_id') ) {
 			$content['school_id'] = $school_id;
 			$content['skillset_id'] = Request('skillset_id');
 			$content['program_id'] = Request('program_id');
-			$content['name'] = Request('drawing_title');
+			$content['name'] = Request('name');
+			//$content['name_approved'] = Request('name_approved');
 
 			$parent_id = $DB->Insert('drawing_main',$content);
 
@@ -366,12 +367,16 @@ function copyVersion($version_id) {
 		$new_id = $table_status['Auto_increment'];
 		$idMap[$obj['id']] = $new_id;
 
+		//logmsg( "obj: " . varDumpString($obj) );
+		//logmsg( "unserializing content begins" );
 		$obj = unserialize($obj['content']);
+		//logmsg( "unserializing content ends" );
 		$obj['id'] = $new_id;
 		if( $copy_to !== 'same_school' )
 		$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		$newobj['content'] = serialize($obj);
 		$newobj['color'] = ($obj['config']['color'] ? $obj['config']['color'] : '333333');
+		//logmsg( "newObj: " . varDumpString($newobj) );
 
 		$DB->Insert('objects',$newobj);
 	}
@@ -487,3 +492,5 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/drawings/toolbar.php');
 	require('view/drawings/helpbar.php');
 }
+
+

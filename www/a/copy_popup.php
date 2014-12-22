@@ -98,7 +98,9 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 
 <fieldset id="drawingName">
 	<legend><label for="drawing_title">New Drawing Name</label></legend>
-	<input type="text" name="drawing_name" id="drawing_name" value="<?= $version['name'] ?> Copy">
+    <div class="approved-program-name">
+        <?php echo GenerateSelectBoxDB('programs', 'drawing_name', 'title', 'title', 'title', '', array('0'=>'Not Listed')); ?>
+    </div>
 </fieldset>
 <fieldset id="versionNote">
     <legend><label for="version_note">Version Note</label></legend>

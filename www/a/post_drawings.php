@@ -6,7 +6,6 @@ require_once("POSTChart.inc.php");
 $MODE = 'post';
 ModuleInit('post_drawings');
 
-
 if (KeyInRequest('action')) {
 	$action = $_REQUEST['action'];
 	switch ($action) {
@@ -262,7 +261,7 @@ function showVersion() {
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
-
+    $TEMPLATE->addl_scripts[] = '/common/APN.js';
 
 	if(CanEditVersion($drawing['id'])) {
 		$readonly = false;
@@ -907,6 +906,7 @@ function showVersionInfo() {
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
 	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
+    $TEMPLATE->addl_scripts[] = '/common/APN.js';
 	PrintHeader();
 
 	$version_id = Request('version_id');

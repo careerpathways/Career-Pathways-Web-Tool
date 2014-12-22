@@ -28,31 +28,53 @@ if( $id != "" ) {
 ?>
 
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<script type="text/javascript" src="/common/APN.js"></script>
+
 <script type="text/javascript">
 var $j = jQuery.noConflict();
 </script>
 <script type="text/javascript" src="/files/greybox.js"></script>
 <!--<script type="text/javascript" src="/files/post_drawing_list.js"></script>-->
-
+<!-- <script type="text/javascript" src="/c/drawings.js"></script> -->
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a>
 
 <p>
 <?php 
 /** begin new drawing form **/
 if( $id == "" ) {
-	
-	$drawing = array('id'=>'', 'code'=>'', 'name'=>'');	
-	
+	$drawing = array('id'=>'', 'code'=>'', 'name'=>'');
 ?>
-<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
+<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form" class="new_drawing">
 <table>
+
+
 <tr>
-	<th valign="bottom">Occupation/Program</th>
+    <?php /* support current method of form submission. hidden so user uses apn <select>, rather than hand-typing. */ ?>
 	<td>
-		<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
+		<input type="hidden" id="drawing_title" name="name" size="80" value="">
 		<div id="checkNameResponse" class="error"></div>
 	</td>
 </tr>
+
+
+<?php if($SITE->hasFeature('oregon_skillset')): ?>
+    <tr>
+        <th><?=l('skillset name')?></th>
+        <td><div id="skillset"><?php
+                echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>''));
+                ?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
+    </tr>
+<?php endif; ?>
+
+<?php if( $school['organization_type'] != 'Other'): ?>
+    <tr>
+        <th><?=l('program name label')?></th>
+        <td><div id="program"><?php
+                echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
+                ?></div></td>
+    </tr>
+<?php endif; ?>
+
 <tr>
 	<th width="80">Organization</th>
 	<td>
@@ -81,7 +103,6 @@ if( $id == "" ) {
 				
 		}
 
-		// REPLACED THIS CODE BELOW --> if(count($these_schools) == 1)
 		//JGD: I don't know how this happens, but I ran into a case where these_schools only had one entry, but it didn't match the school id.
 		//JGD: So I show the selection box if that is the case. Not sure if that's the perfect solution...
 		//logmsg( "school_id: $school_id\n" );
@@ -98,18 +119,9 @@ if( $id == "" ) {
 	?>
 	</td>
 </tr>
-<?php
-if($SITE->hasFeature('oregon_skillset')){
-?>
-<tr>
-	<th><?=l('skillset name')?></th>
-	<td valign="top"><span id="skillset"><?php
-		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-	?></span>(optional)</td>
-</tr>
-<?php
-}
-?>
+
+
+
 <tr>
 	<td>&nbsp;</td>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>
@@ -127,41 +139,28 @@ if($SITE->hasFeature('oregon_skillset')){
 /** begin drawing edit form **/
 	?>
 	<table width="100%">
+	
 	<tr class="editable">
 		<td colspan="2">
-			<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowPostHeader($drawing['id']) ?></div>
-		</td>
-	</tr>
-	<tr class="editable">
-		<th><?=l('program name label')?></th>
-		<td>
-			<div id="title_fixed"><span id="title_value" style="font-size: 12pt;"><?= $drawing['name'] ?></span> 
-				<?=(IsAffiliatedWith($drawing['school_id']) || $drawing['school_id']==$_SESSION['school_id'] ? '<a href="javascript:showTitleChange()" class="tiny">edit</a>' : '')?></div>
-			<div id="title_edit" style="display:none">
-				<input type="text" id="drawing_title" name="name" size="80" value="<?= $drawing['name'] ?>" onblur="checkName(this)">
-				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
-				<div id="checkNameResponse" class="error"></div>
+
+			<div id="drawing_header" class="title_img" style="height:19px;font-size:17px;overflow:hidden;background-color:#295a76;color:#FFFFFF">
+			<?php /* <?php $schools[$drawing['school_id']] ?> | <span class="apn"><?= $drawing['name'] ?></span> */ ?>
+			<?php echo ShowPostHeader($drawing['id']); ?>
 			</div>
+
 		</td>
 	</tr>
+
+    <?php include('apn.php'); ?>
+<?php /*
 	<tr class="editable">
 		<th width="80">Organization</th>
 		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 	</tr>
-	<?php
-	if($SITE->hasFeature('oregon_skillset')){
-	?>
-	<tr class="editable">
-		<th><?=l('skillset name')?></th>
-		<td height="34"><div id="skillset" style="float:left"><?php
-			echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>''));
-		?></div><div id="skillsetConf" style="color:#393; font-weight: bold; padding-left: 10px;"></div></td>
-	</tr>
-	<?php
-	}
+	*/ ?>
 
-	if( is_array($published) ) {
-?>
+
+<?php if( is_array($published) ) { ?>
 	<tr>
 		<th>HTML Link</th>
 		<td>
@@ -254,6 +253,7 @@ Array.prototype.remove = function(s) {
 	if(i != -1) this.splice(i, 1);
 }
 
+
 function checkName(title) {
 	$j.get('/a/drawings_checkname.php',
 		  {mode: 'post',
@@ -275,16 +275,19 @@ function verifyName(result) {
 	}
 }
 
-function savetitle() {
-	var title = getLayer('drawing_title');
+function saveTitle(_title) {
+	//var title = getLayer('drawing_title');
 	$j.get('/a/drawings_checkname.php',
-		  {mode: 'post',
-		   id: '<?= $drawing['id'] ?>',
-		   title: title.value<?php if(IsAdmin()) { ?>,
-		   school_id: $j("#school_id").val()
-		   <?php } ?>
-		  },
-		  verifyNameSubmit);
+		{ 
+		  	mode: 'post',
+			id: '<?= $drawing['id'] ?>',
+			title: _title
+			<?php if(IsAdmin()) { ?>,
+				school_id: $j("#school_id").val()
+		   	<?php } ?>
+		},
+		verifyNameSubmit
+	);
 }
 
 function submitform() {
@@ -318,16 +321,18 @@ function verifyNameSubmit(result) {
 
 function cbNameChanged(drawingCode) {
 	drawing_code = drawingCode;
-	getLayer('title_value').innerHTML = getLayer('drawing_title').value;
-	getLayer('title_edit').style.display = 'none';
-	getLayer('title_fixed').style.display = 'block';
+	alert('saved name');
+	//getLayer('title_value').innerHTML = getLayer('drawing_title').value;
+	//getLayer('title_edit').style.display = 'none';
+	//getLayer('title_fixed').style.display = 'block';
 }
 
+/*
 function showTitleChange() {
 	getLayer('title_edit').style.display = 'block';
 	getLayer('title_fixed').style.display = 'none';
 }
-
+*/
 function preview_drawing(code,version) {
 	if( version == null )
 		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
@@ -344,30 +349,122 @@ function doDelete() {
 }
 <?php } ?>
 
-<?php if( $drawing['id'] ) { ?>
 
-$j(document).ready(function(){
-	$j('#skillset select').bind('change', function() {
-		$j('#skillsetConf').html('Saved!');
-		$j('#skillset select').css({backgroundColor: '#99FF99'});
-		setTimeout(function() {
-			$j('#skillset select').css({backgroundColor: '#FFFFFF'});
-			$j('#skillsetConf').html('');
-		}, 500);
-		$j.post('drawings_post.php',
-			{action: 'skillset',
-			 mode: 'post',
-			 id: <?= intval($drawing['id']) ?>,
-			 skillset_id: $j('#skillset select').val()
+
+(function($){
+	$(document).ready(function(){
+
+        //Create a new APN object with page-specific parameters.
+        //APN provides skill set/approved program name sort features.
+        var apn = new APN({
+            drawingId : '<?= $drawing["id"] ?>',
+            drawingType : '<?= $MODE ?>',
+            programId: '<?= $drawing["program_id"] ?>'
+        });
+
+		/* === Approved Program Name and Skillset selection behavior ===
+
+		<?php $all_programs = $DB->ArrayQuery("SELECT * FROM programs"); ?>
+		var allPrograms = <?php echo json_encode($all_programs ); ?>;
+		allPrograms = objectToArray(allPrograms); //server gives us an object. convert to array
+
+		//skillset run-time model
+		var skillset = {
+			$htmlSelect: $('#skillset_id'),
+			selectedId: function(){
+				return this.$htmlSelect.children('option:selected').attr('value');
 			},
-			function() {
+			selectedName: function(){
+				return this.$htmlSelect.children('option:selected').text();
 			}
-		);
+		};
+
+		//approved program name run-time model
+		var apn = {
+			name: '<?= $drawing['name'] ?>',
+			
+			apply: function(){
+				$('.apn-name').html(this.name);
+			},
+			
+			// Save Approved Program Name back to the database
+			save: function(id, name){
+				this.name = name;
+				var _this = this,
+					_url = '/a/drawings_post.php?mode=<?= $MODE ?>&id=<?= $drawing["id"] ?>&title='
+							+ URLEncode(name);				
+				$.get( _url, function(){
+					_this.apply();
+				});
+			},
+
+			// Filter the Approved Program Name <select> to only show names within the current skill set.
+			filterSelect: function( skillsetId ) {
+				var options = '';
+				if(skillsetId){
+					for ( var i = 0; i < allPrograms.length; i++ ){
+						if ( allPrograms[i] && allPrograms[i].skillset_id == skillsetId ) {
+							options += '<option value="' + allPrograms[i].id + '">' + allPrograms[i].title + '</option>';	
+						}
+					}
+				} else {
+					for ( var i = 0; i < allPrograms.length; i++ ){
+						options += '<option value="' + allPrograms[i].id + '">' + allPrograms[i].title + '</option>';	
+					}
+				}
+				apn.$htmlSelect.html( options );
+			},
+			$saveBtn: $( '.approved-program-name .save' ),
+			$htmlSelect: $( 'select#program_id' )
+		};
+
+
+		// === Event handlers ===
+		//on page load
+		//apn.filterSelect( skillset.selectedId() );
+		
+		//when a new skill set is selected, change which Approved Program Names are available
+		skillset.$htmlSelect.bind( 'change', function() {
+			apn.filterSelect( skillset.selectedId() );
+		});
+
+		//when the approved program name save button is clicked
+		apn.$saveBtn.click( function() {
+			var select = $( this ).parent().find( 'select option:selected' );
+			//Grab the program name and ID from the sibling <select>
+			var newProgramId = select.val(),
+				newProgramName = select.text();
+			if( newProgramId > 0 ) {
+				apn.save( newProgramId, newProgramName );
+			} else {
+				alert( 'Please select an <?=l('program name label')?>.' );
+			}
+		});
+
+
+		$('#skillset select').bind('change', function() {
+			$('#skillsetConf').html('Saved!');
+			$('#skillset select').css({backgroundColor: '#99FF99'});
+			setTimeout(function() {
+				$j('#skillset select').css({backgroundColor: '#FFFFFF'});
+				$j('#skillsetConf').html('');
+			}, 500);
+			$.post('drawings_post.php',
+				{
+					action: 'skillset',
+				 	mode: 'post',
+				 	id: <?= intval($drawing['id']) ?>,
+				 	skillset_id: $('#skillset select').val()
+				},
+				function() {
+				}
+			);
+		});*/
+
 	});
-});
-					
+}($j));
 
 
-<?php } ?>
+
 
 </script>

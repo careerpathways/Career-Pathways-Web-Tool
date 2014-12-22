@@ -14,7 +14,7 @@ if( $drawing['name'] == '' ) {
 }
 ?>
 <drawing id="<?= $drawing['parent_id'] ?>">
-	<name><?= htmlspecialchars($title) ?></name>
+	<name><?= htmlspecialchars($drawing_name) ?></name>
 	<schoolName><?= htmlspecialchars($drawing['school_name']) ?></schoolName>
 	<schoolAbbr><?= htmlspecialchars($drawing['school_abbr']) ?></schoolAbbr>
 	<version id="<?= $drawing['id'] ?>" number="<?= $drawing['version_num'] ?>" published="<?= $drawing['published'] ? 'true' : 'false' ?>">

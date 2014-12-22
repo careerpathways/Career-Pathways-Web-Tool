@@ -21,6 +21,24 @@ else
 	$version_table = 'post_drawings';
 }
 
+// Return a list of all Approved Program Names as JSON
+if( $mode == 'json' ){
+	$program_name_filter = '';
+	if(Request('drawingtype') == 'pathways'){
+		$program_name_filter = 'WHERE use_for_roadmap_drawing = 1';
+	}
+	if(Request('drawingtype') == 'post'){
+		$program_name_filter = 'WHERE use_for_post_drawing = 1 ';
+	}
+    header('Content-type: application/json');
+    if( Request( 'resource' ) == 'programs' ){
+        //.../a/drawings_post.php?mode=json&resource=programs&type=pathways
+        $all_programs = $DB->MultiQuery("SELECT * FROM programs $program_name_filter ORDER BY title");
+        echo json_encode( $all_programs );
+    }
+}
+
+
 if( KeyInRequest('id') ) {
 
 	$drawing = $DB->SingleQuery("SELECT *
@@ -43,7 +61,7 @@ if( KeyInRequest('id') ) {
 				$content = $DB->MultiQuery('SELECT content
 					FROM objects
 					WHERE drawing_id = ' . $d['id'] . '
-					AND (content LIKE "%qualityinfo.org%" OR content LIKE "%olmis.org%" OR content LIKE "%olmis.emp.state.or.us%")');
+					AND (content LIKE "%qualityinfo.org%"  OR content LIKE "%olmis.org%" OR content LIKE "%olmis.emp.state.or.us%")');
 				foreach( $content as $c )
 				{
 					$soc = array_merge($soc, SearchForOLMISLinks($c['content']));
@@ -105,7 +123,8 @@ if( KeyInRequest('id') ) {
 		}
 	
 		die();
-	}
+	} //end olmis
+
 
 	if( Request('action') == 'skillset' )
 	{
@@ -114,8 +133,8 @@ if( KeyInRequest('id') ) {
 			if( intval(Request('id') != 0) )
 			{
 				$DB->Update($main_table, array(
-					'skillset_id'=>intval(Request('skillset_id')),
-					'program_id'=>0
+					'skillset_id'=>intval(Request('skillset_id'))//,
+					//'program_id'=>0
 				), Request('id'));
 			}
 
@@ -187,13 +206,23 @@ if( KeyInRequest('id') ) {
 			echo '('.json_encode(array('skillset'=>$skillset['skillset_id'], 'code'=>$code, 'header'=>$header, 'drawings'=>$drawings)).')';
 		}
 		die();
-	}
+	} //end skillset
 
 	$school_id = $DB->GetValue('school_id', $main_table, intval($_REQUEST['id']));
 	$school_abbr = $DB->GetValue('school_abbr', 'schools', $school_id);
 
 	$content = array();
-	$content['name'] = $_REQUEST['title'];
+
+	if(!empty ($_REQUEST['title'])){
+		$content['name'] = $_REQUEST['title'];	
+	}
+	
+	if( isset($_REQUEST['program_id'])){
+		$content['program_id'] = $_REQUEST['program_id'];
+	
+	}
+    //$content['name_approved'] = $_REQUEST['name_approved'];
+    
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
 

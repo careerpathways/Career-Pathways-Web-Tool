@@ -34,29 +34,29 @@ if (KeyInRequest('action')) {
 		case 'save_tab_name':
 			processTabNameRequest();
 			die();
-                case 'delete':
-                        processDeleteRequest();
-                        die();
-                case 'sign':
-                        processSignViewRequest();
-                        die();
-               case 'change_skillSet':
-                       processChangeSkillSetRequest();
-                       die();
-                default:
-                        die('unknown action');
-        }
+		case 'delete':
+			processDeleteRequest();
+			die();
+        case 'sign':
+            processSignViewRequest();
+            die();
+		case 'change_skillSet':
+			processChangeSkillSetRequest();
+			die();
+		default:
+			die('unknown action');
+	}
 }
 
 $TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 $TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
 $TEMPLATE->toolbar_function = 'ShowSymbolLegend';
-
+$TEMPLATE->addl_scripts[] = '/common/APN.js';
 function ShowSymbolLegend() {
-        $helpFile = 'drawing_list';
-        $onlyLegend = TRUE;
-        require('view_toolbar.php');
-        require('view/drawings/helpbar.php');
+	$helpFile = 'drawing_list';
+	$onlyLegend = TRUE;
+	require('view_toolbar.php');
+	require('view/drawings/helpbar.php');
 }
 
 PrintHeader();
@@ -107,44 +107,44 @@ if( $id )
 		</td>
 	</tr>
 	<tr class="editable">
-                <th width="80">Organization</th>
-                <td><b><?= $schools[$school_id] ?></b></td>
-        </tr>
+		<th width="80">Organization</th>
+		<td><b><?= $schools[$school_id] ?></b></td>
+	</tr>
 <?php
 if($SITE->hasFeature('oregon_skillset')){
-       if (empty($view['oregon_skillsets_id'])) {
-               $skillSet = array('title'=>'');
-       } else {
-               $skillSet = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id='.$view['oregon_skillsets_id']);
-       }
+	if (empty($view['oregon_skillsets_id'])) {
+		$skillSet = array('title'=>'');
+	} else {
+		$skillSet = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id='.$view['oregon_skillsets_id']);
+	}
 ?>
 <tr class="editable">
-       <th><?=l('skillset name')?></th>
-       <td valign="top">
-               <div id="skillSet_fixed">
-                       <span id="skillSet_value"><?= $skillSet['title'] ?></span>
-                       <a href="javascript:showSkillSetChange()" class="tiny">edit</a>
-               </div>
+	<th><?=l('skillset name')?></th>
+	<td valign="top">
+		<div id="skillSet_fixed">
+			<span id="skillSet_value"><?= $skillSet['title'] ?></span>
+			<a href="javascript:showSkillSetChange()" class="tiny">edit</a>
+		</div>
 
-       <div id="skillSet_edit" style="display:none">
-               <?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
-               <?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
-               <input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
-               <span id="checkSkillSetResponse" class="error"></span>
-       </div>
+	<div id="skillSet_edit" style="display:none">
+		<?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
+		<?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
+		<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
+		<span id="checkSkillSetResponse" class="error"></span>
+	</div>
 
-       <?php
-               //echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-       ?>
-       </td>
+	<?php
+		//echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+	?>
+	</td>
 </tr>
 <?php
 }
 ?>
         <?php if($view['published']){?>
-        <tr>
-                <th>Embed Code</th>
-                <td>
+	<tr>
+		<th>Embed Code</th>
+		<td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
@@ -165,13 +165,13 @@ if($SITE->hasFeature('oregon_skillset')){
 			?>
 			<br />
 		</td>
-        </tr>
-        <?php 
-                require('view/drawings/external_links.php');
-        } //endif (published)?>
-        <tr>
-                <th>HTML Link</th>
-                <td>
+	</tr>
+	<?php 
+		require('view/drawings/external_links.php');
+	} //endif (published)?>
+	<tr>
+		<th>HTML Link</th>
+		<td>
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
 			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
@@ -198,37 +198,37 @@ if($SITE->hasFeature('oregon_skillset')){
 				<p>Are you sure? <a href="javascript:void(0);">yes</a></p>
 			</div><br />
 			<br />
-                </td>
-        </tr>
-        <tr>
+		</td>
+	</tr>
+	<tr>
         <?php $count = 0; ?>
-                <td colspan="2">
-                        <div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
-                        <h3 style="display:inline">High School Programs</h3>
-                        <div id="connected_drawing_list_HS">
-                        <?php
-                                $count += ShowSmallDrawingConnectionList($id, 'HS', array(
-                                        'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
-                                ));
-                        ?>
+		<td colspan="2">
+			<div style="display:inline"><a href="javascript:addDrawingToView('hs')"><?= SilkIcon('add.png') ?></a></div>
+			<h3 style="display:inline">High School Programs</h3>
+			<div id="connected_drawing_list_HS">
+			<?php
+				$count += ShowSmallDrawingConnectionList($id, 'HS', array(
+					'delete'=>'javascript:deleteDrawingFromView(\'HS\', %%)',
+				));
+			?>
 			</div>
 			<br />
 			
 			<div style="display:inline"><a href="javascript:addDrawingToView('cc')"><?= SilkIcon('add.png') ?></a></div>
-                        <h3 style="display:inline">Community College Pathways</h3>
-                        <div id="connected_drawing_list_CC">
-                        <?php
+			<h3 style="display:inline">Community College Pathways</h3>
+			<div id="connected_drawing_list_CC">
+			<?php
                 $count += ShowSmallDrawingConnectionList($id, 'CC', array(
-                                        'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
-                                ));
-                        ?>
+					'delete'=>'javascript:deleteDrawingFromView(\'CC\', %%)',
+				));
+			?>
 			</div>
-                        
-                </td>
-        </tr>
-        
-        
-        <!--
+			
+		</td>
+	</tr>
+	
+	
+	<!--
     <tr><td colspan="2"><hr/></td></tr>
     <?php
     /**
@@ -250,14 +250,14 @@ if($SITE->hasFeature('oregon_skillset')){
             }
 
             $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.`description` as 'name', `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . 
-                                         " FROM `requirements` AS `SignatureCategory`" . 
-                                         " LEFT JOIN (`assurance_requirements_ct` AS `Signature`" . 
-                                         "              INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
-                                         "                      AND `assurances`.`vpost_view_id` = '" . $viewId . "'" . 
-                                         "                      AND `assurances`.`valid` = TRUE" . 
-                                         "              LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`" . 
-                             "          ) ON `SignatureCategory`.`id` = `Signature`.`requirement_id`".
-                                         " WHERE `SignatureCategory`.requirement_type = 'stakeholder'";
+            				 " FROM `requirements` AS `SignatureCategory`" . 
+            				 " LEFT JOIN (`assurance_requirements_ct` AS `Signature`" . 
+            				 " 		INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+            				 " 			AND `assurances`.`vpost_view_id` = '" . $viewId . "'" . 
+            				 " 			AND `assurances`.`valid` = TRUE" . 
+            				 " 		LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`" . 
+                             "		) ON `SignatureCategory`.`id` = `Signature`.`requirement_id`".
+            				 " WHERE `SignatureCategory`.requirement_type = 'stakeholder'";
             //print($viewsSigsQuery);
             $signatures     = $DB->MultiQuery($viewsSigsQuery);
             // If we need to group signatures, this is where we do it.
@@ -344,8 +344,8 @@ if($SITE->hasFeature('oregon_skillset')){
             </tr>
             <?php endif; ?>
         <?php endif; ?>
-        </table>
-        <script type="text/javascript">
+	</table>
+	<script type="text/javascript">
 
 	var $j = jQuery.noConflict();
 
@@ -386,24 +386,25 @@ if($SITE->hasFeature('oregon_skillset')){
 		
 	});
 
-       function showSkillSetChange() {
-               getLayer('skillSet_edit').style.display = 'block';
-               getLayer('skillSet_fixed').style.display = 'none';
-       }
+	function showSkillSetChange() {
+		getLayer('skillSet_edit').style.display = 'block';
+		getLayer('skillSet_fixed').style.display = 'none';
+	}
 
-       function saveskillSet() {
-               $j.get("post_views.php",
-                       {id: <?= $id ?>,
-                        skillSet_id: $j('#drawing_skill_set').val(),
-                        action: "change_skillSet"
-                       },
-                       function(data) {
-                               getLayer('skillSet_value').innerHTML = data;
-                               getLayer('skillSet_edit').style.display = 'none';
-                               getLayer('skillSet_fixed').style.display = 'block';
-                       }
-               );
-       }
+	function saveskillSet() {
+		$j.get("post_views.php",
+			{id: <?= $id ?>,
+			 skillSet_id: $j('#drawing_skill_set').val(),
+			 action: "change_skillSet"
+			},
+			function(data) {
+				getLayer('skillSet_value').innerHTML = data;
+				getLayer('skillSet_edit').style.display = 'none';
+				getLayer('skillSet_fixed').style.display = 'block';
+			}
+		);
+	}
+
 
 
 	function showTitleChange() {
@@ -599,14 +600,15 @@ elseif( KeyInRequest('id') )
 		</td>
 	</tr>
 
+
 <?php
 if($SITE->hasFeature('oregon_skillset')){
 ?>
 <tr>
-       <th><?=l('skillset name')?></th>
-       <td valign="top"><span id="skillset"><?php
-               echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-       ?></span>(optional)</td>
+	<th><?=l('skillset name')?></th>
+	<td valign="top"><span id="skillset"><?php
+		echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+	?></span>(optional)</td>
 </tr>
 <?php
 }
@@ -642,18 +644,18 @@ else
 	
 	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id.' ORDER BY name');
 	echo '<table width="100%">';
-	    echo '<tr>';
-	    echo '<th width="20">&nbsp;</th>';
-            echo '<th>Occupation/Program</th>';
-            echo '<th width="240">Last Modified</th>';
+		echo '<tr>';
+			echo '<th width="20">&nbsp;</th>';
+			echo '<th>Occupation/Program</th>';
+			echo '<th width="240">Last Modified</th>';
             echo '<th width="240">Created</th>';
             if ($SITE->hasFeature('post_assurances')) {
                 echo '<th>Signatures</th>';
             }
-            echo '</tr>';
-        foreach( $views as $i=>$v )
-        {
-                echo '<tr class="row' . ($i%2) . '">';
+    echo '</tr>';
+	foreach( $views as $i=>$v )
+	{
+		echo '<tr class="row' . ($i%2) . '">';
         echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
 
         echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['name'] . '</td>';
@@ -666,11 +668,11 @@ else
         $viewId = $v['id'];
         $sigSQL = "SELECT `Category`.`id`, COUNT(`Signature`.`requirement_id`) AS `count` ".
                   "FROM `requirements` AS `Category` " . 
-                  "LEFT JOIN (`assurance_requirements_ct` AS `Signature` " . 
-                  "             INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
-                  "                     AND `assurances`.`vpost_view_id` = '" . $viewId . "' " . 
-                  "                     AND `assurances`.`valid` = TRUE " . 
-                  "             ) ON `Category`.`id` = `Signature`.`requirement_id` ".
+            	  "LEFT JOIN (`assurance_requirements_ct` AS `Signature` " . 
+            	  " 		INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
+            	  " 			AND `assurances`.`vpost_view_id` = '" . $viewId . "' " . 
+            	  " 			AND `assurances`.`valid` = TRUE " . 
+                  "		) ON `Category`.`id` = `Signature`.`requirement_id` ".
                   "WHERE `Category`.`requirement_type` = 'stakeholder' ".
                   "GROUP BY `Category`.`id`";
         $sigResults = $DB->MultiQuery( $sigSQL );
@@ -703,12 +705,12 @@ else
             echo '</td>'; // <pre>' . print_r( $sigResults, true ) . '</pre>
         }
         echo '</tr>';
-      }
-      if( count($views) == 0 )
-      {
-          echo '<tr class="row0"><td colspan="4">No views exist yet for your school</td></tr>';
-      }
-      echo '</table>';
+    }
+	if( count($views) == 0 )
+	{
+		echo '<tr class="row0"><td colspan="4">No views exist yet for your school</td></tr>';
+	}
+	echo '</table>';
 
 
 	$views = $DB->MultiQuery('SELECT v.*, school_name
@@ -906,16 +908,16 @@ function processDrawingListRequest()
 
 function processChangeSkillSetRequest()
 {
-       global $DB;
-       
-       $view = array();
-       $view['oregon_skillsets_id'] = Request('skillSet_id');
-       $view['last_modified'] = $DB->SQLDate();
-       $view['last_modified_by'] = $_SESSION['user_id'];
-       $DB->Update('vpost_views', $view, Request('id'));
-       //We need to return the actual string value. Passed Id is the foreign key to oregon_skillsets table.
-       $row = $DB->SingleQuery("SELECT * FROM oregon_skillsets WHERE id = ".intval(Request('skillSet_id')));
-       echo $row['title'];
+	global $DB;
+	
+	$view = array();
+	$view['oregon_skillsets_id'] = Request('skillSet_id');
+	$view['last_modified'] = $DB->SQLDate();
+	$view['last_modified_by'] = $_SESSION['user_id'];
+	$DB->Update('vpost_views', $view, Request('id'));
+	//We need to return the actual string value. Passed Id is the foreign key to oregon_skillsets table.
+	$row = $DB->SingleQuery("SELECT * FROM oregon_skillsets WHERE id = ".intval(Request('skillSet_id')));
+	echo $row['title'];
 }
 
 function processChangeNameRequest()
@@ -933,10 +935,10 @@ function processChangeNameRequest()
 
 function processCreateRequest()
 {
-        global $DB;
-        global $SITE;
-        $last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
-        $code = base_convert($last['id']*16, 10, 26);
+	global $DB;
+	global $SITE;
+	$last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
+	$code = base_convert($last['id']*16, 10, 26);
 
 	$newCode = '';
 	for( $i=0; $i<strlen($code); $i++ )
@@ -949,10 +951,10 @@ function processCreateRequest()
 	$view['last_modified'] = $DB->SQLDate();
 	$view['created_by'] = $_SESSION['user_id'];
 	$view['last_modified_by'] = $_SESSION['user_id'];
-        $view['`code`'] = $newCode;
-        $view['oregon_skillsets_id'] = Request('skillset_id');
-        $view_id = $DB->Insert('vpost_views', $view);
-        
+	$view['`code`'] = $newCode;
+	$view['oregon_skillsets_id'] = Request('skillset_id');
+	$view_id = $DB->Insert('vpost_views', $view);
+	
         //Adding an assurance record for ALL views regardless of if the assurance feature is enabled.
         //This was a conscious decision to avoid issues with enabling/disabling the post_assurance feature.
         //if($SITE->hasFeature('post_assurances')){
@@ -963,7 +965,7 @@ function processCreateRequest()
             $assurance_id = $DB->Insert('assurances', $assurance);
         //}
         
-        header('Location: post_views.php?id='.$view_id);
+	header('Location: post_views.php?id='.$view_id);
 }
 
 function processTabNameRequest()
@@ -983,7 +985,7 @@ function processDeleteRequest()
 {
 	global $DB;
 	
-        $DB->Query('DELETE FROM vpost_views WHERE id = '.intval(Request('id')));        
+	$DB->Query('DELETE FROM vpost_views WHERE id = '.intval(Request('id')));	
 }
 
 function processSignViewRequest()
