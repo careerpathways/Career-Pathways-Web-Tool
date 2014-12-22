@@ -1,5 +1,3 @@
-# See .htaccess instead. This file is deprecated.
-
 # See vagrant bootstrap for an Apache Virtual Host version of this line:
 # php_value include_path ".:/path/to/www/include:/path/to/common"
 
