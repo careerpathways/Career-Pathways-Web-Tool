@@ -245,7 +245,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 	} else {
 		echo '<table width="100%">';
 		echo '<tr>';
-			echo '<th colspan="4">Occupation/Program</th>';
+			echo '<th colspan="5">Occupation/Program</th>';
 			echo '<th width="240">Last Modified</th>';
 			echo '<th width="240">Created</th>';
 			//echo '<th width="40">SVG</th>';
@@ -254,7 +254,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 			echo '<tr class="drawing_main">';
 
 			echo '<td><a href="'.$draw_page.'?action=drawing_info&id='.$mparent['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
-			echo '<td colspan="3" class="drawinglist_name">'.$mparent['name'].'</td>';
+			echo '<td colspan="4" class="drawinglist_name">'.$mparent['name'].'</td>';
 			$created = ($mparent['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['created_by']));
 			$modified = ($mparent['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$mparent['last_modified_by']));
 			echo '<td><span class="fwfont">'.($mparent['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$mparent['last_modified'])).'</span> <a href="/a/users.php?id='.$mparent['last_modified_by'].'">'.$modified['name'].'</a></td>';
@@ -283,11 +283,16 @@ function ShowDrawingList(&$mains, $type='pathways') {
 						echo (!array_key_exists('note',$dr) || $dr['note']==''?"":' ('.$dr['note'].')');
 					echo '</td>';
 
-					echo '<td width="70">';
+					$degreeType = $dr['sidebar_text_right'];
+					echo '<td width="240">';
+						echo $degreeType;
+					echo '</td>';
+
+					echo '<td width="50">';
 						echo '<a href="'.$draw_page.'?action=version_info&amp;version_id='.$dr['id'].'" class="edit" title="Version Settings">'.SilkIcon('wrench.png').'</a>';
 					echo '</td>';
 
-					echo '<td width="70">';
+					echo '<td width="50">';
 						echo '<a href="'.$draw_page.'?action=draw&amp;version_id='.$dr['id'].'" class="edit" title="'.$drawViewText.'">'.$linktext.'</a>';
 					echo '</td>';
 
