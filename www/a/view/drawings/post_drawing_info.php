@@ -72,11 +72,11 @@ if( $id == "" ) {
         <td><div id="program"><?php
                 echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
                 ?></div></td>
-    </tr>
+    </tr>    
 <?php endif; ?>
 
 <tr>
-	<th width="80">Organization</th>
+	<th>Organization</th>
 	<td>
 	<?php
 
@@ -120,8 +120,14 @@ if( $id == "" ) {
 	</td>
 </tr>
 
-
-
+<tr>
+	<th><?=l('degreetype name label')?></th>
+    <td><div id="degreetype"><?php
+    	$drawingType = strtoupper(Request('type'));
+    	echo GenerateSelectBoxDB('post_sidebar_options', 'degree_type', 'text', 'text', 'text', '', array(''=>''), "type='$drawingType'");
+    	?></div>
+    </td>
+</tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>

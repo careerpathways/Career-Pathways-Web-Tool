@@ -754,14 +754,12 @@ a.chart_header {
 #copyPopup {
 	background-color: #ffffff;
 	width: 400px;
-	height: 300px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
 #copyPopup iframe {
 	width: 400px;
-	height: 300px;
 }
 
 .drawinglist_name {

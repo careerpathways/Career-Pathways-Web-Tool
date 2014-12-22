@@ -182,7 +182,7 @@ if( KeyInRequest('drawing_id') ) {
 			$post->skillset_id = Request('skillset_id');
 			$post->name = Request('name');
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
-			$post->sidebar_right = (Request('type')=='cc'?'Career Pathway Certificate of Completion':'High School Diploma');
+			$post->sidebar_right = Request('degree_type');
 			$post->createEmptyChart();
 			$drawing_id = $post->saveToDB();
 
@@ -347,7 +347,9 @@ function copyVersion($version_id) {
 
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') : 'same_school';
-        $post->note = Request('version_note');
+    $post->note = Request('version_note');
+
+    $post->sidebar_right = Request('degree_type');
 	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) || $user_school['organization_type'] == 'Other') {
 		if( $_SESSION['school_id'] != $drawing['school_id'] ) {
 			if ($copy_to !== 'same_school') {
