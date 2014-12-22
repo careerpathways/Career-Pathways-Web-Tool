@@ -48,6 +48,10 @@ LogLevel warn
     allow from all
 </Directory>
 
+<IfModule mod_php5.c>
+  php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"
+</IfModule>
+
 </VirtualHost>" > /etc/apache2/sites-available/default
 
 echo "<IfModule mod_ssl.c>
@@ -65,6 +69,10 @@ LogLevel warn
     Order allow,deny
     allow from all
 </Directory>
+
+<IfModule mod_php5.c>
+  php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"
+</IfModule>
 
 SSLEngine on
 
