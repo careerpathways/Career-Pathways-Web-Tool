@@ -469,6 +469,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		$j.get("post_views.php",
 			{
 			 school_id: $j("#list_schools option:selected").val(),
+			 degree_type: $j("#list_degreetypes option:selected").val(),
 			 action: 'drawing_list'
 			},
 			function(data) {
@@ -821,6 +822,14 @@ function processDrawingListRequest()
 			?>
 			<br />
 			
+
+			<h3>Degree Types</h3>
+			<?php
+    			$drawingType = strtoupper(Request('type'));
+			    echo GenerateSelectBoxDB('post_sidebar_options', 'list_degreetypes', 'text', 'text', 'text', '', array(''=>'[ Show All ]'), "type='$drawingType'");
+			?>
+			<br />
+
 			<div id="submit_btn" style="display:none" onclick="save_drawing_selection('<?= strtoupper(request('type')) ?>')">Save</div>
 			
 			<div id="list_of_drawings"></div>
@@ -832,6 +841,10 @@ function processDrawingListRequest()
 	<script type="text/javascript">
 		$j(document).ready(function(){
 			$j('#list_schools option[value=<?= $_SESSION['school_id'] ?>]').attr('selected','selected').trigger('change');
+
+			$j("#list_degreetypes").change(function() {
+				select_organization($j('#list_schools option:selected').val());
+			});
 		});
 	</script>
 	<?php
@@ -875,6 +888,12 @@ function processDrawingListRequest()
 	}
 	else
 	{
+		if (Request('degree_type')) {
+			$degreeTypeConditionQuery = 'AND D.sidebar_text_right="'.Request('degree_type').'"';
+		} else {
+			$degreeTypeConditionQuery = '';
+		}
+
 		// return a formatted list of drawings
 		$drawings = $DB->MultiQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by
 			FROM post_drawing_main M
@@ -882,6 +901,7 @@ function processDrawingListRequest()
 			LEFT JOIN users U ON M.last_modified_by=U.id
 			WHERE M.school_id='.intval(Request('school_id')).'
 				AND D.published=1
+			'.$degreeTypeConditionQuery.'
 			ORDER BY name');
 		echo '<h3>Drawings</h3>';
 		echo '<div style="background-color:#ffffff; border: 1px #999999 solid; padding:4px"><table width="100%">';
@@ -898,7 +918,7 @@ function processDrawingListRequest()
 		echo '</table>';
 		if( count($drawings) == 0 )
 		{
-			echo 'No published drawings were found for this school.';
+			echo 'No published drawings were found for this combination of school and degree type.';
 		}
 		echo '</div>';
 	}	
