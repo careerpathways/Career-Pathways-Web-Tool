@@ -230,17 +230,23 @@ echo '***************************** Project-specific settings ******************
 # -------------------
 # Install wkhtmltopdf and its dependencies
 # -------------------
+#apt-get -f install
 apt-get install -y libjpeg8
 apt-get install -y fontconfig
 apt-get install -y libxrender1
 
 # wkhtmltopdf is incomplete via apt-get, so we wget the .deb and dpkg it instead
-wget --output-document 'wkhtmltox.deb' 'http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1/wkhtmltox-0.12.1_linux-precise-amd64.deb?r=&ts=1404948559&use_mirror=tcpdiag'
-chmod 774 'wkhtmltox.deb'
+wget --output-document 'wkhtmltox.deb' 'http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb'
+chown vagrant 'wkhtmltox.deb'
 dpkg -i 'wkhtmltox.deb'
 
 # codebase looks for wkhtmltopdf in a different spot, set up a sym link to avoid error
 ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-i386
+
+# the application stores pdf's here
+mkdir -p '/web2/oregon.ctepathways.org/cache/pdf/'
+chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
+
 
 # -------------------
 # Create cache folder and make sure it's writable

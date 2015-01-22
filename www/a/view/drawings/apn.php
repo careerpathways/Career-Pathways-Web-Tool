@@ -34,7 +34,7 @@
             <select name="program_id" id="program_id">
                 <!-- Javascript fills values -->
             </select>
-            <input type="button" class="save" value="save <?=l('program name label')?>">
+            <input type="button" class="save submit tiny" value="Save <?=l('program name label')?>">
         </div>
 
     </td>

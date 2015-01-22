@@ -7,7 +7,7 @@ $_REQUEST['d'] = CleanDrawingCode($_REQUEST['d']);
 if( KeyInRequest('version_id') ) {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.name, school_id, published, frozen, sk.title AS skillset, program_id
+			drawing_main.id as parent_id, drawing_main.name, school_id, published, frozen, sk.title AS skillset, program_id
 		FROM drawing_main
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
@@ -65,14 +65,7 @@ if( KeyInRequest('version_id') ) {
 
 }
 
-if( $drawing['program_id'] == 0 ){
-	$drawing_name = $drawing['name'];
-}
-else
-{
-	$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
-	$drawing_name = $program['title'];
-}
+$drawing_name =  GetDrawingName($_REQUEST['id'], 'roadmap');
 
 // determine the format based on the request parameter
 if (isset($_REQUEST['format'])) {

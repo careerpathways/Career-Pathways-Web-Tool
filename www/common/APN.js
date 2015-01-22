@@ -66,7 +66,6 @@
                 return this.$htmlSelect.children('option:selected').text();
             },
             save: function(){
-
                 var drawingId = APNScope.args.drawingId,
                     drawingType = APNScope.args.drawingType;
 
@@ -110,7 +109,6 @@
 
             //apply approved program name to all areas of the view which display it
             apply: function(){
-                $('.apn-name').html(this.selectedName());
             },
 
             // Save Approved Program Name back to the database
@@ -121,13 +119,14 @@
                 var _url = '/a/drawings_post.php'
                     + '?mode=' + drawingType
                     + '&id=' + drawingId
-                    + '&name=' + URLEncode( this.selectedName() )
+                    + '&changeTitle=true'
                     + '&program_id=' + URLEncode( this.selectedId() );
 
                 var _this = this; //provide this scope to callback
                 if(drawingId){
-                    $.get( _url, function(){
-                        _this.apply(); //update the web page after saving successfully
+                    $.get( _url, function(response){
+                        var r = eval(response);
+                        $('#drawing_header').html(r.header);
                     });
                 }
             },

@@ -213,11 +213,11 @@ if( KeyInRequest('id') ) {
 
 	$content = array();
 
-	if(!empty ($_REQUEST['title'])){
+	if( isset($_REQUEST['title']) ){
 		$content['name'] = $_REQUEST['title'];	
 	}
 	
-	if( isset($_REQUEST['program_id'])){
+	if( isset($_REQUEST['program_id']) ){
 		$content['program_id'] = $_REQUEST['program_id'];
 	
 	}
@@ -232,10 +232,18 @@ if( KeyInRequest('id') ) {
 	{
 		$t = $DB->SingleQuery('SELECT * FROM '.$main_table.' WHERE id='.intval($_REQUEST['id']));
 		$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
-		if( count($program) > 0 )
-			$t['full_name'] = $t['name'] == '' ? $program['title'] : $t['name'];
-		$header = ShowRoadmapHeader(intval(Request('id')));
-		echo '('.json_encode(array('title'=>$t['name'], 'header'=>$header, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';
+		
+		if($main_table == 'drawing_main'){
+			//roadmap
+			$headerImage = ShowRoadmapHeader($_REQUEST['id']);
+			$t['full_name'] = GetDrawingName($_REQUEST['id'], 'roadmap');
+		} else {
+			//post drawing
+			$headerImage = ShowPostHeader($_REQUEST['id']);
+			$t['full_name'] = GetDrawingName($_REQUEST['id'], 'post');
+		}
+
+		echo '('.json_encode(array('title'=>$t['name'], 'header'=>$headerImage, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';
 	}
 }
 

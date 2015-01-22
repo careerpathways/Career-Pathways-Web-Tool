@@ -79,7 +79,10 @@ global $SITE;
 
 var base_url = 'http://<?= $SITE->base_url() ?>';
 
-var chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><img src="'+base_url+'/files/titles/<?= base64_encode($school['school_abbr']).'/'.base64_encode($drawing_name) ?>.png" height="19" width="800"></div>';
+<?php
+$chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76">' . ShowRoadmapHeader($drawing['parent_id']) . '</div>';
+?>
+var chTitleImg = '<?php echo $chTitleImg; ?>';
 <?php
 if( $drawing['skillset'] ) {
 	?>

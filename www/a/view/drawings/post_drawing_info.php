@@ -158,12 +158,6 @@ if( $id == "" ) {
 	</tr>
 
     <?php include('apn.php'); ?>
-<?php /*
-	<tr class="editable">
-		<th width="80">Organization</th>
-		<td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
-	</tr>
-	*/ ?>
 
 
 <?php if( is_array($published) ) { ?>
@@ -281,19 +275,32 @@ function verifyName(result) {
 	}
 }
 
-function saveTitle(_title) {
-	//var title = getLayer('drawing_title');
-	$j.get('/a/drawings_checkname.php',
-		{ 
-		  	mode: 'post',
-			id: '<?= $drawing['id'] ?>',
-			title: _title
-			<?php if(IsAdmin()) { ?>,
-				school_id: $j("#school_id").val()
-		   	<?php } ?>
-		},
-		verifyNameSubmit
-	);
+function saveTitle() {
+	if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+	{
+		alert("You must enter either an approved program name or a custom program name");
+	}
+	else
+	{
+		$j.get('/a/drawings_post.php',
+			  {mode: 'post',
+			   id: '<?= $drawing['id'] ?>',
+			   changeTitle: "true",
+			   title: $j("#drawing_title").val()<?php if(IsAdmin()) { ?>,
+			   school_id: $j("#school_id").val()
+			   <?php } ?>
+			  }, function(data){
+			  	data = eval(data);
+			  	$j("#drawing_title").val(data.title);
+			  	$j("#drawing_title").css({backgroundColor: '#99FF99'});
+			  	setTimeout(function(){
+				  	$j("#drawing_title").css({backgroundColor: '#FFFFFF'});
+			  	}, 300);
+			  	
+				$j("#drawing_header").html(data.header);
+				//updateDrawingLinks(data.code); //not used for POST drawings
+			  });
+	}
 }
 
 function submitform() {

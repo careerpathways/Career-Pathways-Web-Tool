@@ -99,7 +99,7 @@ else
 {
 	echo '<div id="post_title_container">';
 		echo '<div id="post_title">';
-			echo '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
+			echo ShowPostHeader(Request('drawing_id'));
 		echo '</div>';
 		if( $drawing['skillset'] ) {
 			echo '<div id="skillset">';

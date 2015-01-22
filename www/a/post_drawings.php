@@ -243,7 +243,7 @@ function showVersion() {
 	global $DB, $TEMPLATE;
 
 
-	$drawing = $DB->SingleQuery('SELECT main.*, d.published, d.frozen, schools.school_abbr, d.id, os.title AS skillset
+	$drawing = $DB->SingleQuery('SELECT main.*, d.parent_id, d.published, d.frozen, schools.school_abbr, d.id, os.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
 		JOIN schools ON main.school_id = schools.id
@@ -303,7 +303,7 @@ function showVersion() {
 	$post = POSTChart::Create($drawing['id']);
 
 	echo '<div style="margin-bottom: 10px">';
-	echo '<div id="post_title"><img src="/files/titles/post/'.base64_encode($post->school_abbr).'/'.base64_encode($post->name).'.png" alt="' . $post->school_abbr . ' Career Pathways - ' . $post->name . '" /></div>';
+	echo '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76">' . ShowPostHeader($drawing['parent_id']) . '</div>';
 	if( $drawing['skillset'] )
 	{
 		echo '<div id="skillset">';

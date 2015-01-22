@@ -198,26 +198,80 @@ function ShowBrowserNotice()
 function ShowRoadmapHeader($drawing_id)
 {
 	global $DB;
-	$drawing = $DB->SingleQuery('SELECT school_abbr,
-		IF(m.name="", p.title, m.name) AS full_name
-		FROM drawing_main AS m
-		JOIN schools ON m.school_id=schools.id
-		LEFT JOIN programs AS p ON m.program_id=p.id
-		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+	$name_to_use = GetDrawingName($drawing_id, 'roadmap');
+	$school_abbr = GetSchoolAbbr($drawing_id, 'roadmap');
+	return '<img src="/files/titles/' . base64_encode($school_abbr) . '/' . base64_encode($name_to_use) . '.png" alt="' . $school_abbr . ': ' . $name_to_use . '" height="19" width="800" />';
 }
 
 
 function ShowPostHeader($drawing_id)
 {
 	global $DB;
-	$drawing = $DB->SingleQuery('SELECT school_abbr,
-		IF(m.name="", p.title, m.name) AS full_name
-		FROM post_drawing_main AS m
+	$name_to_use = GetDrawingName($drawing_id, 'post');
+	$school_abbr = GetSchoolAbbr($drawing_id, 'post');
+	return '<img src="/files/titles/' . base64_encode($school_abbr) . '/' . base64_encode($name_to_use) . '.png" alt="' . $school_abbr . ': ' . $name_to_use . '" height="19" width="800" />';
+}
+
+/**
+ * Get the abbreviation for a drawing's school.
+ * 
+ * @param [type] $drawing_id   string or int - Main drawing id.
+ * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post'
+ * @return string The school abbreviation
+ */
+function GetSchoolAbbr($drawing_id, $drawing_type)
+{
+	global $DB;
+	$drawing_id = intval($drawing_id);
+	if($drawing_type === 'roadmap'){
+		$table = 'drawing_main';
+	} elseif( $drawing_type === 'post'){
+		$table = 'post_drawing_main';
+	} else {
+		throw new Error(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		return '';
+	}
+	$drawing = $DB->SingleQuery('SELECT school_abbr
+		FROM ' . $table . ' AS m
+		JOIN schools ON m.school_id=schools.id
+		
+		WHERE m.id = '.$drawing_id);
+	return $drawing['school_abbr'];
+}
+
+/**
+ * Get the name for a drawing based on ID and type.
+ * 
+ * @param mixed $drawing_id  string or int - Main drawing id.
+ * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post'
+ * @return string The proper title for the drawing.
+ */
+function GetDrawingName($drawing_id, $drawing_type)
+{
+	global $DB;
+	$drawing_id = intval($drawing_id);
+	if($drawing_type === 'roadmap'){
+		$table = 'drawing_main';
+	} elseif( $drawing_type === 'post'){
+		$table = 'post_drawing_main';
+	} else {
+		throw new Error(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		return '';
+	}
+
+	$drawing = $DB->SingleQuery('SELECT
+		m.name AS alternate_title,
+		p.title AS approved_program_name
+		FROM ' . $table . ' AS m
 		JOIN schools ON m.school_id=schools.id
 		LEFT JOIN programs AS p ON m.program_id=p.id
 		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+
+	if(strlen($drawing['approved_program_name']) && !strlen($drawing['alternate_title'])){
+		return $drawing['approved_program_name'];
+	} else {
+		return $drawing['alternate_title'];
+	}
 }
 
 function ShowPostViewHeader($view_id)
