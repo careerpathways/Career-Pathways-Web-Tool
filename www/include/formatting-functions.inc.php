@@ -228,7 +228,7 @@ function GetSchoolAbbr($drawing_id, $drawing_type)
 	} elseif( $drawing_type === 'post'){
 		$table = 'post_drawing_main';
 	} else {
-		throw new Error(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		throw new Exception(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
 		return '';
 	}
 	$drawing = $DB->SingleQuery('SELECT school_abbr
@@ -255,7 +255,7 @@ function GetDrawingName($drawing_id, $drawing_type)
 	} elseif( $drawing_type === 'post'){
 		$table = 'post_drawing_main';
 	} else {
-		throw new Error(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		throw new Exception(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
 		return '';
 	}
 

@@ -14,14 +14,16 @@ switch(request('mode'))
 			LEFT JOIN schools AS s ON s.id = drawing_main.school_id
 			WHERE drawing_main.id = ' . request('drawing_id'));
 		$version = $DB->SingleQuery('SELECT version_num FROM drawings WHERE parent_id = ' . $drawing['id'] . ' AND published = 1');
-		$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $version['version_num'];
+		//$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $version['version_num'];
+        $name = GetDrawingName($drawing['id'], 'roadmap') . ' - Version ' . $version['version_num'];
                 break;
 
         case 'version':
                 $url = 'http://' . $_SERVER['SERVER_NAME'] . '/c/version/' . request('drawing_id') . '/' . request('version_id') . '.html';
                 $filename = 'version-' . request('version_id') . '.pdf';
                 $drawing = GetDrawingInfo(request('version_id'));
-		$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $drawing['version_num'];
+		//$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $drawing['version_num'];
+        $name = GetDrawingName(request('drawing_id'), 'roadmap') . ' - Version ' . $drawing['version_num'];;
                 break;
                 
         case 'post_drawing':
@@ -34,14 +36,16 @@ switch(request('mode'))
 			LEFT JOIN schools AS s ON s.id = post_drawing_main.school_id
 			WHERE post_drawing_main.id = ' . request('drawing_id'));
 		$version = $DB->SingleQuery('SELECT version_num FROM post_drawings WHERE parent_id = ' . $drawing['id'] . ' AND published = 1');
-		$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $version['version_num'];
+		//$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $version['version_num'];
+        $name = GetDrawingName(request('drawing_id')) . ' - Version ' . $version['version_num'];
                 break;
                 
         case 'post_version':
                 $url = 'http://' . $_SERVER['SERVER_NAME'] . '/c/post/' . request('drawing_id') . '/' . request('version_id') . '.html?hidecoursedescription';
                 $filename = 'post-version-' . request('version_id') . '.pdf';
                 $drawing = GetDrawingInfo(request('version_id'), 'post');
-		$name = $drawing['school_name'] . ' - ' . $drawing['name'] . ' - Version ' . $drawing['version_num'];
+		//$name = $drawing['school_name'] . ' - ' . $drawing['name'] . ' - Version ' . $drawing['version_num'];
+        $name = GetDrawingName(request('drawing_id')) . ' - Version ' . $version['version_num'];
                 break;          
                 
         case 'post_view':
