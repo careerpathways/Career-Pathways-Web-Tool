@@ -37,7 +37,7 @@ switch(request('mode'))
 			WHERE post_drawing_main.id = ' . request('drawing_id'));
 		$version = $DB->SingleQuery('SELECT version_num FROM post_drawings WHERE parent_id = ' . $drawing['id'] . ' AND published = 1');
 		//$name = $drawing['school_name'] . ' - ' . $drawing['full_name'] . ' - Version ' . $version['version_num'];
-        $name = GetDrawingName(request('drawing_id')) . ' - Version ' . $version['version_num'];
+        $name = GetDrawingName(request('drawing_id'), 'post') . ' - Version ' . $version['version_num'];
                 break;
                 
         case 'post_version':
@@ -45,7 +45,7 @@ switch(request('mode'))
                 $filename = 'post-version-' . request('version_id') . '.pdf';
                 $drawing = GetDrawingInfo(request('version_id'), 'post');
 		//$name = $drawing['school_name'] . ' - ' . $drawing['name'] . ' - Version ' . $drawing['version_num'];
-        $name = GetDrawingName(request('drawing_id')) . ' - Version ' . $version['version_num'];
+        $name = GetDrawingName(request('drawing_id'), 'post') . ' - Version ' . $version['version_num'];
                 break;          
                 
         case 'post_view':
