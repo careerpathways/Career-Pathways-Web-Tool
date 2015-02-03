@@ -688,7 +688,7 @@ echo '</div>';
 
 
 
-
+# post views that have high school and CC in them.
 echo '<div class="section">';
 echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
 $postViews = $DB->MultiQuery('
@@ -702,6 +702,9 @@ JOIN users u ON v.created_by = u.id
 GROUP BY v.id
 ORDER BY v.last_modified DESC
 ');
+
+$totalPostViews = $postViews; //used in summary report (below)
+
 $fullPOSTViews = array();
 foreach($postViews as $row) {
   $numTypes = $DB->MultiQuery('
@@ -740,14 +743,7 @@ foreach($fullPOSTViews as $row) {
 echo '</table>';
 echo '</div>';
 
-# Summary of Embedded POST Views
-echo '<div class="section">';
-$numEmbedded = $DB->MultiQuery('
-SELECT e.id, e.drawing_id
-FROM external_links e
-WHERE e.`type` = "post"
-GROUP BY e.drawing_id
-');
+
 
 
 
@@ -866,6 +862,48 @@ echo '</table>';
 echo '</div>';
 
 
+
+echo '<div class="section">';
+echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>Organization</th>';
+  echo '<th>Number</th>';
+echo '</tr>';
+echo '<tr>';
+  echo '<th>Total Embedded POST Views</th>';
+  echo '<th>'.count($totalPostViews).'</th>';
+echo '</tr>';
+
+echo '<tr>';
+  echo '<th>Full POST Views</th>';
+  echo '<th>'.count($fullPOSTViews).'</th>';
+echo '</tr>';
+
+echo '<tr>';
+  echo '<th>TOP (HS) POST Views Only</th>';
+  echo '<th>'.count($HSonlyPOSTViews).'</th>';
+echo '</tr>';
+
+
+echo '<tr>';
+  echo '<th>BOTTOM (CC) POST Views Only</th>';
+  echo '<th>'.count($CConlyPOSTViews).'</th>';
+echo '</tr>';
+
+echo '</table>';
+echo '</div>';
+
+
+
+# Summary of Embedded POST Views
+echo '<div class="section">';
+$numEmbedded = $DB->MultiQuery('
+SELECT e.id, e.drawing_id
+FROM external_links e
+WHERE e.`type` = "post"
+GROUP BY e.drawing_id
+');
 
 echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
 # such as Lane Community College, 20
