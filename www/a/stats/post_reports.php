@@ -870,25 +870,25 @@ echo '<tr class="drawing_main">';
   echo '<th>Organization</th>';
   echo '<th>Number</th>';
 echo '</tr>';
-echo '<tr>';
-  echo '<th>Total Embedded POST Views</th>';
-  echo '<th>'.count($totalPostViews).'</th>';
+echo '<tr class="row_light">';
+  echo '<td>Total Embedded POST Views</td>';
+  echo '<td>'.count($totalPostViews).'</td>';
 echo '</tr>';
 
-echo '<tr>';
-  echo '<th>Full POST Views</th>';
-  echo '<th>'.count($fullPOSTViews).'</th>';
+echo '<tr class="row_dark">';
+  echo '<td>Full POST Views</td>';
+  echo '<td>'.count($fullPOSTViews).'</td>';
 echo '</tr>';
 
-echo '<tr>';
-  echo '<th>TOP (HS) POST Views Only</th>';
-  echo '<th>'.count($HSonlyPOSTViews).'</th>';
+echo '<tr class="row_light">';
+  echo '<td>TOP (HS) POST Views Only</td>';
+  echo '<td>'.count($HSonlyPOSTViews).'</td>';
 echo '</tr>';
 
 
-echo '<tr>';
-  echo '<th>BOTTOM (CC) POST Views Only</th>';
-  echo '<th>'.count($CConlyPOSTViews).'</th>';
+echo '<tr class="row_dark">';
+  echo '<td>BOTTOM (CC) POST Views Only</td>';
+  echo '<td>'.count($CConlyPOSTViews).'</td>';
 echo '</tr>';
 
 echo '</table>';
