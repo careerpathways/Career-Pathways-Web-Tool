@@ -682,7 +682,13 @@ foreach($testPOSTViews as $row) {
 echo '</table>';
 echo '</div>';
 
-# Summary of completed POST Views
+
+
+
+
+
+
+
 echo '<div class="section">';
 echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
 $postViews = $DB->MultiQuery('
@@ -742,6 +748,125 @@ FROM external_links e
 WHERE e.`type` = "post"
 GROUP BY e.drawing_id
 ');
+
+
+
+
+
+
+echo '<div class="section">';
+echo '<h3>How many "HS" POST Views exist? This includes only top HS section.</h3>';
+$postViews = $DB->MultiQuery('
+  SELECT v.id as view_id, v.name, v.last_modified,
+s.id AS school_id, s.school_name,
+u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+post_drawing_main.type as type
+FROM vpost_views v
+JOIN vpost_links l ON v.id = l.vid
+JOIN schools s ON v.school_id = s.id
+JOIN users u ON v.created_by = u.id
+left join `post_drawing_main` on post_drawing_main.id = l.post_id
+ORDER BY v.last_modified DESC
+');
+
+//build exclusion list
+$exclusionList = array();
+foreach($postViews as $row) {
+  if($row['type'] === 'CC'){
+    $exclusionList[$row['view_id']] = 1;
+  }
+}
+$HSonlyPOSTViews = array();
+foreach($postViews as $row) {
+  if(!array_key_exists($row['view_id'], $exclusionList)){
+    if($row['view_id'] > 0){
+      $HSonlyPOSTViews[$row['view_id']] = $row;
+    }
+  }
+}
+
+$doc = array();
+
+echo '<b>Total: ' . count($HSonlyPOSTViews) . '</b>';
+$trClass = new Cycler('row_light', 'row_dark');
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>View</th>';
+  echo '<th>Organization</th>';
+  echo '<th>User</th>';
+  echo '<th>Last Modified</th>';
+echo '</tr>';
+foreach($HSonlyPOSTViews as $row) {
+  echo '<tr class="' . $trClass . '">';
+    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+    echo '<td>' . $row['last_modified'] . '</td>';
+  echo '</tr>';
+}
+echo '</table>';
+echo '</div>';
+
+
+
+
+
+
+echo '<div class="section">';
+echo '<h3>How many "CC" POST Views exist? This includes only bottom CC section.</h3>';
+$postViews = $DB->MultiQuery('
+  SELECT v.id as view_id, v.name, v.last_modified,
+s.id AS school_id, s.school_name,
+u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+post_drawing_main.type as type
+FROM vpost_views v
+JOIN vpost_links l ON v.id = l.vid
+JOIN schools s ON v.school_id = s.id
+JOIN users u ON v.created_by = u.id
+left join `post_drawing_main` on post_drawing_main.id = l.post_id
+ORDER BY v.last_modified DESC
+');
+
+//build exclusion list
+$exclusionList = array();
+foreach($postViews as $row) {
+  if($row['type'] === 'HS'){
+    $exclusionList[$row['view_id']] = 1;
+  }
+}
+$CConlyPOSTViews = array();
+foreach($postViews as $row) {
+  if(!array_key_exists($row['view_id'], $exclusionList)){
+    if($row['view_id'] > 0){
+      $CConlyPOSTViews[$row['view_id']] = $row;
+    }
+  }
+}
+
+$doc = array();
+
+echo '<b>Total: ' . count($CConlyPOSTViews) . '</b>';
+$trClass = new Cycler('row_light', 'row_dark');
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>View</th>';
+  echo '<th>Organization</th>';
+  echo '<th>User</th>';
+  echo '<th>Last Modified</th>';
+echo '</tr>';
+foreach($CConlyPOSTViews as $row) {
+  echo '<tr class="' . $trClass . '">';
+    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+    echo '<td>' . $row['last_modified'] . '</td>';
+  echo '</tr>';
+}
+echo '</table>';
+echo '</div>';
+
+
+
 echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
 # such as Lane Community College, 20
 
