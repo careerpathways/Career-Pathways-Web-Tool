@@ -751,7 +751,7 @@ echo '</div>';
 
 
 echo '<div class="section">';
-echo '<h3>How many "HS" POST Views exist? This includes only top HS section.</h3>';
+echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
 $postViews = $DB->MultiQuery('
   SELECT v.id as view_id, v.name, v.last_modified,
 s.id AS school_id, s.school_name,
@@ -809,7 +809,7 @@ echo '</div>';
 
 
 echo '<div class="section">';
-echo '<h3>How many "CC" POST Views exist? This includes only bottom CC section.</h3>';
+echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
 $postViews = $DB->MultiQuery('
   SELECT v.id as view_id, v.name, v.last_modified,
 s.id AS school_id, s.school_name,
@@ -863,36 +863,113 @@ echo '</div>';
 
 
 
+
+$view_drawings = $DB->MultiQuery('
+            SELECT  v.id                AS view_id, 
+          v.name              AS view_name,
+          v.last_modified     AS view_last_modified,
+          sv.id               AS view_school_id,
+        sv.school_name      AS view_school_name,
+        sv.school_zip       AS view_school_zip,
+        pdm.type            AS drawing_type,
+        pdm.id              AS drawing_id,
+        pdm.skillset_id     AS drawing_skillset_id,
+        skillsets.title     AS drawing_skillset_title,
+        sd.id               AS drawing_school_id,
+                sd.school_name      AS drawing_school_name,
+                sd.school_zip       AS drawing_school_zip
+    FROM vpost_views v
+      LEFT JOIN vpost_links l
+        ON v.id = l.vid
+      LEFT JOIN post_drawing_main pdm
+        ON pdm.id = l.post_id
+      LEFT JOIN schools sv
+        ON v.school_id = sv.id
+      LEFT JOIN schools sd
+        ON pdm.school_id = sd.id
+      LEFT JOIN oregon_skillsets skillsets
+        ON pdm.skillset_id = skillsets.id
+    WHERE v.published = 1
+    AND pdm.type IN ("HS","CC")
+    ORDER BY v.name ASC
+  ');
+
+$inclusion_list = array();
+  
+  foreach($view_drawings as $view_drawing){
+    $key = $view_drawing['view_school_name'];
+    $view_id = $view_drawing['view_id'];
+
+    if(!isset($inclusion_list[$key])){
+      $inclusion_list[$key] = array(
+        'views' => array()
+      );
+    }
+
+    if(!isset($inclusion_list[$key]['views'][$view_id])){
+      $inclusion_list[$key]['views'][$view_id] = array(
+        'hs_drawing_ids' => array(),
+        'cc_drawing_ids' => array(),
+      );
+    }
+    
+
+    if( $view_drawing['drawing_type'] === 'HS' ){
+      $inclusion_list[$key]['views'][$view_id]['has_hs'] = true;
+      $inclusion_list[$key]['views'][$view_id]['hs_drawing_ids'][] = $view_drawing['drawing_id'];
+      //$inclusion_list[$key]['skillset_ids'][] = $view_drawing['drawing_skillset_id'];
+      //$inclusion_list[$key]['drawings'][] = $view_drawing;
+
+    }
+    if( $view_drawing['drawing_type'] === 'CC' ){
+      $inclusion_list[$key]['views'][$view_id]['has_cc'] = true;
+      $inclusion_list[$key]['views'][$view_id]['cc_drawing_ids'][] = $view_drawing['drawing_id'];
+      //$inclusion_list[$key]['skillset_ids'][] = $view_drawing['drawing_skillset_id'];
+      //$inclusion_list[$key]['drawings'][] = $view_drawing;
+    }
+
+  }
+  //print_r($inclusion_list);
+
 echo '<div class="section">';
 echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
 echo '<table>';
 echo '<tr class="drawing_main">';
   echo '<th>Organization</th>';
-  echo '<th>Number</th>';
+  echo '<th>Total Embedded<br />POST Views</th>';
+  echo '<th>Full POST Views</th>';
+  echo '<th>TOP (HS)<br />POST Views Only</th>';
+  echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
 echo '</tr>';
-echo '<tr class="row_light">';
-  echo '<td>Total Embedded POST Views</td>';
-  echo '<td>'.count($totalPostViews).'</td>';
-echo '</tr>';
+$trClass = new Cycler('row_light', 'row_dark');
+  foreach($inclusion_list as $school_name => $viewDoc){
+      $number_complete = 0;
+      $number_hs_only = 0;
+      $number_cc_only = 0;
+      foreach($viewDoc['views'] as $view){
+        if(isset($view['has_hs']) && isset($view['has_cc'])){
+          $number_complete++;
+        } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
+          $number_hs_only++;
+        } else {
+          $number_cc_only++;
+        }
+      }
 
-echo '<tr class="row_dark">';
-  echo '<td>Full POST Views</td>';
-  echo '<td>'.count($fullPOSTViews).'</td>';
-echo '</tr>';
+    echo '<tr class="' . $trClass . '">';
+      echo '<td>' . $school_name . '</td>';
+      echo '<td>' . count($viewDoc['views']) . '</td>';
+      echo '<td>' . $number_complete . '</td>';
+      echo '<td>' . $number_hs_only . '</td>';
+      echo '<td>' . $number_cc_only . '</td>';
+    echo '</tr>';
 
-echo '<tr class="row_light">';
-  echo '<td>TOP (HS) POST Views Only</td>';
-  echo '<td>'.count($HSonlyPOSTViews).'</td>';
-echo '</tr>';
-
-
-echo '<tr class="row_dark">';
-  echo '<td>BOTTOM (CC) POST Views Only</td>';
-  echo '<td>'.count($CConlyPOSTViews).'</td>';
-echo '</tr>';
+  }
+//add subtotal
 
 echo '</table>';
 echo '</div>';
+  
 
 
 
