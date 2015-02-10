@@ -28,7 +28,7 @@
 
 
 <tr class="editable">
-    <th>Change <?=l('program name label')?></th>
+    <th><?=l('program name label')?></th>
     <td>
         <div class="approved-program-name">
             <select name="program_id" id="program_id">
@@ -41,7 +41,7 @@
 </tr>
 
 <tr class="editable">
-    <th><div id="drawing_title_label"><?= ($drawing['program_id'] == 0 ? 'Program Name' : 'Alternate Title') ?></div></th>
+    <th><div id="drawing_title_label">Custom Program Name (not recommended)</div></th>
     <td>
         <input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>"> <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
     </td>
