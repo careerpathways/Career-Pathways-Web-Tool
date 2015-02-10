@@ -21,9 +21,9 @@ if(!$SITE->hasFeature('oregon_skillset')){
 <h3>Select which Approved Program Name list you wish to update/synchronize:</h3>
 <ul>
 	<li>
-		<a href="ap_name_settings/roadmapdrawings/form.php">Roadmap Drawings &gt;&gt;</a>
+		<a href="ap_name_settings/roadmapdrawings/form.php">Upload Roadmap APNs &gt;&gt;</a>
 	</li>
 	<li>
-		<a href="ap_name_settings/postdrawings/form.php">POST Drawings &gt;&gt;</a>
+		<a href="ap_name_settings/postdrawings/form.php">Upload POST APNs &gt;&gt;</a>
 	</li>
 </ul>
