@@ -889,13 +889,12 @@ $view_drawings = $DB->MultiQuery('
         ON pdm.school_id = sd.id
       LEFT JOIN oregon_skillsets skillsets
         ON pdm.skillset_id = skillsets.id
-    WHERE v.published = 1
     AND pdm.type IN ("HS","CC")
     ORDER BY v.name ASC
   ');
 
 $inclusion_list = array();
-  
+
   foreach($view_drawings as $view_drawing){
     $key = $view_drawing['view_school_name'];
     $view_id = $view_drawing['view_id'];
@@ -917,19 +916,20 @@ $inclusion_list = array();
     if( $view_drawing['drawing_type'] === 'HS' ){
       $inclusion_list[$key]['views'][$view_id]['has_hs'] = true;
       $inclusion_list[$key]['views'][$view_id]['hs_drawing_ids'][] = $view_drawing['drawing_id'];
-      //$inclusion_list[$key]['skillset_ids'][] = $view_drawing['drawing_skillset_id'];
-      //$inclusion_list[$key]['drawings'][] = $view_drawing;
 
     }
     if( $view_drawing['drawing_type'] === 'CC' ){
       $inclusion_list[$key]['views'][$view_id]['has_cc'] = true;
       $inclusion_list[$key]['views'][$view_id]['cc_drawing_ids'][] = $view_drawing['drawing_id'];
-      //$inclusion_list[$key]['skillset_ids'][] = $view_drawing['drawing_skillset_id'];
-      //$inclusion_list[$key]['drawings'][] = $view_drawing;
     }
-
   }
-  //print_r($inclusion_list);
+
+ksort($inclusion_list);
+//totals for all schools
+$total_views = 0;
+$total_complete = 0;
+$total_hs_only = 0;
+$total_cc_only = 0;
 
 echo '<div class="section">';
 echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
@@ -943,18 +943,24 @@ echo '<tr class="drawing_main">';
 echo '</tr>';
 $trClass = new Cycler('row_light', 'row_dark');
   foreach($inclusion_list as $school_name => $viewDoc){
-      $number_complete = 0;
-      $number_hs_only = 0;
-      $number_cc_only = 0;
-      foreach($viewDoc['views'] as $view){
-        if(isset($view['has_hs']) && isset($view['has_cc'])){
-          $number_complete++;
-        } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
-          $number_hs_only++;
-        } else {
-          $number_cc_only++;
-        }
+    $number_complete = 0;
+    $number_hs_only = 0;
+    $number_cc_only = 0;
+    foreach($viewDoc['views'] as $view){
+      if(isset($view['has_hs']) && isset($view['has_cc'])){
+        $number_complete++;
+      } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
+        $number_hs_only++;
+      } else {
+        $number_cc_only++;
       }
+    }
+  
+    //add counts from this org to total
+    $total_views += count($viewDoc['views']);
+    $total_complete += $number_complete;
+    $total_hs_only += $number_hs_only;
+    $total_cc_only += $number_cc_only;
 
     echo '<tr class="' . $trClass . '">';
       echo '<td>' . $school_name . '</td>';
@@ -965,14 +971,21 @@ $trClass = new Cycler('row_light', 'row_dark');
     echo '</tr>';
 
   }
-//add subtotal
+
+echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+  echo '<td>Total</td>';
+  echo '<td>' . $total_views . '</td>';
+  echo '<td>' . $total_complete . '</td>';
+  echo '<td>' . $total_hs_only . '</td>';
+  echo '<td>' . $total_cc_only . '</td>';
+echo '</tr>';
 
 echo '</table>';
 echo '</div>';
   
 
 
-
+/*
 # Summary of Embedded POST Views
 echo '<div class="section">';
 $numEmbedded = $DB->MultiQuery('
@@ -1012,6 +1025,7 @@ foreach($embedded as $row) {
 echo '</table>';
 echo '</div>';
 
+*/
 
 PrintFooter();
 
