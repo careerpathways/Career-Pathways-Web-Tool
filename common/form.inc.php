@@ -646,8 +646,9 @@ global $DB, $DAYS_OF_WEEK;
  *that do not have http
  **/
 function absolutePaths($value){
+		//Change regex to skip links with mailto in them.
         //replace any occurances of href=" that are not followed by http, with href="http://
-        $text = preg_replace('/href="(?!(http|\/))/','href="http://',$value);
+        $text = preg_replace('/href="(?!(http|\/|mailto))/','href="http://',$value);
         
         //make sure there was no regex error
         if(!isset($text)){
