@@ -141,7 +141,7 @@
                 
                 if(skillsetId){
                     for ( var i = 0; i < allPrograms.length; i++ ){
-                        if ( allPrograms[i] && allPrograms[i].title.length > 0 && allPrograms[i].skillset_id == skillsetId ) {
+                        if ( allPrograms[i] && allPrograms[i].title && allPrograms[i].title.length > 0 && allPrograms[i].skillset_id == skillsetId ) {
                             var selected = ( allPrograms[i].id == args.programId ) ? 'selected="selected"' : '';
                             options += '<option value="' + allPrograms[i].id + '" ' + selected + '>' + allPrograms[i].title + '</option>';
                         }

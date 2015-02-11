@@ -43,7 +43,15 @@
 <tr class="editable">
     <th><div id="drawing_title_label">Custom Program Name (not recommended)</div></th>
     <td>
-        <input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>"> <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
+        <input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>">
+        <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
+        <input type="button" id="clear_btn" class="submit tiny" value="Clear" />
+        <script>
+            $j('#clear_btn').click(function(){
+                $j('#drawing_title').val('');
+                $j('#title_btn').trigger('click');
+            })
+        </script>
     </td>
 </tr>
 
