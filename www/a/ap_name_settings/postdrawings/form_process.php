@@ -44,7 +44,8 @@ foreach ($data as $key => $value) {
 			    array(
 				    'skillset_id'          => $value['skillset_id'],
 				    'title'                => $value['approved_program_name'],
-				    'use_for_post_drawing' => 1
+				    'use_for_post_drawing' => 1,
+				    'imported_uid'         => intval($_SESSION['user_id'])
 			    )
 			);
 		}
