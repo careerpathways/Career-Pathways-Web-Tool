@@ -696,9 +696,9 @@ SELECT v.id, v.name, v.last_modified,
 s.id AS school_id, s.school_name,
 u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
 FROM vpost_views v
-JOIN vpost_links l ON v.id = l.vid
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
+LEFT JOIN vpost_links l ON v.id = l.vid
+LEFT JOIN schools s ON v.school_id = s.id
+LEFT JOIN users u ON v.created_by = u.id
 GROUP BY v.id
 ORDER BY v.last_modified DESC
 ');
@@ -746,29 +746,32 @@ echo '</div>';
 
 
 
-
-
+$postViews = $DB->MultiQuery('
+    SELECT v.id as view_id, v.name, v.last_modified,
+          s.id AS school_id, s.school_name,
+          u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+          pdm.type as type
+FROM vpost_views v
+  LEFT JOIN vpost_links l
+    ON v.id = l.vid
+  LEFT JOIN post_drawing_main pdm
+    ON pdm.id = l.post_id
+  LEFT JOIN schools s
+    ON v.school_id = s.id
+  LEFT JOIN users u
+    ON v.created_by = u.id
+  WHERE pdm.type IN ("HS","CC")
+  ORDER BY v.last_modified DESC
+');
 
 
 echo '<div class="section">';
 echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
-$postViews = $DB->MultiQuery('
-  SELECT v.id as view_id, v.name, v.last_modified,
-s.id AS school_id, s.school_name,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
-post_drawing_main.type as type
-FROM vpost_views v
-JOIN vpost_links l ON v.id = l.vid
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
-left join `post_drawing_main` on post_drawing_main.id = l.post_id
-ORDER BY v.last_modified DESC
-');
 
 //build exclusion list
 $exclusionList = array();
 foreach($postViews as $row) {
-  if($row['type'] === 'CC'){
+  if($row['type'] !== 'HS'){
     $exclusionList[$row['view_id']] = 1;
   }
 }
@@ -805,28 +808,13 @@ echo '</div>';
 
 
 
-
-
-
 echo '<div class="section">';
 echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
-$postViews = $DB->MultiQuery('
-  SELECT v.id as view_id, v.name, v.last_modified,
-s.id AS school_id, s.school_name,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
-post_drawing_main.type as type
-FROM vpost_views v
-JOIN vpost_links l ON v.id = l.vid
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
-left join `post_drawing_main` on post_drawing_main.id = l.post_id
-ORDER BY v.last_modified DESC
-');
 
 //build exclusion list
 $exclusionList = array();
 foreach($postViews as $row) {
-  if($row['type'] === 'HS'){
+  if($row['type'] !== 'CC'){
     $exclusionList[$row['view_id']] = 1;
   }
 }
@@ -889,7 +877,7 @@ $view_drawings = $DB->MultiQuery('
         ON pdm.school_id = sd.id
       LEFT JOIN oregon_skillsets skillsets
         ON pdm.skillset_id = skillsets.id
-    AND pdm.type IN ("HS","CC")
+    WHERE pdm.type IN ("HS","CC")
     ORDER BY v.name ASC
   ');
 
