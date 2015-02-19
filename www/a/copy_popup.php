@@ -102,6 +102,7 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
         <?php echo GenerateSelectBoxDB('programs', 'drawing_name', 'title', 'title', 'title', '', array('0'=>'Not Listed')); ?>
     </div>
 </fieldset>
+<?php if( $POST ): ?>
 <fieldset id="degreeType">
 	<legend><label for="degree_type">Degree Type</label></legend>
     <div class="">
@@ -112,6 +113,7 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
         ?>
     </div>
 </fieldset>
+<?php endif; ?>
 <fieldset id="versionNote">
     <legend><label for="version_note">Version Note</label></legend>
     <input type="text" maxlength="255" name="version_note" id="version_note" />
