@@ -67,6 +67,7 @@ if( $id != "" ) {
         <table>
 
             <tr>
+                <th width="115"></th>
                 <td>
                     <?php /** support current method of form submission. hidden so user uses apn <select>, rather than hand-typing. */ ?>
                     <input type="hidden" id="drawing_title" name="name" size="80" value="">
@@ -77,7 +78,7 @@ if( $id != "" ) {
 
             <?php if($SITE->hasFeature('oregon_skillset')): ?>
                 <tr>
-                    <th><?=l('skillset name')?></th>
+                    <th width="115"><?=l('skillset name')?></th>
                     <td>
                         <div id="skillset">
                             <?php echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>'')); ?>
@@ -89,7 +90,7 @@ if( $id != "" ) {
 
             <?php if( $school['organization_type'] != 'Other'): ?>
                 <tr>
-                    <th><?=l('program name label')?></th>
+                    <th width="115"><?=l('program name label')?></th>
                     <td>
                         <div id="program">
                             <?php echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed')); ?>
@@ -99,7 +100,7 @@ if( $id != "" ) {
             <?php endif; ?>
 
             <tr>
-                <th width="160">Organization</th>
+                <th width="115">Organization</th>
                 <td>
                     <?php
                     if( IsAdmin() ) {
@@ -112,7 +113,7 @@ if( $id != "" ) {
             </tr>
 
             <tr>
-                <td>&nbsp;</td>
+                <th width="115"></th>
                 <td>
                     <div style="float:right">
                         <input type="button" class="submit" value="Reset" id="submitButtonReset">
@@ -146,7 +147,7 @@ if( $id != "" ) {
         <?php if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_array($published) ): ?>
 
             <tr class="editable">
-                <th>OLMIS</th>
+                <th width="115">OLMIS</th>
                 <td>
                     <div id="olmis_links">
                         <?=ShowOlmisCheckboxes($drawing['id'], false, "This published roadmap is publicly accessible from the following OLMIS occupational reports:")?>
@@ -167,7 +168,7 @@ if( $id != "" ) {
 
             <?php if($drawing['last_olmis_link']): ?>
                 <tr class="editable">
-                    <th>Last OLMIS Link</th>
+                    <th width="115">Last OLMIS Link</th>
                     <td>
                         <a href="<?=$drawing['last_olmis_link']?>"><?=$drawing['last_olmis_link']?></a>
                         last updated on <?php echo(date("m/d/Y",strtotime($drawing['last_olmis_update']))." at ".date("h:ia",strtotime($drawing['last_olmis_update']))); ?>
@@ -179,13 +180,13 @@ if( $id != "" ) {
 
         <?php if( is_array($published) ): ?>
             <tr>
-                <th>Embed Code</th>
+                <th width="115">Embed Code</th>
                 <td>
                     <textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['name'])),$embed_code)) ?></textarea>
                 </td>
             </tr>
             <tr>
-                <th valign="top">External Link</th>
+                <th valign="top" width="115">External Link</th>
                 <td>
                     <?php if($external = getExternalDrawingLink($id, 'pathways')): ?>
                         <div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
@@ -200,7 +201,7 @@ if( $id != "" ) {
             </tr>
             <?php require('external_links.php'); ?>
             <tr>
-                <th>HTML Link</th>
+                <th width="115">HTML Link</th>
                 <td>
                     <div style="width:16px; float:left; margin-right: 2px;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
                     <div id="drawing_link"><?php
@@ -221,7 +222,7 @@ if( $id != "" ) {
                 </td>
             </tr>
             <tr>
-                <th valign="top">XML Link</th>
+                <th valign="top" width="115">XML Link</th>
                 <td>
                     <div id="drawing_link_xml"><?php
                     $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$xml_link);
@@ -230,7 +231,7 @@ if( $id != "" ) {
                 </td>
             </tr>
             <tr>
-                <th valign="top">Accessible Link</th>
+                <th valign="top" width="115">Accessible Link</th>
                 <td>
                     <div id="drawing_link_ada"><?php
                     $url = str_replace('$$',$id,$accessible_link);
@@ -242,7 +243,7 @@ if( $id != "" ) {
             </tr>
         <?php else: ?>
             <tr>
-                <th valign="top">Links</th>
+                <th valign="top" width="115">Links</th>
                 <td>Publish a version to get the published links for this drawing.</td>
             </tr>
         <?php endif; ?>
@@ -250,8 +251,8 @@ if( $id != "" ) {
         <?php require('version_list.php'); ?>
 
         <tr>
-            <th>Delete</th>
-            <td width="545">
+            <th width="115">Delete</th>
+            <td>
                 <?php if( CanDeleteDrawing($drawing['id'], 'pathways') ): ?>
                     <p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete this drawing and remove <b>all</b> versions</a></p>
                     <div id="deleteConfirm" style="display: none">

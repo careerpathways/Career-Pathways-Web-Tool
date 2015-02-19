@@ -49,6 +49,7 @@ if( $id == "" ) {
 
 
 <tr>
+	<th width="115">&nbsp;</th>
     <?php /* support current method of form submission. hidden so user uses apn <select>, rather than hand-typing. */ ?>
 	<td>
 		<input type="hidden" id="drawing_title" name="name" size="80" value="">
@@ -59,7 +60,7 @@ if( $id == "" ) {
 
 <?php if($SITE->hasFeature('oregon_skillset')): ?>
     <tr>
-        <th><?=l('skillset name')?></th>
+        <th width="115"><?=l('skillset name')?></th>
         <td><div id="skillset"><?php
                 echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>''));
                 ?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
@@ -68,7 +69,7 @@ if( $id == "" ) {
 
 <?php if( $school['organization_type'] != 'Other'): ?>
     <tr>
-        <th><?=l('program name label')?></th>
+        <th width="115"><?=l('program name label')?></th>
         <td><div id="program"><?php
                 echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
                 ?></div></td>
@@ -76,7 +77,7 @@ if( $id == "" ) {
 <?php endif; ?>
 
 <tr>
-	<th>Organization</th>
+	<th width="115">Organization</th>
 	<td>
 	<?php
 
@@ -121,7 +122,7 @@ if( $id == "" ) {
 </tr>
 
 <tr>
-	<th><?=l('degreetype name label')?></th>
+	<th width="115"><?=l('degreetype name label')?></th>
     <td><div id="degreetype"><?php
     	$drawingType = strtoupper(Request('type'));
     	echo GenerateSelectBoxDB('post_sidebar_options', 'degree_type', 'text', 'text', 'text', '', array(''=>''), "type='$drawingType'");
@@ -129,7 +130,7 @@ if( $id == "" ) {
     </td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
+	<th width="115">&nbsp;</th>
 	<td><input type="button" class="submit" value="Create" id="submitButton" onclick="submitform()"></td>
 </tr>
 </table>
@@ -148,7 +149,6 @@ if( $id == "" ) {
 	
 	<tr class="editable">
 		<td colspan="2">
-
 			<div id="drawing_header" class="title_img" style="height:19px;font-size:17px;overflow:hidden;background-color:#295a76;color:#FFFFFF">
 			<?php /* <?php $schools[$drawing['school_id']] ?> | <span class="apn"><?= $drawing['name'] ?></span> */ ?>
 			<?php echo ShowPostHeader($drawing['id']); ?>
@@ -162,7 +162,7 @@ if( $id == "" ) {
 
 <?php if( is_array($published) ) { ?>
 	<tr>
-		<th>HTML Link</th>
+		<th width="115">HTML Link</th>
 		<td>
 			<div style="width:16px; float: left;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
 			<div id="drawing_link"><?php
@@ -172,7 +172,7 @@ if( $id == "" ) {
 		</td>
 	</tr>
 	<tr>
-		<th valign="top">PDF Link</th>
+		<th valign="top" width="115">PDF Link</th>
 		<td><?php 
 			$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$pdf_link);
 			?>
@@ -194,14 +194,14 @@ if( $id == "" ) {
 	</tr>
 	-->
 	<tr>
-		<td>&nbsp;</td>
+		<th width="115">&nbsp;</th>
 		<td><!--These links -->This link will always link to the <b>published</b> version of this drawing.</td>
 	</tr>
 <?php
 	} else {
 ?>
 <tr>
-	<th valign="top">Links</th>
+	<th valign="top" width="115">Links</th>
 	<td>Publish a version to get the published links for this drawing.</td>
 </tr>
 <?php	
@@ -210,8 +210,8 @@ if( $id == "" ) {
 	require('post_version_list.php');		
 ?>
 	<tr>
-		<th>Delete</th>
-		<td width="545">
+		<th width="115">Delete</th>
+		<td>
 		<?php if( CanDeleteDrawing($drawing['id']) ) { ?>
 			<p><a href="javascript:deleteConfirm()" class="noline"><?=SilkIcon('cross.png')?> Delete this drawing and remove <b>all</b> versions</a></p>
 			<div id="deleteConfirm" style="display: none">

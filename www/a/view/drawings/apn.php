@@ -14,7 +14,7 @@
 
 <?php if($SITE->hasFeature('oregon_skillset')):	?>
     <tr class="editable">
-        <th><?=l('skillset name')?></th>
+        <th width="115"><?=l('skillset name')?></th>
 
         <td height="34">
             <?php // [aaa] ?>
@@ -28,7 +28,7 @@
 
 
 <tr class="editable">
-    <th><?=l('program name label')?></th>
+    <th width="115"><?=l('program name label')?></th>
     <td>
         <div class="approved-program-name">
             <select name="program_id" id="program_id">
@@ -41,7 +41,7 @@
 </tr>
 
 <tr class="editable">
-    <th><div id="drawing_title_label">Custom Program Name (not recommended)</div></th>
+    <th width="115"><div id="drawing_title_label">Custom Program Name (not recommended)</div></th>
     <td>
         <input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>">
         <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
@@ -57,6 +57,6 @@
 
 
 <tr class="editable">
-    <th width="80">Organization</th>
+    <th width="115">Organization</th>
     <td><b><?= $schools[$drawing['school_id']] ?></b><input type="hidden" id="school_id" value="<?= $drawing['school_id'] ?>" /></td>
 </tr>

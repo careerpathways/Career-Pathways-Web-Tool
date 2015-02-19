@@ -96,7 +96,7 @@ if( $id )
 		</td>
 	</tr>
 	<tr class="editable">
-		<th>Occupation/Program</th>
+		<th width="115">Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
@@ -107,7 +107,7 @@ if( $id )
 		</td>
 	</tr>
 	<tr class="editable">
-		<th width="80">Organization</th>
+		<th width="115">Organization</th>
 		<td><b><?= $schools[$school_id] ?></b></td>
 	</tr>
 <?php
@@ -119,23 +119,23 @@ if($SITE->hasFeature('oregon_skillset')){
 	}
 ?>
 <tr class="editable">
-	<th><?=l('skillset name')?></th>
+	<th width="115"><?=l('skillset name')?></th>
 	<td valign="top">
 		<div id="skillSet_fixed">
 			<span id="skillSet_value"><?= $skillSet['title'] ?></span>
 			<a href="javascript:showSkillSetChange()" class="tiny">edit</a>
 		</div>
 
-	<div id="skillSet_edit" style="display:none">
-		<?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
-		<?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
-		<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
-		<span id="checkSkillSetResponse" class="error"></span>
-	</div>
+		<div id="skillSet_edit" style="display:none">
+			<?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
+			<?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
+			<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
+			<span id="checkSkillSetResponse" class="error"></span>
+		</div>
 
-	<?php
-		//echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-	?>
+		<?php
+			//echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+		?>
 	</td>
 </tr>
 <?php
@@ -143,14 +143,14 @@ if($SITE->hasFeature('oregon_skillset')){
 ?>
         <?php if($view['published']){?>
 	<tr>
-		<th>Embed Code</th>
+		<th width="115">Embed Code</th>
 		<td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
         
 	<tr>
-		<th valign="top">External Link</th>
+		<th valign="top" width="115">External Link</th>
 		<td>
 			<?php 
 			if($external = getExternalDrawingLink($id, 'post'))
@@ -170,7 +170,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		require('view/drawings/external_links.php');
 	} //endif (published)?>
 	<tr>
-		<th>HTML Link</th>
+		<th width="115">HTML Link</th>
 		<td>
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
@@ -180,7 +180,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		</td>
 	</tr>
 	<tr>
-		<th>PDF Link</th>
+		<th width="115">PDF Link</th>
 		<td>
 			<div id="drawing_link"><?php
 			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode($view['name'])), $pdf_link);
@@ -190,7 +190,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		</td>
 	</tr>
 	<tr>
-		<th>Delete</th>
+		<th width="115">Delete</th>
 		<td>
 			<a href="javascript:void(0);" id="deleteLink" class="noline"><?=SilkIcon('cross.png')?> Delete this view</a> &nbsp;&nbsp;
 			<div id="deleteConfirm" style="display:none">
@@ -328,7 +328,7 @@ if($SITE->hasFeature('oregon_skillset')){
             </tr>
             <?php if ($count > 0): ?>
             <tr>
-                <td>&nbsp;</td>
+                <th width="115">&nbsp;</th>
                 <td>
                     <?php if ($signaturesRequired): ?>
                         <?php if ($signaturesReceived): ?>
