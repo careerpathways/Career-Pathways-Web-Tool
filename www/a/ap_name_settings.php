@@ -20,32 +20,55 @@ if(!$SITE->hasFeature('oregon_skillset')){
 
 
 <?php
-$most_recent = $DB->SingleQuery("SELECT programs.imported, users.first_name, users.last_name
+
+$most_recent_roadmap = $DB->SingleQuery("SELECT programs.imported, users.first_name, users.last_name
 	FROM programs
 	LEFT JOIN users ON programs.imported_uid = users.id
 	WHERE imported_uid > 0
+	AND use_for_roadmap_drawing = 1
+	AND use_for_post_drawing = 0
 	ORDER BY imported desc");
+
+$most_recent_post = $DB->SingleQuery("SELECT programs.imported, users.first_name, users.last_name
+	FROM programs
+	LEFT JOIN users ON programs.imported_uid = users.id
+	WHERE imported_uid > 0
+	AND use_for_roadmap_drawing = 0
+	AND use_for_post_drawing = 1
+	ORDER BY imported desc");
+
 ?>
 
 
 <h3>Select which Approved Program Name list you wish to update/synchronize:</h3>
 
-<?php if($most_recent): ?>
-	<div class="previous-import">
-		Previous upload (most recent) was by <?php echo $most_recent['first_name'] . ' ' . $most_recent['last_name']; ?>
-		on <?php echo $most_recent['imported']; ?>
-	</div>
-<?php else: ?>
-	<div class="previous-import">
-		No previous uploads detected.
-	</div>
-<?php endif; ?>
+
 
 <ul>
 	<li>
 		<a href="ap_name_settings/roadmapdrawings/form.php">Upload Roadmap APNs &gt;&gt;</a>
+		<?php if($most_recent_roadmap): ?>
+			<div class="previous-import">
+				Previous upload (most recent) was by <?php echo $most_recent_roadmap['first_name'] . ' ' . $most_recent_roadmap['last_name']; ?>
+				on <?php echo $most_recent_roadmap['imported']; ?>
+			</div>
+		<?php else: ?>
+			<div class="previous-import">
+				No previous uploads detected.
+			</div>
+		<?php endif; ?>
 	</li>
 	<li>
 		<a href="ap_name_settings/postdrawings/form.php">Upload POST APNs &gt;&gt;</a>
+		<?php if($most_recent_post): ?>
+			<div class="previous-import">
+				Previous upload (most recent) was by <?php echo $most_recent_post['first_name'] . ' ' . $most_recent_post['last_name']; ?>
+				on <?php echo $most_recent_post['imported']; ?>
+			</div>
+		<?php else: ?>
+			<div class="previous-import">
+				No previous uploads detected.
+			</div>
+		<?php endif; ?>
 	</li>
 </ul>
