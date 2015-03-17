@@ -180,7 +180,8 @@ if( KeyInRequest('drawing_id') ) {
 			$post->type = Request('type');
 			$post->school_id = $school_id;
 			$post->skillset_id = Request('skillset_id');
-			$post->name = Request('name');
+			$post->name = "";
+			$post->program_id = Request('program_id'); //approved program name id
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
 			$post->sidebar_right = Request('degree_type');
 			$post->createEmptyChart();
