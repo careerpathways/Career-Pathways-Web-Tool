@@ -238,9 +238,8 @@ ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-i386
 # Create cache folder and make sure it's writable
 # -------------------
 # Make user the vagant user can write to parent folder
-#TODO update paths for washington:
-#mkdir -p /home/wwwcaree/public_html/cache/pdf/
-#chmod -R 777 /home/wwwcaree/public_html/
+mkdir -p /home/wwwcaree/public_html/cache/
+chown -R vagrant:vagrant /home/wwwcaree/public_html/
 
 # Install Pear requirements
 pear install Text_Wiki
@@ -251,7 +250,7 @@ pear -D auto_discover=1 install pear.amazonwebservices.com/sdk
 
 
 #Default-settings.php and settings.php are both used.  So they need to setup and the same.
-sed -i 's#^php_value.*$#php_value include_path  ".:/home/project/$projectName/www/include/:/home/project/$projectName/common/"#g' /home/project/$projectName/www/.htaccess
+sed -i 's#^php_value.*$#php_value include_path  ".:/home/project/'$projectName'/www/include/:/home/project/'$projectName'/common/"#g' /home/project/$projectName/www/.htaccess
 
 sed -i 's#helpdesk@careermaphumboldt.com#michael.calabrese+lccpost@lunarlogic.com#g' /home/project/$projectName/www/include/default.settings.php
 sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
