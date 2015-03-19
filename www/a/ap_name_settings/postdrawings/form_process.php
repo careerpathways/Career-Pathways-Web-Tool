@@ -18,9 +18,13 @@ do {
     if ($row) {
     	if(is_top($row)){
     		$row2 = fgetcsv($handle); //our data exists across two rows
-    		$secondary_course_name = $row[7]; //will be used as approved program name.
+    		$program_title = $row[5];
+    		$secondary_course_name = $row[7];
     		$cluster_title = $row2[5]; //will be used for skillset. Need to map down to the 6 official skillsets.
-			push_data($secondary_course_name, $cluster_title);
+
+    		$approved_program_name = build_approved_program_name($program_title, $secondary_course_name);
+			$skillset_id = get_skillset_id($cluster_title); 
+			push_data($approved_program_name, $skillset_id);
     	}
     }
 } while ($row = fgetcsv($handle));
@@ -52,22 +56,17 @@ foreach ($data as $key => $value) {
 	}
 }
 
-function compare($value){
-	global $existing_programs;
-	foreach($existing_programs as $ep){
-		if(strtolower($ep["title"]) == strtolower($value["approved_program_name"])){
-			return $ep['id'];
-		}
+function build_approved_program_name($program_title, $secondary_course_name) {
+	$excluded_terms = array('(SW)');
+	$approved_program_name = $program_title . ' - ' . $secondary_course_name;
+	foreach ($excluded_terms as $term) {
+		$approved_program_name = str_replace($term, "", $approved_program_name);
 	}
-	return false;
+	$approved_program_name = str_replace("  ", "", $approved_program_name); //remove any double spaces that may occur
+	return $approved_program_name;
 }
 
-function is_top($row) {
-	return (intval($row[1]) > 0);
-}
-
-function push_data($secondary_course_name, $cluster_title) {
-	global $data;
+function get_skillset_id($cluster_title) {
 	switch ($cluster_title) {
 		case "agriculture":
 			$skillset_id = 1; //Database ID for Agriculture, Food and Natural Resources
@@ -136,11 +135,28 @@ function push_data($secondary_course_name, $cluster_title) {
 			$skillset_id = 1;
 			break;
 	}
+	return $skillset_id;	
+}
 
-	$data[$secondary_course_name] = array(
-		'approved_program_name' => $secondary_course_name,
-		'skillset_id' => $skillset_id,
-		'cluster_title' => $cluster_title
+function compare($value) {
+	global $existing_programs;
+	foreach($existing_programs as $ep){
+		if(strtolower($ep["title"]) == strtolower($value["approved_program_name"])){
+			return $ep['id'];
+		}
+	}
+	return false;
+}
+
+function is_top($row) {
+	return (intval($row[1]) > 0);
+}
+
+function push_data($approved_program_name, $skillset_id) {
+	global $data;
+	$data[$approved_program_name] = array(
+		'approved_program_name' => $approved_program_name,
+		'skillset_id' => $skillset_id
 	);
 }
 
