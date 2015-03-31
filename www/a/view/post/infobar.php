@@ -13,7 +13,7 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 		<a href="<?= $_SERVER['PHP_SELF'] . '?action=drawing_info&amp;id=' . $parent['id'] ?>" title="Drawing Properties">
 			<img src="/common/silk/cog.png" width="16" height="16" style="float: left; margin-right: 4px;" />
 		</a>
-		<b><?= $parent['name'] ?></b><br /><br />
+		<b><?= GetDrawingName($parent['id'], 'post') ?></b><br /><br />
 
 		<a href="<?= $_SERVER['PHP_SELF'] . '?action=version_info&amp;version_id=' . Request('version_id') ?>" style="float:left; margin-right: 4px;" title="Version Settings"><?=SilkIcon('wrench.png')?></a>
 
