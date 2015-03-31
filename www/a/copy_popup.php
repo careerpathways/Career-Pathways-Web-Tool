@@ -99,7 +99,8 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 <fieldset id="drawingName">
 	<legend><label for="drawing_title">New Drawing Name</label></legend>
     <div class="approved-program-name">
-        <?php echo GenerateSelectBoxDB('programs', 'drawing_name', 'title', 'title', 'title', '', array('0'=>'Not Listed')); ?>
+    	<?php // This is a list of Approved Program Names with their ID as submit value ?>
+        <?php echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed')); ?>
     </div>
 </fieldset>
 <?php if( $POST ): ?>

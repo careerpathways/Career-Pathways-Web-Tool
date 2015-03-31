@@ -323,7 +323,18 @@ function copyVersion($version_id) {
 		else
 		$newdrawing['school_id'] = $_SESSION['school_id'];
 
-		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
+		if(Request('program_id')){
+			// If an approved program name was selected during "copy this version" pop up
+			$newdrawing['name']	= '';
+			$newdrawing['program_id'] = Request('program_id');
+		} else {
+			// Take from the drawing we're copying. 
+			$newdrawing['name']	= $drawing_main['name'];
+			$newdrawing['program_id'] = $drawing_main['program_id'];
+			$newdrawing['skillset_id'] = $drawing_main['skillset_id'];
+		}
+
+		//$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
 		$newdrawing['date_created'] = $DB->SQLDate();
 		$newdrawing['last_modified'] = $DB->SQLDate();

@@ -124,7 +124,7 @@ switch( Request('mode') ) {
 					JOIN schools ON users.school_id = schools.id
 					WHERE ' . (strlen($school_ids)>0 ? 'school_id IN ("'.$school_ids.'")' : 'organization_type IN ("'.$org_types.'")' ) . '
 					AND user_active=1
-					ORDER BY last_name, first_name';
+					ORDER BY first_name, last_name';
 			$people_school = $DB->VerticalQuery($sql,'name','id');
 			$people = $people_school;
 		}
