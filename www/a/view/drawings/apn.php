@@ -1,23 +1,8 @@
-<!--
-<tr class="editable">
-    <th>Current/Active Name</th>
-    <td>
-        <div id="title_fixed">
-				<span id="title_value" style="font-size: 12pt;">
-					<span class="apn-name"><?= $drawing['name'] ?></span>
-				</span>
-        </div>
-    </td>
-</tr>
--->
-
-
 <?php if($SITE->hasFeature('oregon_skillset')):	?>
     <tr class="editable">
         <th width="115"><?=l('skillset name')?></th>
 
         <td height="34">
-            <?php // [aaa] ?>
             <div id="skillset" style="float:left">
                 <?php echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array(''=>'')); ?>
             </div>

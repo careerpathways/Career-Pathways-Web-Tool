@@ -13,6 +13,9 @@ $POST = Request('mode') == 'post';
 <head>
 <title>Copy Version &bull; Pathways</title>
 <script type="text/javascript" src="/files/prototype.js"></script>
+<script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<script>var jQuery = jQuery.noConflict();</script>
+<script type="text/javascript" src="/common/APN.js"></script>
 <style type="text/css">@import "/styles.css";</style>
 <style type="text/css">
 body {
@@ -98,11 +101,47 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 
 <fieldset id="drawingName">
 	<legend><label for="drawing_title">New Drawing Name</label></legend>
-    <div class="approved-program-name">
-    	<?php // This is a list of Approved Program Names with their ID as submit value ?>
-        <?php echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed')); ?>
-    </div>
+	<table>
+    <?php if($SITE->hasFeature('oregon_skillset')):	?>
+	    <tr class="editable">
+	        <th width="115"><?=l('skillset name')?></th>
+
+	        <td height="34">
+	            <div id="skillset" style="float:left">
+	                <?php echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', 0, array(''=>'')); ?>
+	            </div>
+	            <div id="skillsetConf" style="color:#393; font-weight: bold; padding-left: 10px;"></div>
+	        </td>
+	    </tr>
+	<?php endif; ?>
+	<tr class="editable">
+	    <th width="115"><?=l('program name label')?></th>
+	    <td>
+	        <div class="approved-program-name">
+	            <select name="program_id" id="program_id">
+	                <!-- Javascript fills values -->
+	            </select>
+	            <!-- <input type="button" class="save submit tiny" value="Save <?=l('program name label')?>"> -->
+	        </div>
+
+	    </td>
+	</tr>
+	</table>
+	<script>
+		var drawingType = "<?= Request('mode') ?>";
+		if(drawingType !== 'pathways' && drawingType !== 'post'){
+			if(console && console.error){
+				console.error('var drawingType needs to be either "pathways" (for roadmap drawings) or "post". Got: ' + drawingType)
+			}
+		}
+	    var apn = new APN({
+	        drawingId : undefined, //new drawing
+	        drawingType : "<?= Request('mode') ?>", //pathways or post
+	        programId: undefined //new drawing
+	    });
+	</script>
 </fieldset>
+
 <?php if( $POST ): ?>
 <fieldset id="degreeType">
 	<legend><label for="degree_type">Degree Type</label></legend>

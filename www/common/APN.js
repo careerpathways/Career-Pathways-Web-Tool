@@ -46,6 +46,14 @@
             programId : 0
         };
 
+        //double check this value and error if it's not correct.
+        if(args.drawingType !== 'pathways' && args.drawingType !== 'post'){
+            if(console && console.error){
+                console.error('args.drawingType needs to be either "pathways" (for roadmap drawings) or "post". Got: ' + args.drawingType)
+            }
+            return;
+        }
+
         // Get a list of all programs (Approved Program Names) and make them available to this scope.
         this.allPrograms = {};
         var _url = '/a/drawings_post.php?mode=json&resource=programs&drawingtype=' + this.args.drawingType;
@@ -85,8 +93,8 @@
 
                             $('#skillset select').css({backgroundColor: '#99FF99'});
                             setTimeout(function() {
-                                $j('#skillset select').css({backgroundColor: '#FFFFFF'});
-                                $j('#skillsetConf').html('');
+                                $('#skillset select').css({backgroundColor: '#FFFFFF'});
+                                $('#skillsetConf').html('');
                             }, 500);
                         }
                     );
@@ -148,7 +156,7 @@
                     }
                 } else {
                     for ( var i = 0; i < allPrograms.length; i++ ){
-                        if ( allPrograms[i] && allPrograms[i].title.length > 0 ) {
+                        if ( allPrograms[i] && allPrograms[i].title && allPrograms[i].title.length > 0 ) {
                             var selected = ( allPrograms[i].id == args.programId ) ? 'selected="selected"' : '';
                             options += '<option value="' + allPrograms[i].id + '" ' + selected + '>' + allPrograms[i].title + '</option>';
                         }

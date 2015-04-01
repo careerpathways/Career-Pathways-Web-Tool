@@ -379,7 +379,18 @@ function copyVersion($version_id) {
 			$newdrawing['school_id'] = $_SESSION['school_id'];
 			$post->school_id = $_SESSION['school_id'];
 		}
-		$post->name = (Request('drawing_name') ? Request('drawing_name') : $drawing_main['name']);
+
+		if(Request('program_id') && Request('program_id') > 0){
+			// If an approved program name was selected during "copy this version" pop up
+			$post->name = ''; //Alternate names are not recommended going forward.
+			$post->program_id = Request('program_id');
+			$post->skillset_id = Request('skillset_id');
+		} else {
+			// Take from the drawing we're copying. 
+			$post->name = $drawing_main['name'];;
+			$post->program_id = $drawing_main['program_id'];
+			$post->skillset_id = $drawing_main['skillset_id'];
+		}
 
 		$new_version_id = $post->saveToDB();
 	} else {

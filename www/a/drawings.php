@@ -323,10 +323,11 @@ function copyVersion($version_id) {
 		else
 		$newdrawing['school_id'] = $_SESSION['school_id'];
 
-		if(Request('program_id')){
+		if(Request('program_id') && Request('program_id') > 0){
 			// If an approved program name was selected during "copy this version" pop up
 			$newdrawing['name']	= '';
 			$newdrawing['program_id'] = Request('program_id');
+			$newdrawing['skillset_id'] = Request('skillset_id');
 		} else {
 			// Take from the drawing we're copying. 
 			$newdrawing['name']	= $drawing_main['name'];
