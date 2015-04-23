@@ -1,3 +1,4 @@
+<?php //DO NOT remove the SERVER_NAME as this file may be class from the outside. ?>
 <style type="text/css">
 @import 'http://<?= $_SERVER['SERVER_NAME'] ?>/c/chstyle.css';
 .chVDivider { 
