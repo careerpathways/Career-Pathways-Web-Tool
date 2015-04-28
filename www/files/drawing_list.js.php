@@ -190,7 +190,7 @@ function do_change(whichbox) {
 			break;
 		case 'list_categories':
 			var search = get_selected(getLayer('list_categories'));
-			var categories_list = csl(search,',');
+			var categories_list = encodeURIComponent(csl(search,'ZZSEPARATEZZ')); //use an obscure delimiter to avoid comma problems
 
 			var schools = get_selected(getLayer('list_schools'));
 			
@@ -229,7 +229,7 @@ function load_drawing_list() {
 	var search_c = get_selected(getLayer('list_categories'));
 	var people_list = csl(search_p,',');
 	var schools_list = csl(search_s,',');
-	var cats_list = csl(search_c,',');
+	var cats_list = encodeURIComponent(csl(search_c,'ZZSEPARATEZZ'));
 	var search = getLayer('search_box').value;
 
 	var url = "/a/drawings_load.php?mode=drawing_list&search="+search+"&people="+people_list+"&schools="+schools_list+"&categories="+cats_list+"&type="+MODE;
