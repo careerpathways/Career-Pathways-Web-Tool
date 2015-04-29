@@ -1,6 +1,6 @@
-<?php //DO NOT remove the SERVER_NAME as this file may be class from the outside. ?>
+<?php //DO NOT remove the getBaseUrl() as this file may be accessed from the outside. ?>
 <style type="text/css">
-@import 'http://<?= $_SERVER['SERVER_NAME'] ?>/c/chstyle.css';
+@import '<?= getBaseUrl() ?>/c/chstyle.css';
 .chVDivider { 
 	background: #ccc;
 	height: 100%;
@@ -25,11 +25,11 @@
 </script>
 
 <?php if(isset($_GET['action'])){ ?>
-<!--[if lt IE 9]><script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/excanvas.js"></script><![endif]-->
+<!--[if lt IE 9]><script type="text/javascript" src="<?= getBaseUrl() ?>/files/excanvas.js"></script><![endif]-->
 <?php } else { ?>
 <!--[if lt IE 9]>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/flashcanvas.js"></script>
+<script type="text/javascript" src="<?= getBaseUrl() ?>/files/flashcanvas.js"></script>
 <![endif]-->
 <?php } ?>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/files/prototype.js"></script>
-<script type="text/javascript" src="http://<?= $_SERVER['SERVER_NAME'] ?>/c/chview.js"></script>
+<script type="text/javascript" src="<?= getBaseUrl() ?>/files/prototype.js"></script>
+<script type="text/javascript" src="<?= getBaseUrl() ?>/c/chview.js"></script>

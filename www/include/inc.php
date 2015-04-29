@@ -237,6 +237,21 @@ function getLinkHeaders($link)
 }
 
 /**
+ * Full base URL of this server.
+ * Supports non-standard ports.
+ *
+ * @return string - Entire base url with protocol. No trailing slash.
+ */
+function getBaseUrl(){
+	$protocol = empty($_SERVER['https'])?'http://':'https://';
+	$_baseUrl = $protocol . $_SERVER['SERVER_NAME'];
+	if($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443){
+		$_baseUrl .= ':' . $_SERVER['SERVER_PORT'];
+	}
+	return $_baseUrl;
+}
+
+/**
  * Tries to find the external link to the specified drawing in the external_links table.
  * Filters out things like file:/// links and known testing URLs.
  * 
