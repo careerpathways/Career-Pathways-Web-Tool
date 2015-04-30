@@ -194,22 +194,57 @@ function ShowBrowserNotice()
 	}
 }
 
-
+/**
+ * Show Roadmap Drawing Header
+ * @param mixed int or string - Id of the drawing
+ * @return  string HTML for the Roadmap Drawing Header
+ */
 function ShowRoadmapHeader($drawing_id)
 {
 	global $DB;
 	$name_to_use = GetDrawingName($drawing_id, 'roadmap');
 	$school_abbr = GetSchoolAbbr($drawing_id, 'roadmap');
-	return '<img src="/files/titles/' . base64_encode($school_abbr) . '/' . base64_encode($name_to_use) . '.png" alt="' . $school_abbr . ': ' . $name_to_use . '" height="19" width="800" />';
+	return _BuildDrawingHeader($school_abbr, l('drawing head pathways 1'), l('drawing head pathways 2'), $name_to_use);
 }
 
-
+/**
+ * Show POST Drawing Header
+ * @param mixed int or string - Id of the drawing
+ * @return  string HTML for the POST Drawing Header
+ */
 function ShowPostHeader($drawing_id)
 {
 	global $DB;
 	$name_to_use = GetDrawingName($drawing_id, 'post');
 	$school_abbr = GetSchoolAbbr($drawing_id, 'post');
-	return '<img src="/files/titles/' . base64_encode($school_abbr) . '/' . base64_encode($name_to_use) . '.png" alt="' . $school_abbr . ': ' . $name_to_use . '" height="19" width="800" />';
+	return _BuildDrawingHeader($school_abbr, l('drawing head pathways 1'), l('drawing head pathways 2'), $name_to_use);
+	//Use "drawing head pathways..." for now, to mimic live behavior. (e.g. "Career Pathways" instead of "Plan of Study" on POST drawing headers)
+	//return _BuildDrawingHeader($school_abbr, l('drawing head post 1'), l('drawing head post 2'), $name_to_use);
+}
+
+/**
+ * Generic function to create drawing header markup.
+ * Use ShowRoadmapHeader or ShowPostHeader instead.
+ * 
+ * @return string
+ */
+function _BuildDrawingHeader($school_abbr, $head1, $head2, $name_to_use)
+{
+	$str = '<div class="drawing-header">'
+			. '<div class="section-left">'
+				. '<div class="inner">'
+					. '<span class="school">' . $school_abbr . '</span> '
+					. '<span class="header-1">' . $head1 . '</span>'
+					. '<span class="header-2">' . $head2 . '</span>'
+				. '</div>'
+			. '</div>'
+			. '<div class="section-right">'
+				. '<div class="inner">'
+					. '<span class="title">' . $name_to_use . '</span>'
+				. '</div>'
+			. '</div>'
+		. '</div>';
+	return $str;
 }
 
 /**

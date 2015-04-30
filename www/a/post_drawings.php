@@ -304,7 +304,7 @@ function showVersion() {
 	$post = POSTChart::Create($drawing['id']);
 
 	echo '<div style="margin-bottom: 10px">';
-	echo '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76">' . ShowPostHeader($drawing['parent_id']) . '</div>';
+	echo '<div class="title_img">' . ShowPostHeader($drawing['parent_id']) . '</div>';
 	if( $drawing['skillset'] )
 	{
 		echo '<div id="skillset">';

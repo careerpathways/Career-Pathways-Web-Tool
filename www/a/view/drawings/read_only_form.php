@@ -25,7 +25,7 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 <table>
 <tr class="editable">
 	<td colspan="2">
-		<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowRoadmapHeader($drawing['id']) ?></div>
+		<div id="drawing_header" class="title_img"><?= ShowRoadmapHeader($drawing['id']) ?></div>
 	</td>
 </tr>
 <tr class="editable">

@@ -1,3 +1,4 @@
+@import url(/styles-header.css);
 
 body {
 	font-family: verdana, sans-serif;
@@ -15,7 +16,6 @@ td {
 }
 
 #post_title {
-	height: 19px;
 	background-color: #295a76;
 }
 #post_title_container {

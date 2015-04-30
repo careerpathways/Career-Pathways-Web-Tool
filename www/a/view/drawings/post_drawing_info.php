@@ -149,9 +149,8 @@ if( $id == "" ) {
 	
 	<tr class="editable">
 		<td colspan="2">
-			<div id="drawing_header" class="title_img" style="height:19px;font-size:17px;overflow:hidden;background-color:#295a76;color:#FFFFFF">
-			<?php /* <?php $schools[$drawing['school_id']] ?> | <span class="apn"><?= $drawing['name'] ?></span> */ ?>
-			<?php echo ShowPostHeader($drawing['id']); ?>
+			<div id="drawing_header" class="title_img">
+				<?php echo ShowPostHeader($drawing['id']); ?>
 			</div>
 
 		</td>

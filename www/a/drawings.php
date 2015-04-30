@@ -260,14 +260,18 @@ function showVersion() {
 the toolbar.</p>
 </div>
 
-<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
-	<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
-<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
-<script type="text/javascript">
+<div id="drawing_canvas" class="ctpathways">
+	<?php require('c/view/chart_include.php'); ?>
+		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
+			<script type="text/javascript" src="/c/chadmin.js"></script>
+		<?php else: ?>
+
+		<?php endif; ?>
+		<script type="text/javascript">
 			function init() {
 				if (arguments.callee.done) return;
 				arguments.callee.done = true;
-				Charts.draw('drawing_canvas','toolbar_content');
+				Charts.draw('chartcontainer','toolbar_content');
 			}
 
 			/* for Mozilla */
@@ -283,11 +287,11 @@ the toolbar.</p>
 
 			/* for other browsers */
 			window.onload = init;
-		</script></div>
-
-	<?php
-	PrintFooter();
-}
+		</script>
+</div>
+		<?php
+		PrintFooter();
+	}
 
 function copyVersion($version_id) {
 	global $DB;

@@ -79,22 +79,6 @@ global $SITE;
 
 var base_url = 'http://<?= $SITE->base_url() ?>';
 
-<?php
-$chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76">' . ShowRoadmapHeader($drawing['parent_id']) . '</div>';
-?>
-var chTitleImg = '<?php echo $chTitleImg; ?>';
-<?php
-if( $drawing['skillset'] ) {
-	?>
-	var chSkillset = '<div class="title_skillset" style="font-size:8pt;font-weight:bold;"><?=l('skillset name')?>: <?= $drawing['skillset'] ?></div>';
-	<?php
-} else {
-	?>
-	var chSkillset = '';
-	<?php
-}
-?>
-
 var chColor = ['<?= implode("','",$colors) ?>'];
 
 var connections = <?= count($connections) > 0 ? json_encode($connections) : '[]' ?>;

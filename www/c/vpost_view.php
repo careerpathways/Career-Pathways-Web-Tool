@@ -97,7 +97,7 @@ if( Request('format') == 'html' )
 <?php
 
 echo '<div style="margin-bottom: 10px">';
-echo '<div id="post_title">';
+echo '<div id="post_title" style="height: 19px;">';
 	echo ShowPostViewHeader(intval(Request('id')));
 echo '</div>';
 
