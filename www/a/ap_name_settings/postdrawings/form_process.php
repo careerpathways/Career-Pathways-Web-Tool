@@ -58,15 +58,16 @@ foreach ($data as $key => $value) {
 
 function build_approved_program_name($program_title, $secondary_course_name) {
 	$excluded_terms = array('(SW)');
-	$approved_program_name = $program_title . ' - ' . $secondary_course_name;
+	$approved_program_name = $program_title . " - " . $secondary_course_name;
 	foreach ($excluded_terms as $term) {
 		$approved_program_name = str_replace($term, "", $approved_program_name);
 	}
-	$approved_program_name = str_replace("  ", "", $approved_program_name); //remove any double spaces that may occur
+	$approved_program_name = str_replace("  ", " ", $approved_program_name); //remove any double spaces that may occur
 	return $approved_program_name;
 }
 
 function get_skillset_id($cluster_title) {
+	$cluster_title = strtolower($cluster_title);
 	switch ($cluster_title) {
 		case "agriculture":
 			$skillset_id = 1; //Database ID for Agriculture, Food and Natural Resources
