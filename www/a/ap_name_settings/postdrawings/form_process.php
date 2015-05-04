@@ -23,8 +23,10 @@ do {
     		$cluster_title = $row2[5]; //will be used for skillset. Need to map down to the 6 official skillsets.
 
     		$approved_program_name = build_approved_program_name($program_title, $secondary_course_name);
-			$skillset_id = get_skillset_id($cluster_title); 
-			push_data($approved_program_name, $skillset_id);
+			$skillset_id = get_skillset_id($cluster_title);
+			if(strlen($approved_program_name) > 5 && $skillset_id > 0){
+				push_data($approved_program_name, $skillset_id);
+			}
     	}
     }
 } while ($row = fgetcsv($handle));
@@ -133,7 +135,7 @@ function get_skillset_id($cluster_title) {
 			$skillset_id = 1; //Database ID for Agriculture, Food and Natural Resources
 			break;
 		default:
-			$skillset_id = 1;
+			$skillset_id = 0;
 			break;
 	}
 	return $skillset_id;	
@@ -167,4 +169,4 @@ function push_data($approved_program_name, $skillset_id) {
 <p>Number of new Approved Program Names: <?php echo count($report['new_programs']); ?></p>
 <p>Number skipped because they already exist: <?php echo count($report['skipped']); ?></p>
 <p><a href="/">Return to home page &gt;&gt;</a></p>
-<?php //print_r($report); ?>
+<?php print_r($report); ?>
