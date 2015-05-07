@@ -1153,7 +1153,8 @@ tr.postAssuranceReport.schoolName h2 {
 
 <?php
 //Provide chance for site template to over-ride default styles.
-require_once('defines.php');
-if(file_exists(SITE_TEMPLATE.'styles.css')){
-	require_once(SITE_TEMPLATE.'styles.css');
+if(@include('defines.php')){
+	if(file_exists(SITE_TEMPLATE.'styles.css')){
+		require_once(SITE_TEMPLATE.'styles.css');
+	}
 }
