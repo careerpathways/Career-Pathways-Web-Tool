@@ -1150,3 +1150,10 @@ tr.postAssuranceReport.schoolName h2 {
 .course_detail {
     margin-left: 10px;
 }
+
+<?php
+//Provide chance for site template to over-ride default styles.
+require_once('defines.php');
+if(file_exists(SITE_TEMPLATE.'styles.css')){
+	require_once(SITE_TEMPLATE.'styles.css');
+}
