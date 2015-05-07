@@ -6,7 +6,6 @@
     <title><?= $drawing_name ?> &#8226; Career Pathways</title>
   </head>
   <body>
-
 	<?php
 		require('chart_include.php');
 	?>

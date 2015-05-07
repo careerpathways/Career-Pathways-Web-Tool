@@ -128,5 +128,3 @@ if( $_REQUEST['page'] == 'text' ) {
 		require('view/html.php');
 	}
 }
-
-?>

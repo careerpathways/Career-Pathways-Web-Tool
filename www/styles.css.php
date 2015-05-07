@@ -1120,3 +1120,33 @@ tr.editable, tr.even {
 }
 
 
+.postAssuranceReport.icon {
+    text-align: right;
+}
+
+td.postAssuranceReport {
+    vertical-align: top;
+}
+th.postAssuranceReport {
+    padding-top: 5px;
+}
+
+tr.postAssuranceReport.schoolName h2 {
+    padding-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#course_details_selector {
+    margin-bottom: 10px;
+}
+
+#course_details {
+    margin-bottom: 10px;
+}
+
+.course_detail {
+    margin-left: 10px;
+}
