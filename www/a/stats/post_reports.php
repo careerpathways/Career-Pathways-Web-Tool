@@ -981,41 +981,69 @@ echo '</div>';
 
 
 
+//used in report (below)
+$num_unlinked = 0; 
 
+//only viewdrawings without a skillset are being reported
+$view_drawings_no_skillset = array();
 
+foreach($view_drawings as $view_drawing){
+  if(intval($view_drawing['drawing_skillset_id']) < 1){
+    $num_unlinked++;
+    array_push($view_drawings_no_skillset, $view_drawing);
+  }
+}
 
+usort($view_drawings_no_skillset, 'comp');
+
+function comp($a, $b) {
+  if ($a['view_school_name'] == $b['view_school_name']) {
+    if($a['view_name'] == $b['view_name']){
+      if($a['view_id'] == $b['view_id']){
+        return strcmp($a['drawing_name'], $b['drawing_name']);
+      }
+      return $a['view_id'] - $b['view_id'];
+    }
+    return strcmp($a['view_name'], $b['view_name']);
+  }
+  return strcmp($a['view_school_name'], $b['view_school_name']);
+}
 
 echo '<div class="section">';
 echo '<h3>Total # of unlinked Oregon Skill Set POST Drawings:</h3>';
+echo '<b>Total # of unlinked Oregon Skill Set POST Drawings: '.$num_unlinked.'</b><br>';
+
 echo '<table>';
 echo '<tr class="drawing_main">';
+  echo '<th>Organization Name</th>';
   echo '<th>Title of POST View</th>';
   echo '<th>titles of POST Drawings with missing Oregon Skill Set</th>';
 echo '</tr>';
 
 $trClass = new Cycler('row_light', 'row_dark');
-$num_unlinked = 0;
+$current_view_school_name = null;
 $current_view_id = null;
+$blank_cell = '<td>&nbsp;</td>';
 
-foreach($view_drawings as $view_drawing){
-  if(intval($view_drawing['drawing_skillset_id']) < 1){
-    $num_unlinked++;
-    echo '<tr class="' . $trClass . '">';
-      if($current_view_id != $view_drawing['view_id']){
-        $current_view_id = $view_drawing['view_id'];
-        echo '<td><a href="/a/post_views.php?id=' . $view_drawing['view_id'] . '">' . $view_drawing['view_name'] . ' (id: ' .$view_drawing['view_id']. ')</a></td>';  
-      } else {
-        echo '<td>&nbsp;</td>';
-      }  
-      echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $view_drawing['drawing_id'] . '">' . $view_drawing['drawing_name'] . ' (id: ' .$view_drawing['drawing_id']. ')</a></td>';
-    echo '</tr>';
-  }
+foreach ($view_drawings_no_skillset as $view_drawing) {
+  echo '<tr class="' . $trClass . '">';
+    if($current_view_school_name !== $view_drawing['view_school_name']){
+      $current_view_school_name = $view_drawing['view_school_name'];
+      echo '<td>' . $view_drawing['view_school_name'] . '</td>';  
+    } else {
+      echo $blank_cell;
+    }
+    if($current_view_id !== $view_drawing['view_id']){
+      $current_view_id = $view_drawing['view_id'];
+      echo '<td><a href="/a/post_views.php?id=' . $view_drawing['view_id'] . '">' . $view_drawing['view_name'] . ' (id: ' .$view_drawing['view_id']. ')</a></td>';
+    } else {
+      echo $blank_cell;
+    }
+    
+    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $view_drawing['drawing_id'] . '">' . $view_drawing['drawing_name'] . ' (id: ' .$view_drawing['drawing_id']. ')</a></td>';
+  echo '</tr>';
 }
-
-echo '<tr>';
-echo '<th>Total # of unlinked Oregon Skill Set POST Drawings:</th>';
-echo '<th>' .$num_unlinked. '</th>';
-echo '</tr>';
+   
 echo '</table>';
 echo '</div>';
 
