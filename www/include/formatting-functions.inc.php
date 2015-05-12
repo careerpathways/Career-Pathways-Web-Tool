@@ -231,19 +231,36 @@ function ShowPostHeader($drawing_id)
 function _BuildDrawingHeader($school_abbr, $head1, $head2, $name_to_use)
 {
 	$str = '<div class="drawing-header">'
-			. '<div class="section-left">'
-				. '<div class="inner">'
-					. '<span class="school">' . $school_abbr . '</span> '
-					. '<span class="header-1">' . $head1 . '</span>'
-					. '<span class="header-2">' . $head2 . '</span>'
-				. '</div>'
-			. '</div>'
-			. '<div class="section-right">'
-				. '<div class="inner">'
-					. '<span class="title">' . $name_to_use . '</span>'
-				. '</div>'
-			. '</div>'
-		. '</div>';
+			. '<span class="column left">'
+				. '<span class="school">' . $school_abbr . '</span> '
+				. '<span class="header-1">' . $head1 . '</span>'
+				. '<span class="header-2">' . $head2 . '</span>'
+			. '</span>'
+			. '<span class="column right">'
+				. '<span class="title">' . $name_to_use . '</span>'
+			. '</span>'
+		. '</div>'
+		. '
+			<script type="application/javascript">
+				window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>\') 
+			</script>
+			<script type="application/javascript">
+				(function($){
+					$("body").bind("drawingheaderchanged", function() {
+				        var title_img_w = $(".drawing-header").outerWidth(),
+				            l_col_w = $(".left").outerWidth(),
+				            r_col_w = $(".right").outerWidth(),
+				            both_col_w = l_col_w + r_col_w;
+
+				        if(both_col_w > title_img_w){
+				          $(".drawing-header").css("display", "table");
+				          $(".column").css("display", "table-cell");
+				        }
+				    });
+					$("body").trigger("drawingheaderchanged");
+				}(jQuery));
+			</script>
+		';
 	return $str;
 }
 

@@ -135,6 +135,7 @@
                     $.get( _url, function(response){
                         var r = eval(response);
                         $('#drawing_header').html(r.header);
+                        $("body").trigger("drawingheaderchanged");
                     });
                 }
             },
