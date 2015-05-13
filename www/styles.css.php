@@ -17,7 +17,7 @@ $RED = "EE3300";
 
 ?>
 
-@import url(http://fonts.googleapis.com/css?family=Lato:700|Roboto:900,100);
+@import url(//fonts.googleapis.com/css?family=Lato:700|Roboto:900,100);
 @import url(/styles-header.css);
 
 body

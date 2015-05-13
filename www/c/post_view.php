@@ -85,8 +85,8 @@ if( Request('version_id') ) {
 <html>
 <head>
 	<title><?= ($drawing_id==0?'Not Found':$page_title) ?></title>
-	<link rel="stylesheet" href="/c/pstyle.css" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<link rel="stylesheet" href="<?php getBaseUrl(); ?>/c/pstyle.css" />
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 <body>
 
