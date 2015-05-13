@@ -52,7 +52,7 @@ class GoogleCharts
 		{
 			$params .= '&amp;' . $k . '=' . urlencode($v);
 		}
-		return '<img src="http://chart.apis.google.com/chart?chs=' . $w . 'x' . $h . $params . '" width="' . $w . '" height="' . $h . '" alt="chart" />';
+		return '<img src="//chart.apis.google.com/chart?chs=' . $w . 'x' . $h . $params . '" width="' . $w . '" height="' . $h . '" alt="chart" />';
 	}
 	
 	public function simpleEncode($values, $max)
