@@ -243,7 +243,8 @@ function getLinkHeaders($link)
  * @return string - Entire base url with protocol. No trailing slash.
  */
 function getBaseUrl(){
-	$protocol = empty($_SERVER['https'])?'http://':'https://';
+	$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['SERVER_PORT'] == 8443;
+	$protocol = $isSecure ? 'https://':'http://';
 	$_baseUrl = $protocol . $_SERVER['SERVER_NAME'];
 	if($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443){
 		$_baseUrl .= ':' . $_SERVER['SERVER_PORT'];
