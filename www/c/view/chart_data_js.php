@@ -77,9 +77,9 @@ if( is_array($drawing) ) {
 global $SITE;
 ?>
 
-var base_url = 'http://<?= $SITE->base_url() ?>';
+var base_url = '<?= getBaseUrl() ?>';
 
-var chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><img src="'+base_url+'/files/titles/<?= base64_encode($school['school_abbr']).'/'.base64_encode($title) ?>.png" height="19" width="800"></div>';
+var chTitleImg = '<div class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><img src="<?= getBaseUrl() ?>/files/titles/<?= base64_encode($school['school_abbr']).'/'.base64_encode($title) ?>.png" height="19" width="800"></div>';
 <?php
 if( $drawing['skillset'] ) {
 	?>

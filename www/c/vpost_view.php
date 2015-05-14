@@ -215,7 +215,7 @@ elseif( Request('format') == 'js' )
 		header("Content-type: text/javascript");
 ?>
 		var s=document.createElement('script');
-		s.setAttribute('src','http://<?=$_SERVER['SERVER_NAME']?>/c/log/post/<?=$_REQUEST['id']?>?url='+window.location);
+		s.setAttribute('src','<?= getBaseUrl() ?>/c/log/post/<?=$_REQUEST['id']?>?url='+window.location);
 		document.getElementsByTagName('body')[0].appendChild(s);
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'postContainer')?>");
@@ -235,12 +235,12 @@ elseif( Request('format') == 'js' )
         }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
-            var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
+            var fr = document.createElement('<iframe src="<?= getBaseUrl() ?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
 			fr.setAttribute("width", pc.style.width);
 			fr.setAttribute("height", pc.style.height);
-			fr.setAttribute("src", "http://<?=$_SERVER['SERVER_NAME']?>/c/study/<?=$_REQUEST['id']?>/embed.html");
+			fr.setAttribute("src", "<?= getBaseUrl() ?>/c/study/<?=$_REQUEST['id']?>/embed.html");
 			fr.setAttribute("frameborder", "0");
 			fr.setAttribute("scrolling", "auto");
 		}

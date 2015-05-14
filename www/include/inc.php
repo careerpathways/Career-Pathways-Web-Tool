@@ -239,12 +239,12 @@ function getLinkHeaders($link)
 /**
  * Full base URL of this server.
  * Supports non-standard ports.
- *
+ * @todo  move this function to common.
  * @return string - Entire base url with protocol. No trailing slash.
  */
 function getBaseUrl(){
 	$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['SERVER_PORT'] == 8443;
-	$protocol = $isSecure ? 'https://':'http://';
+	$protocol = '//';
 	$_baseUrl = $protocol . $_SERVER['SERVER_NAME'];
 	if($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443){
 		$_baseUrl .= ':' . $_SERVER['SERVER_PORT'];

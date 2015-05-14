@@ -10,7 +10,7 @@ $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
-<script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
+<script type="text/javascript" src="'.getBaseUrl().'/c/published/$$/embed.js"></script>';
 
 
 $drawing = $DB->LoadRecord($main_table,$id);
