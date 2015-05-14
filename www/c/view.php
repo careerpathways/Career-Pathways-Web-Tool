@@ -92,7 +92,7 @@ if( $_REQUEST['page'] == 'text' ) {
 	else if ($format === 'js') {
 		header("Content-type: text/javascript");
 ?>
-		document.write('<script src="http://<?=$_SERVER['SERVER_NAME']?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+encodeURIComponent(window.location.href)+'"></script>');
+		document.write('<script src="<?=getBaseUrl()?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+encodeURIComponent(window.location.href)+'"></script>');
 
 		var pc = document.getElementById("<?=(Request('container')?Request('container'):'pathwaysContainer')?>");
 
@@ -107,12 +107,12 @@ if( $_REQUEST['page'] == 'text' ) {
         }
 
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
-			var fr = document.createElement('<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/c/published/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
+			var fr = document.createElement('<iframe src="<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
 			fr.setAttribute("width", pc.style.width);
 			fr.setAttribute("height", pc.style.height);
-			fr.setAttribute("src", "http://<?=$_SERVER['SERVER_NAME']?>/c/published/<?=$_REQUEST['id']?>/embed.html");
+			fr.setAttribute("src", "<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html");
 			fr.setAttribute("frameborder", 0);
 			fr.setAttribute("scrolling", "auto");
 		}
