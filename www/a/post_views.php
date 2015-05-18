@@ -92,7 +92,10 @@ if( $id )
 	<table width="100%">
 	<tr class="editable">
 		<td colspan="2">
-			<div id="drawing_header" class="title_img" style="height: 19px;"><?= ShowPostViewHeader($view['id']) ?></div>
+			<!-- <div id="drawing_header" class="title_img" style="height: 19px;"><?= ShowPostViewHeader($view['id']) ?></div> -->
+			<div id="drawing_header" class="title_img">
+                <?= ShowViewHeader($view['id']) ?>
+            </div>
 		</td>
 	</tr>
 	<tr class="editable">

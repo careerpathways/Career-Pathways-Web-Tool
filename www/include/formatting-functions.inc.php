@@ -223,17 +223,29 @@ function ShowPostHeader($drawing_id)
 }
 
 /**
+ * Show "View" Header
+ * @param mixed int or string - Id of the view
+ * @return  string HTML for the Roadmap Drawing Header
+ */
+function ShowViewHeader($view_id)
+{
+	global $DB;
+	$name_to_use = $DB->SingleQuery('SELECT name FROM vpost_views WHERE id = ' . $view_id);
+	return _BuildDrawingHeader(null, l('drawing head post 1'), l('drawing head post 2'), $name_to_use['name']);
+}
+
+/**
  * Generic function to create drawing header markup.
  * Use ShowRoadmapHeader or ShowPostHeader instead.
  * 
  * @return string
  */
-function _BuildDrawingHeader($school_abbr, $head1, $head2, $name_to_use)
+function _BuildDrawingHeader($school_abbr = null, $head1, $head2, $name_to_use)
 {
 	$str = '<div class="drawing-header">'
-			. '<span class="column left">'
-				. '<span class="school">' . $school_abbr . '</span> '
-				. '<span class="header-1">' . $head1 . '</span>'
+			. '<span class="column left">';
+				$school_abbr ? ($str .= '<span class="school">' . $school_abbr . '</span> ') : '';
+				$str .= '<span class="header-1">' . $head1 . '</span>'
 				. '<span class="header-2">' . $head2 . '</span>'
 			. '</span>'
 			. '<span class="column right">'
@@ -326,6 +338,9 @@ function GetDrawingName($drawing_id, $drawing_type)
 	}
 }
 
+/**
+ * @deprecated Use ShowViewHeader instead.
+ */
 function ShowPostViewHeader($view_id)
 {
 	global $DB;
