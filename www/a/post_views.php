@@ -425,6 +425,7 @@ if($SITE->hasFeature('oregon_skillset')){
 				getLayer('title_value').innerHTML = data;
 				getLayer('title_edit').style.display = 'none';
 				getLayer('title_fixed').style.display = 'block';
+				$j("body").trigger("drawingheaderchanged");
 			}
 		);
 	}

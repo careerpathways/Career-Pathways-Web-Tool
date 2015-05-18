@@ -321,13 +321,9 @@ function saveTitle() {
 			  }, function(data){
 			  	data = eval(data);
 			  	$j("#drawing_title").val(data.title);
-			  	$j("#drawing_title").css({backgroundColor: '#99FF99'});
-			  	setTimeout(function(){
-				  	$j("#drawing_title").css({backgroundColor: '#FFFFFF'});
-			  	}, 300);
-			  	
 				$j("#drawing_header").html(data.header);
 				updateDrawingLinks(data.code);
+                $j("body").trigger("drawingheaderchanged");
 			  });
 	}
 }
