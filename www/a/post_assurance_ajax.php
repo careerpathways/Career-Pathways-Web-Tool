@@ -11,66 +11,66 @@ foreach($results as $row){
 } 
 if(Request('action') =='assurance_form'){
     global $DB;
-        $view_id = intval($_REQUEST['view_id']);
-        
-        ?>
-        <div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
-        <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-                <p>
-                        Are you sure you want to add a new post view assurance agreement? 
-                </p>
-                <p>
-                   Adding a new agreement will invalidate the existing assurance signatures and criteria.
-                </p>
-                <input type="submit" class="submit" value="Yes" />
-                <input type="button" class="submit" value="No" onclick="chGreybox.close()" />
-                <input type="hidden" name="view_id" value="<?=$view_id?>" />
-                <input type="hidden" name="action" value="invalidate_assurance" />
-                <input type="hidden" name="r" value="<?=Request('r')?>" />
-        </form>
-        </div>
-        
-        <?php
-        return;
+	$view_id = intval($_REQUEST['view_id']);
+	
+	?>
+	<div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
+    	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+    		<p>
+    			Are you sure you want to add a new post view assurance agreement? 
+    		</p>
+    		<p>
+    		   Adding a new agreement will invalidate the existing assurance signatures and criteria.
+    		</p>
+    		<input type="submit" class="submit" value="Yes" />
+    		<input type="button" class="submit" value="No" onclick="chGreybox.close()" />
+    		<input type="hidden" name="view_id" value="<?=$view_id?>" />
+    		<input type="hidden" name="action" value="invalidate_assurance" />
+    		<input type="hidden" name="r" value="<?=Request('r')?>" />
+    	</form>
+	</div>
+	
+	<?php
+	return;
 } else if(Request('action')=='invalidate_assurance'){
     global $DB;
-        $view_id = intval($_REQUEST['view_id']);
-        if($is_director){
-        //$assurance = $DB->SingleQuery("SELECT id FROM assurances WHERE valid=TRUE AND vpost_view_id=".$view_id);
-        
-        //update the old assurance to invalidate existing signatures and criteria
-        $DB->SingleQuery('UPDATE assurances SET valid=FALSE WHERE vpost_view_id='.$view_id);
-        
-        //Add a new assurance to allow for collecting of new signatures and criteria
-        $data = array('vpost_view_id'=>$view_id,
-                      'created_date'=>date('c'),
-                      'valid'=>true);
-        $DB->Insert('assurances',$data);
-        }
-        header('Location: '.Request('r'));
+	$view_id = intval($_REQUEST['view_id']);
+	if($is_director){
+    	//$assurance = $DB->SingleQuery("SELECT id FROM assurances WHERE valid=TRUE AND vpost_view_id=".$view_id);
+    	
+    	//update the old assurance to invalidate existing signatures and criteria
+    	$DB->SingleQuery('UPDATE assurances SET valid=FALSE WHERE vpost_view_id='.$view_id);
+    	
+    	//Add a new assurance to allow for collecting of new signatures and criteria
+    	$data = array('vpost_view_id'=>$view_id,
+    	              'created_date'=>date('c'),
+    	              'valid'=>true);
+    	$DB->Insert('assurances',$data);
+	}
+	header('Location: '.Request('r'));
 } else if(Request('action')=='publish_form'){
     global $DB;
-        $view_id = intval($_REQUEST['view_id']);
-        $view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$view_id);
-        
-        ?>
-        <div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
-        <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-                <p>Are you sure you want to <?=$view['published'] == 0?'':'un'?>publish this view? 
-                        <?= $view['published'] == 0 ? 
-                                'Publishing this view will make it available to the public via embedded links.' :
-                                'This view will no longer be visible in any web pages that embed it.' ?>
-                </p>
-                <input type="submit" class="submit" value="Yes" />
-                <input type="button" class="submit" value="No" onclick="chGreybox.close()" />
-                <input type="hidden" name="action" value="<?=$view['published'] == 0?'':'un'?>publish" />
-                <input type="hidden" name="view_id" value="<?=$view_id?>" />
-                <input type="hidden" name="r" value="<?=Request('r')?>" />
-        </form>
-        </div>
-        
-        <?php
-        return;
+	$view_id = intval($_REQUEST['view_id']);
+	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$view_id);
+	
+	?>
+	<div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
+    	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+    		<p>Are you sure you want to <?=$view['published'] == 0?'':'un'?>publish this view? 
+    			<?= $view['published'] == 0 ? 
+    				'Publishing this view will make it available to the public via embedded links.' :
+    				'This view will no longer be visible in any web pages that embed it.' ?>
+    		</p>
+    		<input type="submit" class="submit" value="Yes" />
+    		<input type="button" class="submit" value="No" onclick="chGreybox.close()" />
+    		<input type="hidden" name="action" value="<?=$view['published'] == 0?'':'un'?>publish" />
+    		<input type="hidden" name="view_id" value="<?=$view_id?>" />
+    		<input type="hidden" name="r" value="<?=Request('r')?>" />
+    	</form>
+	</div>
+	
+	<?php
+	return;
 } else if(Request('action')=='publish'){
     //publish the sucka!
     if(CanPublishView(Request('view_id'))){

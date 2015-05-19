@@ -13,6 +13,7 @@ class Localize_Strings extends Localize
 		$this->add('program name label', 'Approved Program Name');
 		$this->add('show program name for post', FALSE);
 		$this->add('google analytics drawings', 'UA-8726801-2');
+		$this->add('state name', 'Oregon');
 	}
 
 	public function term_name(&$row)

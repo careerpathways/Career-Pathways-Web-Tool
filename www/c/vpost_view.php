@@ -8,17 +8,28 @@ chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
 
-$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name, skillset_id
-        FROM vpost_views AS v
-        JOIN vpost_links AS vl ON v.id = vl.vid
-	JOIN post_drawing_main AS d ON vl.post_id=d.id
-	JOIN post_drawings AS version ON version.parent_id=d.id
-	JOIN schools AS s ON d.school_id=s.id
-	LEFT JOIN oregon_skillsets ON v.oregon_skillsets_id = oregon_skillsets.id
-	WHERE v.id = '.intval(Request('id')).'
-		AND version.published = 1
-	ORDER BY vl.sort, vl.tab_name');
-
+if($SITE->hasFeature('oregon_skillset')){
+	$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name, skillset_id
+	        FROM vpost_views AS v
+	        JOIN vpost_links AS vl ON v.id = vl.vid
+		JOIN post_drawing_main AS d ON vl.post_id=d.id
+		JOIN post_drawings AS version ON version.parent_id=d.id
+		JOIN schools AS s ON d.school_id=s.id
+		LEFT JOIN oregon_skillsets ON v.oregon_skillsets_id = oregon_skillsets.id
+		WHERE v.id = '.intval(Request('id')).'
+			AND version.published = 1
+		ORDER BY vl.sort, vl.tab_name');
+} else {
+	$drawings = $DB->MultiQuery('SELECT d.*, school_name, school_abbr, v.name AS view_name, version.id AS version_id, tab_name, skillset_id
+	        FROM vpost_views AS v
+	        JOIN vpost_links AS vl ON v.id = vl.vid
+		JOIN post_drawing_main AS d ON vl.post_id=d.id
+		JOIN post_drawings AS version ON version.parent_id=d.id
+		JOIN schools AS s ON d.school_id=s.id
+		WHERE v.id = '.intval(Request('id')).'
+			AND version.published = 1
+		ORDER BY vl.sort, vl.tab_name');
+}
 $page_title = 'Not Found';
 
 $hs = array();
@@ -38,7 +49,9 @@ foreach( $drawings as $d )
 		$hs[] = $d;
 	
 	$page_title = $d['school_name'] . ' - Plan of Study - ' . $d['view_name'];
-+       $main_skillset = $d['view_skillset'];
+	if($SITE->hasFeature('oregon_skillset')){
+		$main_skillset = $d['view_skillset'];
+	}
 
 }
 
@@ -100,14 +113,14 @@ echo '<div style="margin-bottom: 10px">';
 echo '<div id="post_title">';
 	echo ShowPostViewHeader(intval(Request('id')));
 echo '</div>';
-
+if($SITE->hasFeature('oregon_skillset')){
 if( $main_skillset )
        {
                echo '<div id="skillset">';
                        echo $main_skillset;
                echo '</div>';
        }
-
+}
 /*
 if( count($skillsets) > 0 )
 {

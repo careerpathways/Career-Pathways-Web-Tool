@@ -16,6 +16,7 @@ $types = array(
 
 function PrintStatsMenu()
 {
+	global $SITE;
 	?>
 		<div style="float:right; width:220px; border: 1px #999 solid; font-size: 1.2em; line-height: 1.6em;">
 			<ul style="margin:0; padding: 10px; list-style-type: none;">
@@ -24,8 +25,10 @@ function PrintStatsMenu()
 				<li><a href="/a/stats/drawing_counts.php">Drawing Counts</a></li>
 				<li><a href="/a/stats/post_reports.php">POST Reports</a></li>
 				<li><a href="/a/stats/editing_history.php">Editing History</a></li>
+				<?php if( $SITE->hasFeature('olmis') ): ?>
 				<li><a href="/a/stats/olmis_links.php">OLMIS Links</a></li>
 				<li><a href="/a/stats/olmis_not_linked.php">OLMIS - Unlinked Roadmaps</a></li>
+				<?php endif; ?>
 				<li><a href="/a/stats/broken_links.php">Broken Links</a></li>
 				<li><a href="/a/stats/traffic_logs.php">Traffic Logs</a></li>
 				<li><a href="/a/sourcecode_downloads.php">Source Code Downloads</a></li>

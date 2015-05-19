@@ -1150,3 +1150,23 @@ tr.postAssuranceReport.schoolName h2 {
 .course_detail {
     margin-left: 10px;
 }
+
+.loading-horz {
+	background-image: url(/images/horiz-gold.gif);
+	width: 220px;
+	height: 19px;
+}
+
+.wide-loader {
+	background-image: url(/images/wide-loader-on-white.gif);
+	width: 200px;
+	height: 19px;
+}
+
+.loading-spinner {
+	background-image: url(/images/cf9d2b_loader.gif);
+	width: 16px;
+	height: 16px;
+}
+
+
