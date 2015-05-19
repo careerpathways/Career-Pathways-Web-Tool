@@ -950,7 +950,9 @@ function processCreateRequest()
 	$view['created_by'] = $_SESSION['user_id'];
 	$view['last_modified_by'] = $_SESSION['user_id'];
         $view['`code`'] = $newCode;
-        $view['oregon_skillsets_id'] = Request('skillset_id');
+        if($SITE->hasFeature('oregon_skillset')){
+            $view['oregon_skillsets_id'] = Request('skillset_id');
+        }
         $view_id = $DB->Insert('vpost_views', $view);
         
         //Adding an assurance record for ALL views regardless of if the assurance feature is enabled.

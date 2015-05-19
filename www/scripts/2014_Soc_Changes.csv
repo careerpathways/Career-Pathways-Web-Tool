@@ -1,0 +1,67 @@
+NEW 2010 SOC code	NEW 2010 SOC title	Old 2000 SOC code	Old 2000 SOC title	One to One New to Old SOC Match?		
+11-9013	Farmers, Ranchers, and Other Agricultural Managers**	11-9011	Farm, Ranch, and Other Agricultural Managers	No	X	107
+11-9013	Farmers, Ranchers, and Other Agricultural Managers**	11-9012	Farmers and Ranchers	No		
+11-9061	Funeral Service Managers	11-9061	Funeral Directors *	No	X	1
+39-4031	Morticians, Undertakers, and Funeral Directors	11-9061	Funeral Directors*	No	!!!!	
+33-9093 	Transportation Security Screeners** 	13-1041	Compliance Officers, Except Agriculture, Construction, Health and Safety, and Transportation*	No		0
+13-1071	Human Resources Specialists** 	13-1071	Employment, Recruitment, and Placement Specialists	No	X	1
+13-1071	Human Resources Specialists** 	13-1079	Human Resources, Training, and Labor Relations Specialists, All Other*	No	X	11
+13-1075	Labor Relations Specialists	13-1079	Human Resources, Training, and Labor Relations Specialists, All Other*	No	!!!!	
+13-1121	Meeting, Convention, and Event Planners**	13-1121	Meeting and Convention Planners	No	X	60
+13-1121	Meeting, Convention, and Event Planners**	13-1199	Business Operations Specialists, All Other*	No	X	113
+13-1161	Market Research Analysts and Marketing Specialists** 	13-1199	Business Operations Specialists, All Other*	No	!!!!	
+15-1121	Computer Systems Analysts	15-1051	Computer Systems Analysts*	No		196
+15-1143	Computer Network Architects** 	15-1051	Computer Systems Analysts*	No	!!!!	
+15-1142	Network and Computer Systems Administrators** 	15-1071	Network and Computer Systems Administrators	No		103
+15-1122	Information Security Analysts	15-1081	Network Systems and Data Communications Analysts*	No		80
+15-1134	Web Developers	15-1081	Network Systems and Data Communications Analysts*	No	!!!!	
+15-1142	Network and Computer Systems Administrators** 	15-1081	Network Systems and Data Communications Analysts*	No	!!!!	
+15-1143	Computer Network Architects** 	15-1081	Network Systems and Data Communications Analysts*	No	!!!!	
+15-1152	Computer Network Support Specialists	15-1081	Network Systems and Data Communications Analysts*	No	!!!!	
+21-1091	Health Educators 	21-1091	Health Educators*	No		67
+21-1094	Community Health Workers**	21-1091	Health Educators*	No	!!!!	
+21-1094	Community Health Workers**	21-1099	Community and Social Service Specialists, All Other*	No		82
+21-1099	Community and Social Service Specialists, All Other	21-1099	Community and Social Service Specialists, All Other*	No	!!!!	
+23-2011	Paralegals and Legal Assistants** 	23-2011	Paralegals and Legal Assistants	No		28
+23-2011	Paralegals and Legal Assistants** 	23-2092	Law Clerks*	No		0
+25-2051	Special Education Teachers, Preschool	25-2041	Special Education Teachers, Preschool, Kindergarten, and Elementary School*	No		95
+25-2052	Special Education Teachers, Kindergarten and Elementary School	25-2041	Special Education Teachers, Preschool, Kindergarten, and Elementary School*	No	!!!!	
+25-2059	Special Education Teachers, All Other	25-3099	Teachers and Instructors, All Other*	No		0
+25-3099	Teachers and Instructors, All Other	25-3099	Teachers and Instructors, All Other*	No		0
+13-1121	Meeting, Convention, and Event Planners** 	27-3031	Public Relations Specialists*	No	X	9
+27-3031	Public Relations Specialists	27-3031	Public Relations Specialists*	No	!!!!	
+29-1141	Registered Nurses	29-1111	Registered Nurses*	No		224
+29-1151	Nurse Anesthetists	29-1111	Registered Nurses*	No	!!!!	
+29-1161	Nurse Midwives	29-1111	Registered Nurses*	No	!!!!	
+29-1171	Nurse Practitioners	29-1111	Registered Nurses*	No	!!!!	
+29-1128	Exercise Physiologists	29-1129	Therapists, All Other*	No		0
+29-1129	Therapists, All Other	29-1129	Therapists, All Other*	No		0
+29-2057	Ophthalmic Medical Technicians	29-2099	Health Technologists and Technicians, All Other*	No		7
+29-2092	Hearing Aid Specialists	29-2099	Health Technologists and Technicians, All Other*	No	!!!!	
+29-2099	Health Technologists and Technicians, All Other	29-2099	Health Technologists and Technicians, All Other*	No	!!!!	
+31-9097	Phlebotomists	31-9099	Healthcare Support Workers, All Other*	No		68
+31-9099	Healthcare Support Workers, All Other	31-9099	Healthcare Support Workers, All Other*	No	!!!!	
+33-9093 	Transportation Security Screeners** 	33-9032	Security Guards*	No		85
+33-9093 	Transportation Security Screeners** 	33-9099	Protective Service Workers, All Other*	No		7
+13-1131	Fundraisers	41-9099	Sales and Related Workers, All Other*	No		15
+41-9099	Sales and Related Workers, All Other	41-9099	Sales and Related Workers, All Other*	No	!!!!	
+47-2111	Electricians	47-2111 	Electricians*  	No		0
+47-2231	Solar Photovoltaic Installers** 	47-2111 	Electricians*  	No	!!!!	
+47-2181	Roofers	47-2181	Roofers*  	No		12
+47-2231	Solar Photovoltaic Installers** 	47-2181	Roofers*  	No	!!!!	
+47-2231	Solar Photovoltaic Installers** 	47-4099	Construction and Related Workers, All Other*	No		51
+47-4099	Construction and Related Workers, All Other	47-4099	Construction and Related Workers, All Other*	No	!!!!	
+47-2231	Solar Photovoltaic Installers** 	49-9021	Heating, Air Conditioning, and Refrigeration Mechanics and Installers*	No		81
+49-9021	Heating, Air Conditioning, and Refrigeration Mechanics and Installers	49-9021	Heating, Air Conditioning, and Refrigeration Mechanics and Installers*	No	!!!!	
+47-2231	Solar Photovoltaic Installers** 	49-9099	Installation, Maintenance, and Repair Workers, All Other*	No		38
+49-9081	Wind Turbine Service Technicians	49-9099	Installation, Maintenance, and Repair Workers, All Other*	No	!!!!	
+49-9099	Installation, Maintenance, and Repair Workers, All Other	49-9099	Installation, Maintenance, and Repair Workers, All Other*	No	!!!!	
+51-5113	Print Binding and Finishing Workers**	51-5011	Bindery Workers	No		
+51-5113	Print Binding and Finishing Workers**	51-5012	Bookbinders	No		
+51-5112	Printing Press Operators**	51-5021	Job Printers*	No		
+51-5113	Print Binding and Finishing Workers**	51-5021	Job Printers*	No		
+51-5112	Printing Press Operators**	51-5023	Printing Machine Operators	No		
+51-9151	Photographic Process Workers and Processing Machine Operators**	51-9131	Photographic Process Workers	No		
+51-9151	Photographic Process Workers and Processing Machine Operators**	51-9132	Photographic Processing Machine Operators	No		
+51-3099	Food Processing Workers, All Other	51-9199	Production Workers, All Other*	No		
+51-9199	Production Workers, All Other	51-9199	Production Workers, All Other*	No		

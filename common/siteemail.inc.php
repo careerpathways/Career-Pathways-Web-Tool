@@ -73,7 +73,7 @@ class SiteEmail extends MyMailer {
 				$this->AddBCC($this->info['bcc']);
 			}
 		}
-		$this->AddBCC('effie@sivecki.com');
+		$this->AddBCC($SITE->email_bcc());
 		//$this->AddAddress('effie@sivecki.com');
 		//$this->AddAddress('bisch.cris@gmail.com');
 
