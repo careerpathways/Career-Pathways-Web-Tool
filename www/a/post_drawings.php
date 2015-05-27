@@ -922,7 +922,7 @@ function showMiniDrawing($id)
 
 
 function showVersionInfo() {
-	global $DB, $MODE, $TEMPLATE;
+	global $DB, $MODE, $TEMPLATE, $SITE;
 
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';

@@ -8,6 +8,7 @@ abstract class POSTChart
 	protected $_parent_id;
 	
 	protected $_name;
+	protected $_program_id = 0;
         //not really protected.
         protected $_note;
 	protected $_code;
@@ -63,6 +64,7 @@ abstract class POSTChart
 			}
 			$post->loadDataFromDB($id, $preview);
 			$post->name = $drawing['name'];
+			$post->program_id = $drawing['program_id'];
 			$post->school_id = $drawing['school_id'];
 			$post->_footer_state = $drawing['footer_state'.($preview?'_preview':'')];
 			$post->footer_link = $drawing['footer_link'];
@@ -230,6 +232,7 @@ abstract class POSTChart
 			$post_drawing_main['school_id'] = $this->_school_id;
 			$post_drawing_main['skillset_id'] = dv($this->_skillset_id);
 			$post_drawing_main['name'] = $this->_name;
+			$post_drawing_main['program_id'] = $this->_program_id;
 			$post_drawing_main['date_created'] = $DB->SQLDate();
 			$post_drawing_main['last_modified'] = $DB->SQLDate();
 			$post_drawing_main['created_by'] = $_SESSION['user_id'];
@@ -351,6 +354,8 @@ abstract class POSTChart
 		
 			case 'name':
 				return $this->_name;
+			case 'program_id':
+				return $this->_program_id;
                         case 'note':
                                 return $this->_note;
 	
@@ -411,6 +416,10 @@ abstract class POSTChart
 
 			case 'name':
 				$this->_name = $val;
+				break;
+					
+			case 'program_id':
+				$this->_program_id = $val;
 				break;
 			
 			case 'note':
