@@ -17,6 +17,9 @@ $RED = "EE3300";
 
 ?>
 
+@import url(//fonts.googleapis.com/css?family=Lato:700|Roboto:900,100);
+@import url(/styles-header.css);
+
 body
 {
   font-family: verdana, tahoma, arial, sans-serif;
@@ -552,13 +555,18 @@ a.chart_header {
 }
 
 #drawing_canvas {
-	background: url('/c/grid.png');
 	position: absolute;
 	left: 180px;
 	top:74px;
 	height: 1200px;
 	width: 1600px;
 	z-index: -100;
+}
+
+#drawing_canvas canvas {
+	background: url('/c/grid.png');
+	border-top: 1px solid #eee;
+	border-left: 1px solid #eee;
 }
 
 #search_box {

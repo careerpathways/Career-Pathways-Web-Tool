@@ -31,7 +31,14 @@ if( Request('version_id') ) {
 		WHERE published = 1
 			AND deleted = 0
 			AND main.id='.intval(Request('drawing_id')));
+
+
 	if( is_array($drawing) ) {
+		if( $drawing['program_id'] > 0 ){
+			$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
+			$drawing['name'] = $program['title'];
+		}
+		
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
 	}
@@ -92,7 +99,7 @@ else
 {
 	echo '<div id="post_title_container">';
 		echo '<div id="post_title">';
-			echo '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($page_title) . '.png" alt="' . $page_title . '" width="800" height="19" />';
+			echo ShowPostHeader(Request('drawing_id'));
 		echo '</div>';
 		if( $drawing['skillset'] ) {
 			echo '<div id="skillset">';

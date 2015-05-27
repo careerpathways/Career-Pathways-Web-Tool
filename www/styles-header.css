@@ -1,0 +1,61 @@
+/* Drawing Header styles for POST and Roadmap Drawings */
+.title_img {
+	background-color: #295a76;
+}
+
+.drawing-header {
+    color: white;
+    font-size: 17px !important;
+    width: 800px;
+}
+
+.drawing-header .column {
+    display: inline-block;          
+    padding: 1px 4px;
+    vertical-align: bottom;
+}
+
+.drawing-header .column.left {
+	background-color: #333333;
+	font-family: 'Roboto', sans-serif;
+	padding-right: 7px;
+}
+
+#drawing_header {
+	background-color: #295a76;
+}
+
+.drawing-header .column.right {
+	background-color: #295a76;
+	font-family: 'Lato', sans-serif;
+	font-weight: 700;
+	padding-top:0;
+}
+
+.drawing-header .header-1 {
+	font-weight: 100;
+}
+
+.drawing-header .school,
+.drawing-header .header-2 {
+	font-weight: 900;	
+}
+
+.drawing-header .header-2 {
+	padding-left: 2px;	
+}
+
+@media print {
+	.title_img,
+	.drawing-header .column.right {
+		color: white !important;
+		box-shadow: inset 0 0 0 1000px #295a76;
+		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#295a76', endColorstr='#295a76')"; /* IE8 */
+	}
+	.drawing-header .column.left {
+		color: white !important;
+		box-shadow: inset 0 0 0 1000px #333333;
+		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#333333', endColorstr='#333333')"; /* IE8 */
+	}
+}
+/* End Drawing Header styles */

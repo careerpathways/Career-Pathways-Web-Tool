@@ -149,8 +149,11 @@ if( KeyInRequest('drawing_id') ) {
 			$content['school_id'] = $school_id;
 			$content['skillset_id'] = Request('skillset_id');
 			$content['program_id'] = Request('program_id');
+			if($SITE->hasFeature('approved_program_name')){
+			$content['name'] = Request('name');
+			} else {
 			$content['name'] = Request('drawing_title');
-
+			}
 			$parent_id = $DB->Insert('drawing_main',$content);
 
 			// create the first default drawing
@@ -266,7 +269,7 @@ the toolbar.</p>
 			function init() {
 				if (arguments.callee.done) return;
 				arguments.callee.done = true;
-				Charts.draw('drawing_canvas','toolbar_content');
+				Charts.draw('chartcontainer','toolbar_content');
 			}
 
 			/* for Mozilla */
@@ -321,8 +324,21 @@ function copyVersion($version_id) {
 		$newdrawing['school_id'] = $drawing['school_id'];
 		else
 		$newdrawing['school_id'] = $_SESSION['school_id'];
-
-		$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
+		if($SITE->hasFeature('approved_program_name')){
+			if(Request('program_id') && Request('program_id') > 0){
+				// If an approved program name was selected during "copy this version" pop up
+				$newdrawing['name']	= '';
+				$newdrawing['program_id'] = Request('program_id');
+				$newdrawing['skillset_id'] = Request('skillset_id');
+			} else {
+				// Take from the drawing we're copying. 
+				$newdrawing['name']	= $drawing_main['name'];
+				$newdrawing['program_id'] = $drawing_main['program_id'];
+				$newdrawing['skillset_id'] = $drawing_main['skillset_id'];
+			}
+		} else {
+			$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
+		}
 		// tack on a random number at the end. it will only last until they change the name of the drawing
 		$newdrawing['date_created'] = $DB->SQLDate();
 		$newdrawing['last_modified'] = $DB->SQLDate();

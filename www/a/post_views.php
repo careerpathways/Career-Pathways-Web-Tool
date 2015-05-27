@@ -51,7 +51,9 @@ if (KeyInRequest('action')) {
 $TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 $TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
 $TEMPLATE->toolbar_function = 'ShowSymbolLegend';
-
+if($SITE->hasFeature('approved_program_name')){
+$TEMPLATE->addl_scripts[] = '/common/APN.js';
+}
 function ShowSymbolLegend() {
         $helpFile = 'drawing_list';
         $onlyLegend = TRUE;
@@ -92,11 +94,14 @@ if( $id )
 	<table width="100%">
 	<tr class="editable">
 		<td colspan="2">
-			<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowPostViewHeader($view['id']) ?></div>
+			<!-- <div id="drawing_header" class="title_img" style="height: 19px;"><?= ShowPostViewHeader($view['id']) ?></div> -->
+			<div id="drawing_header" class="title_img">
+                <?= ShowViewHeader($view['id']) ?>
+            </div>
 		</td>
 	</tr>
 	<tr class="editable">
-		<th>Occupation/Program</th>
+		<th width="115">Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
@@ -107,7 +112,7 @@ if( $id )
 		</td>
 	</tr>
 	<tr class="editable">
-                <th width="80">Organization</th>
+		<th width="115">Organization</th>
                 <td><b><?= $schools[$school_id] ?></b></td>
         </tr>
 <?php
@@ -119,7 +124,7 @@ if($SITE->hasFeature('oregon_skillset')){
        }
 ?>
 <tr class="editable">
-       <th><?=l('skillset name')?></th>
+	<th width="115"><?=l('skillset name')?></th>
        <td valign="top">
                <div id="skillSet_fixed">
                        <span id="skillSet_value"><?= $skillSet['title'] ?></span>
@@ -143,14 +148,14 @@ if($SITE->hasFeature('oregon_skillset')){
 ?>
         <?php if($view['published']){?>
         <tr>
-                <th>Embed Code</th>
+		<th width="115">Embed Code</th>
                 <td>
 			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
 		</td>
 	</tr>
         
 	<tr>
-		<th valign="top">External Link</th>
+		<th valign="top" width="115">External Link</th>
 		<td>
 			<?php 
 			if($external = getExternalDrawingLink($id, 'post'))
@@ -170,7 +175,7 @@ if($SITE->hasFeature('oregon_skillset')){
                 require('view/drawings/external_links.php');
         } //endif (published)?>
         <tr>
-                <th>HTML Link</th>
+		<th width="115">HTML Link</th>
                 <td>
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
@@ -180,7 +185,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		</td>
 	</tr>
 	<tr>
-		<th>PDF Link</th>
+		<th width="115">PDF Link</th>
 		<td>
 			<div id="drawing_link"><?php
 			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode($view['name'])), $pdf_link);
@@ -190,7 +195,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		</td>
 	</tr>
 	<tr>
-		<th>Delete</th>
+		<th width="115">Delete</th>
 		<td>
 			<a href="javascript:void(0);" id="deleteLink" class="noline"><?=SilkIcon('cross.png')?> Delete this view</a> &nbsp;&nbsp;
 			<div id="deleteConfirm" style="display:none">
@@ -328,7 +333,7 @@ if($SITE->hasFeature('oregon_skillset')){
             </tr>
             <?php if ($count > 0): ?>
             <tr>
-                <td>&nbsp;</td>
+                <th width="115">&nbsp;</th>
                 <td>
                     <?php if ($signaturesRequired): ?>
                         <?php if ($signaturesReceived): ?>
@@ -406,6 +411,7 @@ if($SITE->hasFeature('oregon_skillset')){
        }
 
 
+
 	function showTitleChange() {
 		getLayer('title_edit').style.display = 'block';
 		getLayer('title_fixed').style.display = 'none';
@@ -421,6 +427,7 @@ if($SITE->hasFeature('oregon_skillset')){
 				getLayer('title_value').innerHTML = data;
 				getLayer('title_edit').style.display = 'none';
 				getLayer('title_fixed').style.display = 'block';
+				$j("body").trigger("drawingheaderchanged");
 			}
 		);
 	}
@@ -468,6 +475,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		$j.get("post_views.php",
 			{
 			 school_id: $j("#list_schools option:selected").val(),
+			 degree_type: $j("#list_degreetypes option:selected").val(),
 			 action: 'drawing_list'
 			},
 			function(data) {
@@ -598,6 +606,7 @@ elseif( KeyInRequest('id') )
 		?>
 		</td>
 	</tr>
+
 
 <?php
 if($SITE->hasFeature('oregon_skillset')){
@@ -819,6 +828,14 @@ function processDrawingListRequest()
 			?>
 			<br />
 			
+
+			<h3>Degree Types</h3>
+			<?php
+    			$drawingType = strtoupper(Request('type'));
+			    echo GenerateSelectBoxDB('post_sidebar_options', 'list_degreetypes', 'text', 'text', 'text', '', array(''=>'[ Show All ]'), "type='$drawingType'");
+			?>
+			<br />
+
 			<div id="submit_btn" style="display:none" onclick="save_drawing_selection('<?= strtoupper(request('type')) ?>')">Save</div>
 			
 			<div id="list_of_drawings"></div>
@@ -830,6 +847,10 @@ function processDrawingListRequest()
 	<script type="text/javascript">
 		$j(document).ready(function(){
 			$j('#list_schools option[value=<?= $_SESSION['school_id'] ?>]').attr('selected','selected').trigger('change');
+
+			$j("#list_degreetypes").change(function() {
+				select_organization($j('#list_schools option:selected').val());
+			});
 		});
 	</script>
 	<?php
@@ -873,6 +894,12 @@ function processDrawingListRequest()
 	}
 	else
 	{
+		if (Request('degree_type')) {
+			$degreeTypeConditionQuery = 'AND D.sidebar_text_right="'.Request('degree_type').'"';
+		} else {
+			$degreeTypeConditionQuery = '';
+		}
+
 		// return a formatted list of drawings
 		$drawings = $DB->MultiQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by
 			FROM post_drawing_main M
@@ -880,6 +907,7 @@ function processDrawingListRequest()
 			LEFT JOIN users U ON M.last_modified_by=U.id
 			WHERE M.school_id='.intval(Request('school_id')).'
 				AND D.published=1
+			'.$degreeTypeConditionQuery.'
 			ORDER BY name');
 		echo '<h3>Drawings</h3>';
 		echo '<div style="background-color:#ffffff; border: 1px #999999 solid; padding:4px"><table width="100%">';
@@ -896,7 +924,7 @@ function processDrawingListRequest()
 		echo '</table>';
 		if( count($drawings) == 0 )
 		{
-			echo 'No published drawings were found for this school.';
+			echo 'No published drawings were found for this combination of school and degree type.';
 		}
 		echo '</div>';
 	}	

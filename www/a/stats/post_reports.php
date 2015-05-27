@@ -682,7 +682,13 @@ foreach($testPOSTViews as $row) {
 echo '</table>';
 echo '</div>';
 
-# Summary of completed POST Views
+
+
+
+
+
+
+# post views that have high school and CC in them.
 echo '<div class="section">';
 echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
 $postViews = $DB->MultiQuery('
@@ -690,12 +696,15 @@ SELECT v.id, v.name, v.last_modified,
 s.id AS school_id, s.school_name,
 u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
 FROM vpost_views v
-JOIN vpost_links l ON v.id = l.vid
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
+LEFT JOIN vpost_links l ON v.id = l.vid
+LEFT JOIN schools s ON v.school_id = s.id
+LEFT JOIN users u ON v.created_by = u.id
 GROUP BY v.id
 ORDER BY v.last_modified DESC
 ');
+
+$totalPostViews = $postViews; //used in summary report (below)
+
 $fullPOSTViews = array();
 foreach($postViews as $row) {
   $numTypes = $DB->MultiQuery('
@@ -733,6 +742,312 @@ foreach($fullPOSTViews as $row) {
 }
 echo '</table>';
 echo '</div>';
+
+
+if($SITE->hasFeature('approved_program_name')){
+
+$postViews = $DB->MultiQuery('
+    SELECT v.id as view_id, v.name, v.last_modified,
+          s.id AS school_id, s.school_name,
+          u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+          pdm.type as type
+FROM vpost_views v
+  LEFT JOIN vpost_links l
+    ON v.id = l.vid
+  LEFT JOIN post_drawing_main pdm
+    ON pdm.id = l.post_id
+  LEFT JOIN schools s
+    ON v.school_id = s.id
+  LEFT JOIN users u
+    ON v.created_by = u.id
+  WHERE pdm.type IN ("HS","CC")
+  ORDER BY v.last_modified DESC
+');
+
+
+echo '<div class="section">';
+echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
+
+//build exclusion list
+$exclusionList = array();
+foreach($postViews as $row) {
+  if($row['type'] !== 'HS'){
+    $exclusionList[$row['view_id']] = 1;
+  }
+}
+$HSonlyPOSTViews = array();
+foreach($postViews as $row) {
+  if(!array_key_exists($row['view_id'], $exclusionList)){
+    if($row['view_id'] > 0){
+      $HSonlyPOSTViews[$row['view_id']] = $row;
+    }
+  }
+}
+
+$doc = array();
+
+echo '<b>Total: ' . count($HSonlyPOSTViews) . '</b>';
+$trClass = new Cycler('row_light', 'row_dark');
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>View</th>';
+  echo '<th>Organization</th>';
+  echo '<th>User</th>';
+  echo '<th>Last Modified</th>';
+echo '</tr>';
+foreach($HSonlyPOSTViews as $row) {
+  echo '<tr class="' . $trClass . '">';
+    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+    echo '<td>' . $row['last_modified'] . '</td>';
+  echo '</tr>';
+}
+echo '</table>';
+echo '</div>';
+
+
+
+echo '<div class="section">';
+echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
+
+//build exclusion list
+$exclusionList = array();
+foreach($postViews as $row) {
+  if($row['type'] !== 'CC'){
+    $exclusionList[$row['view_id']] = 1;
+  }
+}
+$CConlyPOSTViews = array();
+foreach($postViews as $row) {
+  if(!array_key_exists($row['view_id'], $exclusionList)){
+    if($row['view_id'] > 0){
+      $CConlyPOSTViews[$row['view_id']] = $row;
+    }
+  }
+}
+
+$doc = array();
+
+echo '<b>Total: ' . count($CConlyPOSTViews) . '</b>';
+$trClass = new Cycler('row_light', 'row_dark');
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>View</th>';
+  echo '<th>Organization</th>';
+  echo '<th>User</th>';
+  echo '<th>Last Modified</th>';
+echo '</tr>';
+foreach($CConlyPOSTViews as $row) {
+  echo '<tr class="' . $trClass . '">';
+    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+    echo '<td>' . $row['last_modified'] . '</td>';
+  echo '</tr>';
+}
+echo '</table>';
+echo '</div>';
+
+
+
+
+$view_drawings = $DB->MultiQuery('
+SELECT  v.id                AS view_id, 
+        v.name              AS view_name,
+        v.last_modified     AS view_last_modified,
+        sv.id               AS view_school_id,
+        sv.school_name      AS view_school_name,
+        sv.school_zip       AS view_school_zip,
+        pdm.name            AS drawing_name,
+        pdm.program_id      AS drawing_program_id,
+        pdm.type            AS drawing_type,
+        pdm.id              AS drawing_id,
+        pdm.skillset_id     AS drawing_skillset_id,
+        skillsets.title     AS drawing_skillset_title,
+        sd.id               AS drawing_school_id,
+        sd.school_name      AS drawing_school_name,
+        sd.school_zip       AS drawing_school_zip
+    FROM vpost_views v
+      LEFT JOIN vpost_links l
+        ON v.id = l.vid
+      LEFT JOIN post_drawing_main pdm
+        ON pdm.id = l.post_id
+      LEFT JOIN schools sv
+        ON v.school_id = sv.id
+      LEFT JOIN schools sd
+        ON pdm.school_id = sd.id
+      LEFT JOIN oregon_skillsets skillsets
+        ON pdm.skillset_id = skillsets.id
+    WHERE pdm.type IN ("HS","CC")
+    ORDER BY v.name ASC
+  ');
+
+$inclusion_list = array();
+
+  foreach($view_drawings as $view_drawing){
+    $key = $view_drawing['view_school_name'];
+    $view_id = $view_drawing['view_id'];
+
+    if(!isset($inclusion_list[$key])){
+      $inclusion_list[$key] = array(
+        'views' => array()
+      );
+    }
+
+    if(!isset($inclusion_list[$key]['views'][$view_id])){
+      $inclusion_list[$key]['views'][$view_id] = array(
+        'hs_drawing_ids' => array(),
+        'cc_drawing_ids' => array(),
+      );
+    }
+
+
+    if( $view_drawing['drawing_type'] === 'HS' ){
+      $inclusion_list[$key]['views'][$view_id]['has_hs'] = true;
+      $inclusion_list[$key]['views'][$view_id]['hs_drawing_ids'][] = $view_drawing['drawing_id'];
+
+    }
+    if( $view_drawing['drawing_type'] === 'CC' ){
+      $inclusion_list[$key]['views'][$view_id]['has_cc'] = true;
+      $inclusion_list[$key]['views'][$view_id]['cc_drawing_ids'][] = $view_drawing['drawing_id'];
+    }
+  }
+
+ksort($inclusion_list);
+//totals for all schools
+$total_views = 0;
+$total_complete = 0;
+$total_hs_only = 0;
+$total_cc_only = 0;
+
+echo '<div class="section">';
+echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>Organization</th>';
+  echo '<th>Total Embedded<br />POST Views</th>';
+  echo '<th>Full POST Views</th>';
+  echo '<th>TOP (HS)<br />POST Views Only</th>';
+  echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
+echo '</tr>';
+$trClass = new Cycler('row_light', 'row_dark');
+  foreach($inclusion_list as $school_name => $viewDoc){
+    $number_complete = 0;
+    $number_hs_only = 0;
+    $number_cc_only = 0;
+    foreach($viewDoc['views'] as $view){
+      if(isset($view['has_hs']) && isset($view['has_cc'])){
+        $number_complete++;
+      } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
+        $number_hs_only++;
+      } else {
+        $number_cc_only++;
+      }
+    }
+  
+    //add counts from this org to total
+    $total_views += count($viewDoc['views']);
+    $total_complete += $number_complete;
+    $total_hs_only += $number_hs_only;
+    $total_cc_only += $number_cc_only;
+
+    echo '<tr class="' . $trClass . '">';
+      echo '<td>' . $school_name . '</td>';
+      echo '<td>' . count($viewDoc['views']) . '</td>';
+      echo '<td>' . $number_complete . '</td>';
+      echo '<td>' . $number_hs_only . '</td>';
+      echo '<td>' . $number_cc_only . '</td>';
+    echo '</tr>';
+
+  }
+
+echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+  echo '<td>Total</td>';
+  echo '<td>' . $total_views . '</td>';
+  echo '<td>' . $total_complete . '</td>';
+  echo '<td>' . $total_hs_only . '</td>';
+  echo '<td>' . $total_cc_only . '</td>';
+echo '</tr>';
+
+echo '</table>';
+echo '</div>';
+  
+
+
+
+
+
+
+
+
+//used in report (below)
+$num_unlinked = 0; 
+
+//only viewdrawings without a skillset are being reported
+$view_drawings_no_skillset = array();
+
+foreach($view_drawings as $view_drawing){
+  if(intval($view_drawing['drawing_skillset_id']) < 1){
+    $num_unlinked++;
+    array_push($view_drawings_no_skillset, $view_drawing);
+  }
+}
+
+usort($view_drawings_no_skillset, 'comp');
+
+function comp($a, $b) {
+  if ($a['view_school_name'] == $b['view_school_name']) {
+    if($a['view_name'] == $b['view_name']){
+      if($a['view_id'] == $b['view_id']){
+        return strcmp($a['drawing_name'], $b['drawing_name']);
+      }
+      return $a['view_id'] - $b['view_id'];
+    }
+    return strcmp($a['view_name'], $b['view_name']);
+  }
+  return strcmp($a['view_school_name'], $b['view_school_name']);
+}
+
+echo '<div class="section">';
+echo '<h3>Total # of unlinked Oregon Skill Set POST Drawings:</h3>';
+echo '<b>Total # of unlinked Oregon Skill Set POST Drawings: '.$num_unlinked.'</b><br>';
+
+echo '<table>';
+echo '<tr class="drawing_main">';
+  echo '<th>Organization Name</th>';
+  echo '<th>Title of POST View</th>';
+  echo '<th>titles of POST Drawings with missing Oregon Skill Set</th>';
+echo '</tr>';
+
+$trClass = new Cycler('row_light', 'row_dark');
+$current_view_school_name = null;
+$current_view_id = null;
+$blank_cell = '<td>&nbsp;</td>';
+
+foreach ($view_drawings_no_skillset as $view_drawing) {
+  echo '<tr class="' . $trClass . '">';
+    if($current_view_school_name !== $view_drawing['view_school_name']){
+      $current_view_school_name = $view_drawing['view_school_name'];
+      echo '<td>' . $view_drawing['view_school_name'] . '</td>';  
+    } else {
+      echo $blank_cell;
+    }
+    if($current_view_id !== $view_drawing['view_id']){
+      $current_view_id = $view_drawing['view_id'];
+      echo '<td><a href="/a/post_views.php?id=' . $view_drawing['view_id'] . '">' . $view_drawing['view_name'] . ' (id: ' .$view_drawing['view_id']. ')</a></td>';
+    } else {
+      echo $blank_cell;
+    }
+    
+    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $view_drawing['drawing_id'] . '">' . $view_drawing['drawing_name'] . ' (id: ' .$view_drawing['drawing_id']. ')</a></td>';
+  echo '</tr>';
+}
+   
+echo '</table>';
+echo '</div>';
+
+} else { //else !hasFeature('approved_program_name')
 
 # Summary of Embedded POST Views
 echo '<div class="section">';
@@ -772,6 +1087,8 @@ foreach($embedded as $row) {
 echo '</table>';
 echo '</div>';
 
+
+} //end else hasFeature('approved_program_name')
 
 PrintFooter();
 

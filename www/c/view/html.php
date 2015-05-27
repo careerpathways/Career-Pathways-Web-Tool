@@ -4,8 +4,10 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title><?= $drawing_name ?> &#8226; Career Pathways</title>
+    <link rel="stylesheet" type="text/css" href="/styles-header.css" />
   </head>
   <body>
+
 	<?php
 		require('chart_include.php');
 	?>
@@ -13,7 +15,7 @@
 		<?php if (Request('action') === 'print') { ?>
 		Charts.printing = true;
 		<?php } ?>
-		Charts.draw();
+		Charts.draw('chartcontainer');
 	</script>
 
 	<?php

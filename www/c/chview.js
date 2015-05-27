@@ -18,6 +18,9 @@ Charts = {
     		Charts.createCanvas(bottomRight.x, bottomRight.y);
 		};
     }
+
+
+
     Charts.elementOffset = Charts.element.cumulativeOffset();
     
     if (toolbar_container) {
@@ -44,8 +47,6 @@ Charts = {
 	
 	Charts.setData({
 		versionId: versionId,
-		titleImg: chTitleImg,
-		skillset: chSkillset,
 		widgets: chData,
 		connections: connections,
 		drawing_status: drawing_status
@@ -104,27 +105,6 @@ Charts = {
 			if (!(Charts.printing && Prototype.Browser.Gecko)) {
 				Charts.element.style.background = 'url(' + Charts.backgroundImageUrl + ')';
 			}
-		}
-		
-		// add the title image
-		var title = document.createElement('div');
-		title.className = 'chTitle';
-		title.innerHTML = data.titleImg;
-		title.style.zIndex = 100;
-		title.style.position = 'absolute';
-		title.style.top = 0;
-		title.style.left = 0;
-		Charts.element.appendChild(title);
-		
-		if(data.skillset) {
-		  var skillset = document.createElement('div');
-		  skillset.className = 'chSkillset';
-		  skillset.innerHTML = data.skillset;
-		  skillset.style.zIndex = 101;
-		  skillset.style.position = 'absolute';
-		  skillset.style.top = "19px";
-		  skillset.style.left = 0;
-		  Charts.element.appendChild(skillset);
 		}
 	
 		// add all the widgets
@@ -430,7 +410,7 @@ var Widget = Class.create(Component, {
     },
     
     getTop: function() {
-    	return parseInt(this.y);
+    	return parseInt(this.y) - 19; //
     },
     
     getLeft: function() {

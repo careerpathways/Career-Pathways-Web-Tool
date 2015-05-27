@@ -19,10 +19,22 @@
 	width: 800px;
 	z-index: -1; 
 }
+#chartcontainer {
+	height: 1200px;
+	width: 1600px;
+}
 </style>
 <script type="text/javascript">
 <?php require('chart_data_js.php'); ?>
 </script>
+
+
+<div class="title_img"><?= ShowRoadmapHeader($drawing['parent_id']) ?></div>
+<div class="title_skillset" style="font-size:8pt;font-weight:bold;"><?= l('skillset name')?>: <?= $drawing['skillset'] ?></div>
+
+<div id="chartcontainer" style="position:relative;"><!-- chview.js will draw the chart here --></div>
+
+
 
 <?php if(isset($_GET['action'])){ ?>
 <!--[if lt IE 9]><script type="text/javascript" src="<?= getBaseUrl() ?>/files/excanvas.js"></script><![endif]-->

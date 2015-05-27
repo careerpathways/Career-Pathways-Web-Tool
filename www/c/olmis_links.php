@@ -41,7 +41,7 @@ if(request('occ'))
 }
 else
 {
-	$olmis = $DB->MultiQuery('
+    $olmis = $DB->MultiQuery('
 		SELECT c.olmis_id, c.job_title,l.drawing_id as id
 		FROM olmis_links AS l
 		JOIN olmis_codes AS c ON l.olmis_id=c.olmis_id
@@ -52,7 +52,7 @@ else
 	{
 		case 'html':
 			echo html_header();
-			//This is no longer accurate as we only pull those that are published.
+            //This is no longer accurate as we only pull those that are published.
 			//echo count($olmis) . ' OLMIS reports currently link to published roadmaps' . "\n";
 			
 			foreach( $olmis as $o ) 
@@ -112,27 +112,24 @@ function html_footer()
 
 function get_drawing_list($olmis_id) {
     global $DB;
-    
     $drawings = $DB->MultiQuery("
- 		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr, schools.school_name
- 		  FROM olmis_links AS l
- 		      JOIN drawing_main AS d ON l.drawing_id=d.id
- 		      LEFT JOIN programs AS p ON d.program_id=p.id
- 		      JOIN schools ON d.school_id=schools.id
+		SELECT IFNULL(p.title, d.name) AS name, d.id, schools.school_abbr, schools.school_name
+		  FROM olmis_links AS l
+		      JOIN drawing_main AS d ON l.drawing_id=d.id
+		      LEFT JOIN programs AS p ON d.program_id=p.id
+		      JOIN schools ON d.school_id=schools.id
 		WHERE l.olmis_id = {$olmis_id}
 	      AND EXISTS (SELECT id FROM drawings WHERE drawings.published=1 and parent_id=d.id)
 	    ORDER BY schools.school_abbr,  name
-
     ");
     return $drawings;
 }
-
 function html_occupation($o)
-{	
+{
 	ob_start();
-        $url = BuildOlmisLink($o['olmis_id']);
+    $url = BuildOlmisLink($o['olmis_id']);
 	echo '<div class="olmis_title"><a href="'.$url.'" target="_blank">' . $o['job_title'] . '</a></div>' . "\n";
-	$drawings = get_drawing_list($o['olmis_id']);
+    $drawings = get_drawing_list($o['olmis_id']);
 	foreach( $drawings as $d ) {
 		echo '<div class="olmis_roadmap"><a href="/c/published/' . $d['id'] . '/view.html" target="_blank"><span title="' . $d['school_name'] . '">' . $d['school_abbr'] . '</span>: ' . $d['name'] . '</a></div>' . "\n";
 	}
@@ -140,14 +137,14 @@ function html_occupation($o)
 }
 
 function json_occupation($o)
-{	
+{
 	$program = array(
 		'title'=>$o['job_title'], 
 		'url'=> BuildOlmisLink($o['olmis_id']),
         //'http://www.qualityinfo.org/olmisj/OIC?areacode=4101000000&rpttype=full&action=report&occ='.$o['olmis_id'].'&go=Continue#section11'
 	);
-	$drawings = get_drawing_list($o['olmis_id']);
-	foreach( $drawings as $d ) 
+    $drawings = get_drawing_list($o['olmis_id']);
+    foreach( $drawings as $d )
 		$program['roadmaps'][] = array('url'=>'http://' . $_SERVER['SERVER_NAME'] . '/c/published/' . $d['id'] . '/view.html', 'school_abbr'=>$d['school_abbr'], 'school_name'=>$d['school_name'], 'title'=>$d['name']);
 
 	return $program;

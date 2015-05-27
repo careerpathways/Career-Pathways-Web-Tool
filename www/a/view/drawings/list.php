@@ -5,6 +5,9 @@ PrintHeader();
 ?>
 
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
+<?php if($SITE->hasFeature('approved_program_name')): ?>
+<script type="text/javascript" src="/common/APN.js"></script>
+<?php endif; ?>
 <script type="text/javascript">
 	jQuery.noConflict();
 	var MODE = '<?= $MODE ?>';

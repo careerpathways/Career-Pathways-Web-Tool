@@ -21,6 +21,24 @@ else
 	$version_table = 'post_drawings';
 }
 
+// Return a list of all Approved Program Names as JSON
+if( $mode == 'json' ){
+	$program_name_filter = '';
+	if(Request('drawingtype') == 'pathways'){
+		$program_name_filter = 'WHERE use_for_roadmap_drawing = 1';
+	}
+	if(Request('drawingtype') == 'post'){
+		$program_name_filter = 'WHERE use_for_post_drawing = 1 ';
+	}
+    header('Content-type: application/json');
+    if( Request( 'resource' ) == 'programs' ){
+        //.../a/drawings_post.php?mode=json&resource=programs&type=pathways
+        $all_programs = $DB->MultiQuery("SELECT * FROM programs $program_name_filter ORDER BY title");
+        echo json_encode( $all_programs );
+    }
+}
+
+
 if( KeyInRequest('id') ) {
 
 	$drawing = $DB->SingleQuery("SELECT *
@@ -105,7 +123,8 @@ if( KeyInRequest('id') ) {
 		}
 	
 		die();
-	}
+	} //end olmis
+
 
 	if( Request('action') == 'skillset' )
 	{
@@ -114,8 +133,8 @@ if( KeyInRequest('id') ) {
 			if( intval(Request('id') != 0) )
 			{
 				$DB->Update($main_table, array(
-					'skillset_id'=>intval(Request('skillset_id')),
-					'program_id'=>0
+					'skillset_id'=>intval(Request('skillset_id'))//,
+					//'program_id'=>0
 				), Request('id'));
 			}
 
@@ -187,13 +206,23 @@ if( KeyInRequest('id') ) {
 			echo '('.json_encode(array('skillset'=>$skillset['skillset_id'], 'code'=>$code, 'header'=>$header, 'drawings'=>$drawings)).')';
 		}
 		die();
-	}
+	} //end skillset
 
 	$school_id = $DB->GetValue('school_id', $main_table, intval($_REQUEST['id']));
 	$school_abbr = $DB->GetValue('school_abbr', 'schools', $school_id);
 
 	$content = array();
+
+	if( isset($_REQUEST['title']) ){
 	$content['name'] = $_REQUEST['title'];
+	}
+	
+	if( isset($_REQUEST['program_id']) ){
+		$content['program_id'] = $_REQUEST['program_id'];
+	
+	}
+    //$content['name_approved'] = $_REQUEST['name_approved'];
+    
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
 
@@ -203,10 +232,24 @@ if( KeyInRequest('id') ) {
 	{
 		$t = $DB->SingleQuery('SELECT * FROM '.$main_table.' WHERE id='.intval($_REQUEST['id']));
 		$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
-		if( count($program) > 0 )
-			$t['full_name'] = $t['name'] == '' ? $program['title'] : $t['name'];
-		$header = ShowRoadmapHeader(intval(Request('id')));
-		echo '('.json_encode(array('title'=>$t['name'], 'header'=>$header, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';
+		
+		if($SITE->hasFeature('approved_program_name')){
+			if($main_table == 'drawing_main'){
+				//roadmap
+				$headerImage = ShowRoadmapHeader($_REQUEST['id']);
+				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'roadmap');
+			} else {
+				//post drawing
+				$headerImage = ShowPostHeader($_REQUEST['id']);
+				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'post');
+			}
+			echo '('.json_encode(array('title'=>$t['name'], 'header'=>$headerImage, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';
+		} else {
+			if( count($program) > 0 )
+				$t['full_name'] = $t['name'] == '' ? $program['title'] : $t['name'];
+			$header = ShowRoadmapHeader(intval(Request('id')));
+			echo '('.json_encode(array('title'=>$t['name'], 'header'=>$header, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';	
+		}
 	}
 }
 
