@@ -77,6 +77,9 @@ function get_skillset_id($cluster_title) {
 		case "business management and administration":
 			$skillset_id = 3; //Database ID for Business and Management
 			break;
+		case "business management & administration":
+			$skillset_id = 3; //Database ID for Business and Management
+			break;
 		case "construction":
 			$skillset_id = 6; //Database ID for Industrial and Engineering Systems
 			break;
@@ -86,10 +89,16 @@ function get_skillset_id($cluster_title) {
 		case "hospitality and tourism":
 			$skillset_id = 5; //Database ID for Human Resources
 			break;
+		case "hospitality & tourism":
+			$skillset_id = 5; //Database ID for Human Resources
+			break;
 		case "natural resources management":
 			$skillset_id = 1; //Database ID for Agriculture, Food and Natural Resources
 			break;
 		case "manufacturing":
+			$skillset_id = 6; //Database ID for Industrial and Engineering Systems
+			break;
+		case "automotive and heavy equipment technology":
 			$skillset_id = 6; //Database ID for Industrial and Engineering Systems
 			break;
 		case "automotive & heavy equipment technology":
@@ -98,13 +107,22 @@ function get_skillset_id($cluster_title) {
 		case "visual and media arts":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
+		case "visual & media arts":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
 		case "engineering":
 			$skillset_id = 6; //Database ID for Industrial and Engineering Systems
 			break;
 		case "information and communications technology (ict)":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
+		case "information & communications technology (ict)":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
 		case "publishing and broadcasting":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
+		case "publishing & broadcasting":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
 		case "marketing":
@@ -113,13 +131,22 @@ function get_skillset_id($cluster_title) {
 		case "education and related fields":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
+		case "education & related fields":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
 		case "finance":
 			$skillset_id = 3; //Database ID for Business and Management
 			break;
 		case "information and communications technology - i&e":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
+		case "information & communications technology - i&e":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
 		case "information and communications technology - aic":
+			$skillset_id = 2; //Database ID for Arts, Information and Communications
+			break;
+		case "information & communications technology - aic":
 			$skillset_id = 2; //Database ID for Arts, Information and Communications
 			break;
 		case "public services":
