@@ -9,8 +9,9 @@ abstract class POSTChart
 	
 	protected $_name;
 	protected $_program_id = 0;
-        //not really protected.
-        protected $_note;
+
+    //not really protected.
+    protected $_note;
 	protected $_code;
 	protected $_skillset_id;
 	protected $_school_name;
@@ -354,10 +355,12 @@ abstract class POSTChart
 		
 			case 'name':
 				return $this->_name;
+			
 			case 'program_id':
 				return $this->_program_id;
-                        case 'note':
-                                return $this->_note;
+            
+            case 'note':
+                    return $this->_note;
 	
 			case 'rows':
 				$rows = $this->_rows;

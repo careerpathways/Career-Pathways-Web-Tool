@@ -235,12 +235,17 @@ apt-get install -y fontconfig
 apt-get install -y libxrender1
 
 # wkhtmltopdf is incomplete via apt-get, so we wget the .deb and dpkg it instead
-wget --output-document 'wkhtmltox.deb' 'http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.1/wkhtmltox-0.12.1_linux-precise-amd64.deb?r=&ts=1404948559&use_mirror=tcpdiag'
-chmod 774 'wkhtmltox.deb'
+wget --output-document 'wkhtmltox.deb' 'http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb'
+chown vagrant 'wkhtmltox.deb'
 dpkg -i 'wkhtmltox.deb'
 
 # codebase looks for wkhtmltopdf in a different spot, set up a sym link to avoid error
 ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-i386
+
+# the application stores pdf's here
+mkdir -p '/web2/oregon.ctepathways.org/cache/pdf/'
+chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
+
 
 # -------------------
 # Create cache folder and make sure it's writable
@@ -262,7 +267,7 @@ pear -D auto_discover=1 install pear.amazonwebservices.com/sdk
 sed -i 's#^php_value.*$#php_value include_path  ".:/home/project/$projectName/www/include/:/home/project/$projectName/common/"#g' /home/project/$projectName/www/.htaccess
 
 sed -i 's#helpdesk@careermaphumboldt.com#michael.calabrese+lccpost@lunarlogic.com#g' /home/project/$projectName/www/include/default.settings.php
-sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
+#sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
 sed -i "s#DBuser\s\?=\s\?'\w\+'#DBuser = 'root'#g" /home/project/$projectName/www/include/default.settings.php
 sed -i "s#DBpass\s\?=\s\?'[^']\+'#DBpass = 'devsu'#g" /home/project/$projectName/www/include/default.settings.php
 ln -s /home/project/$projectName/www/include/default.settings.php /home/project/$projectName/www/include/settings.php

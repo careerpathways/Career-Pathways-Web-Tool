@@ -5,7 +5,7 @@
 # -------------------------------------------
 # set your project name here. bootstrap.sh will get it
 # -------------------------------------------
-$projectName = "cpwt_stable"
+$projectName = "cpwt_core"
 
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!

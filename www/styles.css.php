@@ -1169,6 +1169,7 @@ tr.postAssuranceReport.schoolName h2 {
 	background-image: url(/images/wide-loader-on-white.gif);
 	width: 200px;
 	height: 19px;
+	margin: 30px auto;
 }
 
 .loading-spinner {

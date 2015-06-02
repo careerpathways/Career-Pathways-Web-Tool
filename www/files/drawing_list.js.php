@@ -233,7 +233,7 @@ function load_drawing_list() {
 	var search = getLayer('search_box').value;
 
 	var url = "/a/drawings_load.php?mode=drawing_list&search="+search+"&people="+people_list+"&schools="+schools_list+"&categories="+cats_list+"&type="+MODE;
-	jQuery("#drawing_list").html('<div style="width:220px; margin:30px auto;"><div class="wide-loader"></div>');
+	jQuery("#drawing_list").html('<div class="wide-loader"></div>');
 	doSomething(getLayer('drawing_list'),url);
 }
 
