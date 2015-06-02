@@ -456,7 +456,8 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	echo '<tr>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="20">&nbsp;</th>';
-		echo '<th width="280">Occupation/Program</th>';
+		echo '<th width="260">Occupation/Program</th>';
+		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th>Tab Name</th>';
 		echo '<th>Sort</th>';
@@ -480,6 +481,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 			echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $d['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')" title="View Version">' . SilkIcon('magnifier.png') . '</a></td>';
+			echo '<td><a href="javascript:get_embed_code_for_specific_tab(\''.$d['id'].'\', \''.$c['tab_name'].'\', \''.$type.'\')" title="Get Embed Code that opens to '.$c['tab_name'].'">' . SilkIcon('link.png') . '</a></td>';
 			echo '<td width="90">';
 				echo '<input type="text" id="tabName_'.$c['post_id'].'" class="tabName tabID_'.$c['post_id'].'" value="' . $c['tab_name'] . '" style="width:90px" />';
 			echo '</td>';
