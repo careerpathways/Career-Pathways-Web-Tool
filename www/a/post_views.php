@@ -432,6 +432,25 @@ if($SITE->hasFeature('oregon_skillset')){
 		);
 	}
 
+    function get_embed_code_for_specific_tab(tab_drawing_id, tab_name, type) 
+    {
+        var hash_link = '';
+        if(type === 'HS'){
+            hash_link += '#tabshs-' + tab_drawing_id;
+        }
+        if(type === 'CC'){
+            hash_link += '#tabscc-' + tab_drawing_id;
+        }
+        var _ec = $j('#embed_code').parent().html();
+        _ec = _ec.replace('embed.js', 'embed.js'+hash_link);
+
+        chGreybox.create('<div id="dpcontainer" class="tab-embed">getting tab embed code for '+tab_drawing_id+'</div>',800,600, null, 'This Embed Code will open to tab: ' + tab_name);
+        $j('#dpcontainer').html(_ec);
+        //some styles specific to this greybox:
+        $j('#dpcontainer').css({'height': '300px'});
+        $j('#dpcontainer.tab-embed textarea').css({'margin': '110px 75px', 'width': '630px'});
+    }
+
 	function preview_drawing(code) 
 	{
 		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');

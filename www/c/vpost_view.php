@@ -163,14 +163,14 @@ foreach( array('hs'=>$hs, 'cc'=>$cc) as $type=>$ds )
 			foreach( $ds as $i=>$d )
 			{
 				$school_name = str_replace(array(' High School', ' Community College'), '', $d['school_name']);
-				echo '<li><a href="#tabs'.$type.'-'.($i+1).'">' . $d['tab_name'] . '</a></li>';
+				echo '<li><a href="#tabs'.$type.'-'.($d['id']).'">' . $d['tab_name'] . '</a></li>';
 			}
 			?>
 		</ul>
 		<?php
 		foreach( $ds as $i=>$d )
 		{
-			echo '<div id="tabs'.$type.'-'.($i+1).'" class="tabs_'.$type.'">';
+			echo '<div id="tabs'.$type.'-'.($d['id']).'" class="tabs_'.$type.'">';
 			try
 			{
 				$p = POSTChart::create($d['version_id']);
@@ -227,6 +227,10 @@ elseif( Request('format') == 'js' )
 {
 		header("Content-type: text/javascript");
 ?>
+		//This must remain at the top before other scripts are added.
+		var scripts = document.getElementsByTagName('script');
+		var tabId = scripts[scripts.length - 1].src.split('#')[1];
+
 		var s=document.createElement('script');
 		s.setAttribute('src','<?= getBaseUrl() ?>/c/log/post/<?=$_REQUEST['id']?>?url='+window.location);
 		document.getElementsByTagName('body')[0].appendChild(s);
@@ -247,13 +251,16 @@ elseif( Request('format') == 'js' )
               rv = parseFloat( RegExp.$1 );
         }
 
+		var iFrameSrc = "<?= getBaseUrl() ?>/c/study/<?=$_REQUEST['id']?>/embed.html";
+        if(tabId){ iFrameSrc += '#' + tabId; }
+
         if( rv < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
-            var fr = document.createElement('<iframe src="<?= getBaseUrl() ?>/c/study/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
+            var fr = document.createElement('<iframe src="'+iFrameSrc+'" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="no"></iframe>');
 		} else {
 			var fr = document.createElement('iframe');
 			fr.setAttribute("width", pc.style.width);
 			fr.setAttribute("height", pc.style.height);
-			fr.setAttribute("src", "<?= getBaseUrl() ?>/c/study/<?=$_REQUEST['id']?>/embed.html");
+			fr.setAttribute("src", iFrameSrc);
 			fr.setAttribute("frameborder", "0");
 			fr.setAttribute("scrolling", "auto");
 		}
