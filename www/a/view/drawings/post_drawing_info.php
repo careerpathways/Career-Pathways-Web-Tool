@@ -155,7 +155,7 @@ if( $id == "" ) {
 	
 	<tr class="editable">
 		<td colspan="2">
-			<div id="drawing_header" class="title_img" style="height:19px;font-size:0px;overflow:hidden;background-color:#295a76"><?= ShowPostHeader($drawing['id']) ?></div>
+			<div id="drawing_header" class="title_img"><?= ShowPostHeader($drawing['id']) ?></div>
 		</td>
 	</tr>
 	<tr class="editable">

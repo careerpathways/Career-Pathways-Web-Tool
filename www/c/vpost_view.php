@@ -91,6 +91,9 @@ if( Request('format') == 'html' )
 	<link rel="stylesheet" href="/files/js/jquery/ui.all.css" />
 	<link rel="stylesheet" href="/c/pstyle.css" />
 	<link rel="stylesheet" href="/c/pstyle-print.css"<?=(array_key_exists('print', $_GET) ? '' : ' media="print"')?> />
+	<?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
+	    <link rel="stylesheet" href="/site-template/styles-header.css" />
+	<?php endif; ?>
 <?php
 	if(!array_key_exists('print', $_GET))
 	{
@@ -111,7 +114,7 @@ if( Request('format') == 'html' )
 
 echo '<div style="margin-bottom: 10px">';
 echo '<div id="post_title">';
-	echo ShowPostViewHeader(intval(Request('id')));
+	echo ShowViewHeader(intval(Request('id')));
 echo '</div>';
 if($SITE->hasFeature('oregon_skillset')){
 if( $main_skillset )

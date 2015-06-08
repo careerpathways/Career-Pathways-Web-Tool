@@ -453,7 +453,7 @@ if($SITE->hasFeature('oregon_skillset')){
 
 	function preview_drawing(code) 
 	{
-		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'.html"></iframe></div>',800,600, null, 'Preview');
+		chGreybox.create('<div id="dpcontainer"><iframe src="/c/post/'+code+'/view.html"></iframe></div>',800,600, null, 'Preview');
 	}
 	function preview_postview(id)
 	{

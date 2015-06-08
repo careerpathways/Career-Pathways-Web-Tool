@@ -1,4 +1,6 @@
 <?php
+@include('defines.php');
+
 header("Content-type: text/css");
 
 $WHITE = "FFFFFF";
@@ -19,6 +21,9 @@ $RED = "EE3300";
 
 @import url(//fonts.googleapis.com/css?family=Lato:700|Roboto:900,100);
 @import url(/styles-header.css);
+<?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
+    @import url(/site-template/styles-header.css);
+<?php endif; ?>
 
 body
 {
@@ -1180,8 +1185,6 @@ tr.postAssuranceReport.schoolName h2 {
 
 <?php
 //Provide chance for site template to over-ride default styles.
-if(@include('defines.php')){
-	if(file_exists(SITE_TEMPLATE.'styles.css.php')){
-		require_once(SITE_TEMPLATE.'styles.css.php');
-	}
+if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){
+	require_once(SITE_TEMPLATE.'styles.css.php');
 }

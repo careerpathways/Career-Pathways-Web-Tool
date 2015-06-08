@@ -262,6 +262,12 @@ function showVersion() {
 	}
 
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
+
+	//Allow site-template to over-ride header styles
+	if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')){
+		$TEMPLATE->addl_styles[] = "/site-template/styles-header.css";
+	}
+
 	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
 
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
