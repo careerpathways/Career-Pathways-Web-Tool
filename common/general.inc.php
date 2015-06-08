@@ -67,8 +67,8 @@ function PrintFooter() {
 include("dborder.inc.php");
 $DBO = new DB_order($DB);
 
-//require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
-class PHPMailerLite{};
+require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
+
 class MyMailer extends PHPMailerLite {
 	var $From;
 	var $FromName;
