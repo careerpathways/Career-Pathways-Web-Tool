@@ -672,6 +672,7 @@ else
 	echo '<table width="100%">';
 	    echo '<tr>';
 	    echo '<th width="20">&nbsp;</th>';
+        echo '<th width="20">&nbsp;</th>';
             echo '<th>Occupation/Program</th>';
             echo '<th width="240">Last Modified</th>';
             echo '<th width="240">Created</th>';
@@ -681,9 +682,34 @@ else
             echo '</tr>';
         foreach( $views as $i=>$v )
         {
+            
+            $drawings = $DB->MultiQuery('SELECT  v.id                AS view_id,
+                pdm.skillset_id     AS drawing_skillset_id
+            FROM vpost_views v
+                LEFT JOIN vpost_links l
+                    ON v.id = l.vid
+                LEFT JOIN post_drawing_main pdm
+                    ON pdm.id = l.post_id
+                LEFT JOIN oregon_skillsets skillsets
+                    ON pdm.skillset_id = skillsets.id
+            WHERE v.id = '.$v['id']);
+        $lacks_a_skillset = false;
+        foreach($drawings as $d){
+            if((int)$d['drawing_skillset_id'] < 1){
+                $lacks_a_skillset = true; //if at least one drawing lacks a skillset, provide a notice.
+                break;
+            }
+        }
+
                 echo '<tr class="row' . ($i%2) . '">';
         echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$v['id'].'" class="edit"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties" /></a></td>';
 
+            if($lacks_a_skillset){        
+                echo '<td><a href="javascript:alert(\'For this view, one or more drawings are missing their skillset.\')"><img src="/common/silk/exclamation.png" width="16" height="16" title="For this view, one or more drawings are missing their skillset." /></a></td>';
+            } else {
+                echo '<td>&nbsp;</td>';
+            }
+    
         echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['name'] . '</td>';
 
         $created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
