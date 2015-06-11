@@ -103,7 +103,7 @@ Charts = {
 			Charts.backgroundImageUrl = '/images/' + Charts.drawingStatus + '-overlay.png';
 			// firefox crashes with this backgroung image
 			if (!(Charts.printing && Prototype.Browser.Gecko)) {
-				Charts.element.style.background = 'url(' + Charts.backgroundImageUrl + ')';
+				Charts.canvas.style.background = 'url(' + Charts.backgroundImageUrl + ')';
 			}
 		}
 	
