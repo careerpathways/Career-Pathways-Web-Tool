@@ -292,7 +292,7 @@ the toolbar.</p>
 }
 
 function copyVersion($version_id) {
-	global $DB;
+	global $DB, $SITE;
 	$drawing = GetDrawingInfo($version_id);
 
 	// first get the title information
