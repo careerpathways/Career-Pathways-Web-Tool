@@ -441,6 +441,10 @@ if($SITE->hasFeature('oregon_skillset')){
         if(type === 'CC'){
             hash_link += '#tabscc-' + tab_drawing_id;
         }
+        if($j('#embed_code').length < 1){
+            alert('Please publish this view to acquire tab-specific embed code.');
+            return; //no embed code container (such as when drawing is unpublished)
+        }
         var _ec = $j('#embed_code').parent().html();
         _ec = _ec.replace('embed.js', 'embed.js'+hash_link);
 
