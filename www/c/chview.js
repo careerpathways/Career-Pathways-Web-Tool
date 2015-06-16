@@ -8,6 +8,11 @@ Charts = {
 		
     if (canvas_container) {
     	Charts.element = $(canvas_container);
+    	Charts._afterOpen = function() {
+    		var points = Charts.components.invoke('getShape').invoke('getBounds').pluck('bottomRight');
+    		Charts.bounds = new Geometry.Bounds(points);
+    		var bottomRight = Charts.bounds.bottomRight;
+		};
     }
     else {
     	Charts.element = $(document.body);
