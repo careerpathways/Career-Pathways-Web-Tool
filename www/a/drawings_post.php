@@ -10,13 +10,13 @@ if( Request('mode') )
 else
 	$mode = 'pathways';
 
-if( $mode == 'pathways' )
-{
+if( $mode == 'pathways' ) {
 	$main_table = 'drawing_main';
 	$version_table = 'drawings';
-}
-else
-{
+} elseif ( $mode === 'post_views' ) {
+	$main_table = 'vpost_views';
+	$version_table = null;
+} else {
 	$main_table = 'post_drawing_main';
 	$version_table = 'post_drawings';
 }
@@ -30,6 +30,9 @@ if( $mode == 'json' ){
 	if(Request('drawingtype') == 'post'){
 		$program_name_filter = 'WHERE use_for_post_drawing = 1 ';
 	}
+	if(Request('drawingtype') == 'post_views'){
+		$program_name_filter = 'WHERE use_for_post_drawing = 1 ';
+	}
     header('Content-type: application/json');
     if( Request( 'resource' ) == 'programs' ){
         //.../a/drawings_post.php?mode=json&resource=programs&type=pathways
@@ -40,11 +43,19 @@ if( $mode == 'json' ){
 
 
 if( KeyInRequest('id') ) {
-
-	$drawing = $DB->SingleQuery("SELECT *
+	if($version_table){
+		//Post Drawings and Roadmap Drawings
+		$drawing = $DB->SingleQuery("SELECT *
 			FROM $version_table AS v, $main_table AS m
 			WHERE v.parent_id=m.id
-			AND m.id=".intval(Request('id')));
+			AND m.id=".intval(Request('id')));	
+	} else {
+		//Post Views
+		$drawing = $DB->SingleQuery("SELECT *
+			FROM $main_table AS m
+			WHERE m.id=".intval(Request('id')));	
+	}
+
 	if( !(Request('id') == "" || is_array($drawing) && (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id'])) ) {
 			// permissions error
 //			die();
@@ -132,10 +143,15 @@ if( KeyInRequest('id') ) {
 		{
 			if( intval(Request('id') != 0) )
 			{
-				$DB->Update($main_table, array(
-					'skillset_id'=>intval(Request('skillset_id'))//,
-					//'program_id'=>0
-				), Request('id'));
+				if($main_table === 'vpost_views'){
+					$DB->Update($main_table, array(
+						'oregon_skillsets_id'=>intval(Request('skillset_id'))
+					), Request('id'));
+				} else {
+					$DB->Update($main_table, array(
+						'skillset_id'=>intval(Request('skillset_id'))
+					), Request('id'));	
+				}
 			}
 
 			if( Request('skillset_id') )
@@ -238,6 +254,10 @@ if( KeyInRequest('id') ) {
 				//roadmap
 				$headerImage = ShowRoadmapHeader($_REQUEST['id']);
 				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'roadmap');
+			} elseif ($main_table === 'vpost_views') {
+				//post view
+				$headerImage = ShowViewHeader($_REQUEST['id']);
+				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'post_views');				
 			} else {
 				//post drawing
 				$headerImage = ShowPostHeader($_REQUEST['id']);

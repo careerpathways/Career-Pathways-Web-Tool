@@ -100,13 +100,22 @@ if( $id )
             </div>
 		</td>
 	</tr>
+
+<?php if($SITE->hasFeature('approved_program_name')): ?>
+	<?php 
+	$drawing = $view; //apn.php uses "$drawing"
+	$drawing['skillset_id'] = $view['oregon_skillsets_id'];
+	include('view/drawings/apn.php');
+	?>
+<?php else: ?>
+	
 	<tr class="editable">
 		<th width="115">Occupation/Program</th>
 		<td>
 			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
 			<div id="title_edit" style="display:none">
 				<input type="text" id="drawing_title" name="name" size="80" value="<?= $view['name'] ?>">
-				<input type="button" class="submit tiny" value="Save" id="submitButton" onclick="savetitle()">
+				<input type="button" class="submit tiny" value="Save" id="title_btn" onclick="saveTitle()">
 				<span id="checkNameResponse" class="error"></span>
 			</div>
 		</td>
@@ -144,8 +153,9 @@ if($SITE->hasFeature('oregon_skillset')){
        </td>
 </tr>
 <?php
-}
+} //end if oregon_skillset
 ?>
+<?php endif; //approved_program_name ?>
         <?php if($view['published']){?>
         <tr>
 		<th width="115">Embed Code</th>
@@ -179,7 +189,7 @@ if($SITE->hasFeature('oregon_skillset')){
                 <td>
 			<div id="drawing_link"><?php
 			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
-			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$published_link);
+			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))),$published_link);
 			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
 		</td>
@@ -187,8 +197,8 @@ if($SITE->hasFeature('oregon_skillset')){
 	<tr>
 		<th width="115">PDF Link</th>
 		<td>
-			<div id="drawing_link"><?php
-			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode($view['name'])), $pdf_link);
+			<div id="drawing_link_pdf"><?php
+			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))), $pdf_link);
 			echo '<div style="width:16px; float:left;"><a href="' . $url . '">' . SilkIcon('page_white_acrobat.png') . '</a></div>';
 			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
 			?></div>
@@ -231,95 +241,7 @@ if($SITE->hasFeature('oregon_skillset')){
                         
                 </td>
         </tr>
-        
-        
-        <!--
-    <tr><td colspan="2"><hr/></td></tr>
-    <?php
-    /**
-     * Trac Ticket #38 HTML IS NOT USED PHP is in use below (could stand to be cleaned up someday).
-     */
-    ?>
-    <tr>
-        <?php $viewId = $_REQUEST['id']; ?>
-        <td><a href="/a/post_assurance.php?id=<?= $viewId ?>">Signatures:</a></td>
-        <td>
-            <?php if ($viewId): ?>
-            <?php
-            $userId = $_SESSION['user_id'];
-            $sigPermissionsQuery = "SELECT role_id FROM users_roles WHERE user_id = '$userId'";
-            $sigPermissionsResult = $DB->MultiQuery($sigPermissionsQuery);
-            $sigPermissions = array();
-            foreach ($sigPermissionsResult as $result) {
-                $sigPermissions[$result['role_id']] = true;
-            }
 
-            $viewsSigsQuery = "SELECT `SignatureCategory`.`id`, `SignatureCategory`.`description` as 'name', `User`.`email`, CONCAT(`User`.`first_name`, ' ', `User`.`last_name`) AS `username`, `Signature`.`date_signed`" . 
-                                         " FROM `requirements` AS `SignatureCategory`" . 
-                                         " LEFT JOIN (`assurance_requirements_ct` AS `Signature`" . 
-                                         "              INNER JOIN `assurances` ON `Signature`.`assurance_id` = `assurances`.`id` ".
-                                         "                      AND `assurances`.`vpost_view_id` = '" . $viewId . "'" . 
-                                         "                      AND `assurances`.`valid` = TRUE" . 
-                                         "              LEFT JOIN `users` AS `User` ON `Signature`.`user_id` = `User`.`id`" . 
-                             "          ) ON `SignatureCategory`.`id` = `Signature`.`requirement_id`".
-                                         " WHERE `SignatureCategory`.requirement_type = 'stakeholder'";
-            //print($viewsSigsQuery);
-            $signatures     = $DB->MultiQuery($viewsSigsQuery);
-            // If we need to group signatures, this is where we do it.
-            $categories = array();
-            foreach ($signatures as $signature) {
-                $categories[$signature['id']]['name'] = $signature['name'];
-                $categories[$signature['id']]['sigs'] = array();
-                if ( $signature['email'] ) {
-                    $sig['date_signed'] = $signature['date_signed'];
-                    $sig['email'] = $signature['email'];
-                    $sig['name'] = $signature['username'];
-                    $categories[$signature['id']]['sigs'][] = $sig;
-                }
-            }
-            ?>
-            <table>
-            <?php
-                $signaturesReceived = 0;
-                $signaturesRequired = 0;
-                $recentDate = null;
-            ?>
-            <?php foreach ($categories as $catId => $category): ?>
-                <tr>
-                    <td><?= $category['name'] ?> (<?= $catId ?>):</td>
-                    <td>&nbsp;&nbsp;&nbsp;</td>
-                    <td width="600px">
-                    <?php $sigCount = count($category['sigs']); ?>
-                    <?php if ($sigCount > 0): ?>
-                        <?php $signaturesReceived++; ?>
-                        <?php foreach ($category['sigs'] as $sig): ?>
-                            <?php
-                                if ($recentDate == null || $sig['date_signed'] > $recentDate) {
-                                    $recentDate = $sig['date_signed'];
-                                }
-                            ?>
-                        <p>Signed by <?= $sig['name'] ?> on <?=  date_format(new DateTime($sig['date_signed']),'d M y')?></p>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <?php $signaturesRequired++ ?>
-                        No signatures on file.
-                    <?php endif; ?></td>
-                    <td>&nbsp;&nbsp;&nbsp;</td>
-                    <td>
-                        <?php if (!$sigCount && isset($sigPermissions[$catId])): ?>
-                            <?php $signViewLinkUrl = $_SERVER['PHP_SELF'] . '?action=sign&id=' . $viewId . '&category_id=' . $catId; ?>
-                            <a href="<?= $signViewLinkUrl ?>">Sign this View</a>
-                        <?php else: ?>
-                            &nbsp;
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </table>
-            <?php else: ?>&nbsp
-            <?php endif;?>
-        </td>
-    </tr>-->
         <?php if ($SITE->hasFeature('post_assurances')): ?>
             <tr><td colspan="2"><hr/></td></tr>
             <tr>
@@ -417,20 +339,52 @@ if($SITE->hasFeature('oregon_skillset')){
 		getLayer('title_fixed').style.display = 'none';
 	}
 
-	function savetitle() {
-		$j.get("post_views.php",
-			{id: <?= $id ?>,
-			 title: $j('#drawing_title').val(),
-			 action: "change_name"
-			},
-			function(data) {
-				getLayer('title_value').innerHTML = data;
-				getLayer('title_edit').style.display = 'none';
-				getLayer('title_fixed').style.display = 'block';
-				$j("body").trigger("drawingheaderchanged");
+	<?php if($SITE->hasFeature('approved_program_name')): ?>
+		function saveTitle() {
+			if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+			{
+				alert("You must enter either an approved program name or a custom program name");
 			}
-		);
-	}
+			else
+			{
+				var _url = '/a/drawings_post.php'
+                    + '?mode=post_views'
+                    + '&id=' + <?= $id ?>
+                    + '&changeTitle=true'
+                    + '&program_id=' + URLEncode( $j("#program_id").val() );
+
+				$j.get('/a/drawings_post.php',
+				  {mode: 'post_views',
+				   id: '<?= $id ?>',
+				   changeTitle: "true",
+				   title: $j("#drawing_title").val()<?php if(IsAdmin()) { ?>,
+				   school_id: $j("#school_id").val()
+				   <?php } ?>
+				  }, function(data){
+				  	data = eval(data);
+				  	$j("#drawing_title").val(data.title);
+					$j("#drawing_header").html(data.header);
+					updateDrawingLinks(data.code);
+	                $j("body").trigger("drawingheaderchanged");
+				  });
+			}
+		}
+	<?php else: ?>
+		function saveTitle() {
+			$j.get("post_views.php",
+				{id: <?= $id ?>,
+				 title: $j('#drawing_title').val(),
+				 action: "change_name"
+				},
+				function(data) {
+					getLayer('title_value').innerHTML = data;
+					getLayer('title_edit').style.display = 'none';
+					getLayer('title_fixed').style.display = 'block';
+					$j("body").trigger("drawingheaderchanged");
+				}
+			);
+		}
+	<?php endif; //approved_program_name ?>
 
     function get_embed_code_for_specific_tab(tab_drawing_id, tab_name, type) 
     {
@@ -608,46 +562,94 @@ if($SITE->hasFeature('oregon_skillset')){
 elseif( KeyInRequest('id') )
 {
 	?>
+    <?php // ============= New View Form ============== ?>
 	<form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form">
 	<table>
-	<tr>
-		<th valign="bottom">Occupation/Program</th>
-		<td>
-			<input type="text" id="title" name="name" size="60" value="">
-		</td>
-	</tr>
-	<tr>
-		<th width="80">Organization</th>
-		<td>
-		<?php
-		if( IsAdmin() ) {
-			$these_schools = $DB->VerticalQuery('SELECT * FROM schools ORDER BY school_name', 'school_name', 'id');
-			echo GenerateSelectBox($these_schools, 'school_id', $school_id);
-		} else {
-			echo '<b>'.$schools[$school_id].'</b>';
-		}
-		?>
-		</td>
-	</tr>
+        <?php if($SITE->hasFeature('approved_program_name')): ?>
+            <?php if($SITE->hasFeature('oregon_skillset')): ?>
+                <tr>
+                    <th width="115"><?=l('skillset name')?></th>
+                    <td><div id="skillset"><?php
+                            echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>''));
+                            ?></div><div id="skillsetConf" style="color:#393; font-weight: bold"></div></td>
+                </tr>
+            <?php endif; ?>
 
+            <?php if( $school['organization_type'] != 'Other'): ?>
+                <tr>
+                    <th width="115"><?=l('program name label')?></th>
+                    <td><div id="program"><?php
+                            echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
+                            ?></div></td>
+                </tr>    
+            <?php endif; ?>
 
-<?php
-if($SITE->hasFeature('oregon_skillset')){
-?>
-<tr>
-       <th><?=l('skillset name')?></th>
-       <td valign="top"><span id="skillset"><?php
-               echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-       ?></span>(optional)</td>
-</tr>
-<?php
-}
-?>
+            <tr>
+                <th width="115">Organization</th>
+                <td>
+                <?php
+                    $user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
+                    if( Request('type') == 'cc' ) {
+                        if(IsAdmin()) {
+                            $these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
+                        } else {
+                            if($user_school['organization_type'] == 'Other')
+                                $these_schools = GetAffiliatedSchools('CC');
+                
+                            $these_schools[$school_id] = $user_school['school_name'];
+                        }
+                    } else {
+                        $these_schools = GetAffiliatedSchools();
+                        // Add the user's school if their school is the same type as the new drawing
+                        if( strtolower(Request('type')) == strtolower($user_school['organization_type']) )
+                            $these_schools[$school_id] = $user_school['school_name'];                            
+                    }
+                    if( (count($these_schools) == 1) && (isset($these_schools[$school_id])) ) {
+                        echo '<b>'.$these_schools[$school_id].'</b>';
+                    } else {
+                        echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
+                    }
+                ?>
+                </td>
+            </tr>
+        <?php else: //no approved_program_name ?>
+            <tr>
+                <th valign="bottom">Occupation/Program</th>
+                <td>
+                    <input type="text" id="title" name="name" size="60" value="">
+                </td>
+            </tr>
+            <tr>
+                <th width="80">Organization</th>
+                <td>
+                <?php
+                if( IsAdmin() ) {
+                    $these_schools = $DB->VerticalQuery('SELECT * FROM schools ORDER BY school_name', 'school_name', 'id');
+                    echo GenerateSelectBox($these_schools, 'school_id', $school_id);
+                } else {
+                    echo '<b>'.$schools[$school_id].'</b>';
+                }
+                ?>
+                </td>
+            </tr>
+            <?php
+            if($SITE->hasFeature('oregon_skillset')){
+            ?>
+            <tr>
+                   <th><?=l('skillset name')?></th>
+                   <td valign="top"><span id="skillset"><?php
+                           echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+                   ?></span>(optional)</td>
+            </tr>
+            <?php
+            }
+            ?>
+        <?php endif; //approved_program_name ?>
 
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" class="submit" value="Create" id="submitButton"></td>
-	</tr>
+    	<tr>
+    		<td>&nbsp;</td>
+    		<td><input type="submit" class="submit" value="Create" id="submitButton"></td>
+    	</tr>
 	</table>
 	<input type="hidden" name="action" value="create" />
 	</form>
@@ -812,14 +814,45 @@ else
 	</script>
 	<?php	
 }
+?>
+
+
+<?php if($SITE->hasFeature('approved_program_name') && isset($view['id'])): ?>
+    <script type="text/javascript">
+    (function($){
+        $(document).ready(function(){
+            //Create a new APN object with page-specific parameters.
+            //APN provides skill set/approved program name sort features.
+            var apn = new APN({
+                drawingId : '<?= $view["id"] ?>',
+                drawingType : '<?= $MODE ?>',
+                programId: '<?= $view["program_id"] ?>'
+            });
+        });
+    }(jQuery));
+
+	function updateDrawingLinks(newCode)
+	{
+	  	drawingCode = newCode;
+
+	    var published_link = "<?= $published_link ?>";
+	    var pdf_link = "<?= $pdf_link ?>";
+	    var xml_link = "<?= $xml_link ?>";
+	    var ada_link = "<?= $accessible_link ?>";
+
+	  	$j("#drawing_link input").val(published_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+	    $j("#drawing_link_pdf input").val(pdf_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+	  	$j("#drawing_link_xml input").val(xml_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+	    $j("#drawing_link_ada input").val(ada_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+	}
+    </script>
+<?php endif; ?>
+
+<?php PrintFooter(); ?>
 
 
 
-PrintFooter();
-
-
-
-
+<?php
 function processDrawingListRequest()
 {
 	global $DB;
@@ -1004,8 +1037,7 @@ function processChangeNameRequest()
 	$view['last_modified'] = $DB->SQLDate();
 	$view['last_modified_by'] = $_SESSION['user_id'];
 	$DB->Update('vpost_views', $view, Request('id'));
-	
-	echo Request('title');
+	echo GetDrawingName(Request('id'), 'post_views');
 }
 
 function processCreateRequest()
@@ -1020,7 +1052,10 @@ function processCreateRequest()
 		$newCode .= chr(ord('a')+base_convert(substr($code, $i, 1), 26, 10));
 
 	$view = array();
-	$view['name'] = Request('name');
+	$view['name'] = (string) Request('name');
+    if($SITE->hasFeature('approved_program_name')){
+        $view['program_id'] = Request('program_id');
+    }
 	$view['school_id'] = (IsAdmin() ? Request('school_id') : $_SESSION['school_id']);
 	$view['date_created'] = $DB->SQLDate();
 	$view['last_modified'] = $DB->SQLDate();

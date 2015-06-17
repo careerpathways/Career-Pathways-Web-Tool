@@ -230,8 +230,8 @@ function ShowPostHeader($drawing_id)
 function ShowViewHeader($view_id)
 {
 	global $DB;
-	$name_to_use = $DB->SingleQuery('SELECT name FROM vpost_views WHERE id = ' . $view_id);
-	return _BuildDrawingHeader(null, l('drawing head post 1'), l('drawing head post 2'), $name_to_use['name']);
+	$name_to_use = GetDrawingName($view_id, 'post_views');
+	return _BuildDrawingHeader(null, l('drawing head post 1'), l('drawing head post 2'), $name_to_use);
 }
 
 /**
@@ -307,7 +307,7 @@ function GetSchoolAbbr($drawing_id, $drawing_type)
  * Get the name for a drawing based on ID and type.
  * 
  * @param mixed $drawing_id  string or int - Main drawing id.
- * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post'
+ * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post' or 'post_views'
  * @return string The proper title for the drawing.
  */
 function GetDrawingName($drawing_id, $drawing_type)
@@ -316,6 +316,8 @@ function GetDrawingName($drawing_id, $drawing_type)
 	$drawing_id = intval($drawing_id);
 	if($drawing_type === 'roadmap'){
 		$table = 'drawing_main';
+	} elseif( $drawing_type === 'post_views'){
+		$table = 'vpost_views';
 	} elseif( $drawing_type === 'post'){
 		$table = 'post_drawing_main';
 	} else {

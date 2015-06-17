@@ -7,7 +7,7 @@ $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/%%.html';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
 <script type="text/javascript" src="'.getBaseUrl().'/c/published/$$/embed.js"></script>';
@@ -171,7 +171,7 @@ if( $id != "" ) {
                 <td>
                     <div style="width:16px; float:left; margin-right: 2px;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
                     <div id="drawing_link"><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$published_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.GetDrawingName($drawing['id'], 'roadmap'))),$published_link);
                     echo '<input type="text" style="width:542px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                 </td>
@@ -179,7 +179,7 @@ if( $id != "" ) {
             <tr>
                 <th valign="top">PDF Link</th>
                 <td><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['full_name'])),$pdf_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode(GetDrawingName($drawing['id'], 'roadmap'))),$pdf_link);
                     ?>
                     <div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
                     <div id="drawing_link_pdf">
@@ -191,7 +191,7 @@ if( $id != "" ) {
                 <th valign="top" width="115">XML Link</th>
                 <td>
                     <div id="drawing_link_xml"><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$xml_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.GetDrawingName($drawing['id'], 'roadmap'))),$xml_link);
                     echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                 </td>
@@ -200,7 +200,8 @@ if( $id != "" ) {
                 <th valign="top" width="115">Accessible Link</th>
                 <td>
                     <div id="drawing_link_ada"><?php
-                    $url = str_replace('$$',$id,$accessible_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$accessible_link);
+                    //$url = str_replace('$$',$id,$accessible_link);
                     echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                     These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
@@ -298,8 +299,16 @@ function saveTitle() {
 function updateDrawingLinks(newCode)
 {
   	drawingCode = newCode;
+
+    var published_link = "<?= $published_link ?>";
+    var pdf_link = "<?= $pdf_link ?>";
+    var xml_link = "<?= $xml_link ?>";
+    var ada_link = "<?= $accessible_link ?>";
+
   	$j("#drawing_link input").val(published_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_pdf input").val(pdf_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
   	$j("#drawing_link_xml input").val(xml_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_ada input").val(ada_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
 }
 
 function loadProgramTitles() {

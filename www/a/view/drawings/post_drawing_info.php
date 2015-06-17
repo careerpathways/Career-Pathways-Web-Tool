@@ -83,7 +83,7 @@ if( $id == "" ) {
 			<td>
 				<div style="width:16px; float: left;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
 				<div id="drawing_link"><?php
-				$url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$published_link);
+				$url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'_'.GetDrawingName($drawing['id'], 'post'))),$published_link);
 				echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
 				?></div>
 			</td>
@@ -91,7 +91,7 @@ if( $id == "" ) {
 		<tr>
 			<th valign="top" width="115">PDF Link</th>
 			<td><?php 
-				$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.$drawing['name'])),$pdf_link);
+				$url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'_'.GetDrawingName($drawing['id'], 'post'))),$pdf_link);
 				?>
 				<div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
 				<div id="drawing_link_pdf">
@@ -327,11 +327,27 @@ function saveTitle() {
 			  	}, 300);
 			  	
 				$j("#drawing_header").html(data.header);
-				//updateDrawingLinks(data.code); //not used for POST drawings
+				updateDrawingLinks(data.code);
 				$j("body").trigger("drawingheaderchanged");
 			  });
 	}
 }
+
+function updateDrawingLinks(newCode)
+{
+  	drawingCode = newCode;
+
+    var published_link = "<?= $published_link ?>";
+    var pdf_link = "<?= $pdf_link ?>";
+    var xml_link = "<?= $xml_link ?>";
+    var ada_link = "<?= $accessible_link ?>";
+
+  	$j("#drawing_link input").val(published_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_pdf input").val(pdf_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+  	$j("#drawing_link_xml input").val(xml_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_ada input").val(ada_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+}
+
 <?php else: ?>
 function savetitle() {
 	var title = getLayer('drawing_title');

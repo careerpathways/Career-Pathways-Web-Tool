@@ -32,10 +32,12 @@
         <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
         <input type="button" id="clear_btn" class="submit tiny" value="Clear" />
         <script>
-            $j('#clear_btn').click(function(){
-                $j('#drawing_title').val('');
-                $j('#title_btn').trigger('click');
-            })
+            (function($){
+                $('#clear_btn').click(function(){
+                    $('#drawing_title').val('');
+                    $('#title_btn').trigger('click');
+                });
+            }(jQuery));
         </script>
     </td>
 </tr>
