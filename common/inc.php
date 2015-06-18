@@ -1,6 +1,8 @@
 <?php
 date_default_timezone_set('America/Los_Angeles');
 
+include("defines.php");
+
 include("database.inc.php");
 include("template.inc.php");
 include("sitesettings.inc.php");

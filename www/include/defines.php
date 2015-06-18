@@ -1,0 +1,3 @@
+<?php
+define('SITE_INCLUDE', __DIR__ . DIRECTORY_SEPARATOR);
+define('SITE_TEMPLATE', SITE_INCLUDE . 'site-template' . DIRECTORY_SEPARATOR);
