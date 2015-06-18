@@ -1,6 +1,8 @@
 <?php
 date_default_timezone_set('America/Los_Angeles');
 
+include("defines.php");
+
 include("database.inc.php");
 include("template.inc.php");
 include("sitesettings.inc.php");
@@ -109,7 +111,7 @@ global $DB;
 }
 
 function CleanDrawingCode($code) {
-	return trim(strtolower(preg_replace('/[^a-z0-9\-]+/i','-',$code)), ' -');
+	return trim(strtolower(preg_replace('/[^a-z0-9]+/i','-',$code)), ' -');
 }
 
 function DrawingCodeAlreadyExists($code, $drawing_id, $mode) {
@@ -239,11 +241,12 @@ function getLinkHeaders($link)
 /**
  * Full base URL of this server.
  * Supports non-standard ports.
- *
+ * @todo  move this function to common.
  * @return string - Entire base url with protocol. No trailing slash.
  */
 function getBaseUrl(){
-	$protocol = empty($_SERVER['https'])?'http://':'https://';
+	$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['SERVER_PORT'] == 8443;
+	$protocol = '//';
 	$_baseUrl = $protocol . $_SERVER['SERVER_NAME'];
 	if($_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443){
 		$_baseUrl .= ':' . $_SERVER['SERVER_PORT'];

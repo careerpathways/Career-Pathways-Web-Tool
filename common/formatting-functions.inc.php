@@ -194,32 +194,155 @@ function ShowBrowserNotice()
 	}
 }
 
-
+/**
+ * Show Roadmap Drawing Header
+ * @param mixed int or string - Id of the drawing
+ * @return  string HTML for the Roadmap Drawing Header
+ */
 function ShowRoadmapHeader($drawing_id)
 {
 	global $DB;
-	$drawing = $DB->SingleQuery('SELECT school_abbr,
-		IF(m.name="", p.title, m.name) AS full_name
-		FROM drawing_main AS m
-		JOIN schools ON m.school_id=schools.id
-		LEFT JOIN programs AS p ON m.program_id=p.id
-		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+	$name_to_use = GetDrawingName($drawing_id, 'roadmap');
+	$school_abbr = GetSchoolAbbr($drawing_id, 'roadmap');
+	return _BuildDrawingHeader($school_abbr, l('drawing head pathways 1'), l('drawing head pathways 2'), $name_to_use);
 }
 
-
+/**
+ * Show POST Drawing Header
+ * @param mixed int or string - Id of the drawing
+ * @return  string HTML for the POST Drawing Header
+ */
 function ShowPostHeader($drawing_id)
 {
 	global $DB;
-	$drawing = $DB->SingleQuery('SELECT school_abbr,
-		IF(m.name="", p.title, m.name) AS full_name
-		FROM post_drawing_main AS m
+	$name_to_use = GetDrawingName($drawing_id, 'post');
+	$school_abbr = GetSchoolAbbr($drawing_id, 'post');
+	return _BuildDrawingHeader($school_abbr, l('drawing head pathways 1'), l('drawing head pathways 2'), $name_to_use);
+	//Use "drawing head pathways..." for now, to mimic live behavior. (e.g. "Career Pathways" instead of "Plan of Study" on POST drawing headers)
+	//return _BuildDrawingHeader($school_abbr, l('drawing head post 1'), l('drawing head post 2'), $name_to_use);
+}
+
+/**
+ * Show "View" Header
+ * @param mixed int or string - Id of the view
+ * @return  string HTML for the Roadmap Drawing Header
+ */
+function ShowViewHeader($view_id)
+{
+	global $DB;
+	$name_to_use = GetDrawingName($view_id, 'post_views');
+	return _BuildDrawingHeader(null, l('drawing head post 1'), l('drawing head post 2'), $name_to_use);
+}
+
+/**
+ * Generic function to create drawing header markup.
+ * Use ShowRoadmapHeader or ShowPostHeader instead.
+ * 
+ * @return string
+ */
+function _BuildDrawingHeader($school_abbr = null, $head1, $head2, $name_to_use)
+{
+	$str = '<div class="drawing-header">'
+			. '<span class="column left">';
+				$school_abbr ? ($str .= '<span class="school">' . $school_abbr . '</span> ') : '';
+				$str .= '<span class="header-1">' . $head1 . '</span>'
+				. '<span class="header-2">' . $head2 . '</span>'
+			. '</span>'
+			. '<span class="column right">'
+				. '<span class="title">' . $name_to_use . '</span>'
+			. '</span>'
+		. '</div>'
+		. '
+			<script type="application/javascript">
+				window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>\') 
+			</script>
+			<script type="application/javascript">
+				(function($){
+					$("body").bind("drawingheaderchanged", function() {
+				        var title_img_w = $(".drawing-header").outerWidth(),
+				            l_col_w = $(".left").outerWidth(),
+				            r_col_w = $(".right").outerWidth(),
+				            both_col_w = l_col_w + r_col_w;
+
+				        if(both_col_w > title_img_w){
+				          $(".drawing-header").css("display", "table");
+				          $(".column").css("display", "table-cell");
+				        }
+				    });
+					$("body").trigger("drawingheaderchanged");
+				}(jQuery));
+			</script>
+		';
+	return $str;
+}
+
+/**
+ * Get the abbreviation for a drawing's school.
+ * 
+ * @param [type] $drawing_id   string or int - Main drawing id.
+ * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post'
+ * @return string The school abbreviation
+ */
+function GetSchoolAbbr($drawing_id, $drawing_type)
+{
+	global $DB;
+	$drawing_id = intval($drawing_id);
+	if($drawing_type === 'roadmap'){
+		$table = 'drawing_main';
+	} elseif( $drawing_type === 'post'){
+		$table = 'post_drawing_main';
+	} else {
+		throw new Exception(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		return '';
+	}
+	$drawing = $DB->SingleQuery('SELECT school_abbr
+		FROM ' . $table . ' AS m
+		JOIN schools ON m.school_id=schools.id
+		
+		WHERE m.id = '.$drawing_id);
+	return $drawing['school_abbr'];
+}
+
+/**
+ * Get the name for a drawing based on ID and type.
+ * 
+ * @param mixed $drawing_id  string or int - Main drawing id.
+ * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post' or 'post_views'
+ * @return string The proper title for the drawing.
+ */
+function GetDrawingName($drawing_id, $drawing_type)
+{
+	global $DB;
+	$drawing_id = intval($drawing_id);
+	if($drawing_type === 'roadmap'){
+		$table = 'drawing_main';
+	} elseif( $drawing_type === 'post_views'){
+		$table = 'vpost_views';
+	} elseif( $drawing_type === 'post'){
+		$table = 'post_drawing_main';
+	} else {
+		throw new Exception(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
+		return '';
+	}
+
+	$drawing = $DB->SingleQuery('SELECT
+		m.name AS alternate_title,
+		p.title AS approved_program_name
+		FROM ' . $table . ' AS m
 		JOIN schools ON m.school_id=schools.id
 		LEFT JOIN programs AS p ON m.program_id=p.id
 		WHERE m.id = '.$drawing_id);
-	return '<img src="/files/titles/post/' . base64_encode($drawing['school_abbr']) . '/' . base64_encode($drawing['full_name']) . '.png" alt="' . $drawing['school_abbr'] . ': ' . $drawing['full_name'] . '" height="19" width="800" />';
+
+	if(strlen($drawing['approved_program_name']) && !strlen($drawing['alternate_title'])){
+		return $drawing['approved_program_name'];
+	} else {
+		return $drawing['alternate_title'];
+	}
 }
 
+/**
+ * @deprecated Use ShowViewHeader instead.
+ */
 function ShowPostViewHeader($view_id)
 {
 	global $DB;
@@ -335,7 +458,9 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	echo '<tr>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="20">&nbsp;</th>';
-		echo '<th width="280">Occupation/Program</th>';
+		echo '<th width="240">Occupation/Program</th>';
+		echo '<th width="20">&nbsp;</th>';
+		echo '<th width="20">&nbsp;</th>';
 		echo '<th width="20">&nbsp;</th>';
 		echo '<th>Tab Name</th>';
 		echo '<th>Sort</th>';
@@ -359,6 +484,14 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 			echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $d['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
 			echo '<td>' . $d['name'] . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')" title="View Version">' . SilkIcon('magnifier.png') . '</a></td>';
+			echo '<td>';
+			if((int) $d['skillset_id'] < 1){
+				echo '<a href="javascript:alert(\'This drawing is missing its skillset. Please edit it (by clicking the gear icon) and choose a skillset.\')" title="This drawing is missing its skillset.">' . SilkIcon('exclamation.png') . '</a>';
+			} else {
+				echo '&nbsp;';
+			}
+			echo '</td>';
+			echo '<td><a href="javascript:get_embed_code_for_specific_tab(\''.$d['id'].'\', \''.$c['tab_name'].'\', \''.$type.'\')" title="Get Embed Code that opens to '.$c['tab_name'].'">' . SilkIcon('link.png') . '</a></td>';
 			echo '<td width="90">';
 				echo '<input type="text" id="tabName_'.$c['post_id'].'" class="tabName tabID_'.$c['post_id'].'" value="' . $c['tab_name'] . '" style="width:90px" />';
 			echo '</td>';
