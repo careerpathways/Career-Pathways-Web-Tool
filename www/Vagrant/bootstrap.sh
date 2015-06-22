@@ -247,6 +247,12 @@ mkdir -p '/web2/oregon.ctepathways.org/cache/pdf/'
 chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
 
 
+#install pspell for tinymce spell-checker support
+apt-get install libpspell-dev 
+apt-get install php5-pspell
+apt-get install aspell-en
+
+
 # -------------------
 # Create cache folder and make sure it's writable
 # -------------------
