@@ -32,24 +32,9 @@
 	
 
 	<form class="form-inline" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
-		<div class="section">
-			<h2>{#jbimages_dlg.select_an_image}:</h2>
-			<div id="uploaded-images"></div>
-			<script>
-				$.get('/asset/list.php', function(assets){
-					for(var i = 0; i < assets.length; i++){
-						$('#uploaded-images').append('<img src="'+assets[i].imgSrc+'" />')
-					}
-				});
-				$('body').on('click', '#uploaded-images img', function(){
-					tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + $(this).attr('src') +'" />');
-					tinyMCEPopup.close();
-				})
-			</script>
-		</div>
 
 		<div class="section">
-			<h2>Or upload a new image:</h2>
+			<h2>Upload a new image:</h2>
 			<div id="upload_in_progress" class="upload_infobar"><img src="img/spinner.gif" width="16" height="16" class="spinner">{#jbimages_dlg.upload_in_progress}&hellip; <div id="upload_additional_info"></div></div>
 			<div id="upload_infobar" class="upload_infobar"></div>	
 			
@@ -58,6 +43,27 @@
 				<!--<button type="submit" class="btn">{#jbimages_dlg.upload}</button>-->
 				<input type="submit" class="submit" value="Upload">
 			</p>			
+		</div>
+
+		<div class="section">
+			<h2>Or select from existing images:</h2>
+			<div id="uploaded-images"></div>
+			<script>
+				function appendImg(src){
+				    return function(){
+				    	$('#uploaded-images').append('<img src="'+src+'" />')
+				    }
+				}
+				$.get('/asset/list.php', function(assets){
+					for(var i = 0; i < assets.length; i++){
+						setTimeout(appendImg(assets[i].imgSrc), 250*i);
+					}
+				});
+				$('body').on('click', '#uploaded-images img', function(){
+					tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + $(this).attr('src') +'" />');
+					tinyMCEPopup.close();
+				})
+			</script>
 		</div>
 
 		<input type="submit" class="submit" onclick="tinyMCEPopup.close(); return false;" value="Close">
