@@ -30,6 +30,9 @@ class Asset_Manager
 			$_query = 'SELECT * FROM assets';
 		}
 		$assets = $DB->MultiQuery($_query);
+		foreach ($assets as &$a) {
+			$a['imgSrc'] = getBaseUrl() . '/asset/' . $a['file_name'];
+		}
 		return $assets;
 	}
 

@@ -38,7 +38,7 @@
 			<script>
 				$.get('/asset/list.php', function(assets){
 					for(var i = 0; i < assets.length; i++){
-						$('#uploaded-images').append('<img src="/asset/'+assets[i].file_name+'" />')
+						$('#uploaded-images').append('<img src="'+assets[i].imgSrc+'" />')
 					}
 				});
 				$('body').on('click', '#uploaded-images img', function(){
