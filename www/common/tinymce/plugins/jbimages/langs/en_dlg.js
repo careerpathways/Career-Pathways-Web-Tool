@@ -12,7 +12,7 @@
  */
 
  tinyMCE.addI18n('en.jbimages_dlg',{
-	title : 'Upload an image from computer',
+	title : 'Select an Image or Upload a New One',
 	select_an_image : 'Select an image',
 	upload_in_progress : 'Upload in progress',
 	upload_complete : 'Upload Complete',

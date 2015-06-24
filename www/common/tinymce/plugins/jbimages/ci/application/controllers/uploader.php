@@ -97,14 +97,20 @@ class Uploader extends CI_Controller {
 			}
 			
 			// Save metadata to database
-			$db_result = $DB->Insert('assets',
+			$asset_id = $DB->Insert('assets',
 			    array(
 				    'file_name' => $result['file_name'],
   					'created_by' => $_SESSION['user_id'],
   					'date_created' => $DB->SQLDate()
 			    )
 			);
-			//TODO handle $db_result failure
+			$DB->Insert('assets_school_ids',
+			    array(
+				    'asset_id' => $asset_id,
+  					'school_id' => $_SESSION['school_id']
+			    )
+			);
+
 			// Define stuff for the view
 			$result['result']		= "file_uploaded";
 			$result['resultcode']	= 'ok';

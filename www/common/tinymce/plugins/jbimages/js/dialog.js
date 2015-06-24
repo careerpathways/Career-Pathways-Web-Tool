@@ -34,7 +34,7 @@ var jbImagesDialog = {
 		document.getElementById("upload_in_progress").style.display = 'block';
 		this.timeoutStore = window.setTimeout(function(){
 			document.getElementById("upload_additional_info").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.longer_than_usual', 0) + '<br />' + tinyMCEPopup.getLang('jbimages_dlg.maybe_an_error', 0) + '<br /><a href="#" onClick="jbImagesDialog.showIframe()">' + tinyMCEPopup.getLang('jbimages_dlg.view_output', 0) + '</a>';
-			tinyMCEPopup.editor.windowManager.resizeBy(0, 30, tinyMCEPopup.id);
+			//tinyMCEPopup.editor.windowManager.resizeBy(0, 30, tinyMCEPopup.id);
 		}, 20000);
 	},
 	
@@ -42,7 +42,7 @@ var jbImagesDialog = {
 		if (this.iframeOpened == false)
 		{
 			document.getElementById("upload_target").className = 'upload_target_visible';
-			tinyMCEPopup.editor.windowManager.resizeBy(0, 190, tinyMCEPopup.id);
+			//tinyMCEPopup.editor.windowManager.resizeBy(0, 190, tinyMCEPopup.id);
 			this.iframeOpened = true;
 		}
 	},
@@ -58,7 +58,7 @@ var jbImagesDialog = {
 			
 			if (this.resized == false)
 			{
-				tinyMCEPopup.editor.windowManager.resizeBy(0, 30, tinyMCEPopup.id);
+				//tinyMCEPopup.editor.windowManager.resizeBy(0, 30, tinyMCEPopup.id);
 				this.resized = true;
 			}
 		}
