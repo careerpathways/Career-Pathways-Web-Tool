@@ -36,6 +36,9 @@ class Uploader extends CI_Controller {
 		
 	public function upload ($lang='english')
 	{
+
+		$DB = $this->config->item('db','uploader_settings');
+		
 		// Set language
 		$this->_lang_set($lang);
 		
@@ -93,11 +96,20 @@ class Uploader extends CI_Controller {
 				$this->image_lib->resize();
 			}
 			
-			// Add our stuff
+			// Save metadata to database
+			$db_result = $DB->Insert('assets',
+			    array(
+				    'file_name' => $result['file_name'],
+  					'created_by' => $_SESSION['user_id'],
+  					'date_created' => $DB->SQLDate()
+			    )
+			);
+			//TODO handle $db_result failure
+			// Define stuff for the view
 			$result['result']		= "file_uploaded";
 			$result['resultcode']	= 'ok';
 			$result['file_name']	= $conf['img_path'] . '/' . $result['file_name'];
-			
+
 			// Output to user
 			$this->load->view('ajax_upload_result', $result);
 		}
@@ -122,7 +134,8 @@ class Uploader extends CI_Controller {
 	
 	public function index($lang='english')
 	{
-		$this->blank($lang);
+		$this->upload($lang);
+		//$this->blank($lang);
 	}
 }
 

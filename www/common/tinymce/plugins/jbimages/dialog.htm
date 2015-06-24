@@ -5,10 +5,17 @@
 	<title>{#jbimages_dlg.title}</title>
 	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<script type="text/javascript" src="js/dialog.js"></script>
-
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 	<link href="css/dialog.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+	<div id="uploaded-images"></div>
+	<script>
+		/*$.get('/assets/list', function(data){
+			console.log(data);
+		});*/
+		$('#uploaded-images').html('hi');
+	</script>
 
 	<form class="form-inline" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
 		

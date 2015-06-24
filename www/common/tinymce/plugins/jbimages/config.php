@@ -36,11 +36,10 @@
 | $config['img_path'] = '/images/somefolder';
 | 
 | -------------------------------------------------------------------*/
-
-	
-	$config['img_path'] = '/images'; // Relative to domain name
-	$config['upload_path'] = $_SERVER['DOCUMENT_ROOT'] . $config['img_path']; // Physical path. [Usually works fine like this]
-
+	include('inc.php');
+	$config['img_path'] = '/asset'; // Relative to domain name
+	$config['upload_path'] = $SITE->asset_path(); // Physical path. [Usually works fine like this]
+	$config['db'] = $SITE->GetDBH(); //Provide the Career Pathways database handle
 
 /*-------------------------------------------------------------------
 | 
