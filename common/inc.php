@@ -301,7 +301,6 @@ function getExternalDrawingLink($drawing_id, $type)
 			    //FAIL: Not found
 			    $url = FALSE;
 		    } else {
-                var_dump($result);
 			    //FAIL: Some header other than the normal 200 status was returned.
 			    $url = FALSE;
 		    }
