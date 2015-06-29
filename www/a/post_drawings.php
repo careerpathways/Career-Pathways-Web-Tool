@@ -347,7 +347,7 @@ if($SITE->hasFeature('approved_program_name')){
 }
 
 function copyVersion($version_id) {
-	global $DB;
+	global $DB, $SITE;
 
 	$post = POSTChart::create($version_id);
 
