@@ -15,7 +15,7 @@ if( PostRequest() ) {
 
 	if( Request('ref') == 20 ) {
 
-		$check = $DB->SingleQuery('SELECT * FROM users WHERE email="'.Request('email').'"');
+		$check = $DB->SingleQuery('SELECT * FROM users WHERE user_active=1 AND email="'.Request('email').'"');
 		if( is_array($check) ) {
 			echo '<p>It appears you already have an account registered with this email address.</p>';
 			echo '<p>If you have forgotten your password, please visit the <a href="/a/password.php?reset">password reset</a> page</p>';
