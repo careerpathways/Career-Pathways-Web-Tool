@@ -674,7 +674,15 @@ else
 		echo '<h2>'.$school['school_name'].'</h2>';
 	}
 	
-	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id.' ORDER BY name');
+	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id);
+
+	//resolve the appropriate drawing name for each view
+	foreach($views as &$v){
+		$v['DrawingName'] = GetDrawingName( $v['id'], 'post_views');
+	}
+	//sort views by name
+	usort($views, 'strnatcmpDrawingName');
+
 	echo '<table width="100%">';
 	    echo '<tr>';
 	    echo '<th width="20">&nbsp;</th>';
@@ -716,7 +724,7 @@ else
                 echo '<td>&nbsp;</td>';
             }
     
-        echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['name'] . '</td>';
+        echo '<td>'.($v['published']?'<img src="/common/silk/report.png" width="16" height="16" />&nbsp;':'') . $v['DrawingName'] . '</td>';
 
         $created = ($v['created_by']==''?array('name'=>''):$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['created_by']));
         $modified = ($v['last_modified_by']==array('name'=>'')?"":$DB->SingleQuery("SELECT CONCAT(first_name,' ',last_name) AS name FROM users WHERE id=".$v['last_modified_by']));
