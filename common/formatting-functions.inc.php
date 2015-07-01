@@ -340,6 +340,10 @@ function GetDrawingName($drawing_id, $drawing_type)
 	}
 }
 
+function strnatcmpDrawingName($a,$b){
+	return strnatcmp($a['DrawingName'],$b['DrawingName']);
+}
+
 /**
  * @deprecated Use ShowViewHeader instead.
  */

@@ -196,4 +196,4 @@ function push_data($approved_program_name, $skillset_id) {
 <p>Number of new Approved Program Names: <?php echo count($report['new_programs']); ?></p>
 <p>Number skipped because they already exist: <?php echo count($report['skipped']); ?></p>
 <p><a href="/">Return to home page &gt;&gt;</a></p>
-<?php print_r($report); ?>
+<?php //print_r($report); ?>

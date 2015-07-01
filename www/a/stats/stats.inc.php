@@ -28,7 +28,8 @@ function PrintStatsMenu()
 				<?php if( $SITE->hasFeature('olmis') ): ?>
 				<li><a href="/a/stats/olmis_links.php">OLMIS Links</a></li>
 				<li><a href="/a/stats/olmis_not_linked.php">OLMIS - Unlinked Roadmaps</a></li>
-				<li><a href="/c/olmis.csv">CIS - Export</a></li>
+				<li><a href="/c/olmis.csv">OLMIS - Export</a></li>
+				<li><a href="/c/cis.csv">CIS - Export</a></li>
 				<?php endif; ?>
 				<li><a href="/a/stats/broken_links.php">Broken Links</a></li>
 				<li><a href="/a/stats/traffic_logs.php">Traffic Logs</a></li>
