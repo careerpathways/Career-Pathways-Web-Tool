@@ -810,7 +810,7 @@ else
 ?>
 
 
-<?php if($SITE->hasFeature('approved_program_name') && isset($view['id'])): ?>
+<?php if($SITE->hasFeature('approved_program_name') ): ?>
     <script type="text/javascript">
     (function($){
         $(document).ready(function(){
