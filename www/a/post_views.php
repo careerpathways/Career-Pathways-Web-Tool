@@ -588,27 +588,12 @@ elseif( KeyInRequest('id') )
                 <th width="115">Organization</th>
                 <td>
                 <?php
-                    $user_school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $school_id);
-                    if( Request('type') == 'cc' ) {
-                        if(IsAdmin()) {
-                            $these_schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type!="HS" ORDER BY school_name', 'school_name', 'id');
-                        } else {
-                            if($user_school['organization_type'] == 'Other')
-                                $these_schools = GetAffiliatedSchools('CC');
-                
-                            $these_schools[$school_id] = $user_school['school_name'];
-                        }
-                    } else {
-                        $these_schools = GetAffiliatedSchools();
-                        // Add the user's school if their school is the same type as the new drawing
-                        if( strtolower(Request('type')) == strtolower($user_school['organization_type']) )
-                            $these_schools[$school_id] = $user_school['school_name'];                            
-                    }
-                    if( (count($these_schools) == 1) && (isset($these_schools[$school_id])) ) {
-                        echo '<b>'.$these_schools[$school_id].'</b>';
-                    } else {
-                        echo GenerateSelectBox($these_schools, 'school_id', $_SESSION['school_id']);
-                    }
+                if( IsAdmin() ) {
+                    $these_schools = $DB->VerticalQuery('SELECT * FROM schools ORDER BY school_name', 'school_name', 'id');
+                    echo GenerateSelectBox($these_schools, 'school_id', $school_id);
+                } else {
+                    echo '<b>'.$schools[$school_id].'</b>';
+                }
                 ?>
                 </td>
             </tr>
@@ -825,7 +810,7 @@ else
 ?>
 
 
-<?php if($SITE->hasFeature('approved_program_name') && isset($view['id'])): ?>
+<?php if($SITE->hasFeature('approved_program_name') ): ?>
     <script type="text/javascript">
     (function($){
         $(document).ready(function(){

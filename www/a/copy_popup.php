@@ -62,7 +62,11 @@ fieldset {
 			}
 		}
 	} else {
-		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+		if( IsAdmin() ) {
+			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type = "HS" ORDER BY school_name', 'school_name', 'id');
+		} else {
+			$schools = GetAffiliatedSchools();
+		}
 	}
 ?>
 
