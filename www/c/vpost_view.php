@@ -84,9 +84,8 @@ if( Request('format') == 'html' )
 <html>
 <head>
 	<title><?= $page_title ?></title>
-	<script type="text/javascript" src="/files/js/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="/files/js/jquery.ui.core.js"></script>
-	<script type="text/javascript" src="/files/js/jquery.ui.tabs.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="/files/js/jquery/ui.tabs.css" />
 	<link rel="stylesheet" href="/files/js/jquery/ui.all.css" />
 	<link rel="stylesheet" href="/c/pstyle.css" />
@@ -100,8 +99,39 @@ if( Request('format') == 'html' )
 ?>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("#tabshs").tabs();
-			$("#tabscc").tabs();
+			var $tabs = $("#tabshs");
+			$tabs.tabs({
+			  	create: function(event, ui) {
+				    // Adjust hashes to not affect URL when clicked.
+				    var widget = $tabs.data("uiTabs");
+				    widget.panels.each(function(i){
+				        this.id = "uiTab_" + this.id; // Prepend a custom string to tab id.
+				        widget.anchors[i].hash = "#" + this.id;
+				        $(widget.tabs[i]).attr("aria-controls", this.id);
+				    });
+				},
+			    activate: function(event, ui) {
+			        // Add the original "clean" tab id to the URL hash.
+			        window.location.hash = ui.newPanel.attr("id").replace("uiTab_", "");
+			    },
+			});
+			var $tabs = $("#tabscc");
+			$tabs.tabs({
+			  	create: function(event, ui) {
+				    // Adjust hashes to not affect URL when clicked.
+				    var widget = $tabs.data("uiTabs");
+				    widget.panels.each(function(i){
+				        this.id = "uiTab_" + this.id; // Prepend a custom string to tab id.
+				        widget.anchors[i].hash = "#" + this.id;
+				        $(widget.tabs[i]).attr("aria-controls", this.id);
+				    });
+				},
+			    activate: function(event, ui) {
+			        // Add the original "clean" tab id to the URL hash.
+			        window.location.hash = ui.newPanel.attr("id").replace("uiTab_", "");
+			    },
+			});
+			
 		});
 	</script>
 <?php
