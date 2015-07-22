@@ -324,6 +324,7 @@ Charts.gridColor = 'rgba(20, 20, 20, .2)';
 var VERTICAL = 'v';
 var HORIZONTAL = 'h';
 var DEFAULT_COLOR = '333333';
+var DEFAULT_COLOR_BACKGROUND = 'FFFFFF';
 
 var Widget = Class.create(Component, {
     type: '',
@@ -343,7 +344,9 @@ var Widget = Class.create(Component, {
 		if (!chColor.include(this.config.color)) {
 			this.config.color = DEFAULT_COLOR;
 		}
-		
+		if (!chColor.include(this.config.color_background)) {
+			this.config.color_background = DEFAULT_COLOR_BACKGROUND;
+		}
 		this.connectionIDs = [];
 		this.outgoingConnections = new Hash();
 		this.incomingConnections = new Hash();
@@ -554,7 +557,7 @@ ChartBox = Class.create(Widget, {
   	this.innerRectangle = new Rectangle(
   		{x: 0, y: 0}, 0, 0,
   		{
-  			fillColor: '#ffffff',
+  			fillColor: '#' + this.config.color_background,
   			fill: true,
   			bottomLeftRadius: this.borderThickness,
   			bottomRightRadius: this.borderThickness
