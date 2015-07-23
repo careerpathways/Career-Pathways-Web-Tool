@@ -484,6 +484,28 @@ var WidgetAdmin = {
     
     _onSetColor: function() {
     	this.shape.setStyle('color', '#' + this.config.color);
+    },
+
+    setColorBackground: function(color) {
+   	    if(!color){
+    	    color = 'FFFFFF';
+      	}
+      	this.config.color_background = color;
+      	//chUtil.ajax({id: this.id,
+        //           a: 'update',
+        //           content: { config: {color_background: color}}});
+                   
+		//any connections should inherit the same color
+		//this.getOutgoingConnections().invoke('setColor', color);
+
+		this._onSetColorBackground();
+    },
+
+    _onSetColorBackground: function() {
+    	console.log('in line 508: ' + this.config.color_background);
+    	
+    	this.shape.setStyle('fillColor', '#' + this.config.color_background);
+ 
     }
 }
 
@@ -744,7 +766,9 @@ ChartBox.addMethods({
     _onSetColor: function() {
     	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
     },
-    
+    _onSetColorBackground: function() {
+    	this.innerRectangle.setStyle('fillColor', '#' + this.config.color_background);
+    },
     onReshape: function() {
 		chUtil.ajax({
 			id: this.id,
@@ -1129,7 +1153,10 @@ var onColorSelect = function(type, args, value) {
 	Charts.contextMenuTarget.setColor(value);
 	Charts.redraw();
 };
-
+var onColorBackgroundSelect = function(type, args, value) {
+	Charts.contextMenuTarget.setColorBackground(value);
+	Charts.redraw();
+};
 var onDuplicateSelect = function() {
 	Charts.contextMenuTarget.duplicate(Charts.redraw);
 };
@@ -1210,6 +1237,13 @@ chColor.each(function(color) {
 		onclick: {fn: onColorSelect, obj: color, scope: boxColorMenu}
 	});
 });
+var boxColorBackgroundMenu = new YAHOO.widget.Menu('boxColorBackgroundMenu');
+chColor.each(function(color) {
+	boxColorBackgroundMenu.addItem({
+		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		onclick: {fn: onColorBackgroundSelect, obj: color, scope: boxColorBackgroundMenu}
+	});
+});
 
 // create the box connection menu item
 var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
@@ -1221,6 +1255,7 @@ ChartBox.contextMenu.addItems([[
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
 	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
 	{text: 'Color', submenu: boxColorMenu},
+	{text: 'Background Color', submenu: boxColorBackgroundMenu},
 	// {text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
