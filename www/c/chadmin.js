@@ -491,12 +491,9 @@ var WidgetAdmin = {
     	    color = 'FFFFFF';
       	}
       	this.config.color_background = color;
-      	//chUtil.ajax({id: this.id,
-        //           a: 'update',
-        //           content: { config: {color_background: color}}});
-                   
-		//any connections should inherit the same color
-		//this.getOutgoingConnections().invoke('setColor', color);
+      	chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {color_background: color}}});
 
 		this._onSetColorBackground();
     },
