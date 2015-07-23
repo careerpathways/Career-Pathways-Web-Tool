@@ -620,6 +620,12 @@ ChartBox.addMethods({
 	  input.select();
 	  document.editingTitle = true;
     },
+    changeTitleColor: function(color) {
+    	this.elem.children[0].style.color = '#' + color;
+    	chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {color_title: color}}});
+    },
     saveTitle: function(input) {
       this.titleElement.innerHTML = input.value || '&nbsp;';
       this.config.title = input.value;
@@ -1076,6 +1082,11 @@ var onEditTitleSelect = function() {
 	Charts.contextMenuTarget.changeTitle();
 };
 
+var onEditTitleColorSelect = function(type, args, value) {
+	Charts.contextMenuTarget.changeTitleColor(value);
+	Charts.redraw();
+};
+
 /** Called when the Edit Content menu item is chosen
  *  from the box context menu.
  */
@@ -1241,7 +1252,14 @@ chColor.each(function(color) {
 		onclick: {fn: onColorBackgroundSelect, obj: color, scope: boxColorBackgroundMenu}
 	});
 });
-
+var boxTitleColorMenu = new YAHOO.widget.Menu('boxTitleColorMenu');
+var titleColors = ['ffffff', '000000'];
+titleColors.each(function(color) {
+	boxTitleColorMenu.addItem({
+		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		onclick: {fn: onEditTitleColorSelect, obj: color, scope: boxTitleColorMenu}
+	});
+});
 // create the box connection menu item
 var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
 
@@ -1251,6 +1269,7 @@ ChartBox.contextMenu.addItems([[
 	// {text: 'Edit', submenu: editBoxMenu},
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
 	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
+	{text: 'Edit Title Color', submenu: boxTitleColorMenu},
 	{text: 'Color', submenu: boxColorMenu},
 	{text: 'Background Color', submenu: boxColorBackgroundMenu},
 	// {text: 'Box Type', submenu: typeMenu},

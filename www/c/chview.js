@@ -546,8 +546,8 @@ ChartBox = Class.create(Widget, {
 	    
 	    this.titleElement.update(this.config.title || '&nbsp;');
 	    this.contentElement.update(this.config.content_html);
-		
-		
+		this.titleElement.style.color = '#' + this.config.color_title || '#ffffff';
+
 		this.elem.style.zIndex = "0";
 		return this.elem;
     },
