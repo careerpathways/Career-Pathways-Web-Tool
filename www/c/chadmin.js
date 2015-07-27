@@ -1428,14 +1428,6 @@ YAHOO.widget.MenuItem.prototype.init = function(p_oObject, p_oConfig) {
 	YAHOO.widget.MenuItem.prototype.init_old.apply(this, arguments);
 }
 
-// create the edit box menu
-/*var editBoxMenu = new YAHOO.widget.Menu('editBoxMenu');
-editBoxMenu.addItems([
-	{text: 'Title', onclick: {fn: onEditTitleSelect}},
-	{text: 'Content', onclick: {fn: onEditContentSelect}}
-]);*/
-
-// create the box program menu
 var typeMenu = new YAHOO.widget.Menu('typeMenu');
 types.each(function(type) {
 	typeMenu.addItem({text: type.description, onclick: {fn: onProgramSelect, obj: type.id}});
@@ -1446,6 +1438,8 @@ typeMenu.subscribe('show', function() {
 	selectMenuItemWithOnclickObj(typeMenu, box.config.program);
 });
 
+/* ============================== ChartBox Menus =========================== */
+// create the box program menu
 var boxColorMenu = new YAHOO.widget.Menu('boxColorMenu');
 chColor.each(function(color) {
 	boxColorMenu.addItem({
@@ -1489,21 +1483,45 @@ ChartBox.contextMenu.addItems([[
 ]]);
 
 
+/* ============================== ChartCircle Menus =========================== */
+// create the circle program menu
+var circleColorMenu = new YAHOO.widget.Menu('circleColorMenu');
+chColor.each(function(color) {
+	circleColorMenu.addItem({
+		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		onclick: {fn: onColorSelect, obj: color, scope: circleColorMenu}
+	});
+});
+var circleColorBackgroundMenu = new YAHOO.widget.Menu('circleColorBackgroundMenu');
+chColor.each(function(color) {
+	circleColorBackgroundMenu.addItem({
+		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		onclick: {fn: onColorBackgroundSelect, obj: color, scope: circleColorBackgroundMenu}
+	});
+});
+var circleTitleColorMenu = new YAHOO.widget.Menu('circleTitleColorMenu');
+var titleColors = ['ffffff', '000000'];
+titleColors.each(function(color) {
+	circleTitleColorMenu.addItem({
+		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		onclick: {fn: onEditTitleColorSelect, obj: color, scope: circleTitleColorMenu}
+	});
+});
+// create the box connection menu item
+var linkCirclesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
 
-
-
-// chart circle menu
+// create the box context menu
 ChartCircle.contextMenu = new YAHOO.widget.ContextMenu('ChartCircle.contextMenu');
 ChartCircle.contextMenu.addItems([[
 	// {text: 'Edit', submenu: editBoxMenu},
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
 	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
-	//{text: 'Edit Title Color', submenu: boxTitleColorMenu},
-	//{text: 'Color', submenu: boxColorMenu},
-	//{text: 'Background Color', submenu: boxColorBackgroundMenu},
+	{text: 'Edit Title Color', submenu: circleTitleColorMenu},
+	{text: 'Color', submenu: circleColorMenu},
+	{text: 'Background Color', submenu: circleColorBackgroundMenu},
 	// {text: 'Box Type', submenu: typeMenu},
-	//linkBoxesMenuItem,
-	//{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
+	linkCirclesMenuItem,
+	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
 [
 	{text: 'Delete', onclick: {fn: onDeleteSelect}}
@@ -1531,6 +1549,7 @@ var addAnchorPointMenuItems = function(menu) {
 	});
 };
 
+/* ============================== Anchor/Connection Menus =========================== */
 // create the source and destination anchor point menus
 var anchorSourceMenu = new YAHOO.widget.Menu('anchorSourceMenu');
 addAnchorPointMenuItems(anchorSourceMenu);
@@ -1569,18 +1588,6 @@ chColor.each(function(color) {
 		onclick: {fn: onColorSelect, obj: color, scope: connectionColorMenu}
 	});
 });
-
-/*var dashedMenuItem = new YAHOO.widget.MenuItem('Dashed', {onclick: {fn: onDashedSelect}});
-
-var styleMenu = new YAHOO.widget.Menu('styleMenu');
-styleMenu.addItems(
-[
-	dashedMenuItem
-]);
-
-styleMenu.subscribe('show', function() {
-	dashedMenuItem.cfg.setProperty('checked', Charts.contextMenuTarget.dashed ? true : false);
-});*/
 
 var sourceAxisMenuItem = new YAHOO.widget.MenuItem('Orientation', {submenu: sourceAxisMenu});
 
