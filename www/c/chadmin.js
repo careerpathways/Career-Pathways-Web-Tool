@@ -140,6 +140,9 @@ document.observe('chart:drawn', function(e) {
 				case 'box':
 					menu = ChartBox.contextMenu;
 					break;
+				case 'circle':
+					menu = ChartCircle.contextMenu;
+					break;
 				case 'line':
 					menu = widgetContextMenu;
 					break;
@@ -511,6 +514,7 @@ var END_COLOR = '#f00';
 
 ChartLine.addMethods(WidgetAdmin);
 ChartBox.addMethods(WidgetAdmin);
+ChartCircle.addMethods(WidgetAdmin);
 
 ChartLine.DEFAULT_OPTIONS = {
 	startPoint: {x: 100, y: 100},
@@ -786,6 +790,206 @@ ChartBox.addMethods({
 	}
 });
 
+ChartCircle.ABSOLUTE_MINIMUM_WIDTH = 20;
+ChartCircle.DEFAULT_OPTIONS = {
+	x: 0,
+	y: 100,
+	h: 100,
+	w: 150,
+	config: {
+		title: 'title',
+		content: 'content',
+		content_html: 'content'
+	}
+};
+
+ChartCircle.addMethods({  
+    setProgram: function(program){
+      this.config.program = program;
+      chUtil.ajax({a: 'setProgram',
+                   object_id: this.id,
+                   program_id: program });
+      
+      this.setColor();     
+    },    
+    changeTitle: function() {
+	  if( document.editingTitle ) return;
+      var self = this;
+      var input = document.createElement('input');
+      input.value = this.config.title;
+      input.style.width = (this.w - 20) + 'px';
+      Event.observe(input, 'blur', function() {self.saveTitle(input);}, false);
+      this.titleElement.innerHTML = '';
+      this.titleElement.appendChild(input);
+      input.focus();
+	  input.select();
+	  document.editingTitle = true;
+    },
+    changeTitleColor: function(color) {
+    	this.elem.children[0].style.color = '#' + color;
+    	chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {color_title: color}}});
+    },
+    saveTitle: function(input) {
+      this.titleElement.innerHTML = input.value || '&nbsp;';
+      this.config.title = input.value;
+      chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {title: input.value}}});
+      document.editingTitle = false;
+      this._onContentChange();
+      this.reposition();
+      Charts.redraw();
+    },
+    changeContent: function() {
+	  if( document.editingBox ) return;
+	  Charts.showEditor(this);
+	  document.editingBox = true;
+    },
+    
+    duplicate: function(callback) {
+		return Charts.createComponent(ChartCircle, {
+			x: parseInt(this.x),
+			y: parseInt(this.getTop() + this.getHeight()) + 30,
+			h: this.h,
+			w: this.w,
+			config: {
+				color: this.config.color,
+				title: this.config.title,
+				content: this.config.content,
+				content_html: this.config.content_html
+			}
+		}, callback);
+	},
+  
+    /** Handles a connection action (click, etc.) for a box */
+    connect: function(){
+        //first click means we are setting the connection source and waiting for more info
+        if(Charts.waitingConnectionSource == null) {
+          Charts.waitingConnectionSource = this;
+          linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
+          return;
+        }
+        
+        //don't allow links to objects we have already linked to        
+        if(Charts.waitingConnectionSource.outgoingConnectionExists(this)) {
+            return;
+        }
+        
+        linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
+        
+        //clicking self toggles connection source off and on
+        if(Charts.waitingConnectionSource.id == this.id){                           
+          Charts.waitingConnectionSource = null;
+          return;
+        }
+    	
+        //second click means we are setting the connection destination               
+        var connection = this.connectFrom(Charts.waitingConnectionSource);
+        
+        //remove half-link-waiting indicators regardless of what connection attempt has been made
+        Charts.waitingConnectionSource = null;
+    },
+    
+    connectFrom: function(beginning) {
+    	var data = Connection.determineDefaultConnectionData(beginning, this);
+    	var params = Object.clone(data);
+    	Object.extend(params, {
+    		source_id: Charts.waitingConnectionSource.id,
+			destination_id: this.id,
+			a: 'connect'
+		});
+		
+		var connection = new Connection(beginning, this, data);
+		
+		chUtil.ajax(params, function(ajax) {
+			connection.id = ajax.responseText;
+			
+			Charts.registerComponent(connection);
+			
+			// TODO does this really belong here? should be in event-handling code
+			Charts.redraw();
+		}.bind(this));
+		
+		return connection;
+    },
+    
+    getControlPoints: function() {
+    	var left = this.getAnchorPointPosition({side: Side.LEFT, position: 50});
+    	left.applyPosition = this.applyLeftPosition.bind(this);
+    	
+    	var right = this.getAnchorPointPosition({side: Side.RIGHT, position: 50});
+    	right.applyPosition = this.applyRightPosition.bind(this);
+    	
+    	if (this.w < this.getMinimumContentWidth()) {
+    		left.color = '#ff0000';
+    		right.color = '#ff0000';
+    	}
+    	return [
+    		left,
+    		right
+    	];
+    },
+    
+    getMinimumContentWidth: function() {
+		this.contentElement.style.overflow = 'visible';
+		this.titleElement.style.overflow = 'visible';
+		var result = Math.max(this.titleElement.offsetWidth, this.contentElement.offsetWidth) / Charts.textSizeMultiplier + 20;
+		
+		this.contentElement.style.overflow = 'hidden';
+		this.titleElement.style.overflow = 'hidden';
+		
+		return result;
+    },
+    
+    applyRightPosition: function(position) {
+    	this.w = Math.max(position.x - this.getLeft(), ChartCircle.ABSOLUTE_MINIMUM_WIDTH);
+    	this._onWidthChange(position, Side.RIGHT);
+    },
+    
+    applyLeftPosition: function(position) {
+    	this.w = Math.max(this.getRight() - position.x, ChartCircle.ABSOLUTE_MINIMUM_WIDTH);
+    	this.x = position.x;
+    	this._onWidthChange(position, Side.LEFT);
+    },
+    
+    _onWidthChange: function(position, side) {
+    	this.repositionElement();
+    	this._onContentChange();
+    	this.reposition();
+    	
+    	var newPosition = this.getAnchorPointPosition({side: side, position: 50});
+    	position.x = newPosition.x;
+    	position.y = newPosition.y;
+    },
+    
+    applyPosition: function(position) {
+    	this.x = position.x;
+    	this.y = position.y;
+    	this.repositionElement();
+    	this.reposition();
+    },
+    
+    _onSetColor: function() {
+    	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
+    },
+    _onSetColorBackground: function() {
+    	this.innerRectangle.setStyle('fillColor', '#' + this.config.color_background);
+    },
+    onReshape: function() {
+		chUtil.ajax({
+			id: this.id,
+			a: 'update',
+			content: {
+				x: this.x,
+				y: this.y,
+				h: this.h,
+				w: this.w
+			}
+		});
+	}
+});
 var chUtil = {};
 chUtil.ajax = function(post, callback) {
 	post.version_id = Charts.versionId;
@@ -1200,6 +1404,10 @@ var onNewBoxSelect = function() {
 	var position = Charts.positionWithin(Charts.contextMenuPosition);
 	Charts.createComponent(ChartBox, {x: position.x, y: position.y}, Charts.redraw.bind(Charts));
 }
+var onNewCircleSelect = function() {
+	var position = Charts.positionWithin(Charts.contextMenuPosition);
+	Charts.createComponent(ChartCircle, {x: position.x, y: position.y}, Charts.redraw.bind(Charts));
+}
 
 var onGridSizeSelect = function() {
 	var gridSize = prompt('Edit grid size', Charts.gridSize);
@@ -1221,11 +1429,11 @@ YAHOO.widget.MenuItem.prototype.init = function(p_oObject, p_oConfig) {
 }
 
 // create the edit box menu
-var editBoxMenu = new YAHOO.widget.Menu('editBoxMenu');
+/*var editBoxMenu = new YAHOO.widget.Menu('editBoxMenu');
 editBoxMenu.addItems([
 	{text: 'Title', onclick: {fn: onEditTitleSelect}},
 	{text: 'Content', onclick: {fn: onEditContentSelect}}
-]);
+]);*/
 
 // create the box program menu
 var typeMenu = new YAHOO.widget.Menu('typeMenu');
@@ -1275,6 +1483,27 @@ ChartBox.contextMenu.addItems([[
 	// {text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
+],
+[
+	{text: 'Delete', onclick: {fn: onDeleteSelect}}
+]]);
+
+
+
+
+
+// chart circle menu
+ChartCircle.contextMenu = new YAHOO.widget.ContextMenu('ChartCircle.contextMenu');
+ChartCircle.contextMenu.addItems([[
+	// {text: 'Edit', submenu: editBoxMenu},
+	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
+	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
+	//{text: 'Edit Title Color', submenu: boxTitleColorMenu},
+	//{text: 'Color', submenu: boxColorMenu},
+	//{text: 'Background Color', submenu: boxColorBackgroundMenu},
+	// {text: 'Box Type', submenu: typeMenu},
+	//linkBoxesMenuItem,
+	//{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
 [
 	{text: 'Delete', onclick: {fn: onDeleteSelect}}
@@ -1395,6 +1624,7 @@ widgetContextMenu.addItems([[
 var newComponentMenu = new YAHOO.widget.Menu('Charts.newComponentMenu');
 newComponentMenu.addItems([
 	{text: 'Box', onclick: {fn: onNewBoxSelect}},
+	{text: 'Circle', onclick: {fn: onNewCircleSelect}},
 	{text: 'Line', onclick: {fn: onNewLineSelect, obj: null}},
 	{text: 'Arrow', onclick: {fn: onNewLineSelect, obj: {arrowheadAtEnd: true}}}
 ]);
@@ -1427,6 +1657,7 @@ Charts.contextMenu.subscribe('show', function() {
 document.observe('chart:drawn', function() {
 	Charts.contextMenu.render(Charts.element);
 	ChartBox.contextMenu.render(Charts.element);
+	ChartCircle.contextMenu.render(Charts.element);
 	Connection.contextMenu.render(Charts.element);
 	widgetContextMenu.render(Charts.element);
 	onDrawGridSelect();
