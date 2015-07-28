@@ -972,10 +972,10 @@ ChartCircle.addMethods({
     },
     
     _onSetColor: function() {
-    	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
+    	this.outerCircle.setStyle('fillColor', '#' + this.config.color);
     },
     _onSetColorBackground: function() {
-    	this.innerRectangle.setStyle('fillColor', '#' + this.config.color_background);
+    	this.innerCircle.setStyle('fillColor', '#' + this.config.color_background);
     },
     onReshape: function() {
 		chUtil.ajax({
