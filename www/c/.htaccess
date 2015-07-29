@@ -27,6 +27,7 @@ RewriteRule ^study/([0-9]+)/[^\.]+\.(html|js) vpost_view.php?id=$1&format=$2 [nc
 
 RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]
 RewriteRule ^olmis\.(.+)$ olmis.php?format=$1 [nc,qsa]
-RewriteRule ^cis\.(.+)$ cis.php?format=$1 [nc,qsa]
+RewriteRule ^cis\.(.+)$ cis_roadmap.php?format=$1 [nc,qsa]
+RewriteRule ^cis_post_view\.(.+)$ cis_post_view.php?format=$1 [nc,qsa]
 RewriteRule ^olmis_links\.([a-z]+)$ olmis_links.php?format=$1 [nc,qsa]
 RewriteRule ^log/(pathways|post)/([0-9]+)$ linklog.php?mode=$1&id=$2 [nc,qsa]
