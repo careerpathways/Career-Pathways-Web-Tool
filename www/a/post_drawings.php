@@ -188,7 +188,7 @@ if( KeyInRequest('drawing_id') ) {
 				$post->name = Request('name');
 			}	
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
-			$post->sidebar_right = (Request('type')=='cc'?'Career Pathway Certificate of Completion':'High School Diploma');
+			$post->sidebar_right = Request('degree_type');
 			$post->createEmptyChart();
 			$drawing_id = $post->saveToDB();
 
@@ -347,7 +347,7 @@ if($SITE->hasFeature('approved_program_name')){
 }
 
 function copyVersion($version_id) {
-	global $DB;
+	global $DB, $SITE;
 
 	$post = POSTChart::create($version_id);
 
