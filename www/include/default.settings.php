@@ -63,6 +63,10 @@ class ThisSite extends SiteSettings {
 		return $base_dir . $folder . '/';
 	}
 
+	function asset_path() {
+		return '/home/project/assets/';
+	}
+
 	function https_port() { return ""; }
 	function https_server() { return $_SERVER['SERVER_NAME']; }
 	function force_https_login() { return false; }

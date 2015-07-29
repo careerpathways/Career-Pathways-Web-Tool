@@ -1,5 +1,6 @@
 <?php
 date_default_timezone_set('America/Los_Angeles');
+define('DIR_CORE', dirname(__dir__));
 
 include("defines.php");
 

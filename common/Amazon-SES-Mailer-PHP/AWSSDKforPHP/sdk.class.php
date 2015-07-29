@@ -1542,7 +1542,7 @@ else
 		}
 		else
 		{
-			$dir = exec('(cd ~ && pwd) 2>&1', $out, $exit);
+			$dir = exec('(cd /home && pwd) 2>&1', $out, $exit);
 			if ($exit === 0)
 			{
 				$_ENV['HOME'] = trim($dir);
