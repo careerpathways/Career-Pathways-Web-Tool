@@ -1046,7 +1046,7 @@ Charts.showEditor = function(mychUtil) {
 		theme : "advanced",
 		plugins : "spellchecker,style,table,fullscreen",
 		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontsizeselect",
-		theme_advanced_buttons2 : "bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,|,image,|,cleanup,styleprops,code",
+		theme_advanced_buttons2 : "bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,|,image,|,cleanup,styleprops,forecolor,backcolor,code",
 		theme_advanced_buttons3 : "tablecontrols,|,spellchecker",
 		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",
