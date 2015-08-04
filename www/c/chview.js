@@ -117,18 +117,18 @@ Charts = {
 			var component = null;
 			switch (properties['type']) {
 				case 'line':
-				component = new ChartLine(properties);
-				break;
-			case 'arrow':
-				properties.arrowheadAtEnd = true;
-				component = new ChartLine(properties);
-				break;
-			case 'box':
-				component = new ChartBox(properties);
-				break;
-			case 'circle':
-				component = new ChartCircle(properties);
-				break;    
+					component = new ChartLine(properties);
+					break;
+				case 'arrow':
+					properties.arrowheadAtEnd = true;
+					component = new ChartLine(properties);
+					break;
+				case 'box':
+					component = new ChartBox(properties);
+					break;
+				case 'circle':
+					component = new ChartCircle(properties);
+					break;    
 			}
 			Charts.registerComponent(component);             
 		});
@@ -343,11 +343,10 @@ var Widget = Class.create(Component, {
 		Object.extend(this, options || {});
 		
 		this.type = this.getType();
-		
-		if (!chColor.include(this.config.color)) {
+		if (!chColor.include(this.config.color) && this.config.color !== 'transparent') {
 			this.config.color = DEFAULT_COLOR;
 		}
-		if (!chColor.include(this.config.color_background)) {
+		if (!chColor.include(this.config.color_background) && this.config.color_background !== 'transparent') {
 			this.config.color_background = DEFAULT_COLOR_BACKGROUND;
 		}
 		this.connectionIDs = [];
@@ -557,19 +556,29 @@ ChartBox = Class.create(Widget, {
   
   createShape: function() {
   	this.borderThickness = 5;
+  	if(this.config.color_background === 'transparent'){
+  		this.config.color_background = 'rgba(0,0,0,0)';
+  	} else {
+  		this.config.color_background = '#' + this.config.color_background;
+  	}
   	this.innerRectangle = new Rectangle(
   		{x: 0, y: 0}, 0, 0,
   		{
-  			fillColor: '#' + this.config.color_background,
+  			fillColor: this.config.color_background,
   			fill: true,
   			bottomLeftRadius: this.borderThickness,
   			bottomRightRadius: this.borderThickness
   		}
   	);
+    if(this.config.color === 'transparent'){
+  		this.config.color = 'rgba(0,0,0,0)';
+  	} else {
+  		this.config.color = '#' + this.config.color;
+  	}
   	this.outerRectangle =  new Rectangle(
   		{x: 0, y: 0}, 0, 0,
   		{
-  			fillColor: '#' + this.config.color,
+  			fillColor: this.config.color,
   			strokeColor: '#F00000',
   			fill: true,
   			strokeWidth: 2,
@@ -834,7 +843,7 @@ var Connection = Class.create(Component, {
 		this.source = source;
 		this.destination = destination;
 		this.color = this.source.config.color;
-		
+		console.log(this.color)
 		this.startPoint = {};
 		this.endPoint = {};
 		
