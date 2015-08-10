@@ -486,7 +486,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 		echo '<tr>';
 			echo '<td><a href="'.str_replace('%%', $d['id'], $links['delete']).'">' . SilkIcon('cross.png') . '</a></td>';
 			echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $d['id'] . '">' . SilkIcon('cog.png') . '</a></td>';
-			echo '<td>' . $d['name'] . '</td>';
+			echo '<td>' . GetDrawingName($d['id'], 'post') . '</td>';
 			echo '<td><a href="javascript:preview_drawing(\''.$d['code'].'\')" title="View Version">' . SilkIcon('magnifier.png') . '</a></td>';
 			echo '<td>';
 			if((int) $d['skillset_id'] < 1){
