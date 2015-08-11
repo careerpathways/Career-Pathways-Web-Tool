@@ -691,7 +691,8 @@ else
                     ON pdm.id = l.post_id
                 LEFT JOIN oregon_skillsets skillsets
                     ON pdm.skillset_id = skillsets.id
-            WHERE v.id = '.$v['id']);
+            WHERE v.id = '.$v['id']
+            .' AND pdm.type IN ("HS","CC")');
         $lacks_a_skillset = false;
         foreach($drawings as $d){
             if((int)$d['drawing_skillset_id'] < 1){

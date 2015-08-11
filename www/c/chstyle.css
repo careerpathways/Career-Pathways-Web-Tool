@@ -1,3 +1,7 @@
+a, img {
+  border:none;
+  outline: none;
+}
 body {
 	font-family: verdana;
 }
