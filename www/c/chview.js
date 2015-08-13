@@ -843,7 +843,6 @@ var Connection = Class.create(Component, {
 		this.source = source;
 		this.destination = destination;
 		this.color = this.source.config.color;
-		console.log(this.color)
 		this.startPoint = {};
 		this.endPoint = {};
 		
@@ -857,7 +856,9 @@ var Connection = Class.create(Component, {
 			this.sourceAxis = data.source_axis;
 			this.color = data.color;
 		}
-		
+		if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
+			this.color = '000000';
+		}
 		//connections must be registered with thier respective boxes
 		this.source.registerOutgoingConnection(this);
 		this.destination.registerIncomingConnection(this);

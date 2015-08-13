@@ -488,7 +488,6 @@ var WidgetAdmin = {
     },
     
     _onSetColor: function() {
-    	console.log('aaaa onSetColour')
     	this.shape.setStyle('color', '#' + this.config.color);
     },
 
@@ -1159,11 +1158,11 @@ Connection.addMethods({
 	},
 	
 	setColor: function(color) {
-		//if(color !== 'transparent'){
+		if(color !== 'transparent'){
 			this.color = color;	
 			this.shape.setStyle('color', '#' + color);
 			this.onPropertyChange({'color': color});
-		//}
+		}
 	},
 	
 	autoposition: function() {
@@ -1272,6 +1271,10 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	data.num_segments = 1;
 	data.source_position = 50;
 	data.destination_position = 50;
+	
+	if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
+		source.config.color = '000000';
+	}
 	data.color = source.config.color;
 	
 	return data;
