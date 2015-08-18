@@ -667,6 +667,7 @@ ChartBox.addMethods({
         if(Charts.waitingConnectionSource == null) {
           Charts.waitingConnectionSource = this;
           linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
+          linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
         
@@ -676,6 +677,7 @@ ChartBox.addMethods({
         }
         
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
+        linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         
         //clicking self toggles connection source off and on
         if(Charts.waitingConnectionSource.id == this.id){                           
@@ -876,6 +878,7 @@ ChartCircle.addMethods({
         if(Charts.waitingConnectionSource == null) {
           Charts.waitingConnectionSource = this;
           linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
+          linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
         
@@ -885,6 +888,7 @@ ChartCircle.addMethods({
         }
         
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
+        linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         
         //clicking self toggles connection source off and on
         if(Charts.waitingConnectionSource.id == this.id){                           
