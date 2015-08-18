@@ -55,8 +55,10 @@
 				    }
 				}
 				$.get('/asset/list.php', function(assets){
-					for(var i = 0; i < assets.length; i++){
-						setTimeout(appendImg(assets[i].imgSrc), 250*i);
+					if(typeof assets === 'object' || typeof assets === 'array'){
+						for(var i = 0; i < assets.length; i++){
+							setTimeout(appendImg(assets[i].imgSrc), 250*i);
+						}
 					}
 				});
 				$('body').on('click', '#uploaded-images img', function(){
