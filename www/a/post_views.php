@@ -662,9 +662,10 @@ else
 	$views = $DB->MultiQuery('SELECT * FROM vpost_views WHERE school_id='.$school_id);
 
 	//resolve the appropriate drawing name for each view
-	foreach($views as &$v){
-		$v['DrawingName'] = GetDrawingName( $v['id'], 'post_views');
+	foreach($views as $i => $v){
+		$views[$i]['DrawingName'] = GetDrawingName( $v['id'], 'post_views');
 	}
+
 	//sort views by name
 	usort($views, 'strnatcmpDrawingName');
 
@@ -679,9 +680,9 @@ else
                 echo '<th>Signatures</th>';
             }
             echo '</tr>';
+
         foreach( $views as $i=>$v )
         {
-            
             $drawings = $DB->MultiQuery('SELECT  v.id                AS view_id,
                 pdm.skillset_id     AS drawing_skillset_id
             FROM vpost_views v
@@ -757,7 +758,8 @@ else
             echo '</td>'; // <pre>' . print_r( $sigResults, true ) . '</pre>
         }
         echo '</tr>';
-      }
+      } //end foreach views
+
       if( count($views) == 0 )
       {
           echo '<tr class="row0"><td colspan="4">No views exist yet for your school</td></tr>';
