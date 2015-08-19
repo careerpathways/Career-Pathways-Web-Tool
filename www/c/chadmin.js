@@ -479,8 +479,10 @@ var WidgetAdmin = {
                    a: 'update',
                    content: { config: {color: color}}});
                    
-      //any connections should inherit the same color
-      this.getOutgoingConnections().invoke('setColor', color);
+      //any connections should inherit the same color, unless that color is transparent.
+      if(color !== 'transparent'){
+		this.getOutgoingConnections().invoke('setColor', color);
+      }
       
       this._onSetColor();
     },
@@ -501,11 +503,8 @@ var WidgetAdmin = {
 		this._onSetColorBackground();
     },
 
-    _onSetColorBackground: function() {
-    	console.log('in line 508: ' + this.config.color_background);
-    	
+    _onSetColorBackground: function() {    	
     	this.shape.setStyle('fillColor', '#' + this.config.color_background);
- 
     }
 }
 
@@ -668,6 +667,7 @@ ChartBox.addMethods({
         if(Charts.waitingConnectionSource == null) {
           Charts.waitingConnectionSource = this;
           linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
+          linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
         
@@ -677,6 +677,7 @@ ChartBox.addMethods({
         }
         
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
+        linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         
         //clicking self toggles connection source off and on
         if(Charts.waitingConnectionSource.id == this.id){                           
@@ -771,10 +772,18 @@ ChartBox.addMethods({
     },
     
     _onSetColor: function() {
-    	this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
+    	if(this.config.color === 'transparent'){
+			this.outerRectangle.setStyle('fillColor', 'rgba(0,0,0,0)');
+    	} else {
+    		this.outerRectangle.setStyle('fillColor', '#' + this.config.color);
+    	}
     },
     _onSetColorBackground: function() {
-    	this.innerRectangle.setStyle('fillColor', '#' + this.config.color_background);
+    	if(this.config.color_background === 'transparent'){
+			this.innerRectangle.setStyle('fillColor', 'rgba(0,0,0,0)');
+    	} else {
+    		this.innerRectangle.setStyle('fillColor', '#' + this.config.color_background);
+    	}
     },
     onReshape: function() {
 		chUtil.ajax({
@@ -869,6 +878,7 @@ ChartCircle.addMethods({
         if(Charts.waitingConnectionSource == null) {
           Charts.waitingConnectionSource = this;
           linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
+          linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
         
@@ -878,6 +888,7 @@ ChartCircle.addMethods({
         }
         
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
+        linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         
         //clicking self toggles connection source off and on
         if(Charts.waitingConnectionSource.id == this.id){                           
@@ -1151,9 +1162,11 @@ Connection.addMethods({
 	},
 	
 	setColor: function(color) {
-		this.color = color;
-		this.shape.setStyle('color', '#' + color);
-		this.onPropertyChange({'color': color});
+		if(color !== 'transparent'){
+			this.color = color;	
+			this.shape.setStyle('color', '#' + color);
+			this.onPropertyChange({'color': color});
+		}
 	},
 	
 	autoposition: function() {
@@ -1183,7 +1196,7 @@ Connection.addMethods({
 		var startControlPoint = Object.clone(this.startPoint);
 		startControlPoint.applyPosition = this.applyAnchorPointPosition.bind(this, this.source, this.sourceAnchorPoint, this.startPoint);
 		startControlPoint.color = START_COLOR;
-		
+
 		if (this.numSegments != 1) {
 			var endControlPoint = Object.clone(this.endPoint);
 			endControlPoint.applyPosition = this.applyAnchorPointPosition.bind(this, this.destination, this.destinationAnchorPoint, this.endPoint);
@@ -1262,6 +1275,10 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	data.num_segments = 1;
 	data.source_position = 50;
 	data.destination_position = 50;
+	
+	if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
+		source.config.color = '000000';
+	}
 	data.color = source.config.color;
 	
 	return data;
@@ -1443,22 +1460,30 @@ typeMenu.subscribe('show', function() {
 var boxColorMenu = new YAHOO.widget.Menu('boxColorMenu');
 chColor.each(function(color) {
 	boxColorMenu.addItem({
-		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onColorSelect, obj: color, scope: boxColorMenu}
 	});
+});
+boxColorMenu.addItem({
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="My tip">&#216;</span>',
+	onclick: {fn: onColorSelect, obj: 'transparent', scope: boxColorMenu}
 });
 var boxColorBackgroundMenu = new YAHOO.widget.Menu('boxColorBackgroundMenu');
 chColor.each(function(color) {
 	boxColorBackgroundMenu.addItem({
-		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onColorBackgroundSelect, obj: color, scope: boxColorBackgroundMenu}
 	});
+});
+boxColorBackgroundMenu.addItem({
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="My tip">&#216;</span>',
+	onclick: {fn: onColorBackgroundSelect, obj: 'transparent', scope: boxColorBackgroundMenu}
 });
 var boxTitleColorMenu = new YAHOO.widget.Menu('boxTitleColorMenu');
 var titleColors = ['ffffff', '000000'];
 titleColors.each(function(color) {
 	boxTitleColorMenu.addItem({
-		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onEditTitleColorSelect, obj: color, scope: boxTitleColorMenu}
 	});
 });
