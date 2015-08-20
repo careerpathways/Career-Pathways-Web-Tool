@@ -21,6 +21,10 @@
 					echo '<td><span class="version_title">'.$v['version_num'].' '.($v['published']?' (Published)':'').'</span> <a href="/a/post_drawings.php?action=version_info&version_id='.$v['id'].'" title="Version Settings">'.SilkIcon('wrench.png').'</a></td>';
 				echo '</tr>';
 				echo '<tr>';
+					echo '<td><b>Degree Type</b></td>';
+					echo '<td>'.$v['sidebar_text_right'].'</td>';
+				echo '</tr>';
+				echo '<tr>';
 					echo '<td><b>Note</b></td>';
 					echo '<td>'.($v['published']?'<img src="/common/silk/report.png" title="Published Version" alt="" />':'').($v['frozen']?'<img src="/common/silk/lock.png" title="Version Locked" alt="" />':'').' '.$v['note'].'</td>';
 				echo '</tr>';

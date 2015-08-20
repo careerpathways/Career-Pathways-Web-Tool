@@ -475,7 +475,7 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	foreach( $connections as $c )
 	{
         $count++;
-		$d = $DB->SingleQuery('SELECT M.*, CONCAT(U.first_name," ",U.last_name) AS modified_by, schools.school_name
+		$d = $DB->SingleQuery('SELECT M.*, D.sidebar_text_right, CONCAT(U.first_name," ",U.last_name) AS modified_by, schools.school_name
 			FROM post_drawing_main M
 			JOIN post_drawings D ON D.parent_id=M.id
 			LEFT JOIN users U ON M.last_modified_by=U.id
@@ -505,6 +505,10 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 			echo '</td>';
 			echo '<td>' . $d['school_name'] . '</td>';
 			echo '<td><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span> ' . $d['modified_by'] . '</td>';
+		echo '</tr>';
+		echo '<tr>';
+		echo '<td colspan="2">&nbsp;</td>';
+		echo '<td colspan="8"><i>' . $d['sidebar_text_right'] . '</i></td>';
 		echo '</tr>';
 	}
 	echo '</table>';
