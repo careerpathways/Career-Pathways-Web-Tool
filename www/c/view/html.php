@@ -4,9 +4,9 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title><?= $drawing_name ?> &#8226; Career Pathways</title>
-    <link rel="stylesheet" type="text/css" href="/styles-header.css" />
+    <link rel="stylesheet" type="text/css" href="<?= getBaseUrl(); ?>/styles-header.css" />
     <?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
-	    <link rel="stylesheet" type="text/css" href="/site-template/styles-header.css" />
+	    <link rel="stylesheet" type="text/css" href="<?= getBaseUrl(); ?>/site-template/styles-header.css" />
 	<?php endif; ?>
   </head>
   <body>
