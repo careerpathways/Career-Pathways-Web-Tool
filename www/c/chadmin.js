@@ -653,7 +653,8 @@ ChartBox.addMethods({
 			h: this.h,
 			w: this.w,
 			config: {
-				color: this.config.color,
+				color: this.config.color.replace(/#/g, ''),
+				color_background: this.config.color_background.replace(/#/g, ''),
 				title: this.config.title,
 				content: this.config.content,
 				content_html: this.config.content_html
@@ -864,7 +865,8 @@ ChartCircle.addMethods({
 			h: this.h,
 			w: this.w,
 			config: {
-				color: this.config.color,
+				color: this.config.color.replace(/#/g, ''),
+				color_background: this.config.color_background.replace(/#/g, ''),
 				title: this.config.title,
 				content: this.config.content,
 				content_html: this.config.content_html
@@ -1276,7 +1278,7 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	data.source_position = 50;
 	data.destination_position = 50;
 	
-	if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
+	if(typeof source.config.color !== 'string' || source.config.color === 'transparent' || source.config.color.indexOf('rgba') > -1){
 		source.config.color = '000000';
 	}
 	data.color = source.config.color;
@@ -1476,7 +1478,7 @@ chColor.each(function(color) {
 	});
 });
 boxColorBackgroundMenu.addItem({
-	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="My tip">&#216;</span>',
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="Transparent">&#216;</span>',
 	onclick: {fn: onColorBackgroundSelect, obj: 'transparent', scope: boxColorBackgroundMenu}
 });
 var boxTitleColorMenu = new YAHOO.widget.Menu('boxTitleColorMenu');
@@ -1493,13 +1495,11 @@ var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: 
 // create the box context menu
 ChartBox.contextMenu = new YAHOO.widget.ContextMenu('ChartBox.contextMenu');
 ChartBox.contextMenu.addItems([[
-	// {text: 'Edit', submenu: editBoxMenu},
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
 	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
-	{text: 'Edit Title Color', submenu: boxTitleColorMenu},
-	{text: 'Color', submenu: boxColorMenu},
+	{text: 'Title Color', submenu: boxTitleColorMenu},
+	{text: 'Border Color', submenu: boxColorMenu},
 	{text: 'Background Color', submenu: boxColorBackgroundMenu},
-	// {text: 'Box Type', submenu: typeMenu},
 	linkBoxesMenuItem,
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
@@ -1513,16 +1513,20 @@ ChartBox.contextMenu.addItems([[
 var circleColorMenu = new YAHOO.widget.Menu('circleColorMenu');
 chColor.each(function(color) {
 	circleColorMenu.addItem({
-		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onColorSelect, obj: color, scope: circleColorMenu}
 	});
 });
 var circleColorBackgroundMenu = new YAHOO.widget.Menu('circleColorBackgroundMenu');
 chColor.each(function(color) {
 	circleColorBackgroundMenu.addItem({
-		text: '<span style="background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
+		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onColorBackgroundSelect, obj: color, scope: circleColorBackgroundMenu}
 	});
+});
+circleColorBackgroundMenu.addItem({
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="Transparent">&#216;</span>',
+	onclick: {fn: onColorBackgroundSelect, obj: 'transparent', scope: circleColorBackgroundMenu}
 });
 var circleTitleColorMenu = new YAHOO.widget.Menu('circleTitleColorMenu');
 var titleColors = ['ffffff', '000000'];
@@ -1538,13 +1542,9 @@ var linkCirclesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn
 // create the box context menu
 ChartCircle.contextMenu = new YAHOO.widget.ContextMenu('ChartCircle.contextMenu');
 ChartCircle.contextMenu.addItems([[
-	// {text: 'Edit', submenu: editBoxMenu},
 	{text: 'Edit Content', onclick: {fn: onEditContentSelect}},
-	{text: 'Edit Title', onclick: {fn: onEditTitleSelect}},
-	{text: 'Edit Title Color', submenu: circleTitleColorMenu},
-	{text: 'Color', submenu: circleColorMenu},
+	{text: 'Border Color', submenu: circleColorMenu},
 	{text: 'Background Color', submenu: circleColorBackgroundMenu},
-	// {text: 'Box Type', submenu: typeMenu},
 	linkCirclesMenuItem,
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
 ],
