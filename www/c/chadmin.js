@@ -653,7 +653,8 @@ ChartBox.addMethods({
 			h: this.h,
 			w: this.w,
 			config: {
-				color: this.config.color,
+				color: this.config.color.replace(/#/g, ''),
+				color_background: this.config.color_background.replace(/#/g, ''),
 				title: this.config.title,
 				content: this.config.content,
 				content_html: this.config.content_html
@@ -864,7 +865,8 @@ ChartCircle.addMethods({
 			h: this.h,
 			w: this.w,
 			config: {
-				color: this.config.color,
+				color: this.config.color.replace(/#/g, ''),
+				color_background: this.config.color_background.replace(/#/g, ''),
 				title: this.config.title,
 				content: this.config.content,
 				content_html: this.config.content_html
