@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<title>{#jbimages_dlg.title}</title>
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="js/dialog.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+	<link href="css/dialog.css" rel="stylesheet" type="text/css">
+	<link href="/styles.css" rel="stylesheet" type="text/css">
+	<style>
+	#uploaded-images img {
+		max-width: 100px;
+		max-height: 100px;
+		display: inline-block;
+		margin: 5px;
+	}
+	.section {
+		margin: 10px 0;
+		padding: 10px;
+		background: #FFF;
+	}
+	.upload_infobar {
+		background: none;
+	}
+	#close_link {
+		display: block;
+	}
+	</style>
+</head>
+<body>
+	
+
+	<form class="form-inline" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
+
+		<div class="section">
+			<h2>Upload a new image:</h2>
+			<p>Please limit your file size to 400x400 or 1MB</p>
+			<div id="upload_in_progress" class="upload_infobar"><img src="img/spinner.gif" width="16" height="16" class="spinner">{#jbimages_dlg.upload_in_progress}&hellip; <div id="upload_additional_info"></div></div>
+			<div id="upload_infobar" class="upload_infobar"></div>	
+			
+			<p id="upload_form_container">
+				<input id="uploader" name="userfile" type="file" class="jbFileBox" onChange="document.upl.submit(); jbImagesDialog.inProgress();" size="8">
+				<!--<button type="submit" class="btn">{#jbimages_dlg.upload}</button>-->
+				<input type="submit" class="submit" value="Upload">
+			</p>			
+		</div>
+
+		<div class="section">
+			<h2>Or select from existing images:</h2>
+			<div id="uploaded-images"></div>
+			<script>
+				function appendImg(src){
+				    return function(){
+				    	$('#uploaded-images').append('<img src="'+src+'" />')
+				    }
+				}
+				$.get('/asset/list.php', function(assets){
+					if(typeof assets === 'object' || typeof assets === 'array'){
+						for(var i = 0; i < assets.length; i++){
+							setTimeout(appendImg(assets[i].imgSrc), 250*i);
+						}
+					}
+				});
+				$('body').on('click', '#uploaded-images img', function(){
+					tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + $(this).attr('src') +'" />');
+					tinyMCEPopup.close();
+				})
+			</script>
+		</div>
+
+		<input type="submit" class="submit" onclick="tinyMCEPopup.close(); return false;" value="Close">
+		<p id="the_plugin_name"><a href="http://justboil.me/" target="_blank" title="JustBoil.me Images - a TinyMCE Images Upload Plugin">JustBoil.me Images Plugin</a></p>
+	</form>
+
+	<iframe id="upload_target" name="upload_target" src="ci/index.php/blank"></iframe>
+
+	<script>
+		window.resizeTo(700, 400);
+	</script>
+</body>
+</html>
