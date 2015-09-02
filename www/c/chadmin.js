@@ -985,11 +985,21 @@ ChartCircle.addMethods({
     },
     
     _onSetColor: function() {
-    	this.outerCircle.setStyle('fillColor', '#' + this.config.color);
+    	if(this.config.color === 'transparent'){
+			this.outerCircle.setStyle('fillColor', 'rgba(0,0,0,0)');
+    	} else {
+    		this.outerCircle.setStyle('fillColor', '#' + this.config.color);
+    	}
     },
+
     _onSetColorBackground: function() {
-    	this.innerCircle.setStyle('fillColor', '#' + this.config.color_background);
+    	if(this.config.color_background === 'transparent'){
+			this.innerCircle.setStyle('fillColor', 'rgba(0,0,0,0)');
+    	} else {
+    		this.innerCircle.setStyle('fillColor', '#' + this.config.color_background);
+    	}
     },
+
     onReshape: function() {
 		chUtil.ajax({
 			id: this.id,
@@ -1516,6 +1526,10 @@ chColor.each(function(color) {
 		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onColorSelect, obj: color, scope: circleColorMenu}
 	});
+});
+circleColorMenu.addItem({
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="Transparent">&#216;</span>',
+	onclick: {fn: onColorSelect, obj: 'transparent', scope: circleColorMenu}
 });
 var circleColorBackgroundMenu = new YAHOO.widget.Menu('circleColorBackgroundMenu');
 chColor.each(function(color) {
