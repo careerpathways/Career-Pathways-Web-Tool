@@ -117,15 +117,18 @@ Charts = {
 			var component = null;
 			switch (properties['type']) {
 				case 'line':
-				component = new ChartLine(properties);
-				break;
-			case 'arrow':
-				properties.arrowheadAtEnd = true;
-				component = new ChartLine(properties);
-				break;
-			case 'box':
-				component = new ChartBox(properties);
-				break;    
+					component = new ChartLine(properties);
+					break;
+				case 'arrow':
+					properties.arrowheadAtEnd = true;
+					component = new ChartLine(properties);
+					break;
+				case 'box':
+					component = new ChartBox(properties);
+					break;
+				case 'circle':
+					component = new ChartCircle(properties);
+					break;    
 			}
 			Charts.registerComponent(component);             
 		});
@@ -324,6 +327,7 @@ Charts.gridColor = 'rgba(20, 20, 20, .2)';
 var VERTICAL = 'v';
 var HORIZONTAL = 'h';
 var DEFAULT_COLOR = '333333';
+var DEFAULT_COLOR_BACKGROUND = 'FFFFFF';
 
 var Widget = Class.create(Component, {
     type: '',
@@ -339,11 +343,12 @@ var Widget = Class.create(Component, {
 		Object.extend(this, options || {});
 		
 		this.type = this.getType();
-		
-		if (!chColor.include(this.config.color)) {
+		if (!chColor.include(this.config.color) && this.config.color !== 'transparent') {
 			this.config.color = DEFAULT_COLOR;
 		}
-		
+		if (!chColor.include(this.config.color_background) && this.config.color_background !== 'transparent') {
+			this.config.color_background = DEFAULT_COLOR_BACKGROUND;
+		}
 		this.connectionIDs = [];
 		this.outgoingConnections = new Hash();
 		this.incomingConnections = new Hash();
@@ -543,27 +548,37 @@ ChartBox = Class.create(Widget, {
 	    
 	    this.titleElement.update(this.config.title || '&nbsp;');
 	    this.contentElement.update(this.config.content_html);
-		
-		
+		this.titleElement.style.color = '#' + this.config.color_title || '#ffffff';
+
 		this.elem.style.zIndex = "0";
 		return this.elem;
     },
   
   createShape: function() {
   	this.borderThickness = 5;
+  	if(this.config.color_background === 'transparent'){
+  		this.config.color_background = 'rgba(0,0,0,0)';
+  	} else {
+  		this.config.color_background = '#' + this.config.color_background;
+  	}
   	this.innerRectangle = new Rectangle(
   		{x: 0, y: 0}, 0, 0,
   		{
-  			fillColor: '#ffffff',
+  			fillColor: this.config.color_background,
   			fill: true,
   			bottomLeftRadius: this.borderThickness,
   			bottomRightRadius: this.borderThickness
   		}
   	);
+    if(this.config.color === 'transparent'){
+  		this.config.color = 'rgba(0,0,0,0)';
+  	} else {
+  		this.config.color = '#' + this.config.color;
+  	}
   	this.outerRectangle =  new Rectangle(
   		{x: 0, y: 0}, 0, 0,
   		{
-  			fillColor: '#' + this.config.color,
+  			fillColor: this.config.color,
   			strokeColor: '#F00000',
   			fill: true,
   			strokeWidth: 2,
@@ -658,6 +673,155 @@ ChartBox = Class.create(Widget, {
     }
 });
 
+
+/***
+ basic circle functions
+***/
+ChartCircle = Class.create(Widget, {
+	getType: function() {
+		return 'circle';
+	},
+	
+    elem: null,
+    
+	getElem: function() {
+		/* NOTE: putting the class in the constructor, i.e. 
+		 * new Element('div', {'class': 'ctepathwaysCircle'}); doesn't work in IE
+		 * 8 with Prototype earlier than v1.6.1. See
+		 * https://prototype.lighthouseapp.com/projects/8886/tickets/529 */
+		this.elem = new Element('div').addClassName('ctepathwaysCircle');
+		
+		if (this.w > 0) this.elem.style.width = (this.getWidth() - 20) + 'px';
+
+		this.titleElement = new Element('div').addClassName('ctepathwaysCircleTitle');
+	    this.contentElement = new Element('div').addClassName('ctepathwaysCircleContent');
+	    
+	    //this.elem.appendChild(this.titleElement);
+	    this.elem.appendChild(this.contentElement);
+	    
+	    this.titleElement.update(this.config.title || '&nbsp;');
+	    this.contentElement.update(this.config.content_html);
+		this.titleElement.style.color = '#' + this.config.color_title || '#ffffff';
+
+		this.elem.style.zIndex = "0";
+		return this.elem;
+    },
+  
+  createShape: function() {
+  	this.borderThickness = 5;
+  	this.innerCircle = new Circle(
+  		{x: 0, y: 0}, 0, 0,
+  		{
+  			fillColor: '#' + this.config.color_background,
+  			fill: true,
+  			bottomLeftRadius: this.borderThickness,
+  			bottomRightRadius: this.borderThickness
+  		}
+  	);
+  	this.outerCircle =  new Circle(
+  		{x: 0, y: 0}, 0, 0,
+  		{
+  			fillColor: '#' + this.config.color,
+  			strokeColor: '#F00000',
+  			fill: true,
+  			strokeWidth: 2,
+  			radius: this.borderThickness * 2
+  		}
+  	);
+  	
+  	return new CompoundShape([this.outerCircle, this.innerCircle]);
+  },
+	
+	getLayer: function() {
+		return 1;
+	},
+	
+    getHeight: function() {
+    	return this.height;
+    },
+    
+    /** Returns the position of the anchor point. */
+    getAnchorPointPosition: function(anchorPoint) {
+    	var result;
+    	
+    	switch (anchorPoint.side) {
+    		case Side.TOP:
+    			result = {y: this.getTop()};
+    			break;
+			case Side.BOTTOM:
+				result = {y: this.getBottom()};
+				break;
+			case Side.LEFT:
+				result = {x: this.getLeft()};
+				break;
+			case Side.RIGHT:
+				result = {x: this.getRight()};
+				break;
+    	}
+    	
+    	switch (anchorPoint.side) {
+    		case Side.TOP:
+    		case Side.BOTTOM:
+    			result.x = this.getLeft() + this.getWidth() * anchorPoint.position / 100;
+    			break;
+			case Side.LEFT:
+			case Side.RIGHT:
+				result.y = this.getTop() + this.getHeight() * anchorPoint.position / 100;
+				break;
+    	}
+    	
+    	return result;
+    },
+    
+	repositionElement: function() {
+		this.elem.style.top = (this.getTop()) * Charts.textSizeMultiplier + 'px';
+		this.elem.style.left = (this.getLeft() + 10) * Charts.textSizeMultiplier + 'px';
+		this.elem.style.width = (this.getWidth() - 20) * Charts.textSizeMultiplier + 'px';
+		var titlePadding = 4 * Charts.textSizeMultiplier + 'px';
+		this.titleElement.style.paddingTop = titlePadding;
+		this.titleElement.style.paddingBottom = titlePadding;
+	},
+	
+	_onContentChange: function() {
+		this.titleHeight = this.titleElement.offsetHeight / Charts.textSizeMultiplier;
+		this.contentHeight = this.contentElement.offsetHeight / Charts.textSizeMultiplier;
+		this.height = this.titleHeight + this.contentHeight + 10;
+	},
+    
+    reposition: function() {
+    	var posOuter = {
+    		x: this.getLeft(),
+    		y: this.getTop()
+    	};
+    	
+    	var thickness = this.borderThickness;
+    	this.outerCircle.reposition(posOuter, this.getWidth(), this.getHeight());
+
+    	var posInner = {
+    		x: this.getLeft() + thickness,
+    		y: this.getTop() + thickness
+    	};
+    	
+    	this.innerCircle.reposition(
+    		posInner,
+    		this.getWidth() - thickness * 2,
+    		this.getHeight() - (thickness *2) - this.titleHeight
+    	);
+    	
+    	this.innerCircle.setStyles({
+    		bottomLeftRadius: this.borderThickness,
+  			bottomRightRadius: this.borderThickness
+    	});
+    	
+    	this.outerCircle.setStyle('radius', thickness * 2);
+    	
+    	this.shape.recalculateBounds();
+    	
+    	this.getConnections().invoke('reposition');
+    }
+});
+
+
 /**
   Connection -- a linking between two chart widgets, which can be a 
   composite of different view components
@@ -679,7 +843,6 @@ var Connection = Class.create(Component, {
 		this.source = source;
 		this.destination = destination;
 		this.color = this.source.config.color;
-		
 		this.startPoint = {};
 		this.endPoint = {};
 		
@@ -693,7 +856,9 @@ var Connection = Class.create(Component, {
 			this.sourceAxis = data.source_axis;
 			this.color = data.color;
 		}
-		
+		if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
+			this.color = '000000';
+		}
 		//connections must be registered with thier respective boxes
 		this.source.registerOutgoingConnection(this);
 		this.destination.registerIncomingConnection(this);
@@ -1209,6 +1374,106 @@ var Rectangle = Class.create(AbstractShape, {
 		if (this.style.stroke) {
 			context.stroke();
 		}
+		context.lineWidth = 1;
+	}
+});
+
+
+/* CIRCLE
+******************************************************************************/
+var Circle = Class.create(AbstractShape, {
+	initialize: function(position, width, height, style) {
+		this.reposition(position, width, height);
+		this.setStyle(style);
+	},
+	
+	reposition: function(position, width, height) {
+		this.position = position;
+		this.width = width;
+		this.height = height;
+		
+		this.bounds = Geometry.bounds(position, Geometry.translatedPoint(position, width, height));
+	},
+	
+	onStyleChange: function(style) {
+		if (style.radius) {
+			style.topLeftRadius = style.topRightRadius = style.bottomLeftRadius = style.bottomRightRadius = style.radius;
+		}
+		else {
+			style.topLeftRadius = style.topLeftRadius || 0;
+			style.topRightRadius = style.topRightRadius || 0;
+			style.bottomLeftRadius = style.bottomLeftRadius || 0;
+			style.bottomRightRadius = style.bottomRightRadius || 0;
+		}
+	},
+	
+	draw: function(context) {
+		function drawEllipseWithBezier(ctx, x, y, w, h, fill) {
+			var kappa = .5522848,
+				ox = (w / 2) * kappa, // control point offset horizontal
+				oy = (h / 2) * kappa, // control point offset vertical
+				xe = x + w,           // x-end
+				ye = y + h,           // y-end
+				xm = x + w / 2,       // x-middle
+				ym = y + h / 2;       // y-middle
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x, ym);
+			ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+			ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+			ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+			ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+			if(fill){
+				ctx.fillStyle = fill;
+			}
+			ctx.fill();
+			ctx.restore();
+		}
+		
+
+		if (this.style.strokeWidth){
+			context.lineWidth = this.style.strokeWidth;
+		}
+
+		if (this.style.fillColor) {
+			context.fillStyle = this.style.fillColor;
+		}
+		if (this.style.strokeColor) {
+			context.strokeStyle = this.style.strokeColor;
+		}
+		
+		var x = this.position.x;
+		var y = this.position.y;
+		
+		
+		var width = this.width;
+		var height = this.height;
+
+		drawEllipseWithBezier(context, x, y, width, height);
+
+
+		/*
+		var topLeftRadius = this.style.topLeftRadius;
+		var topRightRadius = this.style.topRightRadius;
+		var bottomLeftRadius = this.style.bottomLeftRadius;
+		var bottomRightRadius = this.style.bottomRightRadius;
+		context.beginPath();
+		context.moveTo(x, y + topLeftRadius);
+		context.lineTo(x, y + height - bottomLeftRadius);
+		context.quadraticCurveTo(x, y + height, x + bottomLeftRadius, y + height);
+		context.lineTo(x + width - bottomRightRadius, y + height);
+		context.quadraticCurveTo(x + width, y + height, x + width, y + height - bottomRightRadius);
+		context.lineTo(x + width, y + topRightRadius);
+		context.quadraticCurveTo(x + width, y, x + width - topRightRadius, y);
+		context.lineTo(x + topLeftRadius, y);
+		context.quadraticCurveTo(x, y, x, y + topLeftRadius);
+		if (this.style.fill) {
+			context.fill();
+		}
+		if (this.style.stroke) {
+			context.stroke();
+		}*/
 		context.lineWidth = 1;
 	}
 });
