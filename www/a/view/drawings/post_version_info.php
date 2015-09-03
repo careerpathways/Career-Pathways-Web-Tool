@@ -41,6 +41,10 @@ $siblings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawings WHERE de
 		<a href="<?= $_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing_main['id'] ?>" title="Drawing Properties"><img src="/common/silk/cog.png" width="16" height="16" /></a></td>
 </tr>
 <tr>
+	<th>Degree Type</th>
+	<td><?= $drawing['sidebar_text_right'] ?></td>
+</tr>
+<tr>
 	<th>Version</th>
 	<td><div class="version_title"><?= $drawing['version_num'].($drawing['published']==1?" (Published)":"") ?></div></td>
 </tr>

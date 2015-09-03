@@ -85,9 +85,9 @@ if( Request('version_id') ) {
 <html>
 <head>
 	<title><?= ($drawing_id==0?'Not Found':$page_title) ?></title>
-	<link rel="stylesheet" href="<?php getBaseUrl(); ?>/c/pstyle.css" />
+	<link rel="stylesheet" href="<?= getBaseUrl(); ?>/c/pstyle.css" />
 	<?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
-		<link rel="stylesheet" href="<?php getBaseUrl(); ?>/site-template/styles-header.css" />
+		<link rel="stylesheet" href="<?= getBaseUrl(); ?>/site-template/styles-header.css" />
 	<?php endif; ?>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>

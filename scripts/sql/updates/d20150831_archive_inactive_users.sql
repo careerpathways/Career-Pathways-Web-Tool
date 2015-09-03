@@ -1,0 +1,1 @@
+UPDATE `users` SET `email`='archive@null.com*' WHERE `user_active` != 1 AND `new_user` != 1

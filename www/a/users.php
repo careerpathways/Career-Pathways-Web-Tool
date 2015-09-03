@@ -154,7 +154,7 @@ if( KeyInRequest('id') || Request('key') ) {
 		$has_drawings = $drawings['num'] > 0 || $versions['num'] > 0;
 
 		if( $has_drawings ) {
-			$DB->Query("UPDATE users SET user_active=0 WHERE id=".$user_id);
+			$DB->Query("UPDATE users SET user_active=0, email='archive@null.com*' WHERE id=".$user_id);
 		} else {
 			$DB->Query("DELETE FROM users WHERE id=".$user_id);
 		}
