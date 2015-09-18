@@ -15,7 +15,7 @@ if( PostRequest() ) {
 
 	if( Request('ref') == 20 ) {
 
-		$check = $DB->SingleQuery('SELECT * FROM users WHERE email="'.Request('email').'"');
+		$check = $DB->SingleQuery('SELECT * FROM users WHERE user_active=1 AND email="'.Request('email').'"');
 		if( is_array($check) ) {
 			echo '<p>It appears you already have an account registered with this email address.</p>';
 			echo '<p>If you have forgotten your password, please visit the <a href="/a/password.php?reset">password reset</a> page</p>';
@@ -81,11 +81,14 @@ if( PostRequest() ) {
 
 			$email = new SiteEmail('account_request');
 			$email->IsHTML(false);
-			$email->Assign('RECIPIENTS', $recipients);
-			//$email->Assign('RECIPIENTS', 'aaron@parecki.com, effie@effie.bz');
+			if(strlen($recipients) >= 5){ //if there is at least one email address (a@b.c = strlen 5)
+				$email->Assign('RECIPIENTS', $recipients);	
+			} else {
+				$email->Assign('RECIPIENTS', $SITE->email_bcc()); //Usually $SITE->email_bcc() is helpdesk@ctepathways.org
+			}
 			$email->Assign('APPROVE_LINK', 'http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']);
 			$email->Assign('USER_INFO', $user_info);
-
+			$email->AddBCC($SITE->email_bcc());
 			$email->Send();
 
 
@@ -110,7 +113,9 @@ if( PostRequest() ) {
 	if( KeyInRequest('form') ) {
 		ShowApplyForm();
 	} else {
-		echo '<p>Are you affiliated with an Oregon school or business?</p>';
+		$vowels = array('a','e','i','o','u');
+		$a_an = (in_array(substr(strtolower(l('state name')), 0, 1), $vowels)) ?  'an ' : 'a ';
+		echo  '<p>Are you affiliated with '.$a_an . l('state name').' school or business?</p>';
 		echo '<p><a href="'.$_SERVER['PHP_SELF'].'?form">Yes</a> &nbsp;&nbsp; <a href="/a/help.php?template=outside">No</a></p>';
 	}
 }

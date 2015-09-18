@@ -34,7 +34,7 @@ if( $drawing['name'] == '' ) {
 			<connection id="<?= $connection['id'] ?>" destinationId="<?= $connection['destination_object_id'] ?>"/>
 			<?php endforeach; ?>
 		</<?= $content['type'] ?>>
-	<? endforeach; ?>
+	<?php endforeach; ?>
 
 	</version>
 </drawing>

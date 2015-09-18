@@ -6,6 +6,7 @@ require_once("POSTChart.inc.php");
 $MODE = 'post';
 ModuleInit('post_drawings');
 
+
 if (KeyInRequest('action')) {
 	$action = $_REQUEST['action'];
 	switch ($action) {
@@ -180,8 +181,12 @@ if( KeyInRequest('drawing_id') ) {
 			$post->type = Request('type');
 			$post->school_id = $school_id;
 			$post->skillset_id = Request('skillset_id');
-			$post->name = "";
-			$post->program_id = Request('program_id'); //approved program name id
+			if($SITE->hasFeature('approved_program_name')){
+				$post->name = "";
+				$post->program_id = Request('program_id'); //approved program name id
+			} else {
+				$post->name = Request('name');
+			}	
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
 			$post->sidebar_right = Request('degree_type');
 			$post->createEmptyChart();
@@ -241,7 +246,7 @@ function hideHeader($id, $preview=FALSE) {
 
 
 function showVersion() {
-	global $DB, $TEMPLATE;
+	global $DB, $TEMPLATE, $SITE;
 
 
 	$drawing = $DB->SingleQuery('SELECT main.*, d.parent_id, d.published, d.frozen, schools.school_abbr, d.id, os.title AS skillset
@@ -257,13 +262,20 @@ function showVersion() {
 	}
 
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
+
+	//Allow site-template to over-ride header styles
+	if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')){
+		$TEMPLATE->addl_styles[] = "/site-template/styles-header.css";
+	}
+
 	$TEMPLATE->addl_styles[] = "/files/greybox/greybox.css";
 
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
+if($SITE->hasFeature('approved_program_name')){
     $TEMPLATE->addl_scripts[] = '/common/APN.js';
-
+}
 	if(CanEditVersion($drawing['id'])) {
 		$readonly = false;
 	} else {
@@ -335,7 +347,7 @@ function showVersion() {
 }
 
 function copyVersion($version_id) {
-	global $DB;
+	global $DB, $SITE;
 
 	$post = POSTChart::create($version_id);
 
@@ -348,7 +360,7 @@ function copyVersion($version_id) {
 
 	$create = Request('create') ? Request('create') : 'new_version';
 	$copy_to = Request('copy_to') ? Request('copy_to') : 'same_school';
-    $post->note = Request('version_note');
+        $post->note = Request('version_note');
 
     $post->sidebar_right = Request('degree_type');
 	if( IsAdmin() || ($drawing_main['type'] == 'HS' && IsStaff()) || $user_school['organization_type'] == 'Other') {
@@ -379,19 +391,21 @@ function copyVersion($version_id) {
 			$newdrawing['school_id'] = $_SESSION['school_id'];
 			$post->school_id = $_SESSION['school_id'];
 		}
-
-		if(Request('program_id') && Request('program_id') > 0){
-			// If an approved program name was selected during "copy this version" pop up
-			$post->name = ''; //Alternate names are not recommended going forward.
-			$post->program_id = Request('program_id');
-			$post->skillset_id = Request('skillset_id');
+		if($SITE->hasFeature('approved_program_name')){
+			if(Request('program_id') && Request('program_id') > 0){
+				// If an approved program name was selected during "copy this version" pop up
+				$post->name = ''; //Alternate names are not recommended going forward.
+				$post->program_id = Request('program_id');
+				$post->skillset_id = Request('skillset_id');
+			} else {
+				// Take from the drawing we're copying. 
+				$post->name = $drawing_main['name'];;
+				$post->program_id = $drawing_main['program_id'];
+				$post->skillset_id = $drawing_main['skillset_id'];
+			}
 		} else {
-			// Take from the drawing we're copying. 
-			$post->name = $drawing_main['name'];;
-			$post->program_id = $drawing_main['program_id'];
-			$post->skillset_id = $drawing_main['skillset_id'];
+			$post->name = (Request('drawing_name') ? Request('drawing_name') : $drawing_main['name']);
 		}
-
 		$new_version_id = $post->saveToDB();
 	} else {
 		// find the greatest version number for this drawing
@@ -914,13 +928,15 @@ function showMiniDrawing($id)
 
 
 function showVersionInfo() {
-	global $DB, $MODE, $TEMPLATE;
+	global $DB, $MODE, $TEMPLATE, $SITE;
 
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
 	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
+if($SITE->hasFeature('approved_program_name')){
     $TEMPLATE->addl_scripts[] = '/common/APN.js';
+}
 	PrintHeader();
 
 	$version_id = Request('version_id');

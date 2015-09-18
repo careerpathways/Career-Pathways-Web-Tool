@@ -230,7 +230,6 @@ echo '***************************** Project-specific settings ******************
 # -------------------
 # Install wkhtmltopdf and its dependencies
 # -------------------
-#apt-get -f install
 apt-get install -y libjpeg8
 apt-get install -y fontconfig
 apt-get install -y libxrender1
@@ -246,6 +245,12 @@ ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-i386
 # the application stores pdf's here
 mkdir -p '/web2/oregon.ctepathways.org/cache/pdf/'
 chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
+
+
+#install pspell for tinymce spell-checker support
+apt-get install libpspell-dev 
+apt-get install php5-pspell
+apt-get install aspell-en
 
 
 # -------------------
@@ -268,7 +273,7 @@ pear -D auto_discover=1 install pear.amazonwebservices.com/sdk
 sed -i 's#^php_value.*$#php_value include_path  ".:/home/project/$projectName/www/include/:/home/project/$projectName/common/"#g' /home/project/$projectName/www/.htaccess
 
 sed -i 's#helpdesk@careermaphumboldt.com#michael.calabrese+lccpost@lunarlogic.com#g' /home/project/$projectName/www/include/default.settings.php
-sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
+#sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
 sed -i "s#DBuser\s\?=\s\?'\w\+'#DBuser = 'root'#g" /home/project/$projectName/www/include/default.settings.php
 sed -i "s#DBpass\s\?=\s\?'[^']\+'#DBpass = 'devsu'#g" /home/project/$projectName/www/include/default.settings.php
 ln -s /home/project/$projectName/www/include/default.settings.php /home/project/$projectName/www/include/settings.php

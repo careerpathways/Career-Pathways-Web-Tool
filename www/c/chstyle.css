@@ -1,3 +1,7 @@
+a, img {
+  border:none;
+  outline: none;
+}
 body {
 	font-family: verdana;
 }
@@ -5,11 +9,15 @@ body {
 .yuimenu {
 	z-index: 10; 
 }
-.ctepathwaysBox input, .ctepathwaysBox textarea {
+.ctepathwaysBox input,
+.ctepathwaysBox textarea,
+.ctepathwaysCircle input,
+.ctepathwaysCircle textarea {
   border: none;
 }
 
-.ctepathwaysBox {
+.ctepathwaysBox,
+.ctepathwaysCircle {
   position: absolute;
   font-family: verdana;
 }
@@ -20,39 +28,53 @@ body {
   margin-right: 20px;
 }
 
-.ctepathwaysBox li {
+.ctepathwaysBox li,
+.ctepathwaysCircle li {
   margin: 0px;
 }
 
 
 /**
- * box
+ * box and etc.
  */
 
-.ctepathwaysBoxTitle {
+.ctepathwaysBoxTitle,
+.ctepathwaysCircleTitle {
   font-size: 10px;
   font-weight: bold;
   color: #fff;
   text-transform: uppercase;
 }
 
-.ctepathwaysBoxContent {
+.ctepathwaysBoxContent,
+.ctepathwaysCircleContent {
   position: absolute;
   height: auto;
   font-size: 11px;
 }
 
-.ctepathwaysBoxTitle, .ctepathwaysBoxContent {
+.ctepathwaysBoxTitle,
+.ctepathwaysBoxContent,
+.ctepathwaysCircleTitle,
+.ctepathwaysCircleContent {
 	width: 100%;
 	overflow: hidden;
 	cursor: default;
 }
+.ctepathwaysCircleContent {
+  padding: 16%;
+  width: 68%;
+}
 
-.ctepathwaysBox input, .ctepathwaysBox textarea {
+.ctepathwaysBox input,
+.ctepathwaysBox textarea,
+.ctepathwaysCircle input,
+.ctepathwaysCircle textarea {
   background-color: #ffc;
 }
 
-.ctepathwaysBox ul {
+.ctepathwaysBox ul,
+.ctepathwaysCircle ul {
 	margin-left: 0px;
 	padding-left: 15px;
 }

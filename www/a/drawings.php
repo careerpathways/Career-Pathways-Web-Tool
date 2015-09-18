@@ -149,9 +149,11 @@ if( KeyInRequest('drawing_id') ) {
 			$content['school_id'] = $school_id;
 			$content['skillset_id'] = Request('skillset_id');
 			$content['program_id'] = Request('program_id');
+			if($SITE->hasFeature('approved_program_name')){
 			$content['name'] = Request('name');
-			//$content['name_approved'] = Request('name_approved');
-
+			} else {
+			$content['name'] = Request('drawing_title');
+			}
 			$parent_id = $DB->Insert('drawing_main',$content);
 
 			// create the first default drawing
@@ -260,14 +262,10 @@ function showVersion() {
 the toolbar.</p>
 </div>
 
-<div id="drawing_canvas" class="ctpathways">
-	<?php require('c/view/chart_include.php'); ?>
-		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
-			<script type="text/javascript" src="/c/chadmin.js"></script>
-		<?php else: ?>
-
-		<?php endif; ?>
-		<script type="text/javascript">
+<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
+	<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
+<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
+<script type="text/javascript">
 			function init() {
 				if (arguments.callee.done) return;
 				arguments.callee.done = true;
@@ -287,14 +285,14 @@ the toolbar.</p>
 
 			/* for other browsers */
 			window.onload = init;
-		</script>
-</div>
-		<?php
-		PrintFooter();
-	}
+		</script></div>
+
+	<?php
+	PrintFooter();
+}
 
 function copyVersion($version_id) {
-	global $DB;
+	global $DB, $SITE;
 	$drawing = GetDrawingInfo($version_id);
 
 	// first get the title information
@@ -326,20 +324,21 @@ function copyVersion($version_id) {
 		$newdrawing['school_id'] = $drawing['school_id'];
 		else
 		$newdrawing['school_id'] = $_SESSION['school_id'];
-
-		if(Request('program_id') && Request('program_id') > 0){
-			// If an approved program name was selected during "copy this version" pop up
-			$newdrawing['name']	= '';
-			$newdrawing['program_id'] = Request('program_id');
-			$newdrawing['skillset_id'] = Request('skillset_id');
+		if($SITE->hasFeature('approved_program_name')){
+			if(Request('program_id') && Request('program_id') > 0){
+				// If an approved program name was selected during "copy this version" pop up
+				$newdrawing['name']	= '';
+				$newdrawing['program_id'] = Request('program_id');
+				$newdrawing['skillset_id'] = Request('skillset_id');
+			} else {
+				// Take from the drawing we're copying. 
+				$newdrawing['name']	= $drawing_main['name'];
+				$newdrawing['program_id'] = $drawing_main['program_id'];
+				$newdrawing['skillset_id'] = $drawing_main['skillset_id'];
+			}
 		} else {
-			// Take from the drawing we're copying. 
-			$newdrawing['name']	= $drawing_main['name'];
-			$newdrawing['program_id'] = $drawing_main['program_id'];
-			$newdrawing['skillset_id'] = $drawing_main['skillset_id'];
+			$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		}
-
-		//$newdrawing['name'] = Request('drawing_name') ? Request('drawing_name') : $drawing_main['name'];
 		// tack on a random number at the end. it will only last until they change the name of the drawing
 		$newdrawing['date_created'] = $DB->SQLDate();
 		$newdrawing['last_modified'] = $DB->SQLDate();
@@ -383,16 +382,12 @@ function copyVersion($version_id) {
 		$new_id = $table_status['Auto_increment'];
 		$idMap[$obj['id']] = $new_id;
 
-		//logmsg( "obj: " . varDumpString($obj) );
-		//logmsg( "unserializing content begins" );
 		$obj = unserialize($obj['content']);
-		//logmsg( "unserializing content ends" );
 		$obj['id'] = $new_id;
 		if( $copy_to !== 'same_school' )
 		$obj['config']['color'] = "333333";  // reset the colors on the objects to grey
 		$newobj['content'] = serialize($obj);
 		$newobj['color'] = ($obj['config']['color'] ? $obj['config']['color'] : '333333');
-		//logmsg( "newObj: " . varDumpString($newobj) );
 
 		$DB->Insert('objects',$newobj);
 	}
@@ -508,5 +503,3 @@ function showToolbarAndHelp($publishAllowed, $helpFile = false) {
 	require('view/drawings/toolbar.php');
 	require('view/drawings/helpbar.php');
 }
-
-

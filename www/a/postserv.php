@@ -312,16 +312,16 @@ require_once("POSTChart.inc.php");
 	{
 		ob_start();
 ?>
-		$(document).ready( function() {
+			$(document).ready( function() {
                 setTimeout( function() {
                     tinyMCE.init({
                         mode : "none",
+                        theme : "advanced",
                         convert_urls : false,
                         relative_urls : false,
-						theme : "advanced",
-                        plugins : "spellchecker,style",
-                        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code,spellchecker",
-                        theme_advanced_buttons2 : "",
+                        plugins : "jbimages,spellchecker,style",
+                        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code",
+                        theme_advanced_buttons2 : "spellchecker,forecolor,backcolor,|,image,jbimages",
                         theme_advanced_buttons3 : "",
                         theme_advanced_buttons4 : "",
                         theme_advanced_toolbar_location : "top",
@@ -623,7 +623,7 @@ require_once("POSTChart.inc.php");
 	
 	function commitHeader($id)
 	{
-        global $DB;
+		global $DB;
 	    $text = absolutePaths($_POST['text']);
             $DB->Update('post_drawings', array('header_text' => $text), intval($id));
             echo $text;

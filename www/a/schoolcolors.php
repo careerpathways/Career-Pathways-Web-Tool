@@ -18,8 +18,9 @@ if( IsAdmin() ) {
 
 $TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 $TEMPLATE->addl_scripts[] = '/files/greybox.js';
+if($SITE->hasFeature('approved_program_name')){
 $TEMPLATE->addl_scripts[] = '/common/APN.js';
-
+}
 PrintHeader();
 ShowSchoolForm($school_id);
 PrintFooter();

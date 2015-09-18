@@ -1,4 +1,6 @@
 <?php
+@include('defines.php');
+
 header("Content-type: text/css");
 
 $WHITE = "FFFFFF";
@@ -19,6 +21,9 @@ $RED = "EE3300";
 
 @import url(//fonts.googleapis.com/css?family=Lato:700|Roboto:900,100);
 @import url(/styles-header.css);
+<?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
+    @import url(/site-template/styles-header.css);
+<?php endif; ?>
 
 body
 {
@@ -762,12 +767,14 @@ a.chart_header {
 #copyPopup {
 	background-color: #ffffff;
 	width: 400px;
+	height: 300px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
 #copyPopup iframe {
 	width: 400px;
+	height: 300px;
 }
 
 .drawinglist_name {
@@ -1126,3 +1133,58 @@ tr.editable, tr.even {
 }
 
 
+.postAssuranceReport.icon {
+    text-align: right;
+}
+
+td.postAssuranceReport {
+    vertical-align: top;
+}
+th.postAssuranceReport {
+    padding-top: 5px;
+}
+
+tr.postAssuranceReport.schoolName h2 {
+    padding-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#course_details_selector {
+    margin-bottom: 10px;
+}
+
+#course_details {
+    margin-bottom: 10px;
+}
+
+.course_detail {
+    margin-left: 10px;
+}
+
+.loading-horz {
+	background-image: url(/images/horiz-gold.gif);
+	width: 220px;
+	height: 19px;
+}
+
+.wide-loader {
+	background-image: url(/images/wide-loader-on-white.gif);
+	width: 200px;
+	height: 19px;
+	margin: 30px auto;
+}
+
+.loading-spinner {
+	background-image: url(/images/cf9d2b_loader.gif);
+	width: 16px;
+	height: 16px;
+}
+
+<?php
+//Provide chance for site template to over-ride default styles.
+if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){
+	require_once(SITE_TEMPLATE.'styles.css.php');
+}

@@ -744,7 +744,7 @@ echo '</table>';
 echo '</div>';
 
 
-
+if($SITE->hasFeature('approved_program_name')){
 
 $postViews = $DB->MultiQuery('
     SELECT v.id as view_id, v.name, v.last_modified,
@@ -1047,8 +1047,8 @@ foreach ($view_drawings_no_skillset as $view_drawing) {
 echo '</table>';
 echo '</div>';
 
+} else { //else !hasFeature('approved_program_name')
 
-/*
 # Summary of Embedded POST Views
 echo '<div class="section">';
 $numEmbedded = $DB->MultiQuery('
@@ -1057,7 +1057,6 @@ FROM external_links e
 WHERE e.`type` = "post"
 GROUP BY e.drawing_id
 ');
-
 echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
 # such as Lane Community College, 20
 
@@ -1088,7 +1087,8 @@ foreach($embedded as $row) {
 echo '</table>';
 echo '</div>';
 
-*/
+
+} //end else hasFeature('approved_program_name')
 
 PrintFooter();
 

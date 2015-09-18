@@ -108,8 +108,8 @@ switch( $_REQUEST['a'] ) {
 							$obj[$key][$key2] = absolutePaths($val2);
 							//$_REQUEST['content'][$key][$key2] = $obj[$key][$key2];
 						} else {
-							$obj[$key][$key2] = $val2;
-						}
+						$obj[$key][$key2] = $val2;
+					}
 						//print("key2:".$key2."  value2: ".$obj[$key][$key2]."  \n");
 						
 					}

@@ -42,14 +42,14 @@
         // Provide arguments to this scope
         this.args = args || {
             drawingId : 0,
-            drawingType : '', //Choices: 'pathways', 'post' (plan of study)
+            drawingType : '', //Choices: 'pathways' (roadmap drawings), 'post' (plan of study), 'post_views' (post views)
             programId : 0
         };
 
         //double check this value and error if it's not correct.
-        if(args.drawingType !== 'pathways' && args.drawingType !== 'post'){
+        if(args.drawingType !== 'pathways' && args.drawingType !== 'post' && args.drawingType !== 'post_views'){
             if(console && console.error){
-                console.error('args.drawingType needs to be either "pathways" (for roadmap drawings) or "post". Got: ' + args.drawingType)
+                console.error('args.drawingType needs to be either "pathways" (for roadmap drawings) or "post" (for post drawings) or "view" (for post views). Got: ' + args.drawingType)
             }
             return;
         }
@@ -135,6 +135,9 @@
                     $.get( _url, function(response){
                         var r = eval(response);
                         $('#drawing_header').html(r.header);
+                        if('function' === typeof updateDrawingLinks){
+                            updateDrawingLinks(r.code);
+                        }
                         $("body").trigger("drawingheaderchanged");
                     });
                 }

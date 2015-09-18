@@ -15,7 +15,9 @@ $POST = Request('mode') == 'post';
 <script type="text/javascript" src="/files/prototype.js"></script>
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
 <script>var jQuery = jQuery.noConflict();</script>
+<?php if($SITE->hasFeature('approved_program_name')): ?>
 <script type="text/javascript" src="/common/APN.js"></script>
+<?php endif; ?>
 <style type="text/css">@import "/styles.css";</style>
 <style type="text/css">
 body {
@@ -60,7 +62,11 @@ fieldset {
 			}
 		}
 	} else {
-		$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+		if( IsAdmin() ) {
+			$schools = $DB->VerticalQuery('SELECT * FROM schools WHERE organization_type != "HS" ORDER BY school_name', 'school_name', 'id');
+		} else {
+			$schools = GetAffiliatedSchools();
+		}
 	}
 ?>
 
@@ -101,8 +107,9 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 
 <fieldset id="drawingName">
 	<legend><label for="drawing_title">New Drawing Name</label></legend>
+	<?php if($SITE->hasFeature('approved_program_name')): ?>	
 	<table>
-    <?php if($SITE->hasFeature('oregon_skillset')):	?>
+    	<?php if($SITE->hasFeature('oregon_skillset')):	?>
 	    <tr class="editable">
 	        <th width="115"><?=l('skillset name')?></th>
 
@@ -140,6 +147,9 @@ if (IsAdmin() || $_SESSION['school_id'] === $version['school_id'] || ($POST && a
 	        programId: undefined //new drawing
 	    });
 	</script>
+	<?php else: ?>
+		<input type="text" name="drawing_name" id="drawing_name" value="<?= $version['name'] ?> Copy">
+	<?php endif; ?>
 </fieldset>
 
 <?php if( $POST ): ?>

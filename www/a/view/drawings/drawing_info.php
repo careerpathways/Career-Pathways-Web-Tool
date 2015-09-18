@@ -7,17 +7,17 @@ $drawings_table = 'drawings';
 $published_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.html';
 $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
-$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
+$accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/%%.html';
 
 $embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
-<script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
+<script type="text/javascript" src="'.getBaseUrl().'/c/published/$$/embed.js"></script>';
 
 
 $drawing = $DB->LoadRecord($main_table,$id);
 
 
-$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
 
+$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
 if( count($program) > 0 )
 {
 	$drawing['full_name'] = $drawing['name'] == '' ? $program['title'] : $drawing['name'];
@@ -35,7 +35,6 @@ if( IsAdmin() ) {
 } else {
 	$school_id = $_SESSION['school_id'];
 }
-
 $school = $DB->SingleQuery('SELECT * FROM schools WHERE id = '.$school_id);
 
 if( $id != "" ) {
@@ -43,94 +42,31 @@ if( $id != "" ) {
 }
 
 ?>
-
 <script type="text/javascript" src="/common/jquery-1.3.min.js"></script>
 <script type="text/javascript" src="/files/jquery.selectboxes.min.js"></script>
-<script type="text/javascript" src="/common/APN.js"></script>
 <script type="text/javascript">
 	var $j = jQuery.noConflict();
 </script>
 <script type="text/javascript" src="/files/greybox.js"></script>
 <script type="text/javascript" src="/files/drawing_list.js"></script>
-<?php /* <script type="text/javascript" src="/c/drawings.js"></script> */ ?>
+<?php if($SITE->hasFeature('approved_program_name')): ?>
+	<script type="text/javascript" src="/common/APN.js"></script>
+<?php else: ?>
+	<script type="text/javascript" src="/c/drawings.js"></script>
+<?php endif; ?>
 
 <a href="<?= $_SERVER['PHP_SELF'] ?>" class="edit">back</a><br /><br />
 
 
 
-<?php if( $id == "" ): ?>
+<?php if( $id == "" ){ /** begin new drawing form **/ ?>
+	<?php if($SITE->hasFeature('approved_program_name')): ?>
+		<?php include('drawing_info_new_form_with_APN.php'); ?>
+	<?php else: ?>
+		<?php include('drawing_info_new_form.php'); ?>
+	<?php endif; ?>
+<?php } else { /** end new drawing form **/ ?>
 
-    <?php /** begin new drawing form **/ ?>
-
-    <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" id="drawing_form" class="new_drawing">
-        <div id="existingDrawings" style="float:right; width:330px;"></div>
-        <table>
-
-            <tr>
-                <th width="115"></th>
-                <td>
-                    <?php /** support current method of form submission. hidden so user uses apn <select>, rather than hand-typing. */ ?>
-                    <input type="hidden" id="drawing_title" name="name" size="80" value="">
-
-                    <div id="checkNameResponse" class="error"></div>
-                </td>
-            </tr>
-
-            <?php if($SITE->hasFeature('oregon_skillset')): ?>
-                <tr>
-                    <th width="115"><?=l('skillset name')?></th>
-                    <td>
-                        <div id="skillset">
-                            <?php echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array('0'=>'')); ?>
-                        </div>
-                        <div id="skillsetConf" style="color:#393; font-weight: bold"></div>
-                    </td>
-                </tr>
-            <?php endif; ?>
-
-            <?php if( $school['organization_type'] != 'Other'): ?>
-                <tr>
-                    <th width="115"><?=l('program name label')?></th>
-                    <td>
-                        <div id="program">
-                            <?php echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed')); ?>
-                        </div>
-                    </td>
-                </tr>
-            <?php endif; ?>
-
-            <tr>
-                <th width="115">Organization</th>
-                <td>
-                    <?php
-                    if( IsAdmin() ) {
-                        echo GenerateSelectBox($schools,'school_id',$school_id);
-                    } else {
-                        echo '<b>'.$schools[$school_id].'</b><input type="hidden" name="school_id" id="school_id" value="'.$school_id.'" />';
-                    }
-                    ?>
-                </td>
-            </tr>
-
-            <tr>
-                <th width="115"></th>
-                <td>
-                    <div style="float:right">
-                        <input type="button" class="submit" value="Reset" id="submitButtonReset">
-                    </div>
-                    <input type="button" class="submit" value="Create" id="submitButtonCreate">
-                </td>
-            </tr>
-
-        </table>
-        <input type="hidden" name="id" value="">
-    </form>
-
-    <?php /** end new drawing form **/ ?>
-
-<?php else: ?>
-
-    <?php /** begin drawing edit form **/ ?>
 
     <table width="960">
 
@@ -141,11 +77,41 @@ if( $id != "" ) {
                 </div>
             </td>
         </tr>
-
-        <?php include('apn.php'); ?>
+        
+        <?php if($SITE->hasFeature('approved_program_name')): ?>
+         	<?php include('apn.php'); ?>
+        <?php else: ?>
+        	<tr class="editable">
+				<th width="120"><?=l('program name label')?></th>
+				<td><div id="program"><?php
+					echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', $drawing['program_id'], array('0'=>'Not Listed'));
+				?></div></td>
+			</tr>
+			<tr class="editable">
+				<th><div id="drawing_title_label"><?= ($drawing['program_id'] == 0 ? 'Program Name' : 'Alternate Title') ?></div></th>
+				<td>
+					<input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>"> <input type="button" id="title_btn" onclick="saveTitle()" class="submit tiny" value="Save" />
+				</td>
+			</tr>
+			<?php
+				if($SITE->hasFeature('oregon_skillset')){
+			?>
+			<tr class="editable">
+				<th><?=l('skillset name')?></th>
+				<td><div id="skillset"><?php
+					echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array('0'=>''));
+				?></div></td>
+			</tr>
+			<?php 
+				} //endif 'oregon_skillset'
+			?>
+			<tr class="editable">
+				<th>Organization</th>
+				<td><b><?= $schools[$school_id] ?></b><input type="hidden" id="school_id" value="<?= $school_id ?>" /></td>
+			</tr>
+        <?php endif; //if site has approved_program_name ?>
 
         <?php if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_array($published) ): ?>
-
             <tr class="editable">
                 <th width="115">OLMIS</th>
                 <td>
@@ -205,7 +171,7 @@ if( $id != "" ) {
                 <td>
                     <div style="width:16px; float:left; margin-right: 2px;"><a href="javascript:preview_drawing(<?=$published['parent_id'].','.$published['id']?>)"><?=SilkIcon('magnifier.png')?></a></div>
                     <div id="drawing_link"><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$published_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.GetDrawingName($drawing['id'], 'roadmap'))),$published_link);
                     echo '<input type="text" style="width:542px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                 </td>
@@ -213,7 +179,7 @@ if( $id != "" ) {
             <tr>
                 <th valign="top">PDF Link</th>
                 <td><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($drawing['full_name'])),$pdf_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode(GetDrawingName($drawing['id'], 'roadmap'))),$pdf_link);
                     ?>
                     <div style="width:16px; float:left; margin-right: 2px;"><a href="<?=$url?>"><?=SilkIcon('page_white_acrobat.png')?></a></div>
                     <div id="drawing_link_pdf">
@@ -225,7 +191,7 @@ if( $id != "" ) {
                 <th valign="top" width="115">XML Link</th>
                 <td>
                     <div id="drawing_link_xml"><?php
-                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$xml_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.GetDrawingName($drawing['id'], 'roadmap'))),$xml_link);
                     echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                 </td>
@@ -234,7 +200,8 @@ if( $id != "" ) {
                 <th valign="top" width="115">Accessible Link</th>
                 <td>
                     <div id="drawing_link_ada"><?php
-                    $url = str_replace('$$',$id,$accessible_link);
+                    $url = str_replace(array('$$','%%'),array($id,CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$accessible_link);
+                    //$url = str_replace('$$',$id,$accessible_link);
                     echo '<input type="text" style="width:560px" value="'.$url.'" onclick="this.select()" />';
                     ?></div>
                     These links, as well as the embed code above, will always link to the <b>published</b> version of this drawing.<br>
@@ -275,7 +242,7 @@ if( $id != "" ) {
 
     <?php /** end drawing edit form **/ ?>
 
-<?php endif; ?>
+<?php } ?>
 
 
 
@@ -332,8 +299,16 @@ function saveTitle() {
 function updateDrawingLinks(newCode)
 {
   	drawingCode = newCode;
+
+    var published_link = "<?= $published_link ?>";
+    var pdf_link = "<?= $pdf_link ?>";
+    var xml_link = "<?= $xml_link ?>";
+    var ada_link = "<?= $accessible_link ?>";
+
   	$j("#drawing_link input").val(published_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_pdf input").val(pdf_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
   	$j("#drawing_link_xml input").val(xml_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
+    $j("#drawing_link_ada input").val(ada_link.replace("$$", <?=($drawing['id']?$drawing['id']:0)?>).replace("%%", drawingCode));
 }
 
 function loadProgramTitles() {
@@ -343,7 +318,7 @@ function loadProgramTitles() {
 		$j("#program_id").addOption(programList[i].id, programList[i].title).val(0);
 	}
 }
-
+<?php if($SITE->hasFeature('approved_program_name')): ?>
 $j(document).ready(function(){
     //Create a new APN object with page-specific parameters.
     //APN provides skill set/approved program name sort features.
@@ -421,6 +396,147 @@ $j(document).ready(function(){
 	bindOlmisCheckboxes();
 
 });
+<?php else: ?>
+$j(document).ready(function(){
+	program_id = $j("#program_id").val();
+
+	$j('#skillset select').bind('change', function() {
+		$j('#skillset select').css({backgroundColor: '#FFFF99'});
+		$j.post('drawings_post.php',
+			{action: 'skillset',
+			 mode: 'pathways',
+			 id: '<?= intval($drawing['id']) ?>',
+			 skillset_id: $j('#skillset select').val()
+			},
+			function(data) {
+				json = eval(data);
+				if( json == null )
+				{
+
+				}
+				else
+				{
+					programList = json;
+					loadProgramTitles();
+				}
+				$j('#skillset select').css({backgroundColor: '#FFFFFF'});
+				$j('#skillsetConf').html('');
+			}
+		);
+	});
+	
+	$j('#program select').bind('change', function() {
+		if( $j(this).val() == 0 ) {
+			$j("#drawing_title_label").html("Program Name");
+		} else {
+			$j("#drawing_title_label").html("Optional Alternate Title");
+		}
+
+		if( $j(this).val() == 0 && $j("#drawing_title").val() == "" )
+		{
+			alert("You must enter either an approved program name or a custom program name");
+			$j(this).val(program_id); // reset the select box
+			$j("#drawing_title_label").html("Optional Alternate Title");
+		}
+		else
+		{
+			program_id = $j(this).val();
+			$j('#program select').css({backgroundColor: '#FFFF99'});
+			$j.post('drawings_post.php',
+				{action: 'skillset',
+				 mode: 'pathways',
+				 id: '<?= intval($drawing['id']) ?>',
+				 program_id: $j('#program select').val(),
+				 school_id: $j('#school_id').val()
+				},
+				function(data) {
+					json = eval(data);
+					if( json == null )
+					{
+	
+					}
+					else
+					{
+						var skillset_id = json["skillset"];
+						$j("#existingDrawings").html(json["drawings"]);
+						if( skillset_id != 0 ){
+							$j('#skillset select').val(skillset_id);
+						}
+						updateDrawingLinks(json.code);
+						$j("#drawing_header").html(json.header);
+					}
+					$j('#program select').css({backgroundColor: '#FFFFFF'});
+					$j('#programConf').html('');
+				}
+			);
+		}
+	});
+
+	$j("#submitButtonCreate").click(function(){
+		if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+		{
+			alert("You must enter either an approved program name or a custom program name");
+		}
+		else
+		{
+			$j.post("/a/drawings.php",
+				{id: "",
+				 skillset_id: $j("#skillset_id").val(),
+				 program_id: $j("#program_id").val(),
+				 drawing_title: $j("#drawing_title").val(),
+				 school_id: $j("#school_id").val()
+				},
+				function(data){
+					data = eval(data);
+					window.location = data["redirect"]
+				});
+		}
+	});
+
+	$j("#submitButtonReset").click(function(){
+		$j("#skillset select").val(0).change();
+		$j("#drawing_title").val("");
+		$j("#school_id").val(<?=$_SESSION['school_id']?>);
+	});
+
+	// OLMIS stuff
+	
+	$j("#olmis_expand").click(function(){
+		$j("#olmis_add").slideDown(300);
+	});
+
+	$j("#search_olmis").click(function(){
+		$j("#olmis_search").html('Please wait while we search your drawing for OLMIS links. This may take a while depending on how many versions of your drawing exist.<br /><div class="loading-horz"></div>');
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: "find"},
+			function(data){
+				json = eval(data);
+				$j("#olmis_search").html(json.olmis);				
+				$j("#olmis_add").slideUp(300);
+				bindOlmisCheckboxes();
+			});
+	});
+	
+	$j("#enter_olmis_links").click(function(){
+		$j.post("/a/drawings_post.php",
+			{id: '<?=intval($drawing['id'])?>',
+			 action: "olmis",
+			 mode: "add",
+			 content: $j("#olmis_textarea").val()},
+			function(data){
+				json = eval(data);
+				$j("#olmis_links").html(json.olmis);
+				$j("#olmis_textarea").val("");
+				bindOlmisCheckboxes();
+			});
+	});
+
+	bindOlmisCheckboxes();
+
+});
+<?php endif; //if has feature approved_program_name ?>
 
 function bindOlmisCheckboxes()
 {
@@ -469,3 +585,4 @@ function bindOlmisCheckboxes()
 <?php endif; ?>
 
 </script>
+

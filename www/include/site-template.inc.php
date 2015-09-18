@@ -103,7 +103,7 @@ class ThisSiteTemplate extends SiteTemplate {
                         ?>
 			<div id="main">
 				<div id="main-c">
-					<div id="module_name"><? $this->PrintPageTitle(); ?></div>
+					<div id="module_name"><?php $this->PrintPageTitle(); ?></div>
 					<div id="main-c-in">
 					<?php
 			}

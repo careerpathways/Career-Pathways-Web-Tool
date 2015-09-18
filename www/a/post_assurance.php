@@ -32,19 +32,19 @@
         array_push($TEMPLATE->addl_scripts,'/files/greybox.js');
         $TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
         $TEMPLATE->toolbar_function = 'ShowSymbolLegend';
-        PrintHeader();
-        
+    PrintHeader();
+
     }
     
     function getSignatureData($viewId)
     {
         global $DB;
 
-        $postSql = "SELECT `PostView`.`name`, `PostView`.`code`, `School`.`school_name` FROM vpost_views AS `PostView`  INNER JOIN schools AS `School` ON `School`.`id` = `PostView`.`school_id`   WHERE `PostView`.`id` = '$viewId'";
+        $postSql = "SELECT `PostView`.`name`, `PostView`.`code`, `School`.`school_name` FROM vpost_views AS `PostView` INNER JOIN schools AS `School` ON `School`.`id` = `PostView`.`school_id` WHERE `PostView`.`id` = '$viewId'";
         $rawData = $DB->SingleQuery($postSql);
 
-        //print "<p>SQL</p><pre>" . print_r($postSql, true) . "</pre>";
-        //print "<p>Data</p><pre>" . print_r($rawData, true) . "</pre>";
+//        print "<p>SQL</p><pre>" . print_r($postSql, true) . "</pre>";
+//        print "<p>Data</p><pre>" . print_r($rawData, true) . "</pre>";
 
         $data['school_name'] = $rawData['school_name'];
         $data['post_name']   = $rawData['name'];
@@ -132,7 +132,7 @@ if ($viewId):
             <div style="float: left;">
                 <h2>Steps for Identifying a Program of Study</h2>
 
-                <h3>(in preparation for approval)</h3>
+                <h3 style="margin-top:0px;">In Preparation for Approval</h3>
                 <ol>
                     <li>When a Cluster, Pathway, and Field or Program of Study has been identified, the
                         groundwork is there for a Program of Study to be developed.
@@ -163,12 +163,12 @@ if ($viewId):
                         does not need to be as specific as the secondary portion of the template.)
                     </li>
                     <li>Identify those areas of postsecondary study, along with the college where the program
-                        can be found (http://www.sbctc.ctc.edu/college/_e-wkforceproftechprograms.aspx).
+                        can be found. <em>(Refer to <a href="http://www.sbctc.ctc.edu/college/_e-wkforceproftechprograms.aspx" target="_blank">SBCTC Professional-Technical Programs</a>.)</em>
                     </li>
                     <li>Determine who your local Tech Prep Director is. Notify him/her that you have a
-                        program of study that needs to be moved forward for approval. (See
-                        http://www.sbctc.ctc.edu/college/_e-wkforcetechprep.aspx for a list of consortium
-                        directors.) If the Tech Prep director finds that the Program is not offered at one of the
+                        program of study that needs to be moved forward for approval. <em>(Refer to
+                        <a href="http://www.sbctc.ctc.edu/college/_e-wkforcetechprep.aspx" target="_blank">SBCTC Workforce Tech Prep</a> 
+                        for a list of consortium directors.)</em> If the Tech Prep director finds that the Program is not offered at one of the
                         consortium’s colleges, then the director will locate a nearby college where the
                         program is offered, and will contact the Tech Prep director for that college to
                         facilitate the approval.
@@ -188,7 +188,8 @@ if ($viewId):
                     </li>
                 </ol>
                 <h2>Program of Study Assurances</h2>
-                <h3>Minimum Criteria</h3>
+
+                <h3 style="margin-top:0px;">Minimum Criteria</h3>
                 <ul class="category_list">
                     <?php 
                     $userQuery = "SELECT role_id FROM users_roles WHERE user_id=$userId and role_id=3;";
@@ -223,7 +224,8 @@ if ($viewId):
 
                     }?>
                 </ul>
-                <h3>Exceeds Minimum Criteria</h3>
+
+                <h3 style="margin-top:0px;">Exceeds Minimum Criteria</h3>
                 <ul class="category_list">
                     <?php 
                     $viewsSigsQuery = "SELECT requirements.id, ".
@@ -248,14 +250,15 @@ if ($viewId):
                         echo('<li><div class="checkbox_container"><input type="checkbox" value="'.$row['id'].'_'.$viewId.'"'.$checked.$enabled.'></div><div class="description_container">'.$row['description'].'</div><div style="clear:both;"></div></li>');
                     }?>
                 </ul>
+
             </div>
         </td>
         <td width="300px" valign="top">
             <div>
-                <?php $data = getSignatureData($viewId); ?><a href="/a/post_views.php?id=<?= $viewId ?>">
+                <?php $data = getSignatureData($viewId); ?>
                 <h1><?= $data['school_name'] ?></h1>
 
-                <h2><?= $data['post_name'] ?> (<?= $data['post_code'] ?>)</h2></a>
+                <h2><a href="/a/post_views.php?id=<?= $viewId ?>"><?= $data['post_name'] ?></a></h2>
                 <?php if ($viewId): ?>
                 <?php
                 $sigPermissionsQuery  = "SELECT role_id FROM users_roles WHERE user_id = '$userId'";
@@ -305,18 +308,18 @@ if ($viewId):
                 }
                 ?>
                 <?php foreach ($categories as $catId => $category): ?>
-                        <?php $sigCount = count($category['sigs']); ?>
-                        <p>
+                    <?php $sigCount = count($category['sigs']); ?>
+                    <p>
                         <?php if ($sigCount > 0): ?>
-                            <input type="checkbox" enabled="0" checked="checked" disabled="disabled"/>
+                        <input type="checkbox" enabled="0" checked="checked" disabled="disabled"/>
                         <?php else: ?>
-                            <input type="checkbox" enabled="0" disabled="disabled"/>
+                        <input type="checkbox" enabled="0" disabled="disabled"/>
                         <?php endif; ?>
                         <?= $category['name'] ?>:
-                        <ul>
+                        <ul style="margin-top:-5px;">
                         <?php if (!$sigCount && isset($sigPermissions[  $category['required_role'] ] )): ?>
                             <?php $signViewLinkUrl = '/a/post_views.php?assurance=1&action=sign&id=' . $viewId . '&category_id=' . $catId . '&assurance_id=' . $assurance_id; ?>
-                            <a class="sign-link" href="<?= $signViewLinkUrl ?>"><img src="/common/silk/script_edit.png" /> Sign as this role.</a>
+                            <a href="<?= $signViewLinkUrl ?>"><img src="/common/silk/script_edit.png" /></a> <a href="<?= $signViewLinkUrl ?>">Sign as this role.</a>
                         <?php endif; ?>
                     </p>
                     <?php if ($sigCount > 0): ?>
@@ -325,7 +328,7 @@ if ($viewId):
                             on <?=  date_format(new DateTime($sig['date_signed']), 'Y-m-d')?><br /><?= $sig['school_name'] ?></li>
                             <?php endforeach; ?>
                     <?php else: ?>
-                        No signatures on file.
+                        <em>No signatures on file.</em>
                     <?php endif; ?>
                   </ul>
                     <?php endforeach; ?>

@@ -86,7 +86,7 @@ if( PostRequest() ) {
 		$message = '
 ** This is the URL of the page I was on **
 (Copy & paste from the address bar of Internet Explorer or Firefox)
-http://oregon.ctepathways.org/....
+http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'....
 
 ** This is what I did **
 
@@ -116,7 +116,7 @@ http://oregon.ctepathways.org/....
 
 	case 'outside':
 		$helptext = '<p>Thank you for visiting the Career Pathways Web Tool.</p>';
-		$helptext .= '<p>This website is currently only available to Oregon schools and businesses. Please contact us if you would like to use this tool in your school or business outside Oregon. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink($SITE->email()).'.</p>';
+		$helptext .= '<p>This website is currently only available to '.l('state name').' schools and businesses. Please contact us if you would like to use this tool in your school or business outside '.l('state name').'. You can contact us using the form below, or by writing to '.EmailEncrypt::EmailLink($SITE->email()).'.</p>';
 
 	}
 
