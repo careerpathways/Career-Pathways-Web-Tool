@@ -81,11 +81,14 @@ if( PostRequest() ) {
 
 			$email = new SiteEmail('account_request');
 			$email->IsHTML(false);
-			$email->Assign('RECIPIENTS', $recipients);
-			//$email->Assign('RECIPIENTS', 'aaron@parecki.com, effie@effie.bz');
+			if(strlen($recipients) >= 5){ //if there is at least one email address (a@b.c = strlen 5)
+				$email->Assign('RECIPIENTS', $recipients);	
+			} else {
+				$email->Assign('RECIPIENTS', $SITE->email_bcc()); //Usually $SITE->email_bcc() is helpdesk@ctepathways.org
+			}
 			$email->Assign('APPROVE_LINK', 'http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']);
 			$email->Assign('USER_INFO', $user_info);
-
+			$email->AddBCC($SITE->email_bcc());
 			$email->Send();
 
 

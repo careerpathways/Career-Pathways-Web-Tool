@@ -61,7 +61,7 @@ class SiteEmail extends MyMailer {
 		}
 
 
-		if( strpos($this->info['bcc'],',') !== false ) {
+		if( strpos($this->info['bcc'],',') === true ) {
 			$bccs = explode(',',$this->info['bcc']);
 			foreach( $bccs as $bcc ) {
 				if( trim($bcc) != '' ) {
@@ -74,15 +74,13 @@ class SiteEmail extends MyMailer {
 			}
 		}
 		$this->AddBCC($SITE->email_bcc());
-		//$this->AddAddress('effie@sivecki.com');
-		//$this->AddAddress('bisch.cris@gmail.com');
-
 
 		if( $debug ) {
+			var_dump($this->bcc[0]);
 			echo '<br>'.str_repeat("--",10).'<br>';
 			echo 'From: '.$this->From.'<br>';
 			echo 'To: '.$this->info['recipient'].'<br>';
-			echo 'BCC: '.$this->info['bcc'].'<br>';
+			echo 'BCC: '.implode($this->bcc[0],',').'<br>';
 			echo 'Subject: '.$this->Subject.'<br>';
 			echo 'Body: '.$this->Body.'<br>';
 			echo '<br>';
