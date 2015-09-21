@@ -1183,6 +1183,13 @@ tr.postAssuranceReport.schoolName h2 {
 	height: 16px;
 }
 
+.site-version-info {
+	color: #999;
+	font-size: 10px;
+	margin-right: 30px;
+	text-align: right;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){

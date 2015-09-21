@@ -110,11 +110,12 @@ class ThisSiteTemplate extends SiteTemplate {
 	}
 
 	function Footer() {
-
+		global $SITE;
 			if( !$this->is_chart_page ) {
 				?>
 					</div>
 				</div>
+				<div class="site-version-info">Core <?= $SITE->get_core_version() ?> - Template <?= $SITE->get_template_version() ?></div>
 				<div id="helplink"><a href="/a/help.php">Questions/Problems?</a></div>
 			</div>
 			<?php
