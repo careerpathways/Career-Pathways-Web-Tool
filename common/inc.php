@@ -2,6 +2,7 @@
 date_default_timezone_set('America/Los_Angeles');
 define('DIR_CORE', dirname(__dir__));
 
+include("version.php");
 include("defines.php");
 
 include("database.inc.php");

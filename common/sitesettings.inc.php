@@ -38,8 +38,29 @@ abstract class SiteSettings {
 
 	//*******************************************************
 
+	/**
+	 * Returns the version of the template project.
+	 * @return string
+	 */
+	function get_template_version() {
+		if(defined('VERSION_TEMPLATE')){
+			return VERSION_TEMPLATE;
+		} else {
+			return '';
+		}
+	}
 
-
+	/**
+	 * Returns the version of core.
+	 * @return string
+	 */
+	function get_core_version() {
+		if(defined('VERSION_CORE')){
+			return VERSION_CORE;
+		} else {
+			return '';
+		}
+	}
 
 	// these methods should never be overridden, as they use the data
 	// that has been set per site
