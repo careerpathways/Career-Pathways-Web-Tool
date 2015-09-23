@@ -23,6 +23,16 @@ class Asset_Manager
 	}
 
 	/**
+	 * Get a list of drawings using the asset specified.
+	 * @param  int $asset_id Id of the asset to look for.
+	 * @return array Drawings that use the asset.
+	 */
+	public static function list_drawings_using_asset($asset_id)
+	{
+		
+	}
+
+	/**
 	 * Get a list of assets.
 	 * @param  array $options
 	 * @return array
