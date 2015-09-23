@@ -42,6 +42,20 @@ class Uploader extends CI_Controller {
 		// Set language
 		$this->_lang_set($lang);
 		
+		$user_school_id = isset($_SESSION['school_id']) ? $_SESSION['school_id'] : null;
+		$bucket_id_to_upload_to = isset($_POST['bucket']) ? $_POST['bucket'] : null;
+		$user_can_edit_other_schools = $this->config->item('CanEditOtherSchools','uploader_settings');
+
+		if($user_can_edit_other_schools || $bucket_id_to_upload_to == 0 || $bucket_id_to_upload_to == $user_school_id){
+			//user is allowed to upload
+		} else {
+			//user is not allowed to upload
+			$result['result']		= "Sorry, you're not permitted to upload to this bucket.";
+			$result['resultcode']	= 'failed';
+			$this->load->view('ajax_upload_result', $result);
+			return;
+		}
+
 		// Get configuartion data (we fill up 2 arrays - $config and $conf)
 		
 		$conf['img_path']			= $this->config->item('img_path',		'uploader_settings');
@@ -107,7 +121,7 @@ class Uploader extends CI_Controller {
 			$DB->Insert('assets_school_ids',
 			    array(
 				    'asset_id' => $asset_id,
-  					'school_id' => $_SESSION['school_id']
+  					'school_id' => $bucket_id_to_upload_to
 			    )
 			);
 

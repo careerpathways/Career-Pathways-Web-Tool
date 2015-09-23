@@ -48,11 +48,11 @@
 		</div>
 
 		<div class="section">
-			<h2>Or select from existing images in <span data-replace="school_name"></span>:</h2>
+			<h2>Or select from existing images in "<span data-replace="school_name"></span>":</h2>
 			<div id="uploaded-images"></div>
 			<script>
 				$.get('/asset/bucket_list.php', function(buckets){
-					var s = '<select>';
+					var s = '<select name="bucket">';
 					if(typeof buckets === 'object' || typeof buckets === 'array'){
 						for(var i = 0; i < buckets.length; i++){
 							s += '<option value="'+buckets[i].school_id+'">'+buckets[i].school_name+'</option>';

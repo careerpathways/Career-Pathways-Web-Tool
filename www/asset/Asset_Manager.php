@@ -31,7 +31,7 @@ class Asset_Manager
 	{
 		global $SITE, $DB;
 		
-		if(isset($options['school_id']) && $options['school_id'] > 0){
+		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
 			$_query = 'SELECT a.id, a.file_name, asi.school_id FROM assets_school_ids asi
 			LEFT JOIN assets a
@@ -51,8 +51,10 @@ class Asset_Manager
 
 	/**
 	 * Get a list of asset buckets for the given user.
-	 * A bucket is an id and a label, used to group assets.
-	 * Based on user permission level.
+	 * A bucket is an id and a label, used to group assets. 
+	 * It's basically a school id and a school name, but there is an additional one called "Site Wide"
+	 * 
+	 * Results are based on user permission level.
 	 * @param  object $user
 	 * @return array
 	 */
@@ -64,12 +66,12 @@ class Asset_Manager
 			'school_id' => 0, //there is no school with this id, it's used for the site-wide bucket.
 			'school_name' => 'Site Wide'
 		);
-		$r = $DB->SingleQuery('SELECT * FROM admin_user_levels WHERE name ="State Admin"');
-		$admin_level = $r['level']; //usually an int like 127
 		$query = 'SELECT school_id, school_name FROM assets_school_ids
 			LEFT JOIN schools 
-				on assets_school_ids.school_id = schools.id';
-		if(isset($_SESSION['user_level']) && $_SESSION['user_level'] < $admin_level){
+				ON assets_school_ids.school_id = schools.id
+			WHERE school_id > 0'; //don't get school id 0, which is null. We add that manually (below, in this function)
+		//Restrict the query if the user is not allowed to edit other schools (a.k.a buckets).
+		if(!CanEditOtherSchools()){
 			if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
 				$query .= ' WHERE school_id = "'.$_SESSION['school_id'].'"';
 			}
