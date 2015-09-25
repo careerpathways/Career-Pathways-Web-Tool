@@ -115,7 +115,8 @@ class Uploader extends CI_Controller {
 			    array(
 				    'file_name' => $result['file_name'],
   					'created_by' => $_SESSION['user_id'],
-  					'date_created' => $DB->SQLDate()
+  					'date_created' => $DB->SQLDate(),
+  					'active' => true
 			    )
 			);
 			$DB->Insert('assets_school_ids',
@@ -128,7 +129,11 @@ class Uploader extends CI_Controller {
 			// Define stuff for the view
 			$result['result']		= "file_uploaded";
 			$result['resultcode']	= 'ok';
-			$result['file_name']	= $conf['img_path'] . '/' . $result['file_name'];
+
+			$result['asset'] = array(
+				'id' => $asset_id,
+				'file_name' => $conf['img_path'] . '/' . $result['file_name']
+			);
 
 			// Output to user
 			$this->load->view('ajax_upload_result', $result);

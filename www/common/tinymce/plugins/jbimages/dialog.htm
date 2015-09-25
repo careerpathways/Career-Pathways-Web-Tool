@@ -4,38 +4,19 @@
     <meta charset="utf-8">
 	<title>{#jbimages_dlg.title}</title>
 	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="js/dialog.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 	<link href="css/dialog.css" rel="stylesheet" type="text/css">
 	<link href="/styles.css" rel="stylesheet" type="text/css">
-	<style>
-	#uploaded-images img {
-		max-width: 100px;
-		max-height: 100px;
-		display: inline-block;
-		margin: 5px;
-	}
-	.section {
-		margin: 10px 0;
-		padding: 10px;
-		background: #FFF;
-	}
-	.upload_infobar {
-		background: none;
-	}
-	#close_link {
-		display: block;
-	}
-	</style>
 </head>
 <body>
-	
-
-	<form class="form-inline" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
-		<h2>Choose your image bucket:</h2>
-		<div class="bucket-select-container"></div>
+	<form class="form-inline asset-manager" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
 		<div class="section">
-			<h2>Upload a new image to this bucket:</h2>
+			<h2>1. Choose Your Image Bucket</h2>
+			<p><div class="bucket-select-container"></div></p>
+		</div>
+		
+		<div class="section">
+			<h2>Upload a new image to this bucket</h2>
 			<p>Please limit your file size to 400x400 or 1MB</p>
 			<div id="upload_in_progress" class="upload_infobar"><img src="img/spinner.gif" width="16" height="16" class="spinner">{#jbimages_dlg.upload_in_progress}&hellip; <div id="upload_additional_info"></div></div>
 			<div id="upload_infobar" class="upload_infobar"></div>	
@@ -46,57 +27,11 @@
 				<input type="submit" class="submit" value="Upload">
 			</p>			
 		</div>
-
-		<div class="section">
-			<h2>Or select from existing images in "<span data-replace="school_name"></span>":</h2>
+		<h3>OR</h3>
+		<div class="section existing">
+			<h2>Select from existing images in "<span data-replace="school_name"></span>"</h2>
+			<div class="messages"></div>
 			<div id="uploaded-images"></div>
-			<script>
-				$.get('/asset/bucket_list.php', function(buckets){
-					var s = '<select name="bucket">';
-					if(typeof buckets === 'object' || typeof buckets === 'array'){
-						for(var i = 0; i < buckets.length; i++){
-							s += '<option value="'+buckets[i].school_id+'">'+buckets[i].school_name+'</option>';
-						}
-					}
-					s += '</select>';
-					$('.bucket-select-container').html(s);
-					$('.bucket-select-container select').on('change',function(){
-						updateLabels($(this).find(':selected').text());
-						clearAssets();
-						getAssets($(this).val());
-					});
-					$('.bucket-select-container select').trigger('change');
-				});
-
-				function updateLabels(label){
-					$("[data-replace='school_name']").html(label);
-				}
-
-				function getAssets(school_id){
-					$.get('/asset/list.php?school_id='+school_id, function(assets){
-						if(typeof assets === 'object' || typeof assets === 'array'){
-							for(var i = 0; i < assets.length; i++){
-								setTimeout(appendImg(assets[i].imgSrc), 250*i);
-							}
-						}
-					});
-				}
-
-				function appendImg(src){
-				    return function(){
-				    	$('#uploaded-images').append('<img src="'+src+'" />')
-				    }
-				}
-
-				function clearAssets(){
-					$('#uploaded-images').html('');
-				}
-
-				$('body').on('click', '#uploaded-images img', function(){
-					tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + $(this).attr('src') +'" />');
-					tinyMCEPopup.close();
-				})
-			</script>
 		</div>
 
 		<input type="submit" class="submit" onclick="tinyMCEPopup.close(); return false;" value="Close">
@@ -105,8 +40,6 @@
 
 	<iframe id="upload_target" name="upload_target" src="ci/index.php/blank"></iframe>
 
-	<script>
-		window.resizeTo(700, 400);
-	</script>
+	<script type="text/javascript" src="js/dialog.js"></script>
 </body>
 </html>

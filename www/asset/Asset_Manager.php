@@ -3,33 +3,88 @@ if(!defined('DIR_CORE')){
 	include("inc.php");	
 }
 
+define('URL_ASSET', '/asset/');
+
 class Asset_Manager
 {
+	/**
+	 * Get a single asset file.
+	 * @param  int $asset_id Id of the asset.
+	 * @return string The asset object.
+	 */
+	public static function get_asset($asset_id, $include_deleted = false)
+	{
+		global $SITE, $DB;
+		$query = 'SELECT * 
+			FROM assets
+			WHERE id = '.$asset_id;
+		if(!$include_deleted){ //don't include deleted
+			$query .= ' AND active = 1';
+		}
+		$asset = $DB->SingleQuery($query);
+		return $asset;
+	}
+
 	/**
 	 * Get a single asset file.
 	 * @param  string $filename Filename of the asset file.
 	 * @return string The path to the asset file.
 	 */
-	public static function get_asset($filename)
+	public static function get_asset_by_filename($filename)
 	{
-		global $SITE;
-		$assetPath = $SITE->asset_path();
-		return $assetPath . $filename;
+		global $SITE, $DB;
+		$asset = $DB->SingleQuery('SELECT * 
+			FROM assets
+			WHERE file_name = "'.$filename.'"
+			AND active = 1
+		');
+		if($asset){
+			$assetPath = $SITE->asset_path();
+			return $assetPath . $filename;	
+		}
+		
 	}
 
 	public static function delete_asset($asset_id)
 	{
-		//TODO check user permissions. Either has to be a member of this school, or state admin.
+		global $DB;
+		$asset = $DB->SingleQuery('SELECT * 
+			FROM assets
+			LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id
+			WHERE id = "'.$asset_id.'"
+		');
+		if(CanEditOtherSchools() || $asset['school_id'] == $_SESSION['school_id']){
+			$DB->Query('UPDATE assets
+				SET active=0
+				WHERE id = '.$asset_id);
+			return array(
+				'status'=>'success',
+				'message'=>'Successfully deleted asset with id ' . $asset_id
+			);
+		} else {
+			return array(
+				'status'=>'failure',
+				'message'=>'You do not have permission to delete asset with id ' . $asset_id
+			);
+		}
 	}
 
 	/**
-	 * Get a list of drawings using the asset specified.
+	 * Get a list of items using the asset specified.
 	 * @param  int $asset_id Id of the asset to look for.
-	 * @return array Drawings that use the asset.
+	 * @param  string $scope Scope to search for the asset within.
+	 * @return array Number of, and list of ids of drawings that use the asset.
 	 */
-	public static function list_drawings_using_asset($asset_id)
+	public static function check_use($asset_id, $scope)
 	{
-		
+		global $DB;
+		$asset = self::get_asset($asset_id, true);
+		$tail = URL_ASSET . $asset['file_name'];
+		if($scope == 'roadmap_drawings'){
+			$res = $DB->MultiQuery('SELECT * FROM objects WHERE content LIKE "%'.$tail.'%"');
+		}
+		var_dump($res);
+		//return $asset_use;
 	}
 
 	/**
@@ -47,6 +102,7 @@ class Asset_Manager
 			LEFT JOIN assets a
 			ON a.id = asi.asset_id
 			WHERE asi.school_id = ' . (int) $options['school_id'] . '
+			AND active = true
 			ORDER BY a.date_created DESC';
 		} else {
 			//return all assets
@@ -88,7 +144,17 @@ class Asset_Manager
 		}
 		$query .= ' GROUP BY school_id ORDER BY school_name ASC';
 		$buckets = $DB->MultiQuery($query);
-		array_unshift($buckets, $site_wide_bucket); //everyone can see this bucket
+
+		//everyone can see this bucket
+		array_unshift($buckets, $site_wide_bucket);
+		
+		//Assign permissions to each bucket.
+		foreach($buckets as &$bucket){
+			if(IsAdmin() || $bucket['school_id'] == $_SESSION['school_id']){
+				$bucket['userCanDelete'] = true;
+				$bucket['userCanReplace'] = true;	
+			}
+		}
 		return $buckets;
 	}
 }
