@@ -39,7 +39,28 @@
 	</form>
 
 	<iframe id="upload_target" name="upload_target" src="ci/index.php/blank"></iframe>
-
+	
+	<script type="text/javascript" src="/asset/Asset_Manager.js"></script>
 	<script type="text/javascript" src="js/dialog.js"></script>
+	<script>
+		$('body').on('click', '[data-asset="delete"]', function(){
+			var asset_id = $(this).parents('.asset').data('asset-id');
+			checkAssetUse(asset_id, 'roadmap_drawings', function(response){
+				var response = confirm("There are " + response.number_of_objects_using + " roadmap drawing versions using this image. Are you sure you want to delete it?");
+				if(response == true){
+					deleteAsset(asset_id);		
+				}
+			});
+		});
+
+		$('body').on('click', '[data-asset="insert"], #uploaded-images img', function(){
+			var imgSrc = $(this).parents('.asset').find('.img-container img').attr('src'),
+			assetId = $(this).parents('.asset').data('asset-id');
+			insertImage(imgSrc, assetId); //tinymce dialog.js
+		});
+
+		//Asset_Manager.js main function
+		getBuckets();
+	</script>
 </body>
 </html>

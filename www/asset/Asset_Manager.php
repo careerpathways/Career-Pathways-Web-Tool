@@ -78,13 +78,26 @@ class Asset_Manager
 	public static function check_use($asset_id, $scope)
 	{
 		global $DB;
-		$asset = self::get_asset($asset_id, true);
-		$tail = URL_ASSET . $asset['file_name'];
+		//Adding slashes to avoid mysql syntax errors.
+		$tail = addslashes('data-asset-id="' . $asset_id . '"'); // e.g. data-asset-id=\"12\"
 		if($scope == 'roadmap_drawings'){
-			$res = $DB->MultiQuery('SELECT * FROM objects WHERE content LIKE "%'.$tail.'%"');
+			$res = $DB->MultiQuery('SELECT 
+					COUNT(objects.id) as times_used_within_version,
+					objects.drawing_id as drawing_version_id,
+					drawings.parent_id as drawing_main_id
+				FROM objects
+				LEFT JOIN drawings
+					ON objects.drawing_id = drawings.id
+				WHERE objects.content 
+				LIKE "%'.$tail.'%" 
+				GROUP BY objects.drawing_id
+				ORDER BY drawing_main_id ASC');
 		}
-		var_dump($res);
-		//return $asset_use;
+		$asset_use = array(
+			'number_of_objects_using' => count($res),
+			'usages' => $res
+		);
+		return $asset_use;
 	}
 
 	/**
