@@ -12,6 +12,8 @@ Charts = {
     		var points = Charts.components.invoke('getShape').invoke('getBounds').pluck('bottomRight');
     		Charts.bounds = new Geometry.Bounds(points);
     		var bottomRight = Charts.bounds.bottomRight;
+    		jQuery('#'+canvas_container).width(bottomRight.x);
+    		jQuery('#'+canvas_container).height(bottomRight.y);
 		};
     }
     else {

@@ -20,8 +20,10 @@
 	z-index: -1; 
 }
 #chartcontainer {
-	height: 1200px;
-	width: 1600px;
+	/* chview.js will updated chartcontainer with more specific size. These have to be big for initial rendering to take place. */
+	height: 1600px;
+	width: 1200px;
+	overflow:hidden;
 }
 </style>
 <script type="text/javascript">
