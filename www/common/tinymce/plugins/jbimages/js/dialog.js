@@ -11,7 +11,25 @@
  * Version: 2.3 released 23/06/2013
  */
 
- tinyMCEPopup.requireLangPack();
+
+/* ====== Provide support if this .js file is used outside the context of tinyMCE ====== */
+if(tinyMCEPopup){
+	var usingFullTinyMCEPopup = true
+} else {
+	var tinyMCEPopup = {
+		getLang: function(id){
+			var p = id.split('.');
+			console.log(tinyMCE);
+			console.log(p);
+			return tinyMCE['en.jbimages_dlg'][p[1]];
+		}
+	}
+}
+
+if(usingFullTinyMCEPopup){
+	tinyMCEPopup.requireLangPack();
+}
+
 
 var jbImagesDialog = {
 	
@@ -72,10 +90,10 @@ var jbImagesDialog = {
 		}
 	}
 };
-
-tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
-function insertImage(imgSrc, assetId){
-	tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + imgSrc +'" data-asset-id="'+assetId+'"/>');
-	tinyMCEPopup.close();
+if(usingFullTinyMCEPopup){
+	tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
+	function insertImage(imgSrc, assetId){
+		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + imgSrc +'" data-asset-id="'+assetId+'"/>');
+		tinyMCEPopup.close();
+	}
 }
-

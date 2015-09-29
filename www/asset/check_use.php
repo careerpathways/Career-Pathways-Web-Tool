@@ -13,12 +13,7 @@ if(!Request('asset_id')){
 	require('template/json.php');
 	die();
 }
-if(!Request('scope')){
-	$response = array('status'=>'failure','message'=>'Please provide a scope to check asset use on.');	
-	require('template/json.php');
-	die();
-}
 
-$response = Asset_Manager::check_use((int) Request('asset_id'), Request('scope'));
+$response = Asset_Manager::check_use((int) Request('asset_id'));
 require('template/json.php');
 die();

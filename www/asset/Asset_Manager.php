@@ -72,29 +72,44 @@ class Asset_Manager
 	/**
 	 * Get a list of items using the asset specified.
 	 * @param  int $asset_id Id of the asset to look for.
-	 * @param  string $scope Scope to search for the asset within.
 	 * @return array Number of, and list of ids of drawings that use the asset.
 	 */
-	public static function check_use($asset_id, $scope)
+	public static function check_use($asset_id)
 	{
 		global $DB;
 		//Adding slashes to avoid mysql syntax errors.
 		$tail = addslashes('data-asset-id="' . $asset_id . '"'); // e.g. data-asset-id=\"12\"
-		if($scope == 'roadmap_drawings'){
-			$res = $DB->MultiQuery('SELECT 
-					COUNT(objects.id) as times_used_within_version,
-					objects.drawing_id as drawing_version_id,
-					drawings.parent_id as drawing_main_id
-				FROM objects
-				LEFT JOIN drawings
-					ON objects.drawing_id = drawings.id
-				WHERE objects.content 
+		
+		$roadmap_drawings = $DB->MultiQuery('SELECT 
+				"roadmap_drawing" as type,
+				drawings.parent_id as roadmap_drawing_main_id,
+				objects.drawing_id as roadmap_drawing_version_id,
+				objects.id as objects_id,
+				COUNT(objects.id) as times_used_within_version
+				
+			FROM objects
+			LEFT JOIN drawings
+				ON objects.drawing_id = drawings.id
+			WHERE objects.content 
 				LIKE "%'.$tail.'%" 
-				GROUP BY objects.drawing_id
-				ORDER BY drawing_main_id ASC');
-		}
+			GROUP BY roadmap_drawing_version_id
+			ORDER BY roadmap_drawing_main_id ASC');
+
+		$post_drawings = $DB->MultiQuery('SELECT 
+				"post_drawing" as type,
+				post_drawings.parent_id as post_drawing_main_id,
+				post_drawings.id as post_drawing_version_id,
+				post_cell.id as post_cell_id,
+				COUNT(post_cell.id) as times_used_within_version
+			FROM post_cell 
+				LEFT JOIN post_drawings on post_cell.drawing_id = post_drawings.id
+			WHERE content 
+				LIKE "%'.$tail.'%"
+			GROUP BY post_drawing_version_id
+			ORDER BY post_drawing_main_id ASC');
+		$res = array_merge($roadmap_drawings, $post_drawings);
 		$asset_use = array(
-			'number_of_objects_using' => count($res),
+			'number_of_drawings_using' => count($res),
 			'usages' => $res
 		);
 		return $asset_use;

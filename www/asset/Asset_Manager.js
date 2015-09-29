@@ -93,8 +93,8 @@ function clearAssets(){
 /**
  * Check an assets use and get details about where it's used.
  */
-function checkAssetUse(assetId, scope, callback){
-	$.get("/asset/check_use.php?asset_id="+assetId+"&scope="+scope, function(response){
+function checkAssetUse(assetId, callback){
+	$.get("/asset/check_use.php?asset_id="+assetId, function(response){
 		if(response && 'function' === typeof callback){
 			callback(response);
 		}
