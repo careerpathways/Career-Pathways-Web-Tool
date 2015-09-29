@@ -2,6 +2,7 @@
 if(!defined('DIR_CORE')){
 	include("inc.php");	
 }
+include("simple_html_dom.php");
 
 define('URL_ASSET', '/asset/');
 
@@ -138,9 +139,15 @@ class Asset_Manager
 		}
 		$assets = $DB->MultiQuery($_query);
 		foreach ($assets as &$a) {
-			$a['imgSrc'] = getBaseUrl() . '/asset/' . $a['file_name'];
+			$a['imgSrc'] = self::make_asset_url($a['file_name']);
 		}
 		return $assets;
+	}
+
+
+	public static function make_asset_url($assetFileName)
+	{
+		return getBaseUrl() . '/asset/' . $assetFileName;
 	}
 
 	/**
@@ -160,21 +167,33 @@ class Asset_Manager
 			'school_id' => 0, //there is no school with this id, it's used for the site-wide bucket.
 			'school_name' => 'Site Wide'
 		);
-		$query = 'SELECT school_id, school_name FROM assets_school_ids
-			LEFT JOIN schools 
-				ON assets_school_ids.school_id = schools.id
-			WHERE school_id > 0'; //don't get school id 0, which is null. We add that manually (below, in this function)
-		//Restrict the query if the user is not allowed to edit other schools (a.k.a buckets).
-		if(!CanEditOtherSchools()){
-			if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
-				$query .= ' WHERE school_id = "'.$_SESSION['school_id'].'"';
-			}
-		}
-		$query .= ' GROUP BY school_id ORDER BY school_name ASC';
-		$buckets = $DB->MultiQuery($query);
+
+		
 
 		//everyone can see this bucket
-		array_unshift($buckets, $site_wide_bucket);
+		$buckets[] = $site_wide_bucket;
+
+		//Add this user's school bucket
+		if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
+			$user_school_bucket = $DB->SingleQuery('SELECT id as school_id, school_name FROM schools WHERE id = ' . (int) $_SESSION['school_id']);
+			$buckets[] = $user_school_bucket;
+		}
+
+		//Get buckets for other schools that have assets
+		if(CanEditOtherSchools()){
+			//don't get school id 0
+			$query = 'SELECT school_id, school_name FROM assets_school_ids
+				LEFT JOIN schools 
+					ON assets_school_ids.school_id = schools.id
+				WHERE school_id > 0';
+			//exclude this user's school (included above)
+			if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
+				$query .= ' AND school_id != ' . (int) $_SESSION['school_id'];
+			}
+			$query .= ' GROUP BY school_id ORDER BY school_name ASC';
+			$other_schools_buckets = $DB->MultiQuery($query);
+			$buckets = array_merge($buckets, $other_schools_buckets);
+		}
 		
 		//Assign permissions to each bucket.
 		foreach($buckets as &$bucket){
@@ -184,5 +203,135 @@ class Asset_Manager
 			}
 		}
 		return $buckets;
+	}
+
+	/**
+	 * Replace an asset with another one.
+	 * @param  int $assetIdOriginal
+	 * @param  int $assetIdNew
+	 * @return [type]                  [description]
+	 */
+	public static function replace_asset($assetIdOriginal, $assetIdNew)
+	{
+		$result = array(
+			'status'=>'',
+			'message'=>'',
+			'operation'=> __FUNCTION__,
+			'details'=>array()
+		);
+
+		$drawings = self::check_use($assetIdOriginal);
+
+		if($drawings['number_of_drawings_using'] == 0){
+			$result['status'] = 'not-modified';
+			$result['message'] = 'There are no Roadmap or POST Drawings using that asset.';
+			return $result;
+		}
+		
+		$original_asset = self::get_asset($assetIdOriginal);
+		$new_asset = self::get_asset($assetIdNew);
+
+		foreach($drawings['usages'] as $d){
+			if($d['type'] === 'roadmap_drawing'){
+				$result['details'][] = self::replace_asset_in_object($d['objects_id'], $original_asset, $new_asset);
+			} elseif($d['type'] === 'post_drawing'){
+				$result['details'][] = self::replace_asset_in_post_cell($d['post_cell_id'], $original_asset, $new_asset);
+			}
+		}
+
+		$result['status'] = 'success';
+		$result['message'] = 'Updated ' . count($result['details']) . ' Roadmap/POST Drawings.';
+
+		return $result;
+	}
+
+	/**
+	 * Replace an asset in a Roadmap Object
+	 * @param  int $objectId Object Id in the object table in the db.
+	 * @param  array $assetOriginal
+	 * @param  array $assetNew
+	 * @return array $result object
+	 */
+	private static function replace_asset_in_object($objectId, $assetOriginal, $assetNew)
+	{
+		global $DB;
+		$result = array(
+			'status' => '',
+			'message' => '',
+			'type' => 'roadmap/object',
+			'operation'=> __FUNCTION__,
+			'object_id' => $objectId
+		);
+
+		$object = $DB->SingleQuery('SELECT * FROM objects WHERE id = ' . $objectId);
+		if(!isset($object['content'])){
+			$result['status'] = 'failure';
+			$result['message'] = 'Roadmap/object has no content.';
+			return $result;
+		}
+		$c = unserialize($object['content']);
+		$c['config']['content'] = self::replace_asset_in_html($c['config']['content'], $assetOriginal, $assetNew);
+		$c['config']['content_html'] = self::replace_asset_in_html($c['config']['content_html'], $assetOriginal, $assetNew);
+
+		$DB->Update('objects',array('content'=>serialize($c)), $objectId);
+		
+		$result['status'] = 'success';
+		$result['message'] = 'Updated roadmap object id ' . $objectId;
+
+		return $result;
+	}
+
+	/**
+	 * Replace an asset in a Post Drawing Cell
+	 * @param  int $postCellId Cell ID in post_cell table in the db.
+	 * @param  array $assetOriginal
+	 * @param  array $assetNew
+	 * @return array $result object
+	 */
+	private static function replace_asset_in_post_cell($postCellId, $assetOriginal, $assetNew)
+	{
+		global $DB;
+		$result = array(
+			'status' => '',
+			'message' => '',
+			'type' => 'post/post_cell',
+			'operation'=> __FUNCTION__,
+			'post_cell_id' => $postCellId
+		);
+
+		$c = $DB->SingleQuery('SELECT * FROM post_cell WHERE id = ' . $postCellId);
+		
+		if(!isset($c['content'])){
+			$result['status'] = 'failure';
+			$result['message'] = 'POST Drawing/post_cell has no content.';
+			return $result;
+		}
+		
+		$c['content'] = self::replace_asset_in_html($c['content'], $assetOriginal, $assetNew);
+		
+		$DB->Update('post_cell',array('content'=>$c['content']), $postCellId);
+
+		$result['status'] = 'success';
+		$result['message'] = 'Updated post cell id ' . $postCellId;
+		
+		return $result;
+	}
+
+	/**
+	 * Replaces an asset image src and data-asset-id in an html string.
+	 * @param  string $htmlString
+	 * @param  array $assetOriginal
+	 * @param  array $assetNew
+	 * @return string Same as $htmlString but with image src and data-asset-id updated. Note: line breaks are removed.
+	 */
+	private static function replace_asset_in_html($htmlString, $assetOriginal, $assetNew){
+		$htmlObj = str_get_html($htmlString);
+		foreach($htmlObj->find('img') as $e){
+			if($e->getAttribute('data-asset-id') == $assetOriginal['id']){
+	       		$e->setAttribute('src', self::make_asset_url($assetNew['file_name']));
+	       		$e->setAttribute('data-asset-id', $assetNew['id']);
+	       	}
+		}
+		return (string) $htmlObj;
 	}
 }
