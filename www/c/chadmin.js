@@ -1291,7 +1291,7 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	if(typeof source.config.color !== 'string' || source.config.color === 'transparent' || source.config.color.indexOf('rgba') > -1){
 		source.config.color = '000000';
 	}
-	data.color = source.config.color;
+	data.color = source.config.color.replace('#','');
 	
 	return data;
 };
