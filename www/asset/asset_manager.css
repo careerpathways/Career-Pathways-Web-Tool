@@ -1,0 +1,117 @@
+#uploaded-images .asset {
+  width: 100px;
+  height: 150px;
+  display: inline-block;
+  margin: 3px;
+  background: #eee;
+  vertical-align: top;
+}
+.asset-manager .heading {
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+.asset-manager .subheading {
+  color: black;
+  font-size: 16px;
+  font-weight: normal;
+  margin: 10px 0;
+}
+.asset .img-container {
+  width: 100px;
+  height: 100px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.asset-manager .btn {
+  color: white;
+  background: #333;
+  font-size:9px;
+  line-height: 12px;
+  margin: 2px;
+  padding: 2px;
+  text-shadow: none;
+}
+.asset-manager .btn:hover {
+  color:white;
+  background: #333;
+}
+.asset-manager .insert.btn {
+  background: #33CC33;
+  padding: 2px 22px;
+}
+.asset-manager .delete.btn {
+  background: #990000;
+}
+.asset-manager .replace.btn {
+  background: #3333EE;
+}
+.img-container img {
+  cursor: pointer;
+  margin: 5%;
+  max-width: 90%;
+  max-height: 90%;
+}
+.section {
+  margin: 20px 0;
+  padding: 20px 10px;
+  background: #FFF;
+  border-bottom: 1px dashed #eee;
+}
+.upload_infobar {
+  background: none;
+}
+#close_link {
+  display: block;
+}
+
+/* Show/Hide controls based on user permissions for this bucket. JS assigns the permissions class. */
+.asset .delete.btn { display: none; }
+.userCanDelete .asset .delete.btn { display: inline-block; }
+.asset .replace.btn { display: none; }
+.userCanReplace .asset .replace.btn { display: inline-block; }
+
+.replacement-pad {
+  text-align: center;
+}
+.replacement-pad .asset {
+  display: block !important;
+}
+.replacement-pad .asset .btn {
+  display: none;
+}
+.replacement-pad .asset .img-container {
+  display: block;
+  height: initial;
+  margin: 5px auto;
+}
+.replace-with-this.btn {
+  display: none;
+  background: #3333aa;
+}
+.replace-with-this.btn:hover {
+   background: #3333dd;
+}
+
+.section.existing.asset-replace-mode .delete.btn,
+.section.existing.asset-replace-mode .insert.btn,
+.section.existing.asset-replace-mode .replace.btn {
+  display: none;
+}
+
+.section.existing.asset-replace-mode .replace-with-this.btn {
+  display: block;
+}
+.replacement-pad .cancel {
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.replacement-pad .step-two-instructions {
+  margin: 50px auto;
+}
+.replacement-pad .btn.proceed {
+  background: green;
+}

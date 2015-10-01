@@ -1,4 +1,4 @@
 RewriteEngine on
 
-RewriteCond %{REQUEST_URI} !.php$
+RewriteCond %{REQUEST_URI} !.php|.js|.css$
 RewriteRule ^(.*)$ index.php?asset=$1 [nc]

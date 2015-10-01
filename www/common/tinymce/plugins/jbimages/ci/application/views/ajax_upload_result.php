@@ -5,7 +5,10 @@
 <title>JustBoil's Result Page</title>
 <script language="javascript" type="text/javascript">
 	window.parent.window.jbImagesDialog.uploadFinish({
-		filename:'<?php echo $file_name; ?>',
+		asset: {
+			imgSrc: '<?php echo $asset["file_name"]; ?>',
+			id:'<?php echo $asset["id"]; ?>'
+		},
 		result: '<?php echo $result; ?>',
 		resultCode: '<?php echo $resultcode; ?>'
 	});

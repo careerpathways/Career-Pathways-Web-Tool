@@ -10,6 +10,7 @@ It's recommended to make a copy of the entire plugin, then upgrade tinymce, then
 The jbimages plugin is modified.
 
 See Git commits 7a9326dd95c4312d98db36e3368ad7a7fd27ceff and bf854728f6c8985c60c3852f77b132fb8351172e to see major changes.
+Other changes to this plugin are included in 4.1.0.
 
 This plugin will very likely ''not'' be compatible with major version changes of tinymce.
 

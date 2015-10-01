@@ -29,7 +29,7 @@
 			ed.addCommand('jbImages', function() {
 				var unixtime_ms = new Date().getTime();
 				ed.windowManager.open({
-					file : url + '/dialog.htm?z' + unixtime_ms,
+					file : url + '/dialog.php?z' + unixtime_ms,
 					width : 330 + parseInt(ed.getLang('jbimages.delta_width', 0)),
 					height : 155 + parseInt(ed.getLang('jbimages.delta_height', 0)),
 					inline : 1

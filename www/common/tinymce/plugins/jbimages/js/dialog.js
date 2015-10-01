@@ -11,7 +11,25 @@
  * Version: 2.3 released 23/06/2013
  */
 
- tinyMCEPopup.requireLangPack();
+
+/* ====== Provide support if this .js file is used outside the context of tinyMCE ====== */
+if(tinyMCEPopup){
+	var usingFullTinyMCEPopup = true
+} else {
+	var tinyMCEPopup = {
+		getLang: function(id){
+			var p = id.split('.');
+			console.log(tinyMCE);
+			console.log(p);
+			return tinyMCE['en.jbimages_dlg'][p[1]];
+		}
+	}
+}
+
+if(usingFullTinyMCEPopup){
+	tinyMCEPopup.requireLangPack();
+}
+
 
 var jbImagesDialog = {
 	
@@ -67,11 +85,15 @@ var jbImagesDialog = {
 			document.getElementById("upload_in_progress").style.display = 'none';
 			document.getElementById("upload_infobar").style.display = 'block';
 			document.getElementById("upload_infobar").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.upload_complete', 0);			
-			$('#uploaded-images').prepend('<img src="'+result.filename+'" />');
+			$('#uploaded-images').prepend(buildAssetHTML(result.asset));
 			$("#upload_form_container").fadeIn();
 		}
 	}
-
 };
-
-tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
+if(usingFullTinyMCEPopup){
+	tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
+	function insertImage(imgSrc, assetId){
+		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + imgSrc +'" data-asset-id="'+assetId+'"/>');
+		tinyMCEPopup.close();
+	}
+}

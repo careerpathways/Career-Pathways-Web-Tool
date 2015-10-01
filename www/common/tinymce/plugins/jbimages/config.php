@@ -40,6 +40,7 @@
 	$config['img_path'] = getBaseUrl() . '/asset'; // Includes full domain name
 	$config['upload_path'] = $SITE->asset_path(); // Physical path. [Usually works fine like this]
 	$config['db'] = $SITE->GetDBH(); //Provide the Career Pathways database handle
+	$config['CanEditOtherSchools'] = CanEditOtherSchools(); //If current user can edit other schools
 
 /*-------------------------------------------------------------------
 | 
