@@ -46,10 +46,14 @@
             programId : 0
         };
 
+        var ROADMAP_DRAWING_TYPE = 'pathways',
+            POST_DRAWING_TYPE = 'post',
+            POST_VIEWS_TYPE = 'post_views';
+
         //double check this value and error if it's not correct.
-        if(args.drawingType !== 'pathways' && args.drawingType !== 'post' && args.drawingType !== 'post_views'){
+        if(args.drawingType !== ROADMAP_DRAWING_TYPE && args.drawingType !== POST_DRAWING_TYPE && args.drawingType !== POST_VIEWS_TYPE){
             if(console && console.error){
-                console.error('args.drawingType needs to be either "pathways" (for roadmap drawings) or "post" (for post drawings) or "view" (for post views). Got: ' + args.drawingType)
+                console.error('args.drawingType needs to be either "'+ROADMAP_DRAWING_TYPE+'" (for roadmap drawings) or "'+POST_DRAWING_TYPE+'" (for post drawings) or "'+POST_VIEWS_TYPE+'" (for post views). Got: ' + args.drawingType);
             }
             return;
         }
@@ -60,7 +64,8 @@
         $.get(_url,
             function( _allPrograms ){
                 APNScope.allPrograms = JSON.parse(_allPrograms);
-                APNScope.programName.filterSelect( APNScope.skillset.selectedId() );
+                //Set program name select initially
+                APNScope.programName.filterSelect( APNScope.skillset.selectedId(), _this.args.programId );
             });
 
 
@@ -72,6 +77,15 @@
             },
             selectedName: function(){
                 return this.$htmlSelect.children('option:selected').text();
+            },
+            //update the skillset <select> to the appropriate skillset based on a program id.
+            updateSelected: function(program){
+                if(program.skillset_id != this.selectedId()){
+                    this.$htmlSelect.val(program.skillset_id);
+                    this.save();
+                    //make sure only program names with this skillset id are shown, if they're not already.
+                    _this.programName.filterSelect(program.skillset_id, program.id);
+                }
             },
             save: function(){
                 var drawingId = APNScope.args.drawingId,
@@ -108,6 +122,15 @@
         this.programName = {
         
             $htmlSelect: $('#program_id'), //html id of the <select> element
+            selected: function(){
+                var _selectedId = this.selectedId();
+                for ( var i = 0; i < _this.allPrograms.length; i++ ){
+                    if(_this.allPrograms[i].id == _selectedId){
+                        return _this.allPrograms[i];
+                    }
+                    
+                }
+            },
             selectedId: function(){
                 return this.$htmlSelect.children('option:selected').attr('value');
             },
@@ -144,24 +167,23 @@
             },
 
             // Filter the Approved Program Name <select> to only show names within the current skill set.
-            filterSelect: function( skillsetId ) {
+            filterSelect: function( skillsetId, programId ) {
                 var options = '',
-                    allPrograms = _this.allPrograms
-                    args = _this.args;
+                    allPrograms = _this.allPrograms;
 
                 options += '<option value="0"></option>';
                 
                 if(skillsetId){
                     for ( var i = 0; i < allPrograms.length; i++ ){
                         if ( allPrograms[i] && allPrograms[i].title && allPrograms[i].title.length > 0 && allPrograms[i].skillset_id == skillsetId ) {
-                            var selected = ( allPrograms[i].id == args.programId ) ? 'selected="selected"' : '';
+                            var selected = ( allPrograms[i].id == programId ) ? 'selected="selected"' : '';
                             options += '<option value="' + allPrograms[i].id + '" ' + selected + '>' + allPrograms[i].title + '</option>';
                         }
                     }
                 } else {
                     for ( var i = 0; i < allPrograms.length; i++ ){
                         if ( allPrograms[i] && allPrograms[i].title && allPrograms[i].title.length > 0 ) {
-                            var selected = ( allPrograms[i].id == args.programId ) ? 'selected="selected"' : '';
+                            var selected = ( allPrograms[i].id == programId ) ? 'selected="selected"' : '';
                             options += '<option value="' + allPrograms[i].id + '" ' + selected + '>' + allPrograms[i].title + '</option>';
                         }
                     }
@@ -185,6 +207,7 @@
         });
         
         this.programName.$htmlSelect.bind( 'change', function() {
+            _this.skillset.updateSelected(_this.programName.selected());
             //when creating new drawings, make sure the drawing_title field gets updated when program name changes
             $('#drawing_form.new_drawing #drawing_title').val(_this.programName.selectedName());
         });     
