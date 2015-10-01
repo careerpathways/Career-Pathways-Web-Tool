@@ -29,34 +29,26 @@ if( Request('sid') ) {
 		
 		echo '<div style="background-color: white; width: 100%;"><div style="padding-top:5px; padding-left:5px;">';
 
-		//$color = $DB->SingleQuery('SELECT * FROM color_schemes WHERE school_id = ' . $school_id . ' AND hex = "' . strtolower($_REQUEST['color']) . '"');
+		$request_color = strtolower($_REQUEST['color']);
 
-        $color = $DB->SingleQuery('
-        SELECT count(distinct dcc.id) as num_roadmaps,dcc.hexcolor as hex FROM (
-            SELECT m.id as id , o.color as hexcolor
-            FROM drawing_main as m INNER JOIN drawings as d ON m.id = d.parent_id
-                              INNER JOIN objects as o ON o.drawing_id= d.id
-		    WHERE m.school_id='.$school_id . '
-		     AND o.color = \''. strtolower($_REQUEST['color']) .'\'
-		UNION
-				SELECT m.id as id, c.color as hexcolor
-				FROM connections c
-				INNER JOIN objects o ON c.source_object_id = o.id
-				INNER JOIN drawings d ON o.drawing_id=d.id
-				INNER JOIN drawing_main m ON d.parent_id = m.id
-  				WHERE school_id = ' . $school_id . '
-  		          AND c.color = \''. strtolower($_REQUEST['color']) .'\'
-				) as dcc
-		GROUP BY dcc.hexcolor
-		'
-        );
+		$query = 'SELECT drawing_main.id
+		FROM objects
+		LEFT JOIN drawings on objects.drawing_id = drawings.id
+		LEFT JOIN drawing_main on drawings.parent_id = drawing_main.id
+		WHERE 
+		(objects.content LIKE \'%s:16:"color_background";s:6:"'.$request_color.'";%\'
+		OR objects.content LIKE \'%s:5:"color";s:6:"'.$request_color.'";%\')
+		AND drawing_main.school_id = "'.$school_id.'"
+		GROUP BY drawings.parent_id';
 
+		$roadmaps_using_color = $DB->MultiQuery($query);
+		$num_roadmaps = count($roadmaps_using_color);
 
 		echo '<div style="padding:20px;">';
-			echo '<div style="background-color:#' . $color['hex'] . '; width:40px; height:40px; margin:0 auto;"></div>';
+			echo '<div style="background-color:#' . $request_color . '; width:40px; height:40px; margin:0 auto;"></div>';
 		echo '</div>';
-		
-		echo '<div style="padding-bottom:5px;">This color is currently being used by ' . $color['num_roadmaps'] . ' roadmaps. You must choose a new color for the objects currently using this color.</div>'; 
+
+		echo '<div style="padding-bottom:5px;">This color is currently being used by <b>' . $num_roadmaps . '</b> roadmaps. You must choose a new color for the objects currently using this color.</div>'; 
 		
 		$colors = $DB->MultiQuery('SELECT *
 			FROM color_schemes
@@ -67,7 +59,7 @@ if( Request('sid') ) {
 		
 		foreach($colors as $c)
 		{
-			if($c['hex'] != $color['hex'])
+			if($c['hex'] != $request_color)
 				echo '<div style="background-color:#' . $c['hex'] . '; width:40px; height:40px; float:left; margin-right:5px; margin-bottom:5px;">
 					<input type="radio" name="reassign_color" class="reassign_color" value="' . $c['hex'] . '"' . ($c['hex'] == '333333' ? 'checked="checked"' : '') . ' />
 				</div>';
@@ -84,7 +76,7 @@ if( Request('sid') ) {
 		<script type="text/javascript">
 			jQuery("#reassignBtn").click(function(){
 				$(this).val("Please wait...").unbind("click").css({float: "left"}).after('<div style="float:left; margin-left:10px;"><img src="/images/e6d09e_loader.gif" width="43" height="11" /></div><div style="clear:both;"></div>');
-				deleteColor(school_id, "<?=$color['hex']?>", $(".reassign_color:checked").val());
+				deleteColor(school_id, "<?= $request_color ?>", $(".reassign_color:checked").val());
 			});
 		</script>
 		<?php 
@@ -97,47 +89,33 @@ if( Request('sid') ) {
 
 			$objects = $DB->MultiQuery('
 				SELECT o.*, d.id AS drawing_id
-				FROM objects o
-				JOIN drawings d ON o.drawing_id=d.id
-				JOIN drawing_main m ON d.parent_id = m.id
-				WHERE school_id = ' . $school_id . '
-					AND color = "' . Request('color') . '"');
+					FROM objects o
+						JOIN drawings d ON o.drawing_id=d.id
+						JOIN drawing_main m ON d.parent_id = m.id
+					WHERE (
+						o.content LIKE \'%s:16:"color_background";s:6:"'.Request('color') .'";%\'
+						OR
+						o.content LIKE \'%s:5:"color";s:6:"'.Request('color') .'";%\'
+					)
+					AND school_id = ' . $school_id );
 			foreach($objects as $o)
 			{
 				$content = unserialize($o['content']);
-				$content['config']['color'] = Request('replaceWith');
+				if(isset($content['config']['color']) && $content['config']['color'] == Request('color')){
+					$content['config']['color'] = Request('replaceWith');
+				}
+				if(isset($content['config']['color_background']) && $content['config']['color_background'] == Request('color')){
+					$content['config']['color_background'] = Request('replaceWith');
+				}
 				
 				$data = array();
 				$data['content'] = serialize($content);
-				$data['color'] = Request('replaceWith');
+				$data['color'] = 'null'; //No longer used because drawings have multiple color properties now.
 				$DB->Update('objects', $data, $o['id']);
 				
 				if(!in_array($o['drawing_id'], $drawing_ids))
 					$drawing_ids[] = $o['drawing_id'];
 			}
-
-            /*
-			$objects = $DB->MultiQuery('
-				SELECT o.*, d.id AS drawing_id
-				FROM objects o
-				JOIN drawings d ON o.drawing_id=d.id
-				JOIN drawing_main m ON d.parent_id = m.id
-				WHERE school_id = ' . $school_id . '
-					AND color = "' . Request('color') . '"');
-			foreach($objects as $o)
-			{
-				$content = unserialize($o['content']);
-				$content['config']['color'] = Request('replaceWith');
-				
-				$data = array();
-				$data['content'] = serialize($content);
-				$data['color'] = Request('replaceWith');
-				$DB->Update('objects', $data, $o['id']);
-				
-				if(!in_array($o['drawing_id'], $drawing_ids))
-					$drawing_ids[] = $o['drawing_id'];
-			}
-            */
 
 			$connections = $DB->MultiQuery('
 				SELECT c.*, d.id AS drawing_id

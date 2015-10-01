@@ -239,8 +239,8 @@ function loadPicker() {
 			showhexcontrols: true,
 			showwebsafe: false,
 			images: {
-				PICKER_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/picker_thumb.png",
-				HUE_THUMB: "http://developer.yahoo.com/yui/examples/colorpicker/assets/hue_thumb.png"
+				PICKER_THUMB: "https://cdnjs.cloudflare.com/ajax/libs/yui/2.7.0/colorpicker/assets/picker_thumb.png",
+				HUE_THUMB: "https://cdnjs.cloudflare.com/ajax/libs/yui/2.7.0/colorpicker/assets/hue_thumb.png"
 			}
 		});
 		colorPicker.setValue([0,0,0],false);
