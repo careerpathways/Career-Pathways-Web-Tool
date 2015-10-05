@@ -60,7 +60,7 @@ class Asset_Manager
 				WHERE id = '.$asset_id);
 			return array(
 				'status'=>'success',
-				'message'=>'Successfully deleted asset with id ' . $asset_id
+				'message'=>'Image successfully deleted.'
 			);
 		} else {
 			return array(

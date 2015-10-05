@@ -81,7 +81,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			<?php if($inTinyMce): ?>
 				<h2>3. Select an image from <span data-replace="school_name"></span></h2>
 			<?php else: ?>
-				<h2>Administer images for <span data-replace="school_name"></span></h2>
+				<h2>Manage images for <span data-replace="school_name"></span></h2>
 			<?php endif;?>
 			
 			<div class="messages"></div>
