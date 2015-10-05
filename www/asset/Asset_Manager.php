@@ -224,7 +224,7 @@ class Asset_Manager
 
 		if($drawings['number_of_drawings_using'] == 0){
 			$result['status'] = 'not-modified';
-			$result['message'] = 'There are no Roadmap or POST Drawings using that asset.';
+			$result['message'] = 'There are no Roadmap or POST Drawings using that image.';
 			return $result;
 		}
 		
