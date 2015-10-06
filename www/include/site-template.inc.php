@@ -115,8 +115,8 @@ class ThisSiteTemplate extends SiteTemplate {
 				?>
 					</div>
 				</div>
-				<div class="site-version-info">Core <?= $SITE->get_core_version() ?> - Template <?= $SITE->get_template_version() ?></div>
 				<div id="helplink"><a href="/a/help.php">Questions/Problems?</a></div>
+				<div class="site-version-info">Core <?= $SITE->get_core_version() ?> - Core Template <?= $SITE->get_template_version() ?></div>
 			</div>
 			<?php
 			}
