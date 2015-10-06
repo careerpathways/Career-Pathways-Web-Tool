@@ -129,6 +129,7 @@ function replaceAssetStart(assetId){
 		$(".section.existing").addClass('asset-replace-mode');
 		$(".replacement-pad").append('<div class="drawings-using">There are '+response.number_of_drawings_using+' drawings using this image &uarr;.</div>');
 		$(".replacement-pad").append('<div class="subheading step-two-instructions">Please choose a replacement above.</div>');
+		$(".replacement-pad").append('<div><em>*Replace image does not replace image in library, it only replaces use of image throughout Roadmaps and POST drawings.</em></div>');
 		$(".replacement-pad").append('<div class="btn proceed" data-asset="replaceproceed" data-asset-original-id="'+assetId+'">proceed</div>');
 		$('[data-asset="replaceproceed"]').hide();
 	});
