@@ -1,8 +1,8 @@
 #uploaded-images .asset {
-  width: 100px;
   height: 150px;
   display: inline-block;
   margin: 3px;
+  padding: 5px;
   background: #eee;
   vertical-align: top;
 }
@@ -19,12 +19,14 @@
   margin: 10px 0;
 }
 .asset .img-container {
-  width: 100px;
+  width: 100%;
   height: 100px;
-  display: table-cell;
-  vertical-align: middle;
 }
-
+.img-container img {
+  cursor: pointer;
+  height:90px;
+  width: auto;
+}
 .asset-manager .btn {
   color: white;
   background: #333;
@@ -48,12 +50,7 @@
 .asset-manager .replace.btn {
   background: #3333EE;
 }
-.img-container img {
-  cursor: pointer;
-  margin: 5%;
-  max-width: 90%;
-  max-height: 90%;
-}
+
 .section {
   margin: 20px 0;
   padding: 20px 10px;

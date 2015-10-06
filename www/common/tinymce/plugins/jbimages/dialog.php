@@ -73,7 +73,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			<p id="upload_form_container">
 				<input id="uploader" name="userfile" type="file" class="jbFileBox" onChange="document.upl.submit(); jbImagesDialog.inProgress();" size="8">
 				<!--<button type="submit" class="btn">{#jbimages_dlg.upload}</button>-->
-				<input type="submit" class="submit" value="Upload">
+				<!--<input type="submit" class="submit" value="Upload">-->
 			</p>			
 		</div>
 		
