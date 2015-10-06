@@ -57,7 +57,7 @@ function getAssets(school_id){
 	$.get('/asset/list.php?school_id='+school_id, function(assets){
 		if(typeof assets === 'object' || typeof assets === 'array'){
 			if(assets.length < 1){
-				$('.section.existing .messages').html('<p>There are no assets for this bucket yet.</p>');
+				$('.section.existing .messages').html('<p>There are no images for this bucket yet.</p>');
 			}
 			for(var i = 0; i < assets.length; i++){
 				setTimeout(appendAsset(assets[i]), 250*i);
@@ -121,14 +121,15 @@ function replaceAssetStart(assetId){
 	assetReplaceMode = true;
 	$('.section.upload').hide();
 	checkAssetUse(assetId, function(response){
-		$(".replacement-pad").append('<div class="heading">Asset Replacement</div>'); //clear each time
+		$(".replacement-pad").append('<div class="heading">Image Replacement</div>'); //clear each time
 		$(".replacement-pad").append('<div class="btn cancel" data-asset="replacecancel" data-asset-id="'+assetId+'">cancel</div>');
-		$(".replacement-pad").append('<div class="subheading">This asset will be replaced:</div>');
+		$(".replacement-pad").append('<div class="subheading">This image will be replaced:</div>');
 		$asset.clone().appendTo(".replacement-pad");
 		$asset.hide(); //don't offer it as a choice to replace itself!
 		$(".section.existing").addClass('asset-replace-mode');
 		$(".replacement-pad").append('<div class="drawings-using">There are '+response.number_of_drawings_using+' drawings using this image &uarr;.</div>');
 		$(".replacement-pad").append('<div class="subheading step-two-instructions">Please choose a replacement above.</div>');
+		$(".replacement-pad").append('<div><em>*Replace image does not replace image in library, it only replaces use of image throughout Roadmaps and POST drawings.</em></div>');
 		$(".replacement-pad").append('<div class="btn proceed" data-asset="replaceproceed" data-asset-original-id="'+assetId+'">proceed</div>');
 		$('[data-asset="replaceproceed"]').hide();
 	});

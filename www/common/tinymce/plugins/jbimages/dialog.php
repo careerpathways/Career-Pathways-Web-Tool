@@ -73,7 +73,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			<p id="upload_form_container">
 				<input id="uploader" name="userfile" type="file" class="jbFileBox" onChange="document.upl.submit(); jbImagesDialog.inProgress();" size="8">
 				<!--<button type="submit" class="btn">{#jbimages_dlg.upload}</button>-->
-				<input type="submit" class="submit" value="Upload">
+				<!--<input type="submit" class="submit" value="Upload">-->
 			</p>			
 		</div>
 		
@@ -81,7 +81,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			<?php if($inTinyMce): ?>
 				<h2>3. Select an image from <span data-replace="school_name"></span></h2>
 			<?php else: ?>
-				<h2>Administer images for <span data-replace="school_name"></span></h2>
+				<h2>Manage images for <span data-replace="school_name"></span></h2>
 			<?php endif;?>
 			
 			<div class="messages"></div>
@@ -105,9 +105,13 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		$('body').on('click', '[data-asset="delete"]', function(){
 			var asset_id = $(this).parents('.asset').data('asset-id');
 			checkAssetUse(asset_id, function(response){
-				var response = confirm("There are " + response.number_of_drawings_using + " Roadmap or POST drawing versions using this image. Are you sure you want to delete it?");
-				if(response == true){
-					deleteAsset(asset_id);		
+				if(response.number_of_drawings_using == 0){
+					var confirmResponse = confirm('Are you sure you want to delete this image? No drawings contain this image.');
+					if(confirmResponse == true){
+						deleteAsset(asset_id);		
+					}
+				} else {
+					alert("There are " + response.number_of_drawings_using + " drawing versions using this image. Cannot delete image.");
 				}
 			});
 		});

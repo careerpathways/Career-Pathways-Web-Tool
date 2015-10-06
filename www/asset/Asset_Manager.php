@@ -54,18 +54,19 @@ class Asset_Manager
 			LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id
 			WHERE id = "'.$asset_id.'"
 		');
-		if(CanEditOtherSchools() || $asset['school_id'] == $_SESSION['school_id']){
+		$drawingsUsingAsset = self::check_use($asset_id);
+		if($drawingsUsingAsset['number_of_drawings_using'] == 0 && (CanEditOtherSchools() || $asset['school_id'] == $_SESSION['school_id'])){
 			$DB->Query('UPDATE assets
 				SET active=0
 				WHERE id = '.$asset_id);
 			return array(
 				'status'=>'success',
-				'message'=>'Successfully deleted asset with id ' . $asset_id
+				'message'=>'Image successfully deleted.'
 			);
 		} else {
 			return array(
 				'status'=>'failure',
-				'message'=>'You do not have permission to delete asset with id ' . $asset_id
+				'message'=>'You do not have permission to delete this image, or this image is in use.'
 			);
 		}
 	}
@@ -224,7 +225,7 @@ class Asset_Manager
 
 		if($drawings['number_of_drawings_using'] == 0){
 			$result['status'] = 'not-modified';
-			$result['message'] = 'There are no Roadmap or POST Drawings using that asset.';
+			$result['message'] = 'There are no Roadmap or POST Drawings using that image.';
 			return $result;
 		}
 		
