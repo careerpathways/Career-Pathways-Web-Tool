@@ -30,8 +30,8 @@
 				var unixtime_ms = new Date().getTime();
 				ed.windowManager.open({
 					file : url + '/dialog.php?z' + unixtime_ms,
-					width : 700 + parseInt(ed.getLang('jbimages.delta_width', 0)),
-					height : 400 + parseInt(ed.getLang('jbimages.delta_height', 0)),
+					width : 800 + parseInt(ed.getLang('jbimages.delta_width', 0)),
+					height : 690 + parseInt(ed.getLang('jbimages.delta_height', 0)),
 					inline : 1
 				}, {
 					plugin_url : url // Plugin absolute URL
