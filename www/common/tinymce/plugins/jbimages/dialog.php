@@ -62,9 +62,9 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		
 		<div class="section upload">
 			<?php if($inTinyMce): ?>
-				<h2>2. (optional) Upload a new image</h2>
+				<h2>2. (optional) Upload A New Image</h2>
 			<?php else: ?>
-				<h2>Upload a new image</h2>
+				<h2>Upload A New Image</h2>
 			<?php endif;?>
 			<p>The new image will be added to <span data-replace="school_name"></span>. Please limit your file size to 400x400 or 1MB</p>
 			<div id="upload_in_progress" class="upload_infobar"><img src="img/spinner.gif" width="16" height="16" class="spinner"><!--{#jbimages_dlg.upload_in_progress}-->Upload in progress&hellip; <div id="upload_additional_info"></div></div>
@@ -79,9 +79,9 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		
 		<div class="section existing">
 			<?php if($inTinyMce): ?>
-				<h2>3. Select an image from <span data-replace="school_name"></span></h2>
+				<h2>3. Select An Image From <span data-replace="school_name"></span></h2>
 			<?php else: ?>
-				<h2>Manage images for <span data-replace="school_name"></span></h2>
+				<h2>Manage Images For <span data-replace="school_name"></span></h2>
 			<?php endif;?>
 			
 			<div class="messages"></div>
