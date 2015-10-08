@@ -637,8 +637,8 @@ a.chart_header {
 }
 
 #helplink {
-	text-align: right;
-	margin-right: 30px;
+	float: left;
+	margin-left: 30px;
 	font-size: 9px;
 }
 #helplink a {
@@ -1185,7 +1185,7 @@ tr.postAssuranceReport.schoolName h2 {
 
 .site-version-info {
 	color: #999;
-	font-size: 10px;
+	font-size: 9px;
 	margin-right: 30px;
 	text-align: right;
 }
