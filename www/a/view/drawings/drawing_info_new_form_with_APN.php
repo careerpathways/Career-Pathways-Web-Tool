@@ -2,16 +2,6 @@
         <div id="existingDrawings" style="float:right; width:330px;"></div>
         <table>
 
-            <tr>
-                <th width="115"></th>
-                <td>
-                    <?php /** support current method of form submission. hidden so user uses apn <select>, rather than hand-typing. */ ?>
-                    <input type="hidden" id="drawing_title" name="name" size="80" value="">
-
-                    <div id="checkNameResponse" class="error"></div>
-                </td>
-            </tr>
-
             <?php if($SITE->hasFeature('oregon_skillset')): ?>
                 <tr>
                     <th width="115"><?=l('skillset name')?></th>
@@ -34,6 +24,14 @@
                     </td>
                 </tr>
             <?php endif; ?>
+
+
+            <tr>
+                <th valign="bottom"><div id="drawing_title_label">Custom Program Name (not recommended)</div></th>
+                <td>
+                    <input type="text" id="drawing_title" name="name" size="40" value="<?= $drawing['name'] ?>">
+                </td>
+            </tr>
 
             <tr>
                 <th width="115">Organization</th>

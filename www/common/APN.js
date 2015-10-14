@@ -202,14 +202,10 @@
         this.skillset.$htmlSelect.bind( 'change', function() {
             _this.programName.filterSelect( _this.skillset.selectedId() );
             _this.skillset.save();
-            //when creating new drawings, make sure the drawing_title field gets updated when skillset changes
-            $('#drawing_form.new_drawing #drawing_title').val(_this.programName.selectedName());
         });
         
         this.programName.$htmlSelect.bind( 'change', function() {
             _this.skillset.updateSelected(_this.programName.selected());
-            //when creating new drawings, make sure the drawing_title field gets updated when program name changes
-            $('#drawing_form.new_drawing #drawing_title').val(_this.programName.selectedName());
         });     
             
 

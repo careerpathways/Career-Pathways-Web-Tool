@@ -331,10 +331,10 @@ $j(document).ready(function(){
 	program_id = $j("#program_id").val();
 
 	$j("#submitButtonCreate").click(function(){
-		if( $j("#drawing_title").val() === "" )
-		{
-			alert("You must enter an Approved Program Name.");
-		}
+        if( $j("#program_id").val() == 0 && $j("#drawing_title").val() == "" )
+        {
+            alert("You must enter either an approved program name or a custom program name");
+        }
 		else
 		{
 			$j.post("/a/drawings.php",

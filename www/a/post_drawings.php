@@ -182,7 +182,7 @@ if( KeyInRequest('drawing_id') ) {
 			$post->school_id = $school_id;
 			$post->skillset_id = Request('skillset_id');
 			if($SITE->hasFeature('approved_program_name')){
-				$post->name = "";
+				$post->name = Request('name');
 				$post->program_id = Request('program_id'); //approved program name id
 			} else {
 				$post->name = Request('name');
