@@ -72,15 +72,7 @@ Administration (US DOL ETA) and the Oregon Community College Strategic Reserve F
 <h3>Oregon Career Pathway Statewide Initiative</h3>
 
 <p>For more information about the Oregon Career Pathway Initiative go to:</p>
-<a href="http://www.oregonpathways.org">www.oregonpathways.org</a>
-<p>or contact:</p>
-<p>
-Mimi Maduro<br />
-Pathways Initiative Statewide Director<br />
-Dept. of Community Colleges & Workforce Development<br />
-<a href="mailto:mmaduro@cgcc.cc.or.us">mmaduro@cgcc.cc.or.us</a>
-</p>
-
+<a href="http://cpwebtool.org/Project_History#Who_else_is_implementing_the_Web_Tool.3F">cpwebtool.org/</a>
 </div>
 
 <?php
