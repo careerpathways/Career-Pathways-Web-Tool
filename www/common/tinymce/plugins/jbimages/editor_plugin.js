@@ -32,8 +32,8 @@
 					file : url + '/dialog.php?z' + unixtime_ms,
 					width : 800 + parseInt(ed.getLang('jbimages.delta_width', 0)),
 					height : 690 + parseInt(ed.getLang('jbimages.delta_height', 0)),
-					inline : 1
-				}, {
+					inline : 1,
+					scrollbars: "yes",
 					plugin_url : url // Plugin absolute URL
 				});
 			});
