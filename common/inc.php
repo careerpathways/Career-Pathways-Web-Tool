@@ -270,8 +270,9 @@ function getExternalDrawingLink($drawing_id, $type)
 	$time_start = microtime(true);
 	
 	$drawing_id = intval($drawing_id);
-	$type = ($type == 'pathways' ? 'pathways' : 'post');
-	
+	if($type !== 'pathways' && $type !== 'post_views'){
+		$type = 'post';
+	}
 	$link = $DB->SingleQuery('
 		SELECT url
 		FROM external_links 

@@ -168,7 +168,7 @@ if($SITE->hasFeature('oregon_skillset')){
 		<th valign="top" width="115">External Link</th>
 		<td>
 			<?php 
-			if($external = getExternalDrawingLink($id, 'post'))
+			if($external = getExternalDrawingLink($id, 'post_views'))
 			{
 				?>
 				<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
