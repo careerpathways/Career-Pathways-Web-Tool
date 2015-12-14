@@ -86,8 +86,13 @@ if( strtolower($_SERVER['REQUEST_METHOD']) == "post" ) {
 			$vars = $DB->MultiQuery("SELECT * FROM email_variables WHERE email_id='".$email['id']."' OR email_id='all' ORDER BY variable");
 
 			foreach( $vars as $v ) {
+				//This doesn't do anything, at least for OR:
 				$v['description'] = str_replace("%%WEBSITE_EMAIL%%",$SITE->email(),$v['description']);
-
+				
+				//Show the email address from default.settings.php
+				if($v['variable'] === 'WEBSITE_EMAIL'){
+					$v['description'] = $SITE->email();	
+				}
 				?>
 				<tr>
 					<td width="160" class="small" valign="top"><?= $v['variable'] ?></td>
