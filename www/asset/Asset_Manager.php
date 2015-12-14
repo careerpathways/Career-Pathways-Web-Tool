@@ -183,15 +183,14 @@ class Asset_Manager
 		//Get buckets for other schools that have assets
 		if(CanEditOtherSchools()){
 			//don't get school id 0
-			$query = 'SELECT school_id, school_name FROM assets_school_ids
-				LEFT JOIN schools 
-					ON assets_school_ids.school_id = schools.id
-				WHERE school_id > 0';
+			$query = 'SELECT id AS school_id, school_name 
+				FROM schools 	
+				WHERE id > 0';
 			//exclude this user's school (included above)
 			if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
-				$query .= ' AND school_id != ' . (int) $_SESSION['school_id'];
+				$query .= ' AND id != ' . (int) $_SESSION['school_id'];
 			}
-			$query .= ' GROUP BY school_id ORDER BY school_name ASC';
+			$query .= ' GROUP BY id ORDER BY school_name ASC';
 			$other_schools_buckets = $DB->MultiQuery($query);
 			$buckets = array_merge($buckets, $other_schools_buckets);
 		}
@@ -210,7 +209,7 @@ class Asset_Manager
 	 * Replace an asset with another one.
 	 * @param  int $assetIdOriginal
 	 * @param  int $assetIdNew
-	 * @return [type]                  [description]
+	 * @return array $result Details about how things went.
 	 */
 	public static function replace_asset($assetIdOriginal, $assetIdNew)
 	{
