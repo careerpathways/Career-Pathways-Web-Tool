@@ -298,10 +298,10 @@ if( KeyInRequest('id') || Request('key') ) {
 				$content['user_active'] = 1;
 				$content['new_user'] = 0;
 				$content['date_created'] = $DB->SQLDate();
-				$user_id = $DB->Insert('users',$content);
+				//$user_id = $DB->Insert('users',$content);
 
 
-				$email = new SiteEmail('account_approved');
+				$email = new SiteEmail('account_approved', true);
 				$email->IsHTML(false);
 				$email->Assign('LOGIN_LINK', $login_url.'?email='.$content['email'].'&password='.$password);
 				$email->Assign('PASSWORD', $password);

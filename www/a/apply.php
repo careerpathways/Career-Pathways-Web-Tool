@@ -47,7 +47,7 @@ if( PostRequest() ) {
 			if( Request('school') != 0 && is_numeric(Request('school')) ) {
 				$user['school_id'] = Request('school');
 				
-				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>64 AND user_active=1');
+				$admins = $DB->MultiQuery('SELECT email FROM users WHERE school_id='.$user['school_id'].' AND user_level>=64 AND user_active=1');
 				//print('http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']."<pre>".print_r($admins,true)."<pre>");
 				foreach( $admins as $m ) {
 					$recipients .= $m['email'].', ';
@@ -67,7 +67,7 @@ if( PostRequest() ) {
 			*/
 			}
 
-			$DB->Insert('users',$user);
+			//$DB->Insert('users',$user);
 
 			// compose email to send to helpdesk@ctepathways.org as well as any school admins of the school they are applying for
 
@@ -84,11 +84,10 @@ if( PostRequest() ) {
 			if(strlen($recipients) >= 5){ //if there is at least one email address (a@b.c = strlen 5)
 				$email->Assign('RECIPIENTS', $recipients);	
 			} else {
-				$email->Assign('RECIPIENTS', $SITE->email_bcc()); //Usually $SITE->email_bcc() is helpdesk@ctepathways.org
+				$email->Assign('RECIPIENTS', $SITE->email()); //Usually is helpdesk@ctepathways.org
 			}
 			$email->Assign('APPROVE_LINK', 'http://'.$_SERVER['SERVER_NAME'].'/a/users.php?key='.$user['application_key']);
 			$email->Assign('USER_INFO', $user_info);
-			$email->AddBCC($SITE->email_bcc());
 			$email->Send();
 
 

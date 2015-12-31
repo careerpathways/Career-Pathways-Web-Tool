@@ -12,7 +12,7 @@ if( !defined('NOSESSION') ) {
 
 include("grammar.inc.php");
 include("wordgen.inc.php");
-include("class.phpmailer.php");
+//include("class.phpmailer.php");
 include("time.inc.php");
 include("form.inc.php");
 include("formatting.inc.php");
@@ -68,31 +68,8 @@ include("dborder.inc.php");
 $DBO = new DB_order($DB);
 
 require_once('Amazon-SES-Mailer-PHP/AmazonSESMailer.php');
-
-class MyMailer extends PHPMailerLite {
-	var $From;
-	var $FromName;
-	var $Host = "mail.parecki.com";
-	#var $Mailer = "amazonses";
-	var $WordWrap = 75;
-
-	function __construct() {
-	global $SITE;
-		$this->From = $SITE->email();
-		$this->FromName = $SITE->email_name();
-		#parent::__construct(AWS_KEY, AWS_SECRET_KEY);
-		parent::__construct();
-	}
-}
-
+require_once(dirname(dirname(__FILE__)).'/vendor/swiftmailer/swiftmailer/lib/swift_required.php');
 include("siteemail.inc.php");
-
-
-
-
-
-
-
 
 
 
