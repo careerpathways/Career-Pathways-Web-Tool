@@ -225,9 +225,7 @@ global $DB, $STATES;
 	</tr>
 	<tr>
 		<td>County:</td>
-		<td colspan="2"><?=
-			GenerateSelectBoxDB('counties', 'school_county', 'id', 'county', 'county', $school['school_county'], array(''=>''))
-		?></td>
+		<td colspan="2" id="county_container"><!-- This form select is inserted via javascript --></td>
 	</tr>
 
 	<tr>
@@ -250,6 +248,20 @@ global $DB, $STATES;
 </table>
 <input type="hidden" name="id" value="<?= $id ?>">
 </form>
+
+<script type="application/javascript">
+	window.jQuery || document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>');
+</script>
+<script>
+	$('#school_state').change(function(){
+		var state = $(this).val();
+		$.get('/a/counties.php?state='+state,function(response){
+			$('#county_container').html(response);
+		});
+	})
+	$('#school_state').trigger('change');
+</script>
+
 <?php
 
 }
