@@ -253,13 +253,40 @@ global $DB, $STATES;
 	window.jQuery || document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>');
 </script>
 <script>
-	$('#school_state').change(function(){
-		var state = $(this).val();
+	// Make saved values available in Javascript.
+	var school_state = "<?= isset($school['school_state']) ? $school['school_state'] : '' ?>",
+		school_county = "<?= isset($school['school_county']) ? $school['school_county'] : '' ?>";
+
+	if(school_state === '' && school_county === '') {
+		// On page load, if this school is NOT being edited,
+		// load all counties for this state.
+		load_counties();
+	} else {
+		// On page load, if this school is being edited, 
+		// load the correct (saved) state and county.
+		// First, select the state that was saved.
+		$('#school_state').val(school_state);
+		
+		// Then load counties for that state, and select the county that was saved.
+		load_counties(function(){
+			$('#county_container').val(school_county);
+		});	
+	}
+
+	function load_counties(callback) {
+		var state = $('#school_state').val();
 		$.get('/a/counties.php?state='+state,function(response){
 			$('#county_container').html(response);
+			if(callback && typeof callback == 'function') {
+				callback();
+			}
 		});
-	})
-	$('#school_state').trigger('change');
+	}
+
+	// ---- event bindings ----
+	$('#school_state').change(function(){
+		load_counties();
+	});
 </script>
 
 <?php
