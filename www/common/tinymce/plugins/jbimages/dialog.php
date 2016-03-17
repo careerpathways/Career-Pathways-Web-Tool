@@ -52,6 +52,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 
 	<form class="form-inline asset-manager" id="upl" name="upl" action="ci/index.php/upload/{#jbimages_dlg.lang_id}" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="jbImagesDialog.inProgress();">
 		<div class="section bucket">
+			<div style="color:red;font-weight: bold;">STOP: Make sure you select your school bucket for your school specific images!</div>
 			<?php if($inTinyMce): ?>
 				<h2>1. Choose Your Image Bucket</h2>
 			<?php else: ?>
