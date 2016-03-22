@@ -991,9 +991,10 @@ function processDrawingListRequest()
 		echo '<div style="background-color:#ffffff; border: 1px #999999 solid; padding:4px"><table width="100%">';
 		foreach( $drawings as $d )
 		{
+			$name = GetDrawingName($d['id'], 'post');
 			echo '<tr class="drawing_select" id="d_'.$d['id'].'">';
 				echo '<td width="20" class="icon"><img src="/common/silk/tick.png" width="16" height="16" style="display:none" /></td>';
-				echo '<td>' . $d['name'] . '</td>';
+				echo '<td>' . $name . '</td>';
 				echo '<td width="40" class="preview"><a href="javascript:loadDrawingPreview(\''.$d['code'].'\')"><img src="/common/silk/magnifier.png" width="16" height="16" /></a></td>';
 				echo '<td width="155"><span class="fwfont">'.($d['last_modified']==''?'':$DB->Date('Y-m-d f:i a',$d['last_modified'])).'</span></td>';
 				echo '<td width="130">' . $d['modified_by'] . '</td>';

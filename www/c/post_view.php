@@ -3,7 +3,7 @@ chdir("..");
 require_once("inc.php");
 require_once("POSTChart.inc.php");
 
-$drawing_id = 0;
+$drawing_id = 0; //version id, not drawing main id
 
 
 if( Request('version_id') ) {
@@ -15,6 +15,7 @@ if( Request('version_id') ) {
 		WHERE deleted = 0
 			AND d.id='.intval(Request('version_id')).'
 			AND main.id='.intval(Request('drawing_id')));
+	$drawing_main_id = Request('drawing_id');
 	if( is_array($drawing) ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
@@ -32,7 +33,7 @@ if( Request('version_id') ) {
 			AND deleted = 0
 			AND main.id='.intval(Request('drawing_id')));
 
-
+	$drawing_main_id = Request('drawing_id');
 	if( is_array($drawing) ) {
 		if( $drawing['program_id'] > 0 ){
 			$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
@@ -54,9 +55,10 @@ if( Request('version_id') ) {
 		WHERE published = 1
 			AND deleted = 0
 			AND code="'.Request('d').'"');
+	$drawing_main_id = Request('d');
 	if( is_array($drawing) ) {
 		$drawing_id = $drawing['id'];
-		$page_title = $drawing['name'];
+		$page_title = GetDrawingName($drawing_main_id, 'post');
 	}
 	else
 		drawing_not_found('post', 0, 0, Request('d'));
@@ -71,6 +73,7 @@ if( Request('version_id') ) {
 		WHERE version_num = '.Request('v').'
 			AND deleted = 0
 			AND code="'.Request('d').'"');
+	$drawing_main_id = Request('d');
 	if( is_array($drawing) ) {
 		$drawing_id = $drawing['id'];
 		$page_title = $drawing['name'];
@@ -102,7 +105,7 @@ else
 {
 	echo '<div id="post_title_container">';
 		echo '<div id="post_title">';
-			echo ShowPostHeader(Request('drawing_id'));
+			echo ShowPostHeader($drawing_main_id);
 		echo '</div>';
 		if( $drawing['skillset'] ) {
 			echo '<div id="skillset">';
