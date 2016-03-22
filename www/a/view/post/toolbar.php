@@ -22,13 +22,13 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=".$dr
 	
 		<div style="margin-bottom:10px">
 			<?php if (CanEditVersion($drawing['id'], 'post') && $drawing['published'] == 0) { ?>
-				<a href="javascript:configurePopup(<?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('table.png') ?> configure rows & cols</a><br />
+				<a href="javascript:configurePopup(<?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('table.png') ?> configure rows & cols</a>
 			<?php } ?>
 			<?php // HS drawings can always be copied, but CC drawings can only be copied by staff
 			if( $drawing_main['type'] == 'HS' || IsStaff() ) { ?>
-			<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br />
+			<a href="javascript:copyPopup('post', <?= $_REQUEST['version_id'] ?>)" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a>
 			<?php } ?>
-			<a href="/c/post/<?= $drawing_main['id'] . '/' . $drawing['id'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a><br />
+			<a href="/c/post/<?= $drawing_main['id'] . '/' . $drawing['id'] ?>.html?action=print" class="noline" target="_new"><?= SilkIcon('printer.png') ?> print this version</a>
 			<?php if (CanEditVersion($drawing['id'], 'post', false)) : ?>
 				<form action="/a/post_drawings.php" method="post" id="publishForm">
 					<input type="hidden" name="drawing_id" value="<?=$drawing['id']?>" />

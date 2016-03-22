@@ -23,7 +23,7 @@ $drawing_main = $DB->SingleQuery("SELECT * FROM drawing_main WHERE id=".$drawing
 
 		<div style="margin-bottom:10px">
 			
-			<?php if( IsStaff() ) { ?><a href="javascript:copyPopup('pathways', '<?=  $_REQUEST['drawing_id'] ?>')" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><br /><?php } ?>
+			<?php if( IsStaff() ) { ?><a href="javascript:copyPopup('pathways', '<?=  $_REQUEST['drawing_id'] ?>')" class="noline"><?= SilkIcon('page_copy.png') ?> copy this version</a><!--<br />--><?php } ?>
 
 			<a href="/c/version/<?= $drawing_main['id'] . '/' . $drawing['id'] ?>.html?action=print" target="_new" class="noline"><?= SilkIcon('printer.png') ?> print this version</a>
 			<?php if (CanEditVersion($drawing_id, 'pathways', false)) : ?>

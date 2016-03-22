@@ -24,13 +24,11 @@ foreach($results as $row){
                         
                 <?php if(CanPublishView($_REQUEST['id']) && $is_view_page){?>
                     <a href="javascript:publishViewPopup(<?=$_REQUEST['id']?>, <?=$view['published']?>, '<?=$_SERVER['PHP_SELF']?>?id=<?=$view_id?>')" id="publishLink" class="noline"><?= SilkIcon('report_go.png') ?> <?=$view['published'] == 0?'':'un'?>publish this view</a>
-                    <br />
                 <?php }
 
                 //POST Assurance only
                 if ($SITE->hasFeature('post_assurances')){?>
                     <a href="post_assurance_pdf.php?view_id=<?=$view_id?>" target="_blank" class="noline"><?= SilkIcon('page_white_acrobat.png') ?> assurance PDF</a>
-                    <br />
                     <?php if($is_director){?>
                     <a href="javascript:viewAssurancePopup(<?=$_REQUEST['id']?>, '<?=$_SERVER['PHP_SELF']?>?id=<?=$view_id?>')" class="noline"><?= SilkIcon('add.png') ?> add assurance agreement</a>
                     <?php } 

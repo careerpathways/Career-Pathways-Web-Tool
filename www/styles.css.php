@@ -1190,6 +1190,27 @@ tr.postAssuranceReport.schoolName h2 {
 	text-align: right;
 }
 
+#toolbar_content {
+	margin: 10px;
+}
+
+#toolbar a {
+	display: block;
+	margin: 0 -10px 2px -10px;
+	padding: 2px 10px 3px 10px;
+}
+
+#toolbar a img {
+	float: left;
+	margin-right: 3px;
+	margin-top: -1px;
+}
+
+#toolbar a:hover {
+	background-color: white;
+	color: black;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){
