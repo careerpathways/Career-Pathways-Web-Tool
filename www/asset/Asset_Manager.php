@@ -246,8 +246,8 @@ class Asset_Manager
 				$bucket['userCanDelete'] = true;
 				$bucket['userCanReplace'] = true;	
 			}
-			if($bucket['school_id'] == $_SESSION['school_id']){
-				$bucket['isOwn'] = true;
+			if(!IsAdmin() && $bucket['school_id'] == $_SESSION['school_id']){
+				$bucket['isOwn'] = true; //for non-admins, provide information about this bucket being "their" (school).
 			}
 		}
 		return $buckets;

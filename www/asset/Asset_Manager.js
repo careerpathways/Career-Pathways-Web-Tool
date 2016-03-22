@@ -24,10 +24,17 @@ function clearWorkPad() {
 }
 
 function buildBucketSelectorHTML(buckets) {
-	var s = '<select name="bucket">';
+	var selected = '',
+		s = '<select name="bucket">';
+
 	if(typeof buckets === 'object' || typeof buckets === 'array'){
 		for(var i = 0; i < buckets.length; i++){
-			s += '<option value="'+buckets[i].school_id+'">'+buckets[i].school_name+'</option>';
+			if(buckets[i].isOwn){
+				selected = ' selected="selected"'
+			} else {
+				selected = '';
+			}
+			s += '<option value="'+buckets[i].school_id+'"'+selected+'>'+buckets[i].school_name+'</option>';
 		}
 	}
 	s += '</select>';
