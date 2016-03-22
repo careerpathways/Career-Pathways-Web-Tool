@@ -35,6 +35,7 @@
   margin: 2px;
   padding: 2px;
   text-shadow: none;
+  vertical-align: top;
 }
 .asset-manager .btn:hover {
   color:white;
@@ -69,17 +70,19 @@
 .userCanDelete .asset .delete.btn { display: inline-block; }
 .asset .replace.btn { display: none; }
 .userCanReplace .asset .replace.btn { display: inline-block; }
+.asset .move.btn { display: none; }
+.userCanDelete .asset .move.btn { display: inline-block; } /* Users are allow to move images out if they are allowed to delete images. */
 
-.replacement-pad {
+.work-pad {
   text-align: center;
 }
-.replacement-pad .asset {
+.work-pad .asset {
   display: block !important;
 }
-.replacement-pad .asset .btn {
+.work-pad .asset .btn {
   display: none;
 }
-.replacement-pad .asset .img-container {
+.work-pad .asset .img-container {
   display: block;
   height: initial;
   margin: 5px auto;
@@ -92,23 +95,21 @@
    background: #3333dd;
 }
 
-.section.existing.asset-replace-mode .delete.btn,
-.section.existing.asset-replace-mode .insert.btn,
-.section.existing.asset-replace-mode .replace.btn {
+.section.existing.asset-replace-mode .btn {
   display: none;
 }
 
 .section.existing.asset-replace-mode .replace-with-this.btn {
   display: block;
 }
-.replacement-pad .cancel {
+.work-pad .cancel {
   cursor: pointer;
   font-weight: bold;
   margin-bottom: 20px;
 }
-.replacement-pad .step-two-instructions {
+.work-pad .step-two-instructions {
   margin: 50px auto;
 }
-.replacement-pad .btn.proceed {
+.work-pad .btn.proceed {
   background: green;
 }

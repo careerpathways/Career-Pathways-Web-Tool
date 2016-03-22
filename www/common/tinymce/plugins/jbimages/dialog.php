@@ -23,6 +23,9 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		.replace.btn {
 			display: none !important;
 		}
+		.move.btn {
+			display: none !important;	
+		}
 		<?php else: ?>
 		.insert.btn {
 			display: none;
@@ -85,11 +88,11 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 				<h2>Manage Images For <span data-replace="school_name"></span></h2>
 			<?php endif;?>
 			
-			<div class="messages"></div>
 			<div id="uploaded-images"></div>
 		</div>
 
-		<div class="section replacement-pad">
+		<div class="messages"></div>
+		<div class="section work-pad">
 			
 		</div>
 
@@ -103,6 +106,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 	
 
 	<script>
+		/* Event Handlers. See Asset_Manager.js for functions. */
 		$('body').on('click', '[data-asset="delete"]', function(){
 			var asset_id = $(this).parents('.asset').data('asset-id');
 			checkAssetUse(asset_id, function(response){
@@ -121,13 +125,43 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			var asset_to_replace_id = $(this).parents('.asset').data('asset-id');
 			replaceAssetStart(asset_to_replace_id);
 		});
+		$('body').on('click', '[data-asset="move"]', function(){
+			var asset_to_replace_id = $(this).parents('.asset').data('asset-id');
+			moveAssetStart(asset_to_replace_id);
+		});
 		<?php endif; ?>
 		$('body').on('click', '[data-asset="insert"], #uploaded-images img', function(){
 			var imgSrc = $(this).parents('.asset').find('.img-container img').attr('src'),
 			assetId = $(this).parents('.asset').data('asset-id');
 			insertImage(imgSrc, assetId); //tinymce dialog.js
 		});
+		$('body').on('click', '[data-asset="replacecancel"]', function(){
+			replaceAssetCancel($(this).attr('data-asset-id'));
+		});
 
+		$('body').on('click', '[data-asset="replaceproceed"]', function(){
+			if($(this).attr('data-asset-original-id') && $(this).attr('data-asset-replacement-id')){
+				var originalId = $(this).attr('data-asset-original-id'),
+					replacementId = $(this).attr('data-asset-replacement-id');
+				$.get('/asset/replace.php?asset_id_original='+originalId+'&asset_id_new='+replacementId, function(response){
+					$('.work-pad').html('<div class="message">'+response.message+'</div>');
+					$('.work-pad').append('<div class="btn cancel" data-asset="replacecancel" data-asset-id="'+originalId+'">Okay</div>');
+				});	
+			}	
+		});
+
+		$('body').on('click', '[data-asset="replace-with-this"]', function(){
+			var assetId = $(this).parents('.asset').data('asset-id');
+			replaceAssetReplacementChosen(assetId);
+		});
+
+		$('body').on('click', '[data-asset="movecancel"]', function(){
+			moveAssetCancel($(this).attr('data-asset-id'));
+		});
+
+		$('body').on('click', '[data-asset="moveproceed"]', function(){
+			moveAssetProceed($(this).attr('data-asset-id'), $('.move-asset .bucket-select-container select').val());
+		});
 		//Asset_Manager.js main function
 		getBuckets();
 	</script>

@@ -72,6 +72,50 @@ class Asset_Manager
 	}
 
 	/**
+	 * Move an asset to a new school
+	 * @param  int $asset_id      Id of the asset to move.
+	 * @param  int $bucket_id     Id of the bucket to move the asset to.
+	 * @return array status array
+	 */
+	public static function move_asset($asset_id, $bucket_id)
+	{
+		global $DB;
+		if(isset($asset_id) && is_int($asset_id) && $asset_id >= 0
+			&& isset($bucket_id) && is_int($bucket_id) && $bucket_id >= 0) {
+			if(CanEditOtherSchools() || $bucket_id == $_SESSION['school_id']){
+				$DB->Query('UPDATE assets_school_ids
+					SET school_id='.$bucket_id.'
+					WHERE asset_id = '.$asset_id);
+				$asset = $DB->SingleQuery('SELECT * 
+					FROM assets
+					LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id
+					LEFT JOIN schools on schools.id = assets_school_ids.school_id
+					WHERE assets.id = "'.$asset_id.'"
+				');
+				if($asset['school_id'] == 0){
+					$bucket_name = 'Site Wide';
+				} else {
+					$bucket_name = $asset['school_name'];
+				}
+				return array(
+					'status'=>'success',
+					'message'=>'Image successfully moved to ' . $bucket_name
+				);	
+			} else {
+				return array(
+					'status'=>'failure',
+					'message'=>'You do not have permission to move images to the selected bucket.'
+				);
+			}
+		} else {
+			return array(
+				'status'=>'failure',
+				'message'=>'Bad asset_id or bucket_id.'
+			);
+		}
+	}
+
+	/**
 	 * Get a list of items using the asset specified.
 	 * @param  int $asset_id Id of the asset to look for.
 	 * @return array Number of, and list of ids of drawings that use the asset.
@@ -198,8 +242,12 @@ class Asset_Manager
 		//Assign permissions to each bucket.
 		foreach($buckets as &$bucket){
 			if(IsAdmin() || $bucket['school_id'] == $_SESSION['school_id']){
+				$bucket['userCanWrite'] = true;
 				$bucket['userCanDelete'] = true;
 				$bucket['userCanReplace'] = true;	
+			}
+			if($bucket['school_id'] == $_SESSION['school_id']){
+				$bucket['isOwn'] = true;
 			}
 		}
 		return $buckets;
