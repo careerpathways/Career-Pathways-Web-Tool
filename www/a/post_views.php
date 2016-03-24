@@ -942,6 +942,7 @@ function processDrawingListRequest()
 		{
 			foreach( explode(',', Request('drawings')) as $link_id )
 			{
+				//Note: $link_id is a post_drawing_main.id here.
 				$test = $DB->MultiQuery('SELECT * FROM vpost_links WHERE vid='.$drawing_id.' AND post_id='.$link_id);
 
 				if( count($test) == 0 )
@@ -950,7 +951,20 @@ function processDrawingListRequest()
 											 FROM post_drawing_main AS pdm
 											 JOIN schools ON school_id=schools.id
 											 WHERE pdm.id = '.$link_id);
-					$tab_name = str_replace(array(' High School', ' Community College'), '', $info['school_name']);
+					// For default tab names for community colleges, use <degree type>: <drawing name>
+					if(strstr($info['school_name'], 'Community College')) {
+						$dt = GetDegreeType($link_id);
+						if(strlen($dt) > 0){
+							$tab_name =  $dt . ': ' . GetDrawingName($link_id, 'post');	
+						} else {
+							//just in case there is no degree type available
+							$tab_name =  GetDrawingName($link_id, 'post');	
+						}
+					} else {
+						// Continue with same behavior for high school tab names.
+						$tab_name = str_replace(' High School', '', $info['school_name']);	
+					}
+					
 					$DB->Insert('vpost_links', array('vid'=>$drawing_id, 'post_id'=>$link_id, 'tab_name'=>$tab_name));
 				}
 			}

@@ -340,6 +340,28 @@ function GetDrawingName($drawing_id, $drawing_type)
 	}
 }
 
+/**
+ * Get Degree Type (a.k.a sidebar_text_right) for a POST Drawing.
+ * @param  int $drawing_main_id
+ * @return string The degree type.
+ */
+function GetDegreeType($drawing_main_id)
+{
+	global $DB;
+	$drawing_main_id = intval($drawing_main_id);
+	$res = $DB->SingleQuery('SELECT sidebar_text_right
+		FROM post_drawings
+		WHERE parent_id=' . $drawing_main_id
+		. ' AND published=1
+		 ORDER BY last_modified DESC'); //this might conflict with /a/post_views.php order by name. See near $degreeTypeConditionQuery
+	if(is_array($res) && isset($res['sidebar_text_right'])){
+		return $res['sidebar_text_right'];	
+	} else {
+		return null;
+	}
+	
+}
+
 function strnatcmpDrawingName($a,$b){
 	return strnatcmp($a['DrawingName'],$b['DrawingName']);
 }
