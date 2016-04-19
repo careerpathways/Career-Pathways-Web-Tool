@@ -3,6 +3,7 @@ if(!defined('DIR_CORE')){
 	include("inc.php");	
 }
 include("simple_html_dom.php");
+include("Asset_Permission.php");
 
 define('URL_ASSET', '/asset/');
 
@@ -23,6 +24,9 @@ class Asset_Manager
 			$query .= ' AND active = 1';
 		}
 		$asset = $DB->SingleQuery($query);
+		$asset['imgSrc'] = self::make_asset_url($asset['file_name']);
+		$asset['userCanModify'] = Asset_Permission::can_modify($_SESSION['user_id'], $asset['id']);
+		$asset['userCanDelete'] = Asset_Permission::can_delete($_SESSION['user_id'], $asset['id']);
 		return $asset;
 	}
 
@@ -55,7 +59,7 @@ class Asset_Manager
 			WHERE id = "'.$asset_id.'"
 		');
 		$drawingsUsingAsset = self::check_use($asset_id);
-		if($drawingsUsingAsset['number_of_drawings_using'] == 0 && (CanEditOtherSchools() || $asset['school_id'] == $_SESSION['school_id'])){
+		if($drawingsUsingAsset['number_of_drawings_using'] == 0 && Asset_Permission::can_delete($_SESSION['user_id'], $asset_id)){
 			$DB->Query('UPDATE assets
 				SET active=0
 				WHERE id = '.$asset_id);
@@ -73,6 +77,7 @@ class Asset_Manager
 
 	/**
 	 * Move an asset to a new school
+	 * 
 	 * @param  int $asset_id      Id of the asset to move.
 	 * @param  int $bucket_id     Id of the bucket to move the asset to.
 	 * @return array status array
@@ -82,7 +87,11 @@ class Asset_Manager
 		global $DB;
 		if(isset($asset_id) && is_int($asset_id) && $asset_id >= 0
 			&& isset($bucket_id) && is_int($bucket_id) && $bucket_id >= 0) {
-			if(CanEditOtherSchools() || $bucket_id == $_SESSION['school_id']){
+			
+			$_asset = $DB->Query('SELECT * FROM assets WHERE id = '.$asset_id);
+
+			// User is allowed to move an asset if they can delete the original, and they can write to destination bucket.
+			if (Asset_Permission::can_delete($_SESSION['user_id'], $asset_id) && Asset_Permission::can_create($_SESSION['user_id'], $bucket_id)) {
 				$DB->Query('UPDATE assets_school_ids
 					SET school_id='.$bucket_id.'
 					WHERE asset_id = '.$asset_id);
@@ -117,6 +126,7 @@ class Asset_Manager
 
 	/**
 	 * Get a list of items using the asset specified.
+	 * 
 	 * @param  int $asset_id Id of the asset to look for.
 	 * @return array Number of, and list of ids of drawings that use the asset.
 	 */
@@ -163,6 +173,7 @@ class Asset_Manager
 
 	/**
 	 * Get a list of assets.
+	 * 
 	 * @param  array $options
 	 * @return array
 	 */
@@ -172,7 +183,7 @@ class Asset_Manager
 		
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
-			$_query = 'SELECT a.id, a.file_name, asi.school_id FROM assets_school_ids asi
+			$_query = 'SELECT a.*, asi.school_id FROM assets_school_ids asi
 			LEFT JOIN assets a
 			ON a.id = asi.asset_id
 			WHERE asi.school_id = ' . (int) $options['school_id'] . '
@@ -185,6 +196,8 @@ class Asset_Manager
 		$assets = $DB->MultiQuery($_query);
 		foreach ($assets as &$a) {
 			$a['imgSrc'] = self::make_asset_url($a['file_name']);
+			$a['userCanModify'] = Asset_Permission::can_modify($_SESSION['user_id'], $a['id']);
+			$a['userCanDelete'] = Asset_Permission::can_delete($_SESSION['user_id'], $a['id']);
 		}
 		return $assets;
 	}
@@ -213,8 +226,6 @@ class Asset_Manager
 			'school_name' => 'Site Wide'
 		);
 
-		
-
 		//everyone can see this bucket
 		$buckets[] = $site_wide_bucket;
 
@@ -241,13 +252,11 @@ class Asset_Manager
 		
 		//Assign permissions to each bucket.
 		foreach($buckets as &$bucket){
-			if(IsAdmin() || $bucket['school_id'] == $_SESSION['school_id']){
-				$bucket['userCanWrite'] = true;
-				$bucket['userCanDelete'] = true;
-				$bucket['userCanReplace'] = true;	
-			}
+			//User can create assets in this bucket, or not.
+			$bucket['userCanCreate'] = Asset_Permission::can_create($_SESSION['user_id'], $bucket['school_id']);
+
 			if(!IsAdmin() && $bucket['school_id'] == $_SESSION['school_id']){
-				$bucket['isOwn'] = true; //for non-admins, provide information about this bucket being "their" (school).
+				$bucket['isOwn'] = true; //If this bucket is the user's "school". Admins default to site-wide as their own bucket.
 			}
 		}
 		return $buckets;
@@ -255,6 +264,7 @@ class Asset_Manager
 
 	/**
 	 * Replace an asset with another one.
+	 * 
 	 * @param  int $assetIdOriginal
 	 * @param  int $assetIdNew
 	 * @return array $result Details about how things went.
@@ -267,6 +277,13 @@ class Asset_Manager
 			'operation'=> __FUNCTION__,
 			'details'=>array()
 		);
+
+		//Permit user to replacing the original asset if they are able to "delete" it.
+		if(!Asset_Permission::can_delete($_SESSION['user_id'], $assetIdOriginal)){
+			$result['status'] = 'not-modified';
+			$result['message'] = 'Our apologies, it appears you do not have permission to overwrite that asset.';
+			return $result;
+		}
 
 		$drawings = self::check_use($assetIdOriginal);
 

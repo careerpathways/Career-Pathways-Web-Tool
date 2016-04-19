@@ -65,14 +65,6 @@
   display: block;
 }
 
-/* Show/Hide controls based on user permissions for this bucket. JS assigns the permissions class. */
-.asset .delete.btn { display: none; }
-.userCanDelete .asset .delete.btn { display: inline-block; }
-.asset .replace.btn { display: none; }
-.userCanReplace .asset .replace.btn { display: inline-block; }
-.asset .move.btn { display: none; }
-.userCanDelete .asset .move.btn { display: inline-block; } /* Users are allow to move images out if they are allowed to delete images. */
-
 .work-pad {
   text-align: center;
 }

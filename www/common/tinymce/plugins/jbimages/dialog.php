@@ -80,21 +80,20 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 				<!--<input type="submit" class="submit" value="Upload">-->
 			</p>			
 		</div>
-		
+		<div class="messages"></div>
+		<div class="section work-pad">
+		</div>
 		<div class="section existing">
 			<?php if($inTinyMce): ?>
 				<h2>3. Select An Image From <span data-replace="school_name"></span></h2>
 			<?php else: ?>
-				<h2>Manage Images For <span data-replace="school_name"></span></h2>
+				<h2>Images In <span data-replace="school_name"></span></h2>
 			<?php endif;?>
 			
 			<div id="uploaded-images"></div>
 		</div>
 
-		<div class="messages"></div>
-		<div class="section work-pad">
-			
-		</div>
+		
 
 		<?php if($inTinyMce): ?>
 		<input type="submit" class="submit" onclick="tinyMCEPopup.close(); return false;" value="Close">

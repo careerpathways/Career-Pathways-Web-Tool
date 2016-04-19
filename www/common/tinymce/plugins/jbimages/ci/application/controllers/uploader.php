@@ -132,6 +132,8 @@ class Uploader extends CI_Controller {
 
 			$result['asset'] = array(
 				'id' => $asset_id,
+				'userCanModify' => true,
+				'userCanDelete' => true,
 				'file_name' => $conf['img_path'] . '/' . $result['file_name']
 			);
 

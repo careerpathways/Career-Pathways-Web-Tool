@@ -1,6 +1,7 @@
 var assetReplaceMode = false;
 
 function getBuckets(){
+	$(".work-pad").hide();
 	$.get('/asset/bucket_list.php', function(buckets){
 		buildBucketSelector(buckets);
 	});
@@ -9,7 +10,6 @@ function getBuckets(){
 function buildBucketSelector(buckets) {
 	$('.bucket-select-container').html(buildBucketSelectorHTML(buckets));
 	$('.bucket-select-container select').on('change',function(){
-		updatePermissions($(this).val(), buckets);
 		updateLabels($(this).find(':selected').text());
 		clearAssets();
 		clearWorkPad();
@@ -21,6 +21,7 @@ function buildBucketSelector(buckets) {
 
 function clearWorkPad() {
 	$(".work-pad").html('');
+	$(".work-pad").hide();
 }
 
 function buildBucketSelectorHTML(buckets) {
@@ -41,29 +42,6 @@ function buildBucketSelectorHTML(buckets) {
 	return s;
 }
 
-/**
- * Update permissions for the bucket.
- * This is only to show/hide the appropriate controls. Actual enforcement occurs on server-side.
- * @param  {int} bucketId the bucket id to enforce permissions for.
- * @param  {array} buckets  array of bucket objects
- */
-function updatePermissions(bucketId, buckets){
-	for(var i = 0; i < buckets.length; i++){
-		if(buckets[i].school_id == bucketId){
-			if(buckets[i].userCanDelete){
-				$('#uploaded-images').addClass('userCanDelete'); //used to delete images, as well as move them to another bucket.
-			} else {
-				$('#uploaded-images').removeClass('userCanDelete');
-			}
-			if(buckets[i].userCanReplace){
-				$('#uploaded-images').addClass('userCanReplace');
-			} else {
-				$('#uploaded-images').removeClass('userCanReplace');
-			}
-		}
-	}
-}
-
 function msg(msgHTML) {
 	$('.messages').html(msgHTML);
 }
@@ -77,10 +55,10 @@ function getAssets(school_id){
 	$.get('/asset/list.php?school_id='+school_id, function(assets){
 		if(typeof assets === 'object' || typeof assets === 'array'){
 			if(assets.length < 1){
-				msg('<p>There are no images for this bucket yet.</p>');
+				msg('<p>Note: There are no images for this bucket yet.</p>');
 			}
 			for(var i = 0; i < assets.length; i++){
-				setTimeout(appendAsset(assets[i]), 250*i);
+				setTimeout(appendAsset(assets[i]), 50*i);
 			}
 		}
 	});
@@ -93,7 +71,7 @@ function buildAssetHTML(asset){
 	    		+ '<img src="'+asset.imgSrc+'" />'
 	    	+ '</div>'
 	    	+ '<div class="controls">';
-		    	h += getButtons();
+		    	h += getButtons(asset);
 	    	h += '</div>'
     	+ '</div>';
     return h;
@@ -144,6 +122,7 @@ function replaceAssetStart(assetId){
 	assetReplaceMode = true;
 	$('.section.upload').hide();
 	checkAssetUse(assetId, function(response){
+		$(".work-pad").show();
 		$(".work-pad").append('<div class="heading">Image Replacement</div>'); //clear each time
 		$(".work-pad").append('<div class="btn cancel" data-asset="replacecancel" data-asset-id="'+assetId+'">cancel</div>');
 		$(".work-pad").append('<div class="subheading">This image will be replaced:</div>');
@@ -151,7 +130,7 @@ function replaceAssetStart(assetId){
 		$asset.hide(); //don't offer it as a choice to replace itself!
 		$(".section.existing").addClass('asset-replace-mode');
 		$(".work-pad").append('<div class="drawings-using">There are '+response.number_of_drawings_using+' drawings using this image &uarr;.</div>');
-		$(".work-pad").append('<div class="subheading step-two-instructions">Please choose a replacement above.</div>');
+		$(".work-pad").append('<div class="subheading step-two-instructions">Please choose a replacement image.</div>');
 		$(".work-pad").append('<div><em>*Replace image does not replace image in library, it only replaces use of image throughout Roadmaps and POST drawings.</em></div>');
 		$(".work-pad").append('<div class="btn proceed" data-asset="replaceproceed" data-asset-original-id="'+assetId+'">proceed</div>');
 		$('[data-asset="replaceproceed"]').hide();
@@ -164,6 +143,7 @@ function replaceAssetStart(assetId){
  */
 function replaceAssetReplacementChosen(replacementAssetId){
 	var $replacementAsset = $('[data-asset-id="'+replacementAssetId+'"]');
+	$(".work-pad").show();
 	$('.section:not(.work-pad)').hide();
 	$('.step-two-instructions').hide();
 	$('[data-asset="replaceproceed"]').attr('data-asset-replacement-id', replacementAssetId).show();
@@ -182,6 +162,7 @@ function replaceAssetCancel(assetId){
 
 function moveAssetStart(assetId){
 	msg('');
+	$('.section.existing').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+assetId+'"]');
 	var h = '<div class="move-asset">'
@@ -198,11 +179,12 @@ function moveAssetStart(assetId){
 			var isCurrent = $('.bucket-select-container select').find(':selected').val() == buckets[i].school_id
 			// Don't show current bucket (moving FROM), and don't show
 			// buckets for which the user is not allowed to write to.
-			if(buckets[i].userCanWrite && !isCurrent){
+			if(buckets[i].userCanCreate && !isCurrent){
 				permittedBuckets.push(buckets[i]);
 			}
 		}
 		if(permittedBuckets.length > 0){
+			$(".work-pad").show();
 			$('.work-pad').html(h);
 			$asset.clone().insertBefore('.heading');
 			$('.move-asset .bucket-select-container').html(buildBucketSelectorHTML(permittedBuckets));
@@ -219,6 +201,7 @@ function moveAssetProceed(assetId, bucketId){
 			clearWorkPad();
 			msg(response.message);
 			$('[data-asset-id="'+_assetId+'"]').remove();
+			$('.section.existing').show();
 		} else {
 			msg(response.message);
 		}
@@ -227,15 +210,18 @@ function moveAssetProceed(assetId, bucketId){
 
 function moveAssetCancel(assetId){
 	clearWorkPad();
+	$('.section.existing').show();
 	msg('Cancelled image move.');
 }
 
-function getButtons(){
+function getButtons(asset){
 	var btns = '';
-	btns += '<div class="delete btn" data-asset="delete">Delete</div>'
-    	+ '<div class="replace btn" data-asset="replace">Replace</div>'
-    	+ '<div class="move btn" data-asset="move">Move</div>'
-    	+ '<div class="replace-with-this btn" data-asset="replace-with-this">Replace with this</div>'
+	if(asset.userCanDelete){
+		btns += '<div class="delete btn" data-asset="delete">Delete</div>'
+    		+ '<div class="replace btn" data-asset="replace">Replace</div>'    
+		 	+ '<div class="move btn" data-asset="move">Move</div>'
+	}	
+	btns += '<div class="replace-with-this btn" data-asset="replace-with-this">Replace with this</div>'
     	+ '<div class="insert btn" data-asset="insert">Insert</div>';
 	return btns;
 }

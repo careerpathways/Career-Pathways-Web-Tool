@@ -4,10 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>JustBoil's Result Page</title>
 <script language="javascript" type="text/javascript">
+	//Provides values from uploader.php to Javascripts
 	window.parent.window.jbImagesDialog.uploadFinish({
 		asset: {
 			imgSrc: '<?php echo $asset["file_name"]; ?>',
-			id:'<?php echo $asset["id"]; ?>'
+			id:'<?php echo $asset["id"]; ?>',
+			userCanModify: '<?php echo $asset["userCanModify"]; ?>',
+			userCanDelete: '<?php echo $asset["userCanDelete"]; ?>'
 		},
 		result: '<?php echo $result; ?>',
 		resultCode: '<?php echo $resultcode; ?>'
