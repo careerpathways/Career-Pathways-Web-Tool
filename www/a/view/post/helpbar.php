@@ -1,10 +1,10 @@
 <div id="helpbar">
 	<div id="helpbar_header"></div>
-	<div id="helpbar_content">
+	<div id="helpbar_content" class="links standard">
 		<?php
 			global $DB;
 			$text = $DB->SingleQuery('SELECT * FROM news WHERE category="help" AND sort_index=2001');
-			echo $text['text'];
+			echo str_replace('<br />', '', $text['text']);
 		?>
 		<p><img src="/common/silk/help.png" alt=""/> <a href="javascript:showHelp()">More Help</a></p>
 	</div>

@@ -538,6 +538,21 @@ a.chart_header {
 	padding-bottom: 10px;
 }
 
+#helpbar_content.standard {
+	margin: 10px 0;
+}
+
+#helpbar_content.standard a {
+	margin-bottom: 4px	
+}
+
+#helpbar_content.standard img {
+	display: inline-block;
+	margin: 0 5px 0 10px;
+	float: left;
+	clear: left;
+}
+
 #toolbar a.toolbarButton {
 	text-decoration: none;	
 	display: block;

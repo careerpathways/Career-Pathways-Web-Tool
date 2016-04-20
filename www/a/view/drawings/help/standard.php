@@ -1,6 +1,6 @@
 <?php
 $text = $DB->SingleQuery('SELECT * FROM news WHERE category="help" AND sort_index=1001');
-echo $text['text'];
+echo str_replace('<br />', '', $text['text']);
 ?>
 
 <script type="text/javascript">
