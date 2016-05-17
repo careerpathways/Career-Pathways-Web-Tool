@@ -9,6 +9,20 @@ if(!defined('DIR_CORE')){
 class Asset_Permission
 {
 	/**
+	 * Get a user permission level.
+	 * 
+	 * @param  string $name name as seen in DB eg: 'State Admin'
+	 * @return int level eg: 127
+	 */
+	public static function get_user_level($name)
+	{
+		global $DB;
+		$user_data = $DB->SingleQuery('SELECT * FROM admin_user_levels WHERE name = "' . $name . '"');
+		if (isset($user_data['level'])) {
+			return (int) $user_data['level'];
+		}
+	}
+	/**
 	 * Determine if a user can create an asset in a given bucket.
 	 * 
 	 * @param  int $user_id Id of the user trying to create a new asset.
@@ -24,8 +38,7 @@ class Asset_Permission
 		}
 
 		$user = $DB->SingleQuery('SELECT * FROM users WHERE id = ' . $user_id);
-
-		if(($user['school_id'] == $bucket_id) || ($user['user_level'] == USER_ADMIN)) {
+		if(($user['school_id'] == $bucket_id) || ($user['user_level'] >= self::get_user_level('State Admin'))) {
 			return true;
 		}
 
@@ -44,16 +57,27 @@ class Asset_Permission
 		global $DB;
 
 		$user = $DB->SingleQuery('SELECT * FROM users WHERE id = ' . $user_id);
-		$asset = $DB->SingleQuery('SELECT * FROM assets LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id WHERE assets.id = ' . $asset_id);
+		$asset = $DB->SingleQuery('
+			SELECT 
+				assets.*,
+				assets_school_ids.school_id as asset_bucket_id,
+				users.school_id as asset_creator_school_id
+			FROM assets 
+			LEFT JOIN assets_school_ids
+				ON assets.id = assets_school_ids.asset_id
+			LEFT JOIN users
+				ON assets.created_by = users.id
+			WHERE assets.id = ' . $asset_id);
 		
-		if($user['user_level'] == USER_ADMIN){
+
+		if($user['user_level'] >= self::get_user_level('State Admin')){
 			return true; //admins can delete anything
 		}
 		if ($user['id'] == $asset['created_by']) {
 			return true; //users can delete own assets
 		}
 		//if is org admin and asset is in same school, can delete.
-		if (($user['school_id'] == $asset['school_id']) && $user['user_level'] == USER_STAFF) {
+		if (($user['school_id'] == $asset['asset_creator_school_id']) && $user['user_level'] >= self::get_user_level('Webmaster')) {
 			return true;
 		}
 

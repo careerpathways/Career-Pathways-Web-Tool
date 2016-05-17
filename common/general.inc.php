@@ -25,6 +25,7 @@ include("states.inc.php");
 
 
 // define user level constants
+// refer to admin_user_levels table in the DB!
 define("USER_ANONYMOUS", -1);
 define("USER_MEMBER", 16);
 define("USER_STAFF", 64);
