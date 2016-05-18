@@ -149,7 +149,7 @@ function replaceAssetReplacementChosen(replacementAssetId){
 	$('.step-two-instructions').hide();
 	$('[data-asset="replaceproceed"]').attr('data-asset-replacement-id', replacementAssetId).show();
 	$replacementAsset.clone().insertBefore('[data-asset="replacement-asset"]');
-	$(".work-pad").append('<div class="step-two-instructions-two">This image will replace it everywhere it\'s used.</div>');
+	$(".work-pad").append('<div class="step-two-instructions-two">Your selected image will be replaced in every drawing it is used.</div>');
 	
 }
 
