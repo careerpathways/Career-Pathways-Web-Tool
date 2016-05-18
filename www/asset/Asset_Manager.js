@@ -132,7 +132,8 @@ function replaceAssetStart(assetId){
 		$(".work-pad").append('<div class="drawings-using">There are '+response.number_of_drawings_using+' drawings using this image &uarr;.</div>');
 		$(".work-pad").append('<div class="subheading step-two-instructions">Please choose a replacement image.</div>');
 		$(".work-pad").append('<div><em>*Replace image does not replace image in library, it only replaces use of image throughout Roadmaps and POST drawings.</em></div>');
-		$(".work-pad").append('<div class="btn proceed" data-asset="replaceproceed" data-asset-original-id="'+assetId+'">proceed</div>');
+		$(".work-pad").append('<div data-asset="replacement-asset"><!-- Populated by clicking "replace-with-this" --></div>');
+		$(".work-pad").append('<div class="btn proceed test" data-asset="replaceproceed" data-asset-original-id="'+assetId+'">proceed</div>');
 		$('[data-asset="replaceproceed"]').hide();
 	});
 }
@@ -147,7 +148,7 @@ function replaceAssetReplacementChosen(replacementAssetId){
 	$('.section:not(.work-pad)').hide();
 	$('.step-two-instructions').hide();
 	$('[data-asset="replaceproceed"]').attr('data-asset-replacement-id', replacementAssetId).show();
-	$replacementAsset.clone().insertBefore('[data-asset="replaceproceed"]');
+	$replacementAsset.clone().insertBefore('[data-asset="replacement-asset"]');
 	$(".work-pad").append('<div class="step-two-instructions-two">This image will replace it everywhere it\'s used.</div>');
 	
 }
@@ -169,7 +170,7 @@ function moveAssetStart(assetId){
 	+'<div class="heading">Move Image</div>'
 	+'<div class="bucket-select-container"></div>'
 	+'<div class="btn cancel" data-asset="movecancel" data-asset-id="'+assetId+'">cancel</div>'
-	+'<div class="btn proceed" data-asset="moveproceed" data-asset-id="'+assetId+'">proceed</div>'
+	+'<br><div class="btn proceed" data-asset="moveproceed" data-asset-id="'+assetId+'">proceed</div>'
 	+'</div>';
 	
 	$.get('/asset/bucket_list.php', function(buckets){

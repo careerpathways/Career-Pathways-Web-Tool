@@ -1,4 +1,4 @@
-#uploaded-images .asset {
+.asset {
   height: 150px;
   display: inline-block;
   margin: 3px;
@@ -69,7 +69,9 @@
   text-align: center;
 }
 .work-pad .asset {
-  display: block !important;
+  height: 100px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 .work-pad .asset .btn {
   display: none;
