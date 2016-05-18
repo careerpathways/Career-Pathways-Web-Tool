@@ -1,2 +1,2 @@
 <?php
-define('VERSION_CORE', '4.1.4a');
+define('VERSION_CORE', '4.1.5');
