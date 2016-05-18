@@ -12,7 +12,9 @@ function buildBucketSelector(buckets) {
 	$('.bucket-select-container select').on('change',function(){
 		updateLabels($(this).find(':selected').text());
 		clearAssets();
-		clearWorkPad();
+		if(!$('.section.existing').hasClass('asset-replace-mode')){
+			clearWorkPad();	
+		}
 		getAssets($(this).val());
 	});
 	//initial page load:
@@ -164,6 +166,8 @@ function replaceAssetCancel(assetId){
 function moveAssetStart(assetId){
 	msg('');
 	$('.section.existing').hide();
+	$('.section.bucket').hide();
+	$('.section.upload').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+assetId+'"]');
 	var h = '<div class="move-asset">'
@@ -203,6 +207,8 @@ function moveAssetProceed(assetId, bucketId){
 			msg(response.message);
 			$('[data-asset-id="'+_assetId+'"]').remove();
 			$('.section.existing').show();
+			$('.section.bucket').show();
+			$('.section.upload').show();
 		} else {
 			msg(response.message);
 		}
@@ -212,6 +218,8 @@ function moveAssetProceed(assetId, bucketId){
 function moveAssetCancel(assetId){
 	clearWorkPad();
 	$('.section.existing').show();
+	$('.section.bucket').show();
+	$('.section.upload').show();
 	msg('Cancelled image move.');
 }
 
