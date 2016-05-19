@@ -72,9 +72,12 @@ function buildAssetHTML(asset){
 	    	+ '<div class="img-container">'
 	    		+ '<img src="'+asset.imgSrc+'" />'
 	    	+ '</div>'
-	    	+ '<div class="controls">';
-		    	h += getButtons(asset);
-	    	h += '</div>'
+	    	+ '<div class="controls">'
+		    	+ getButtons(asset)
+	    	+ '</div>'
+	    	+ '<div>'
+	    		+ getUserInfo(asset)
+	    	+ '</div>'
     	+ '</div>';
     return h;
 }
@@ -234,4 +237,21 @@ function getButtons(asset){
     	+ '<div class="insert btn" data-asset="insert">Insert</div>';
 	return btns;
 }
+
+function getUserInfo(asset){
+	var userInfoString = '';
+	var contentCreator = asset.first_name + ' ' + asset.last_name;
+	var contentCreatorSchool = asset.school_name;
+	if (contentCreatorSchool == null) {contentCreatorSchool = "Created in Site Wide"}
+	
+	userInfoString += 'Created By:<br />'
+		+ contentCreator + '<br />'
+		+ '(' + contentCreatorSchool + ')';
+	
+	return userInfoString;
+	var stringified = JSON.stringify(asset);
+	//return contentCreatorSchool;
+}
+
+
 

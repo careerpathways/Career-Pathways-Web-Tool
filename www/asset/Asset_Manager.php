@@ -183,12 +183,17 @@ class Asset_Manager
 		
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
-			$_query = 'SELECT a.*, asi.school_id FROM assets_school_ids asi
-			LEFT JOIN assets a
-			ON a.id = asi.asset_id
-			WHERE asi.school_id = ' . (int) $options['school_id'] . '
-			AND active = true
-			ORDER BY a.date_created DESC';
+			$_query = 'SELECT a.*, asi.school_id, u.first_name, u.last_name, s.school_name 
+				FROM assets_school_ids asi
+					LEFT JOIN assets a
+						ON a.id = asi.asset_id
+					LEFT JOIN users u
+						ON u.id = a.created_by
+					LEFT JOIN schools s
+						ON s.id = asi.school_id 
+				WHERE asi.school_id = ' . (int) $options['school_id'] . '
+				AND a.active = true
+				ORDER BY a.date_created DESC';
 		} else {
 			//return all assets
 			$_query = 'SELECT * FROM assets';
