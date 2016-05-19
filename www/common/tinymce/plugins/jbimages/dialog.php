@@ -1,4 +1,7 @@
 ﻿<?php
+if(!defined('VERSION_CORE')){
+	include('version.php');
+}
 /* ====== Provide support if this .js file is used outside the context of tinyMCE ====== */
 if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 	$inTinyMce = false;
@@ -15,9 +18,9 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<?php endif; ?>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-	<link href="/asset/asset_manager.css" rel="stylesheet" type="text/css">
-	<link href="css/dialog.css" rel="stylesheet" type="text/css">
-	<link href="/styles.css" rel="stylesheet" type="text/css">
+	<link href="/asset/asset_manager.css?v=<?= VERSION_CORE ?>" rel="stylesheet" type="text/css">
+	<link href="css/dialog.css?v=<?= VERSION_CORE ?>" rel="stylesheet" type="text/css">
+	<link href="/styles.css?v=<?= VERSION_CORE ?>" rel="stylesheet" type="text/css">
 	<style>
 		<?php if($inTinyMce): ?>
 		.replace.btn {
@@ -39,7 +42,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 	
 </head>
 <body>
-	<script type="text/javascript" src="/asset/Asset_Manager.js"></script>
+	<script type="text/javascript" src="/asset/Asset_Manager.js?v=<?= VERSION_CORE ?>"></script>
 	
 	<?php if(!$inTinyMce): ?>
 		<script>
