@@ -164,6 +164,17 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		$('body').on('click', '[data-asset="moveproceed"]', function(){
 			moveAssetProceed($(this).attr('data-asset-id'), $('.move-asset .bucket-select-container select').val());
 		});
+
+		$('body').on('click', '[data-asset="info"]', function(){
+			var assetId = $(this).parents('.asset').data('asset-id');
+			$.get('/asset/check_use.php?assetId='+assetId, function(response){
+				assetInfoShow(assetId);	
+			});	
+		});
+
+		$('body').on('click', '[data-asset="infoback"]', function(){
+			assetInfoBack($(this).attr('dataassetInfo-asset-id'));
+		});
 		//Asset_Manager.js main function
 		getBuckets();
 	</script>

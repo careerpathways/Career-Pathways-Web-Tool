@@ -76,7 +76,7 @@ function buildAssetHTML(asset){
 		    	+ getButtons(asset)
 	    	+ '</div>'
 	    	+ '<div>'
-	    		+ getUserInfo(asset)
+	    		+ getAssetCreatorInfo(asset)
 	    	+ '</div>'
     	+ '</div>';
     return h;
@@ -155,7 +155,6 @@ function replaceAssetReplacementChosen(replacementAssetId){
 	$('[data-asset="replaceproceed"]').attr('data-asset-replacement-id', replacementAssetId).show();
 	$replacementAsset.clone().insertBefore('[data-asset="replacement-asset"]');
 	$(".work-pad").append('<div class="step-two-instructions-two">Your selected image will be replaced in every drawing it is used.</div>');
-	
 }
 
 function replaceAssetCancel(assetId){
@@ -226,31 +225,76 @@ function moveAssetCancel(assetId){
 	msg('Cancelled image move.');
 }
 
+function assetInfoShow(assetId){
+		msg('');
+	$('.section.existing').hide();
+	$('.section.bucket').hide();
+	$('.section.upload').hide();
+	clearWorkPad();
+	var $asset = $('[data-asset-id="'+assetId+'"]');
+	var h = '<div class="asset-info">'
+	+'<div class="heading"<>/div>'
+	+'<div class="bucket-select-container"></div>'
+	+'<div class="btn cancel" data-asset="movecancel" data-asset-id="'+assetId+'">cancel</div>'
+	+'<br><div class="btn proceed" data-asset="moveproceed" data-asset-id="'+assetId+'">proceed</div>'
+	+'</div>';
+	
+	$.get('/asset/bucket_list.php', function(buckets){
+		var permittedBuckets = [];
+		for(var i = 0; i < buckets.length; i++){
+			//var isCurrent = buckets[i];
+			var isCurrent = $('.bucket-select-container select').find(':selected').val() == buckets[i].school_id
+			// Don't show current bucket (moving FROM), and don't show
+			// buckets for which the user is not allowed to write to.
+			if(buckets[i].userCanCreate && !isCurrent){
+				permittedBuckets.push(buckets[i]);
+			}
+		}
+		if(permittedBuckets.length > 0){
+			$(".work-pad").show();
+			$('.work-pad').html(h);
+			$asset.clone().insertBefore('.heading');
+			$('.move-asset .bucket-select-container').html(buildBucketSelectorHTML(permittedBuckets));
+		} else {
+			msg('It appears there are no other buckets that you have permission to move images to.');
+		}
+	});
+
+	checkAssetUse(assetId, function(response){
+		console.log(response);
+	});
+}
+
+function assetInfoBack(assetId){
+	clearWorkPad();
+	$('.section.existing').show();
+	$('.section.bucket').show();
+	$('.section.upload').show();
+}
+
 function getButtons(asset){
 	var btns = '';
 	if(asset.userCanDelete){
 		btns += '<div class="delete btn" data-asset="delete">Delete</div>'
     		+ '<div class="replace btn" data-asset="replace">Replace</div>'    
-		 	+ '<div class="move btn" data-asset="move">Move</div>'
+		 	+ '<div class="move btn" data-asset="move">Move</div>'    
+		 	+ '<div class="info btn" data-asset="info">Info</div>'
 	}	
 	btns += '<div class="replace-with-this btn" data-asset="replace-with-this">Replace with this</div>'
     	+ '<div class="insert btn" data-asset="insert">Insert</div>';
 	return btns;
 }
 
-function getUserInfo(asset){
-	var userInfoString = '';
-	var contentCreator = asset.first_name + ' ' + asset.last_name;
-	var contentCreatorSchool = asset.school_name;
-	if (contentCreatorSchool == null) {contentCreatorSchool = "Created in Site Wide"}
+function getAssetCreatorInfo(asset){
 	
-	userInfoString += 'Created By:<br />'
-		+ contentCreator + '<br />'
-		+ '(' + contentCreatorSchool + ')';
-	
+
+	var userInfoString = '' 
+		+ asset.first_name + ' ' + asset.last_name 
+		+ '<br />'
+		+ '<div title="' + asset.school_name + '">'
+		+'(' + asset.school_abbr + ')'
+		+ '</div>'
 	return userInfoString;
-	var stringified = JSON.stringify(asset);
-	//return contentCreatorSchool;
 }
 
 

@@ -138,27 +138,44 @@ class Asset_Manager
 		
 		$roadmap_drawings = $DB->MultiQuery('SELECT 
 				"roadmap_drawing" as type,
-				drawings.parent_id as roadmap_drawing_main_id,
-				objects.drawing_id as roadmap_drawing_version_id,
-				objects.id as objects_id,
-				COUNT(objects.id) as times_used_within_version
-				
-			FROM objects
-			LEFT JOIN drawings
-				ON objects.drawing_id = drawings.id
-			WHERE objects.content 
+				d.parent_id as roadmap_drawing_main_id,
+				d.version_num as roadmap_drawing_version_num,
+				dm.name as roadmap_drawing_name,
+				s.id as roadmap_drawing_school_id,
+				s.school_name as roadmap_drawing_school_name,
+				s.school_abbr as roadmap_drawing_school_abbr,
+				o.drawing_id as roadmap_drawing_version_id,
+				o.id as objects_id,
+				COUNT(o.id) as times_used_within_version
+			FROM objects o
+			LEFT JOIN drawings d
+				ON d.id = o.drawing_id
+			LEFT JOIN drawing_main dm
+				ON dm.id = d.parent_id
+			LEFT JOIN schools s
+				ON s.id = dm.school_id
+			WHERE o.content 
 				LIKE "%'.$tail.'%" 
 			GROUP BY roadmap_drawing_version_id
 			ORDER BY roadmap_drawing_main_id ASC');
 
 		$post_drawings = $DB->MultiQuery('SELECT 
 				"post_drawing" as type,
-				post_drawings.parent_id as post_drawing_main_id,
-				post_drawings.id as post_drawing_version_id,
-				post_cell.id as post_cell_id,
-				COUNT(post_cell.id) as times_used_within_version
-			FROM post_cell 
-				LEFT JOIN post_drawings on post_cell.drawing_id = post_drawings.id
+				pd.parent_id as post_drawing_main_id,
+				pd.id as post_drawing_version_id,
+				pd.version_num as post_drawing_version,
+				pdm.name as post_drawing_name,
+				s.school_name as scool_name,
+				pc.id as post_cell_id,
+				COUNT(pc.id) as times_used_within_version
+			FROM post_cell pc
+			LEFT JOIN post_drawings pd
+				ON pd.id = pc.drawing_id
+			LEFT JOIN post_drawing_main pdm
+				ON pdm.id = pd.parent_id
+			LEFT JOIN schools s
+				ON s.id = pdm.school_id
+
 			WHERE content 
 				LIKE "%'.$tail.'%"
 			GROUP BY post_drawing_version_id
@@ -183,7 +200,7 @@ class Asset_Manager
 		
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
-			$_query = 'SELECT a.*, asi.school_id, u.first_name, u.last_name, s.school_name 
+			$_query = 'SELECT a.*, asi.school_id, u.first_name, u.last_name, s.school_name, s.school_abbr
 				FROM assets_school_ids asi
 					LEFT JOIN assets a
 						ON a.id = asi.asset_id
