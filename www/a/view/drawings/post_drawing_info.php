@@ -237,6 +237,49 @@ if( $id == "" ) {
 	
 	require('post_version_list.php');		
 ?>
+
+	<tr>
+        <th width="115" class="show-updated label">Show "Updated"</th>
+            <td>
+                <?php
+                if(isset($drawing['show_updated'])){
+                    $show_updated = filter_var($drawing['show_updated'], FILTER_VALIDATE_BOOLEAN); //get reliable boolean from string
+                } else {
+                    $show_updated = false; //default
+                }
+                ?>
+                <input type="radio" class="true" name="show_updated" <?= $show_updated === true ? 'checked="checked"':'' ?> value="true"> Yes, show "Updated: dd-mm-yyyy" at the top-right of the published drawing.
+                <br>
+                <input type="radio" class="false" name="show_updated" <?= $show_updated === false ? 'checked="checked"':'' ?> value="false"> No, do not show it.
+                <script>
+                    (function($){
+                        $('input[name="show_updated"]').change(function(){
+                            var _action = "disable_show_updated";
+                            if('true' == $(this).val()){
+                                _action = "enable_show_updated";
+                            }
+
+                            $j.post('/a/drawings_post.php',
+                                {
+                                    mode: 'post',
+                                    id: '<?= $drawing['id'] ?>',
+                                    action: _action
+                                }, function(data){
+                                    if(true == data.success){
+                                        $('.show-updated.label .notice').hide(); //in case not fully faded out yet
+                                        $('.show-updated.label').append('<div class="notice" style="color:green;">saved</div>');
+                                        setTimeout(function(){
+                                            $('.show-updated.label .notice').fadeOut(2000);
+                                        },100);
+                                    }
+                                    console.log(data.success)
+                                },'json'
+                            );
+                        });
+                    }($j));
+                </script>
+            </td>
+        </tr>
 	<tr>
 		<th width="115">Delete</th>
 		<td>
