@@ -300,4 +300,21 @@ if( Request('drawing_id') )
 	die('200 OK');
 }
 
+// #118325033 - ability to show "Updated (date)" at the top of published drawings.
+if( Request( 'action' ) == 'enable_show_updated' ){
+	header('Content-type: application/json');
+	$DB->Update($main_table, array(
+		'show_updated'=>1
+	), Request('id'));
+	echo json_encode(array('success'=>true, 'value'=>1));
+}
+
+if( Request( 'action' ) == 'disable_show_updated' ){
+	header('Content-type: application/json');
+	$DB->Update($main_table, array(
+		'show_updated'=>0
+	), Request('id'));
+	echo json_encode(array('success'=>true, 'value'=>0));
+}
+
 ?>

@@ -137,7 +137,7 @@ function SearchForOLMISLinks($content)
 	// 1. parse $content for olmis urls
 	// 2. for any ids that are not in the database, parse the olmis page to find the job title
 	// 3. return an array of IDs
-	
+	//e.g. https://www.qualityinfo.org/jc-oprof/?at=1&amp;t1=434171~434171~4101000000~0
 	$soc = array();
 	if( preg_match_all('/(qualityinfo\.org|olmis\.emp\.state\.or\.us)[^"]*t1=[^~]+~([0-9]{6})~/', $content, $matches) )
 	foreach( $matches[2] as $m )
