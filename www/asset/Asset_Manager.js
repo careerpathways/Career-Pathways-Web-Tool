@@ -238,21 +238,23 @@ function assetInfoShow(assetId, asset){
 	$('.section.upload').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+assetId+'"]');
-	assetUsedIn = buildAssetUseHTML(asset);
+	var assetUse = buildAssetUseHTML(asset);
 
 	var h = 
 	'<div class="asset-info">'
 		+ '<div class = information>'
-			+ assetUsedIn
+			+'<div class="heading">Information</div>'
+			+ '<div>'
+				+ assetUse
+			+ '</div>'
 		+ '</div>'
-		+'<div class="heading">Information</div>'
 		+'<div class="bucket-select-container"></div>'
 		+'<div class="btn cancel" data-asset="assetInfoBack" data-asset-id="'+assetId+'">Back</div>'
 	+ '</div>';
 
 	$(".work-pad").show();
 	$('.work-pad').html(h);
-	$asset.clone().insertBefore('.information');
+	$asset.clone().insertAfter('.information .heading');
 }
 
 function assetInfoBack(assetId){
@@ -275,7 +277,7 @@ function buildAssetCreatorInfo(asset){
 function buildAssetUseHTML(asset){
 	console.log(asset.usages);
 	var h = '<div class="img-info">'
-	+ 'Used In:' 
+	+ '<u><strong>Used In</strong></u>:' 
 	+ '<br/>';
 
 	for (var i = 0; i < asset.usages.length; i++) {
@@ -289,9 +291,9 @@ function buildAssetUseHTML(asset){
 			
 			h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
 				if ( drawing_name == '' ){
-					h += 'Unnamed Drawing'
+					h += 'Unnamed Drawing';
 				} else {
-					h += drawing_name
+					h += drawing_name;
 				}
 			h += '</a>'
 			+ '(Version '
@@ -309,14 +311,13 @@ function buildAssetUseHTML(asset){
 			var drawing_school_name = asset.usages[i].scool_name;
 			var drawing_version_id = asset.usages[i].post_drawing_version_id;
 			
-			h += '<div class="asset-use">'
-			+ '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+			h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
 
 				if ( drawing_name == '' ){
-					h += 'Unnamed Drawing'
+					h += 'Unnamed Drawing';
 				} 
 				else {
-					h += drawing_name
+					h += drawing_name;
 				}
 
 			h += '</a>'
@@ -326,11 +327,9 @@ function buildAssetUseHTML(asset){
 			+ drawing_school_name 
 			+ '<a href="/a/post_drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
 			+ '<a href="/a/post_drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
-			+ '<br/>'
-			+ '</div>';
+			+ '<br/>';
 		
 		}
-		//h += '</div>';
 	}
 	h += '</div>';
 

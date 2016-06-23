@@ -1226,7 +1226,16 @@ tr.postAssuranceReport.schoolName h2 {
 	color: black;
 }
 
-.img-info .asset-use .edit {
+.img-info {
+    text-align: left;
+    display: inline-block;
+}
+
+.img-info .asset-use {
+    margin-top: 3px;
+}
+
+.img-info .asset-use img {
     margin-left: 7px;
 }
 
