@@ -180,6 +180,7 @@ class Asset_Manager
 				LIKE "%'.$tail.'%"
 			GROUP BY post_drawing_version_id
 			ORDER BY post_drawing_main_id ASC');
+
 		$res = array_merge($roadmap_drawings, $post_drawings);
 		$asset_use = array(
 			'number_of_drawings_using' => count($res),
@@ -411,7 +412,8 @@ class Asset_Manager
 	 * @param  array $assetNew
 	 * @return string Same as $htmlString but with image src and data-asset-id updated. Note: line breaks are removed.
 	 */
-	private static function replace_asset_in_html($htmlString, $assetOriginal, $assetNew){
+	private static function replace_asset_in_html($htmlString, $assetOriginal, $assetNew)
+	{
 		$htmlObj = str_get_html($htmlString);
 		foreach($htmlObj->find('img') as $e){
 			if($e->getAttribute('data-asset-id') == $assetOriginal['id']){

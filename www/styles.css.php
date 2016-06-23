@@ -1226,6 +1226,10 @@ tr.postAssuranceReport.schoolName h2 {
 	color: black;
 }
 
+.img-info .asset-use .edit {
+    margin-left: 7px;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){

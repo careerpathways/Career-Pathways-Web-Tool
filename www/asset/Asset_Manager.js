@@ -1,3 +1,9 @@
+/*
+These functions help build the image library.
+For the event listners see:
+common/tinymce/plugins/jbimages/dialog.php
+*/
+
 var assetReplaceMode = false;
 
 function getBuckets(){
@@ -76,7 +82,7 @@ function buildAssetHTML(asset){
 		    	+ getButtons(asset)
 	    	+ '</div>'
 	    	+ '<div>'
-	    		+ getAssetCreatorInfo(asset)
+	    		+ buildAssetCreatorInfo(asset)
 	    	+ '</div>'
     	+ '</div>';
     return h;
@@ -225,44 +231,28 @@ function moveAssetCancel(assetId){
 	msg('Cancelled image move.');
 }
 
-function assetInfoShow(assetId){
-		msg('');
+function assetInfoShow(assetId, asset){
+	msg('');
 	$('.section.existing').hide();
 	$('.section.bucket').hide();
 	$('.section.upload').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+assetId+'"]');
-	var h = '<div class="asset-info">'
-	+'<div class="heading"<>/div>'
-	+'<div class="bucket-select-container"></div>'
-	+'<div class="btn cancel" data-asset="movecancel" data-asset-id="'+assetId+'">cancel</div>'
-	+'<br><div class="btn proceed" data-asset="moveproceed" data-asset-id="'+assetId+'">proceed</div>'
-	+'</div>';
-	
-	$.get('/asset/bucket_list.php', function(buckets){
-		var permittedBuckets = [];
-		for(var i = 0; i < buckets.length; i++){
-			//var isCurrent = buckets[i];
-			var isCurrent = $('.bucket-select-container select').find(':selected').val() == buckets[i].school_id
-			// Don't show current bucket (moving FROM), and don't show
-			// buckets for which the user is not allowed to write to.
-			if(buckets[i].userCanCreate && !isCurrent){
-				permittedBuckets.push(buckets[i]);
-			}
-		}
-		if(permittedBuckets.length > 0){
-			$(".work-pad").show();
-			$('.work-pad').html(h);
-			$asset.clone().insertBefore('.heading');
-			$('.move-asset .bucket-select-container').html(buildBucketSelectorHTML(permittedBuckets));
-		} else {
-			msg('It appears there are no other buckets that you have permission to move images to.');
-		}
-	});
+	assetUsedIn = buildAssetUseHTML(asset);
 
-	checkAssetUse(assetId, function(response){
-		console.log(response);
-	});
+	var h = 
+	'<div class="asset-info">'
+		+ '<div class = information>'
+			+ assetUsedIn
+		+ '</div>'
+		+'<div class="heading">Information</div>'
+		+'<div class="bucket-select-container"></div>'
+		+'<div class="btn cancel" data-asset="assetInfoBack" data-asset-id="'+assetId+'">Back</div>'
+	+ '</div>';
+
+	$(".work-pad").show();
+	$('.work-pad').html(h);
+	$asset.clone().insertBefore('.information');
 }
 
 function assetInfoBack(assetId){
@@ -270,6 +260,81 @@ function assetInfoBack(assetId){
 	$('.section.existing').show();
 	$('.section.bucket').show();
 	$('.section.upload').show();
+}
+
+function buildAssetCreatorInfo(asset){
+	var userInfoString = '' 
+		+ asset.first_name + ' ' + asset.last_name 
+		+ '<br />'
+		+ '<div title="' + asset.school_name + '">'
+		+'(' + asset.school_abbr + ')'
+		+ '</div>'
+	return userInfoString;
+}
+//called by assetInfoShow
+function buildAssetUseHTML(asset){
+	console.log(asset.usages);
+	var h = '<div class="img-info">'
+	+ 'Used In:' 
+	+ '<br/>';
+
+	for (var i = 0; i < asset.usages.length; i++) {
+		console.log(asset.usages[i]);
+		h += '<div class="asset-use">';
+		if (asset.usages[i].type == 'roadmap_drawing'){
+			var drawing_name = asset.usages[i].roadmap_drawing_name;
+			var drawing_version = asset.usages[i].roadmap_drawing_version_num;
+			var drawing_school_name = asset.usages[i].roadmap_drawing_school_name;
+			var drawing_version_id = asset.usages[i].roadmap_drawing_version_id;
+			
+			h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+				if ( drawing_name == '' ){
+					h += 'Unnamed Drawing'
+				} else {
+					h += drawing_name
+				}
+			h += '</a>'
+			+ '(Version '
+			+ drawing_version
+			+ '): ' 
+			+ drawing_school_name
+			+ '<a href="/a/drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
+			+ '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+			+ '<br/>'
+			+ '</div>';
+		
+		} else if (asset.usages[i].type == 'post_drawing'){
+			var drawing_name = asset.usages[i].post_drawing_name;
+			var drawing_version = asset.usages[i].post_drawing_version;
+			var drawing_school_name = asset.usages[i].scool_name;
+			var drawing_version_id = asset.usages[i].post_drawing_version_id;
+			
+			h += '<div class="asset-use">'
+			+ '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+
+				if ( drawing_name == '' ){
+					h += 'Unnamed Drawing'
+				} 
+				else {
+					h += drawing_name
+				}
+
+			h += '</a>'
+			+ '(Version '
+			+ drawing_version
+			+ '): ' 
+			+ drawing_school_name 
+			+ '<a href="/a/post_drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
+			+ '<a href="/a/post_drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+			+ '<br/>'
+			+ '</div>';
+		
+		}
+		//h += '</div>';
+	}
+	h += '</div>';
+
+	return h;
 }
 
 function getButtons(asset){
@@ -284,18 +349,3 @@ function getButtons(asset){
     	+ '<div class="insert btn" data-asset="insert">Insert</div>';
 	return btns;
 }
-
-function getAssetCreatorInfo(asset){
-	
-
-	var userInfoString = '' 
-		+ asset.first_name + ' ' + asset.last_name 
-		+ '<br />'
-		+ '<div title="' + asset.school_name + '">'
-		+'(' + asset.school_abbr + ')'
-		+ '</div>'
-	return userInfoString;
-}
-
-
-

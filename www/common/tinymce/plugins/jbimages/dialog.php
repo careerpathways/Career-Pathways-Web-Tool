@@ -131,6 +131,13 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			var asset_to_replace_id = $(this).parents('.asset').data('asset-id');
 			moveAssetStart(asset_to_replace_id);
 		});
+		$('body').on('click', '[data-asset="info"]', function(){
+			var assetId = $(this).parents('.asset').data('asset-id');
+			console.log('/asset/check_use.php?asset_id='+assetId);
+			$.get('/asset/check_use.php?asset_id='+assetId, function(asset){
+				assetInfoShow(assetId, asset);	
+			});	
+		});
 		<?php endif; ?>
 		$('body').on('click', '[data-asset="insert"], #uploaded-images img', function(){
 			var imgSrc = $(this).parents('.asset').find('.img-container img').attr('src'),
@@ -165,14 +172,7 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			moveAssetProceed($(this).attr('data-asset-id'), $('.move-asset .bucket-select-container select').val());
 		});
 
-		$('body').on('click', '[data-asset="info"]', function(){
-			var assetId = $(this).parents('.asset').data('asset-id');
-			$.get('/asset/check_use.php?assetId='+assetId, function(response){
-				assetInfoShow(assetId);	
-			});	
-		});
-
-		$('body').on('click', '[data-asset="infoback"]', function(){
+		$('body').on('click', '[data-asset="assetInfoBack"]', function(){
 			assetInfoBack($(this).attr('dataassetInfo-asset-id'));
 		});
 		//Asset_Manager.js main function
