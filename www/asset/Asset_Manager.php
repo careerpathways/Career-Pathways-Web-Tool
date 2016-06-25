@@ -12,7 +12,7 @@ class Asset_Manager
 	/**
 	 * Get a single asset file.
 	 * @param  int $asset_id Id of the asset.
-	 * @return string The asset object.
+	 * @return array The asset object.
 	 */
 	public static function get_asset($asset_id, $include_deleted = false)
 	{
@@ -47,7 +47,6 @@ class Asset_Manager
 			$assetPath = $SITE->asset_path();
 			return $assetPath . $filename;	
 		}
-		
 	}
 
 	public static function delete_asset($asset_id)
@@ -138,16 +137,21 @@ class Asset_Manager
 		
 		$roadmap_drawings = $DB->MultiQuery('SELECT 
 				"roadmap_drawing" as type,
+				a.id as asset_id,
+				a.alt as asset_alt_text,
 				d.parent_id as roadmap_drawing_main_id,
 				d.version_num as roadmap_drawing_version_num,
 				dm.name as roadmap_drawing_name,
+				o.content as roadmap_drawing_content,
+				o.drawing_id as roadmap_drawing_version_id,
+				o.id as object_id,
 				s.id as roadmap_drawing_school_id,
 				s.school_name as roadmap_drawing_school_name,
 				s.school_abbr as roadmap_drawing_school_abbr,
-				o.drawing_id as roadmap_drawing_version_id,
-				o.id as objects_id,
 				COUNT(o.id) as times_used_within_version
 			FROM objects o
+			LEFT JOIN assets a
+				ON a.id = '.$asset_id.'
 			LEFT JOIN drawings d
 				ON d.id = o.drawing_id
 			LEFT JOIN drawing_main dm
@@ -161,6 +165,8 @@ class Asset_Manager
 
 		$post_drawings = $DB->MultiQuery('SELECT 
 				"post_drawing" as type,
+				a.id as asset_id,
+				a.alt as asset_alt_text,
 				pd.parent_id as post_drawing_main_id,
 				pd.id as post_drawing_version_id,
 				pd.version_num as post_drawing_version,
@@ -169,6 +175,8 @@ class Asset_Manager
 				pc.id as post_cell_id,
 				COUNT(pc.id) as times_used_within_version
 			FROM post_cell pc
+			LEFT JOIN assets a
+				ON a.id = '.$asset_id.'
 			LEFT JOIN post_drawings pd
 				ON pd.id = pc.drawing_id
 			LEFT JOIN post_drawing_main pdm
@@ -184,7 +192,8 @@ class Asset_Manager
 		$res = array_merge($roadmap_drawings, $post_drawings);
 		$asset_use = array(
 			'number_of_drawings_using' => count($res),
-			'usages' => $res
+			'usages' => $res,
+			'asset' => self::get_asset($asset_id)
 		);
 		return $asset_use;
 	}
@@ -229,6 +238,113 @@ class Asset_Manager
 	public static function make_asset_url($assetFileName)
 	{
 		return getBaseUrl() . '/asset/' . $assetFileName;
+	}
+
+	public static function set_asset_alt_text( $asset_id, $alt_text )
+	{
+		/*
+		$res = array_merge($roadmap_drawings, $post_drawings);
+		$asset_use = array(
+			'number_of_drawings_using' => count($res),
+			'usages' => $res,
+			'asset' => self::get_asset($asset_id)
+		);
+
+		 */
+		global $SITE, $DB;
+
+		$asset_use = self::check_use($asset_id);
+
+		/*foreach ($asset_use['usages'] as &$object) {
+			if ($object['type'] == "roadmap_drawing"){
+
+				$result = array(
+					'status' => '',
+					'message' => '',
+				);
+
+				if(!isset($object['content'])){
+					$result['status'] = 'failure';
+					$result['message'] = 'Roadmap/object has no content.';
+					return $result;
+				}
+				//unserialize the content
+				$c = unserialize($object['content']);
+				//replace the alt text
+				$c['config']['content'] = str_replace('/alt=".*"/', $alt_text, $c['config']['content']);
+				$c['config']['content_html'] = str_replace('/alt=".*"/', $alt_text, $c['config']['content_html']);				
+				//serialize the content
+				$c = serialize($c);
+				//set content in the object in the DB
+				$DB->SingleQuery('UPDATE cpwt_oregon_template.objects
+					SET content = "'.$c.'"
+					WHERE objects.id = '.$object['object_id']
+				);	
+			} else {
+
+			//
+			//unserialize the content
+			//replace the alt text
+			//serialize the content
+			//set content in the object in the DB
+			}
+		}*/
+
+					/*private static function replace_asset_in_object($objectId, $assetOriginal, $assetNew)
+					{
+
+
+						$DB->Update('objects',array('content'=>serialize($c)), $objectId);
+						
+						$result['status'] = 'success';
+						$result['message'] = 'Updated roadmap object id ' . $objectId;
+
+						return $result;
+					}
+
+
+					{
+						global $DB;
+						$result = array(
+							'status' => '',
+							'message' => '',
+							'type' => 'post/post_cell',
+							'operation'=> __FUNCTION__,
+							'post_cell_id' => $postCellId
+						);
+
+						$c = $DB->SingleQuery('SELECT * FROM post_cell WHERE id = ' . $postCellId);
+						
+						if(!isset($c['content'])){
+							$result['status'] = 'failure';
+							$result['message'] = 'POST Drawing/post_cell has no content.';
+							return $result;
+						}
+						
+						$c['content'] = self::replace_asset_in_html($c['content'], $assetOriginal, $assetNew);
+						
+						$DB->Update('post_cell',array('content'=>$c['content']), $postCellId);
+
+						$result['status'] = 'success';
+						$result['message'] = 'Updated post cell id ' . $postCellId;
+						
+						return $result;
+					}*/
+
+		$can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
+
+		if($can_modify){
+			$DB->SingleQuery('UPDATE cpwt_oregon_template.assets
+				SET alt = "'.$alt_text.'"
+				WHERE assets.id = '.$asset_id
+			);			
+			return true;
+		} else {
+			return false;
+		}
+
+
+		
 	}
 
 	/**
@@ -321,7 +437,7 @@ class Asset_Manager
 
 		foreach($drawings['usages'] as $d){
 			if($d['type'] === 'roadmap_drawing'){
-				$result['details'][] = self::replace_asset_in_object($d['objects_id'], $original_asset, $new_asset);
+				$result['details'][] = self::replace_asset_in_object($d['object_id'], $original_asset, $new_asset);
 			} elseif($d['type'] === 'post_drawing'){
 				$result['details'][] = self::replace_asset_in_post_cell($d['post_cell_id'], $original_asset, $new_asset);
 			}

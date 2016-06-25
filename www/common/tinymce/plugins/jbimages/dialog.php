@@ -133,9 +133,8 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		});
 		$('body').on('click', '[data-asset="info"]', function(){
 			var assetId = $(this).parents('.asset').data('asset-id');
-			console.log('/asset/check_use.php?asset_id='+assetId);
 			$.get('/asset/check_use.php?asset_id='+assetId, function(asset){
-				assetInfoShow(assetId, asset);	
+				assetInfoShow(asset);	
 			});	
 		});
 		<?php endif; ?>
@@ -170,6 +169,12 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 
 		$('body').on('click', '[data-asset="moveproceed"]', function(){
 			moveAssetProceed($(this).attr('data-asset-id'), $('.move-asset .bucket-select-container select').val());
+		});
+
+		$('body').on('click', '[data-asset="alt-text-submit"]', function(){
+			var altText = $('[data-asset="alt-text-input"]').val();
+			var assetId = $('[data-asset="alt-text-input"]').attr('data-asset-id');
+			setAltText(assetId, altText);
 		});
 
 		$('body').on('click', '[data-asset="assetInfoBack"]', function(){

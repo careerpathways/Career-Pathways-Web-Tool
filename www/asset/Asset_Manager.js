@@ -121,6 +121,12 @@ function deleteAsset(assetId){
 	});	
 }
 
+function setAltText(assetId, altText){
+	$.get('/asset/set_alt_text.php?asset_id=' + assetId + '&alt_text=' + altText, function(isSuccessfull){
+		//todo handle success and failure.
+	});
+}
+
 /**
  * Begin replacing an asset.
  * Replacing an asset is a 3 step process (choose replacee, choose replacement, confirm)
@@ -231,14 +237,16 @@ function moveAssetCancel(assetId){
 	msg('Cancelled image move.');
 }
 
-function assetInfoShow(assetId, asset){
+function assetInfoShow(usagesReport){
+	console.log(usagesReport);
 	msg('');
 	$('.section.existing').hide();
 	$('.section.bucket').hide();
 	$('.section.upload').hide();
 	clearWorkPad();
-	var $asset = $('[data-asset-id="'+assetId+'"]');
-	var assetUse = buildAssetUseHTML(asset);
+	var $asset = $('[data-asset-id="'+usagesReport.asset.id+'"]');
+	var assetUse = buildAssetUseHTML(usagesReport);
+	var altTextInput = buildAltTextInput(usagesReport);
 
 	var h = 
 	'<div class="asset-info">'
@@ -248,8 +256,10 @@ function assetInfoShow(assetId, asset){
 				+ assetUse
 			+ '</div>'
 		+ '</div>'
-		+'<div class="bucket-select-container"></div>'
-		+'<div class="btn cancel" data-asset="assetInfoBack" data-asset-id="'+assetId+'">Back</div>'
+		+ '<div class="edit-alt-text-container">'
+			+ altTextInput
+		+ '</div>'
+		+ '<div class="btn cancel" data-asset="assetInfoBack" data-asset-id="'+usagesReport.asset.id+'">Back</div>'
 	+ '</div>';
 
 	$(".work-pad").show();
@@ -257,7 +267,7 @@ function assetInfoShow(assetId, asset){
 	$asset.clone().insertAfter('.information .heading');
 }
 
-function assetInfoBack(assetId){
+function assetInfoBack(){
 	clearWorkPad();
 	$('.section.existing').show();
 	$('.section.bucket').show();
@@ -273,67 +283,73 @@ function buildAssetCreatorInfo(asset){
 		+ '</div>'
 	return userInfoString;
 }
-//called by assetInfoShow
-function buildAssetUseHTML(asset){
-	console.log(asset.usages);
+
+function buildAssetUseHTML(usagesReport){
 	var h = '<div class="img-info">'
 	+ '<u><strong>Used In</strong></u>:' 
 	+ '<br/>';
 
-	for (var i = 0; i < asset.usages.length; i++) {
-		console.log(asset.usages[i]);
+	var drawHTML = function (){
+		h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+
+		if ( drawing_name == '' ){
+			h += 'Unnamed Drawing';
+		} 
+		else {
+			h += drawing_name;
+		}
+
+		h += '</a>'
+		+ '(Version '
+		+ drawing_version
+		+ '): ' 
+		+ drawing_school_name 
+		+ '<a href="/a/' + iconHrefString + 'drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
+		+ '<a href="/a/' + iconHrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+		+ '<br/>';
+	}
+
+	for (var i = 0; i < usagesReport.usages.length; i++) {
 		h += '<div class="asset-use">';
-		if (asset.usages[i].type == 'roadmap_drawing'){
-			var drawing_name = asset.usages[i].roadmap_drawing_name;
-			var drawing_version = asset.usages[i].roadmap_drawing_version_num;
-			var drawing_school_name = asset.usages[i].roadmap_drawing_school_name;
-			var drawing_version_id = asset.usages[i].roadmap_drawing_version_id;
-			
-			h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
-				if ( drawing_name == '' ){
-					h += 'Unnamed Drawing';
-				} else {
-					h += drawing_name;
-				}
-			h += '</a>'
-			+ '(Version '
-			+ drawing_version
-			+ '): ' 
-			+ drawing_school_name
-			+ '<a href="/a/drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
-			+ '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
-			+ '<br/>'
-			+ '</div>';
+		if (usagesReport.usages[i].type == 'roadmap_drawing'){
+			var drawing_version = usagesReport.usages[i].roadmap_drawing_version_num;
+			var drawing_name = usagesReport.usages[i].roadmap_drawing_name;
+			var drawing_school_name = usagesReport.usages[i].roadmap_drawing_school_name;
+			var iconHrefString = '';
+			var drawing_version_id = usagesReport.usages[i].roadmap_drawing_version_id;
+
+			drawHTML();
 		
-		} else if (asset.usages[i].type == 'post_drawing'){
-			var drawing_name = asset.usages[i].post_drawing_name;
-			var drawing_version = asset.usages[i].post_drawing_version;
-			var drawing_school_name = asset.usages[i].scool_name;
-			var drawing_version_id = asset.usages[i].post_drawing_version_id;
-			
-			h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+		} else if (usagesReport.usages[i].type == 'post_drawing'){
+			var drawing_version = usagesReport.usages[i].post_drawing_version;
+			var drawing_name = usagesReport.usages[i].post_drawing_name;
+			var drawing_school_name = usagesReport.usages[i].scool_name;
+			var iconHrefString = 'post_';
+			var drawing_version_id = usagesReport.usages[i].post_drawing_version_id;
 
-				if ( drawing_name == '' ){
-					h += 'Unnamed Drawing';
-				} 
-				else {
-					h += drawing_name;
-				}
-
-			h += '</a>'
-			+ '(Version '
-			+ drawing_version
-			+ '): ' 
-			+ drawing_school_name 
-			+ '<a href="/a/post_drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
-			+ '<a href="/a/post_drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
-			+ '<br/>';
+			drawHTML();
 		
 		}
+		h += '</div>';
 	}
 	h += '</div>';
 
 	return h;
+}
+
+function buildAltTextInput(usagesReport){
+	console.log(usagesReport);
+	if (usagesReport.asset.userCanModify) {
+	h = '<u><strong>Alt Text:</strong></u>'
+	+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '">'
+	+ '<button data-asset="alt-text-submit">'
+		+ 'Button Text'
+	+ '</button>';
+
+	return h;
+	} else {
+		return '';
+	}
 }
 
 function getButtons(asset){
