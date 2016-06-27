@@ -1239,6 +1239,54 @@ tr.postAssuranceReport.schoolName h2 {
     margin-left: 7px;
 }
 
+.alt-text-editor * {
+    margin-right: 3px;
+}
+
+.alt-text-editor {
+    margin-top: 5px;
+}
+
+.asset-manager .btn {
+	background: #333;
+	color: white;
+	font-size: 9px;
+	line-height: 12px;
+	margin: 2px;
+	padding: 2px;
+	text-shadow: none;
+	vertical-align: top; 
+}
+
+.asset-manager .btn {
+	background: #333;
+	color: white;
+	font-size: 9px;
+	line-height: 12px;
+	margin: 2px;
+	padding: 2px;
+	text-shadow: none;
+	vertical-align: top;
+}
+
+.alt-text-editor button {
+    background: #333;
+    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.25);
+    color: white;
+    cursor: pointer;
+    font-family: verdana, tahoma, arial, sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    line-height: 12px;
+    margin: 2px;
+    margin-top: 0px;
+    padding: 2px;
+    padding-top: 0px;
+    text-shadow: none;
+    vertical-align: top;
+    height: 16px;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){

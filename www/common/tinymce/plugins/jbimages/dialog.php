@@ -139,9 +139,10 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 		});
 		<?php endif; ?>
 		$('body').on('click', '[data-asset="insert"], #uploaded-images img', function(){
-			var imgSrc = $(this).parents('.asset').find('.img-container img').attr('src'),
-			assetId = $(this).parents('.asset').data('asset-id');
-			insertImage(imgSrc, assetId); //tinymce dialog.js
+			var assetId = $(this).parents('.asset').data('asset-id');
+			$.get('/asset/get.php?asset_id=' + assetId, function(asset){
+				insertImage(asset); //tinymce dialog.js			
+			});
 		});
 		$('body').on('click', '[data-asset="replacecancel"]', function(){
 			replaceAssetCancel($(this).attr('data-asset-id'));

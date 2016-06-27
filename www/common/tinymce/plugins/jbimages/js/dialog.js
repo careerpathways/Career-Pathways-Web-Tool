@@ -92,8 +92,8 @@ var jbImagesDialog = {
 };
 if(usingFullTinyMCEPopup){
 	tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
-	function insertImage(imgSrc, assetId){
-		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + imgSrc +'" data-asset-id="'+assetId+'"/>');
+	function insertImage(asset){
+		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + asset.imgSrc +'" alt="' + asset.alt + '" data-asset-id="'+asset.id+'"/>');
 		tinyMCEPopup.close();
 	}
 }

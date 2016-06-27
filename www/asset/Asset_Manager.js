@@ -76,7 +76,7 @@ function buildAssetHTML(asset){
 	var h = ''
     	+ '<div class="asset" data-asset-id="'+asset.id+'">'
 	    	+ '<div class="img-container">'
-	    		+ '<img src="'+asset.imgSrc+'" />'
+	    		+ '<img src="'+asset.imgSrc+'" alt="' + asset.alt + '" />'
 	    	+ '</div>'
 	    	+ '<div class="controls">'
 		    	+ getButtons(asset)
@@ -123,7 +123,15 @@ function deleteAsset(assetId){
 
 function setAltText(assetId, altText){
 	$.get('/asset/set_alt_text.php?asset_id=' + assetId + '&alt_text=' + altText, function(isSuccessfull){
-		//todo handle success and failure.
+		var successMessage = 'Successfully saved alt text!';
+		var failureMessage = 'It seems there was an error saving the alt text! Please refresh the page and try again.';
+		if (isSuccessfull){
+			$('.alt-text-result').html(successMessage);
+			$('.alt-text-result').addClass('success');
+		} else {
+			$('.alt-text-result').html(failureMessage);
+			$('.alt-text-result').addClass('failure');
+		}
 	});
 }
 
@@ -238,15 +246,13 @@ function moveAssetCancel(assetId){
 }
 
 function assetInfoShow(usagesReport){
-	console.log(usagesReport);
 	msg('');
 	$('.section.existing').hide();
 	$('.section.bucket').hide();
 	$('.section.upload').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+usagesReport.asset.id+'"]');
-	var assetUse = buildAssetUseHTML(usagesReport);
-	var altTextInput = buildAltTextInput(usagesReport);
+	var assetUse = buildInformationHTML(usagesReport);
 
 	var h = 
 	'<div class="asset-info">'
@@ -255,9 +261,6 @@ function assetInfoShow(usagesReport){
 			+ '<div>'
 				+ assetUse
 			+ '</div>'
-		+ '</div>'
-		+ '<div class="edit-alt-text-container">'
-			+ altTextInput
 		+ '</div>'
 		+ '<div class="btn cancel" data-asset="assetInfoBack" data-asset-id="'+usagesReport.asset.id+'">Back</div>'
 	+ '</div>';
@@ -284,10 +287,24 @@ function buildAssetCreatorInfo(asset){
 	return userInfoString;
 }
 
-function buildAssetUseHTML(usagesReport){
+function buildInformationHTML(usagesReport){
 	var h = '<div class="img-info">'
 	+ '<u><strong>Used In</strong></u>:' 
 	+ '<br/>';
+
+	var buildAltTextInput = function (){
+		if (usagesReport.asset.userCanModify) {
+			h += '<div class="alt-text-editor">'
+				+ '<u><strong>Alt Text:</strong></u>'
+				+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '" value="' + usagesReport.asset.alt + '">'
+				+ '<button data-asset="alt-text-submit">'
+					+ 'Update Alt Text'
+				+ '</button>'
+				+ '<span class="alt-text-result"></span>';
+				+ '</div>'
+
+		}
+	}
 
 	var drawHTML = function (){
 		h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
@@ -332,24 +349,11 @@ function buildAssetUseHTML(usagesReport){
 		}
 		h += '</div>';
 	}
+
+	buildAltTextInput();
 	h += '</div>';
 
 	return h;
-}
-
-function buildAltTextInput(usagesReport){
-	console.log(usagesReport);
-	if (usagesReport.asset.userCanModify) {
-	h = '<u><strong>Alt Text:</strong></u>'
-	+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '">'
-	+ '<button data-asset="alt-text-submit">'
-		+ 'Button Text'
-	+ '</button>';
-
-	return h;
-	} else {
-		return '';
-	}
 }
 
 function getButtons(asset){

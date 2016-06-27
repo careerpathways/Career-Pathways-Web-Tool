@@ -272,7 +272,6 @@ if( $id == "" ) {
                                             $('.show-updated.label .notice').fadeOut(2000);
                                         },100);
                                     }
-                                    console.log(data.success)
                                 },'json'
                             );
                         });

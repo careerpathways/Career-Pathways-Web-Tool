@@ -139,11 +139,11 @@ class Asset_Manager
 				"roadmap_drawing" as type,
 				a.id as asset_id,
 				a.alt as asset_alt_text,
-				d.parent_id as roadmap_drawing_main_id,
 				d.version_num as roadmap_drawing_version_num,
+				d.id as roadmap_drawing_version_id,
+				dm.id as roadmap_drawing_main_id,
 				dm.name as roadmap_drawing_name,
 				o.content as roadmap_drawing_content,
-				o.drawing_id as roadmap_drawing_version_id,
 				o.id as object_id,
 				s.id as roadmap_drawing_school_id,
 				s.school_name as roadmap_drawing_school_name,
@@ -167,12 +167,13 @@ class Asset_Manager
 				"post_drawing" as type,
 				a.id as asset_id,
 				a.alt as asset_alt_text,
-				pd.parent_id as post_drawing_main_id,
+				pc.id as post_cell_id,
+				pc.content as post_cell_content,
 				pd.id as post_drawing_version_id,
 				pd.version_num as post_drawing_version,
+				pdm.id as post_drawing_main_id,
 				pdm.name as post_drawing_name,
 				s.school_name as scool_name,
-				pc.id as post_cell_id,
 				COUNT(pc.id) as times_used_within_version
 			FROM post_cell pc
 			LEFT JOIN assets a
@@ -210,7 +211,11 @@ class Asset_Manager
 		
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
-			$_query = 'SELECT a.*, asi.school_id, u.first_name, u.last_name, s.school_name, s.school_abbr
+			$_query = 'SELECT a.*, asi.school_id,
+			 u.first_name,
+			 u.last_name,
+			 s.school_name,
+			 s.school_abbr
 				FROM assets_school_ids asi
 					LEFT JOIN assets a
 						ON a.id = asi.asset_id
@@ -242,98 +247,59 @@ class Asset_Manager
 
 	public static function set_asset_alt_text( $asset_id, $alt_text )
 	{
-		/*
-		$res = array_merge($roadmap_drawings, $post_drawings);
-		$asset_use = array(
-			'number_of_drawings_using' => count($res),
-			'usages' => $res,
-			'asset' => self::get_asset($asset_id)
-		);
-
-		 */
 		global $SITE, $DB;
-
 		$asset_use = self::check_use($asset_id);
+		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
 
-		/*foreach ($asset_use['usages'] as &$object) {
-			if ($object['type'] == "roadmap_drawing"){
+		if($user_can_modify){
+			//Loop through each asset use and write alt text to db.
+			foreach ($asset_use['usages'] as &$object) {
+				if ($object['type'] == "roadmap_drawing"){
 
-				$result = array(
-					'status' => '',
-					'message' => '',
-				);
+					if(!isset($object['roadmap_drawing_content'])){
+						error_log('Failure to write alt text: Roadmap object has no content.', 0);
+					}
+					//unserialize the content
+					$c = unserialize($object['roadmap_drawing_content']);
+					//replace the alt text
+					
+					$content_string = $c['config']['content'];
+					$content_html_string = $c['config']['content_html'];
+					$pattern = '/alt=".*?"/';
+					$replacement = 'alt="'.$alt_text.'"';
+					
+					$c['config']['content'] = preg_replace($pattern, $replacement, $content_string);
+					$c['config']['content_html'] = preg_replace($pattern, $replacement, $content_html_string);				
+					//serialize the content
+					$c = serialize($c);
+					//set content in the object in the DB
+					$DB->SingleQuery("UPDATE cpwt_oregon_template.objects
+						SET content = '" . $c . "'
+						WHERE objects.id = ".$object['object_id']
+					);
+					
+				} elseif ($object['type'] == "post_drawing"){
 
-				if(!isset($object['content'])){
-					$result['status'] = 'failure';
-					$result['message'] = 'Roadmap/object has no content.';
-					return $result;
-				}
-				//unserialize the content
-				$c = unserialize($object['content']);
-				//replace the alt text
-				$c['config']['content'] = str_replace('/alt=".*"/', $alt_text, $c['config']['content']);
-				$c['config']['content_html'] = str_replace('/alt=".*"/', $alt_text, $c['config']['content_html']);				
-				//serialize the content
-				$c = serialize($c);
-				//set content in the object in the DB
-				$DB->SingleQuery('UPDATE cpwt_oregon_template.objects
-					SET content = "'.$c.'"
-					WHERE objects.id = '.$object['object_id']
-				);	
-			} else {
-
-			//
-			//unserialize the content
-			//replace the alt text
-			//serialize the content
-			//set content in the object in the DB
-			}
-		}*/
-
-					/*private static function replace_asset_in_object($objectId, $assetOriginal, $assetNew)
-					{
-
-
-						$DB->Update('objects',array('content'=>serialize($c)), $objectId);
-						
-						$result['status'] = 'success';
-						$result['message'] = 'Updated roadmap object id ' . $objectId;
-
-						return $result;
+					if(!isset($object['post_cell_content'])){
+						error_log('Failure to write alt text: Post cell has no content.', 0);
 					}
 
+					//replace the alt text
+					$content_string = $object['post_cell_content'];
+					$pattern = '/alt=".*?"/';
+					$replacement = 'alt="'.$alt_text.'"';
+					$c = preg_replace($pattern, $replacement, $content_string);
 
-					{
-						global $DB;
-						$result = array(
-							'status' => '',
-							'message' => '',
-							'type' => 'post/post_cell',
-							'operation'=> __FUNCTION__,
-							'post_cell_id' => $postCellId
-						);
+					//set content in the post cell in the DB
+					$DB->SingleQuery("UPDATE cpwt_oregon_template.post_cell
+						SET content = '" . $c . "'
+						WHERE post_cell.id = ".$object['post_cell_id']
+					);
+				}
 
-						$c = $DB->SingleQuery('SELECT * FROM post_cell WHERE id = ' . $postCellId);
-						
-						if(!isset($c['content'])){
-							$result['status'] = 'failure';
-							$result['message'] = 'POST Drawing/post_cell has no content.';
-							return $result;
-						}
-						
-						$c['content'] = self::replace_asset_in_html($c['content'], $assetOriginal, $assetNew);
-						
-						$DB->Update('post_cell',array('content'=>$c['content']), $postCellId);
+			}
 
-						$result['status'] = 'success';
-						$result['message'] = 'Updated post cell id ' . $postCellId;
-						
-						return $result;
-					}*/
-
-		$can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
-
-		if($can_modify){
+			//write alt text to asset
 			$DB->SingleQuery('UPDATE cpwt_oregon_template.assets
 				SET alt = "'.$alt_text.'"
 				WHERE assets.id = '.$asset_id
@@ -341,10 +307,7 @@ class Asset_Manager
 			return true;
 		} else {
 			return false;
-		}
-
-
-		
+		}		
 	}
 
 	/**
