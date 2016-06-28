@@ -1287,6 +1287,10 @@ tr.postAssuranceReport.schoolName h2 {
     height: 16px;
 }
 
+span.alt-text-result {
+    display: block;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){

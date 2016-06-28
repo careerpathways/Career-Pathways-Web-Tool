@@ -268,6 +268,16 @@ function assetInfoShow(usagesReport){
 	$(".work-pad").show();
 	$('.work-pad').html(h);
 	$asset.clone().insertAfter('.information .heading');
+
+	//prevent special chars
+	$('.alt-text-editor input').bind('keypress', function (event) {
+		var regex = new RegExp("^[a-zA-Z0-9 ]+$");
+		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+		if (!regex.test(key)) {
+			event.preventDefault();
+			return false;
+		}
+	});
 }
 
 function assetInfoBack(){
@@ -292,13 +302,13 @@ function buildInformationHTML(usagesReport){
 	+ '<u><strong>Used In</strong></u>:' 
 	+ '<br/>';
 
-	var buildAltTextInput = function (){
+	var drawAltTextInput = function (){
 		if (usagesReport.asset.userCanModify) {
 			h += '<div class="alt-text-editor">'
 				+ '<u><strong>Alt Text:</strong></u>'
 				+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '" value="' + usagesReport.asset.alt + '">'
 				+ '<button data-asset="alt-text-submit">'
-					+ 'Update Alt Text'
+					+ 'Save Alt Text'
 				+ '</button>'
 				+ '<span class="alt-text-result"></span>';
 				+ '</div>'
@@ -350,8 +360,7 @@ function buildInformationHTML(usagesReport){
 		h += '</div>';
 	}
 
-	buildAltTextInput();
-	h += '</div>';
+	drawAltTextInput(); h += '</div>';
 
 	return h;
 }
