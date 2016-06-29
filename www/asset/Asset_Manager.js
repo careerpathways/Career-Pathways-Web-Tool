@@ -298,9 +298,13 @@ function buildAssetCreatorInfo(asset){
 }
 
 function buildInformationHTML(usagesReport){
-	var h = '<div class="img-info">'
-	+ '<u><strong>Used In</strong></u>:' 
-	+ '<br/>';
+	var h = '<div class="img-info">';
+	
+	if (usagesReport.usages.length != 0) {
+		h += '<u><strong>Used In</strong></u>:';
+	}
+		
+	h += '<br/>';
 
 	var drawAltTextInput = function (){
 		if (usagesReport.asset.userCanModify) {
