@@ -1,7 +1,7 @@
 /*
 These functions help build the image library.
 For the event listners see:
-common/tinymce/plugins/jbimages/dialog.php
+www/common/tinymce/plugins/jbimages/dialog.php
 */
 
 var assetReplaceMode = false;
@@ -125,7 +125,8 @@ function setAltText(assetId, altText){
 	$.get('/asset/set_alt_text.php?asset_id=' + assetId + '&alt_text=' + altText, function(isSuccessfull){
 		var successMessage = 'Successfully saved alt text!';
 		var failureMessage = 'It seems there was an error saving the alt text! Please refresh the page and try again.';
-		if (isSuccessfull){
+		console.log(isSuccessfull);
+		if (isSuccessfull === true){
 			$('.alt-text-result').html(successMessage);
 			$('.alt-text-result').addClass('success');
 		} else {
@@ -299,6 +300,7 @@ function buildAssetCreatorInfo(asset){
 
 function buildInformationHTML(usagesReport){
 	var h = '<div class="img-info">';
+	console.log(usagesReport);
 	
 	if (usagesReport.usages.length != 0) {
 		h += '<u><strong>Used In</strong></u>:';

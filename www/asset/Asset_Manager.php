@@ -261,21 +261,26 @@ class Asset_Manager
 					}
 					//unserialize the content
 					$c = unserialize($object['roadmap_drawing_content']);
-					//replace the alt text
 					
-					$content_string = $c['config']['content'];
-					$content_html_string = $c['config']['content_html'];
-					$pattern = '/alt=".*?"/';
-					$replacement = 'alt="'.$alt_text.'"';
+					$patterns = array();
+					$patterns[0] = '/alt=".*?"/';
+					$patterns[1] = '/"/';
+					$patterns[2] = '/;/';
 					
-					$c['config']['content'] = preg_replace($pattern, $replacement, $content_string);
-					$c['config']['content_html'] = preg_replace($pattern, $replacement, $content_html_string);				
+					$replacements = array();
+					$replacements[0] ='alt="'.$alt_text.'"';
+					$replacements[1] = '\"';
+					$replacements[2] = '\;';
+
+					$c['config']['content'] = preg_replace($patterns, $replacements, $c['config']['content']);
+					$c['config']['content_html'] = preg_replace($patterns, $replacements, $c['config']['content_html']);				
 					//serialize the content
 					$c = serialize($c);
+
 					//set content in the object in the DB
-					$DB->SingleQuery("UPDATE cpwt_oregon_template.objects
-						SET content = '" . $c . "'
-						WHERE objects.id = ".$object['object_id']
+					$DB->SingleQuery('UPDATE cpwt_oregon_template.objects
+						SET content = "' . $c . '"
+						WHERE objects.id = '.$object['object_id']
 					);
 					
 				} elseif ($object['type'] == "post_drawing"){
@@ -285,15 +290,24 @@ class Asset_Manager
 					}
 
 					//replace the alt text
-					$content_string = $object['post_cell_content'];
-					$pattern = '/alt=".*?"/';
-					$replacement = 'alt="'.$alt_text.'"';
-					$c = preg_replace($pattern, $replacement, $content_string);
+					$c = $object['post_cell_content'];
+
+					$patterns = array();
+					$patterns[0] = '/alt=".*?"/';
+					$patterns[1] = '/"/';
+					$patterns[2] = '/;/';
+					
+					$replacements = array();
+					$replacements[0] ='alt="'.$alt_text.'"';
+					$replacements[1] = '\"';
+					$replacements[2] = '\;';
+
+					$c = preg_replace($patterns, $replacements, $c);
 
 					//set content in the post cell in the DB
-					$DB->SingleQuery("UPDATE cpwt_oregon_template.post_cell
-						SET content = '" . $c . "'
-						WHERE post_cell.id = ".$object['post_cell_id']
+					$DB->SingleQuery('UPDATE cpwt_oregon_template.post_cell
+						SET content = "' . $c . '"
+						WHERE post_cell.id = '.$object["post_cell_id"]
 					);
 				}
 
@@ -303,11 +317,13 @@ class Asset_Manager
 			$DB->SingleQuery('UPDATE cpwt_oregon_template.assets
 				SET alt = "'.$alt_text.'"
 				WHERE assets.id = '.$asset_id
-			);			
-			return true;
+			);
+			
+
 		} else {
-			return false;
-		}		
+			error_log('Failure to write alt text: The asset use type seems to not be a post or roadmap.', 0);
+		}
+		return true;
 	}
 
 	/**
@@ -501,5 +517,5 @@ class Asset_Manager
 	       	}
 		}
 		return (string) $htmlObj;
-	}
+							}
 }

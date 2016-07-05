@@ -1291,6 +1291,14 @@ span.alt-text-result {
     display: block;
 }
 
+span.alt-text-result.success {
+    color: green;
+}
+
+span.alt-text-result.failure {
+    color: red;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){
