@@ -551,7 +551,7 @@ ChartLine.addMethods({
   	this.reposition();
   },
   
-	duplicate: function(callback) {
+	duplicate: function(callback) {		
 		return Charts.createComponent(ChartLine, {
 			startPoint: Geometry.translatedPoint(this.startPoint, 0, 30),
 			endPoint: Geometry.translatedPoint(this.endPoint, 0, 30),
@@ -578,7 +578,12 @@ ChartLine.addMethods({
 			}
 		});      
     },
-	
+	changeThickness: function(thickness) {
+		this.shape.style.lineWidth = thickness;
+		chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {thickness: thickness}}});
+	},
 	applyPosition: function(position) {
 		var deltas = Geometry.deltas(this, position);
 		this.startPoint = Geometry.translatedPoint(this.startPoint, deltas);;
@@ -1121,6 +1126,10 @@ Charts.insertFCKcontent = function() {
 Charts.waitingConnectionSource = null;
 
 Connection.addMethods({
+	changeThickness: function(thickness) {
+		this.shape.style.lineWidth = thickness;
+		this.onPropertyChange({'thickness': thickness});
+	},
 	remove: function() {
 		if (!Charts.confirmDelete('connection')) {
 			return;
@@ -1401,7 +1410,10 @@ var onColorBackgroundSelect = function(type, args, value) {
 var onDuplicateSelect = function() {
 	Charts.contextMenuTarget.duplicate(Charts.redraw);
 };
-
+var changeThickness = function(type, args, value) {
+	Charts.contextMenuTarget.changeThickness(value);
+	Charts.redraw();
+};
 var onSnapToGridSelect = function() {
 	Charts.snapToGrid = !Charts.snapToGrid;
 };
@@ -1630,6 +1642,20 @@ chColor.each(function(color) {
 
 var sourceAxisMenuItem = new YAHOO.widget.MenuItem('Orientation', {submenu: sourceAxisMenu});
 
+var connectionThicknessMenuA = new YAHOO.widget.Menu('connectionThicknessMenuA');
+connectionThicknessMenuA.addItem({
+	text: 'Light (default)',
+	onclick: {fn: changeThickness, obj: 5}
+});
+connectionThicknessMenuA.addItem({
+	text: 'Medium',
+	onclick: {fn: changeThickness, obj: 20}
+});
+connectionThicknessMenuA.addItem({
+	text: 'Heavy',
+	onclick: {fn: changeThickness, obj: 35}
+});
+
 // create the connection context menu
 Connection.contextMenu = new YAHOO.widget.ContextMenu('connectionContextMenu');
 Connection.contextMenu.addItems([[
@@ -1638,6 +1664,7 @@ Connection.contextMenu.addItems([[
 	sourceAxisMenuItem,
 	{text: 'Segments', submenu: numSegmentsMenu},
 	{text: 'Color', submenu: connectionColorMenu},
+	{text: 'Thickness', submenu: connectionThicknessMenuA},
 	/*{text: 'Style', submenu: styleMenu},*/
 	{text: 'Auto Position', onclick: {fn: onAutopositionSelect}}
 ],
@@ -1658,10 +1685,25 @@ chColor.each(function(color) {
 	});
 });
 
+var connectionThicknessMenuB = new YAHOO.widget.Menu('connectionThicknessMenuB');
+connectionThicknessMenuB.addItem({
+	text: 'Light (default)',
+	onclick: {fn: changeThickness, obj: 5}
+});
+connectionThicknessMenuB.addItem({
+	text: 'Medium',
+	onclick: {fn: changeThickness, obj: 20}
+});
+connectionThicknessMenuB.addItem({
+	text: 'Heavy',
+	onclick: {fn: changeThickness, obj: 35}
+});
+
 var widgetContextMenu = new YAHOO.widget.ContextMenu('widgetContextMenu');
 widgetContextMenu.addItems([[
 	{text: 'Color', submenu: widgetColorMenu},
-	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}}
+	{text: 'Thickness', submenu: connectionThicknessMenuB},
+	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}},
 ],
 [
 	{text: 'Delete', onclick: {fn: onDeleteSelect}}

@@ -487,7 +487,7 @@ ChartLine = Class.create(Widget, {
 			[Geometry.ORIGIN, Geometry.ORIGIN],
 			{
 				color: '#' + this.config.color,
-				lineWidth: 5,
+				lineWidth: this.config.thickness || 5,
 				arrowheadAtEnd: this.arrowheadAtEnd
 			}
 		);
@@ -859,6 +859,7 @@ var Connection = Class.create(Component, {
 			this.numSegments = parseInt(data.num_segments);
 			this.sourceAxis = data.source_axis;
 			this.color = data.color;
+			this.thickness = data.thickness;
 		}
 		if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
 			this.color = '000000';
@@ -875,7 +876,7 @@ var Connection = Class.create(Component, {
 			[Geometry.ORIGIN, Geometry.ORIGIN],
 			{
 				arrowheadAtEnd: true,
-				lineWidth: 5,
+				lineWidth: this.thickness || 5,
 				color: '#' + this.color
 			}
 		);
@@ -1155,8 +1156,7 @@ var Path = Class.create(AbstractShape, {
 	draw: function(context) {
 		var arrowheadAtEnd = this.style.arrowheadAtEnd;
 		var arrowheadAtStart = this.style.arrowheadAtStart;
-		
-		context.lineWidth = this.style.lineWidth || 1;
+		context.lineWidth = parseInt(this.style.lineWidth) || 5; //lineWidth is stored in DB as "thickness"
 		context.lineCap = 'round';
 		context.strokeStyle = context.fillStyle = this.style.color;
 		

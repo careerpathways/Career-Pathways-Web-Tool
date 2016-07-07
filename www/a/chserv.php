@@ -55,7 +55,7 @@ switch( $_REQUEST['a'] ) {
 		if($debug) PA($_REQUEST);
 
 		$type = Request('type');
-
+		if($debug) echo "Type: " . $type . "\n";
 		if ($type === 'connection') {
 			$properties = array();
 			if (isset($_REQUEST['num_segments'])) {
@@ -75,6 +75,9 @@ switch( $_REQUEST['a'] ) {
 			}
 			if (isset($_REQUEST['color'])) {
 				$properties['color'] = $_REQUEST['color'];
+			}
+			if (isset($_REQUEST['thickness'])) {
+				$properties['thickness'] = $_REQUEST['thickness'];
 			}
 			if (isset($_REQUEST['source_axis'])) {
 				if ($_REQUEST['source_axis'] === 'x') {
