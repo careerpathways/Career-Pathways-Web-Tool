@@ -235,7 +235,8 @@ Charts = {
 		}
 	},
 	
-	/** Redraws all shapes in the chart. */
+	/** Redraws all shapes in the chart. 
+	function redraw() */
 	redraw: function() {
 		var context = Charts.ctx;
 		
@@ -488,6 +489,7 @@ ChartLine = Class.create(Widget, {
 			{
 				color: '#' + this.config.color,
 				lineWidth: this.config.thickness || 5,
+				lineDashStyle: this.config.lineDashStyle || 'solid',
 				arrowheadAtEnd: this.arrowheadAtEnd
 			}
 		);
@@ -860,7 +862,9 @@ var Connection = Class.create(Component, {
 			this.sourceAxis = data.source_axis;
 			this.color = data.color;
 			this.thickness = data.thickness;
+			this.lineDashStyle = data.lineDashStyle;
 		}
+
 		if(typeof this.color !== 'string' || this.color === 'transparent' || this.color.indexOf('rgba') > -1){
 			this.color = '000000';
 		}
@@ -877,6 +881,7 @@ var Connection = Class.create(Component, {
 			{
 				arrowheadAtEnd: true,
 				lineWidth: this.thickness || 5,
+				lineDashStyle: this.lineDashStyle || 5,
 				color: '#' + this.color
 			}
 		);
@@ -1157,9 +1162,34 @@ var Path = Class.create(AbstractShape, {
 		var arrowheadAtEnd = this.style.arrowheadAtEnd;
 		var arrowheadAtStart = this.style.arrowheadAtStart;
 		context.lineWidth = parseInt(this.style.lineWidth) || 5; //lineWidth is stored in DB as "thickness"
-		context.lineCap = 'round';
+		
+		//default
 		context.strokeStyle = context.fillStyle = this.style.color;
 		
+		
+		switch(this.style.lineDashStyle) {
+			case 'DashedShort':
+				context.lineCap = 'square';
+				//setLineDash only supported in IE 11+
+				if(context.setLineDash){
+					context.setLineDash([(.1)*context.lineWidth, (2)*context.lineWidth]);	
+				}
+				break;
+			case 'DashedLong':
+				context.lineCap = 'square';
+				if(context.setLineDash){
+					context.setLineDash([(1)*context.lineWidth, (2)*context.lineWidth]);
+				}
+				break;
+			default:
+				context.lineCap = 'round';
+				if(context.setLineDash){
+					context.setLineDash([]);
+				}
+				break;
+		}
+	
+				
 		context.beginPath();
 		
 		var previousPoint = this.points[0];

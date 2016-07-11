@@ -79,6 +79,9 @@ switch( $_REQUEST['a'] ) {
 			if (isset($_REQUEST['thickness'])) {
 				$properties['thickness'] = $_REQUEST['thickness'];
 			}
+			if (isset($_REQUEST['lineDashStyle'])) {
+				$properties['lineDashStyle'] = $_REQUEST['lineDashStyle'];
+			}
 			if (isset($_REQUEST['source_axis'])) {
 				if ($_REQUEST['source_axis'] === 'x') {
 					$sourceAxis = 'x';

@@ -578,6 +578,12 @@ ChartLine.addMethods({
 			}
 		});      
     },
+    changeLineDash: function(lineDashStyle) {
+		this.shape.style.lineDashStyle = lineDashStyle;
+		chUtil.ajax({id: this.id,
+                   a: 'update',
+                   content: { config: {lineDashStyle: lineDashStyle}}});
+	},
 	changeThickness: function(thickness) {
 		this.shape.style.lineWidth = thickness;
 		chUtil.ajax({id: this.id,
@@ -1130,6 +1136,10 @@ Connection.addMethods({
 		this.shape.style.lineWidth = thickness;
 		this.onPropertyChange({'thickness': thickness});
 	},
+	changeLineDash: function(lineDashStyle) {
+		this.shape.style.lineDashStyle = lineDashStyle;
+		this.onPropertyChange({'lineDashStyle': lineDashStyle});
+	},
 	remove: function() {
 		if (!Charts.confirmDelete('connection')) {
 			return;
@@ -1414,6 +1424,10 @@ var changeThickness = function(type, args, value) {
 	Charts.contextMenuTarget.changeThickness(value);
 	Charts.redraw();
 };
+var changeLineDash = function(type, args, value) {
+	Charts.contextMenuTarget.changeLineDash(value);
+	Charts.redraw();
+};
 var onSnapToGridSelect = function() {
 	Charts.snapToGrid = !Charts.snapToGrid;
 };
@@ -1655,7 +1669,19 @@ connectionThicknessMenuA.addItem({
 	text: 'Heavy',
 	onclick: {fn: changeThickness, obj: 35}
 });
-
+var connectionLineStyleMenuA = new YAHOO.widget.Menu('connectionLineStyleMenuA');
+connectionLineStyleMenuA.addItem({
+	text: 'Solid',
+	onclick: {fn: changeLineDash, obj: "Solid"}
+});
+connectionLineStyleMenuA.addItem({
+	text: 'Dashed - Short',
+	onclick: {fn: changeLineDash, obj: "DashedShort"}
+});
+connectionLineStyleMenuA.addItem({
+	text: 'Dashed - Long',
+	onclick: {fn: changeLineDash, obj: "DashedLong"}
+});
 // create the connection context menu
 Connection.contextMenu = new YAHOO.widget.ContextMenu('connectionContextMenu');
 Connection.contextMenu.addItems([[
@@ -1665,7 +1691,7 @@ Connection.contextMenu.addItems([[
 	{text: 'Segments', submenu: numSegmentsMenu},
 	{text: 'Color', submenu: connectionColorMenu},
 	{text: 'Thickness', submenu: connectionThicknessMenuA},
-	/*{text: 'Style', submenu: styleMenu},*/
+	{text: 'Line Style', submenu: connectionLineStyleMenuA},
 	{text: 'Auto Position', onclick: {fn: onAutopositionSelect}}
 ],
 [
@@ -1698,11 +1724,25 @@ connectionThicknessMenuB.addItem({
 	text: 'Heavy',
 	onclick: {fn: changeThickness, obj: 35}
 });
+var connectionLineStyleMenuB = new YAHOO.widget.Menu('connectionLineStyleMenuB');
+connectionLineStyleMenuB.addItem({
+	text: 'Solid',
+	onclick: {fn: changeLineDash, obj: "Solid"}
+});
+connectionLineStyleMenuB.addItem({
+	text: 'Dashed - Short',
+	onclick: {fn: changeLineDash, obj: "DashedShort"}
+});
+connectionLineStyleMenuB.addItem({
+	text: 'Dashed - Long',
+	onclick: {fn: changeLineDash, obj: "DashedLong"}
+});
 
 var widgetContextMenu = new YAHOO.widget.ContextMenu('widgetContextMenu');
 widgetContextMenu.addItems([[
 	{text: 'Color', submenu: widgetColorMenu},
 	{text: 'Thickness', submenu: connectionThicknessMenuB},
+	{text: 'Line Style', submenu: connectionLineStyleMenuB},
 	{text: 'Duplicate', onclick: {fn: onDuplicateSelect}},
 ],
 [
