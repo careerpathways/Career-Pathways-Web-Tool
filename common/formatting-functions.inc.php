@@ -362,6 +362,30 @@ function GetDegreeType($drawing_main_id)
 	
 }
 
+/**
+ * Get Degree Type Abbreviation.
+ * @param  string $degreeType The name of the degree type (post_sidebar_options "text" column).
+ *                e.g. "One-Year Certificate of Completion" or "High School Diploma"
+ * @param  boolean $fallback If true, use the full $degreeType instead of the abbreviation, if no abbreviation is found.
+ * @return string The degree type abbreviation.
+ */
+function GetDegreeTypeAbbr($degreeType, $fallback = true)
+{
+	global $DB;
+	$res = $DB->SingleQuery('SELECT abbreviation
+		FROM post_sidebar_options
+		WHERE `text`="'. $degreeType .'"');
+	if(isset($res['abbreviation']) && strlen($res['abbreviation']) > 0){
+		return $res['abbreviation'];
+	} else {
+		if($fallback){
+			return $degreeType; //couldn't find abbreviation	
+		} else {
+			return '';
+		}
+	}
+}
+
 function strnatcmpDrawingName($a,$b){
 	return strnatcmp($a['DrawingName'],$b['DrawingName']);
 }

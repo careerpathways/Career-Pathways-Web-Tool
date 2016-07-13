@@ -669,6 +669,11 @@ require_once("POSTChart.inc.php");
 					$data['id'] = $DB->Insert('post_sidebar_options', $data);
 					echo json_encode($data);
 					break;
+				case "abbreviate":
+					$data = array('abbreviation'=>$_POST['abbreviation']);
+					$result = $DB->Update('post_sidebar_options', $data, $_POST['id']);
+					echo json_encode($result);
+					break;
 				case "delete":
 					$data = array('id'=>$_POST['id']);
 					$DB->Query("DELETE FROM post_sidebar_options WHERE id=".$_POST['id']);

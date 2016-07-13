@@ -952,10 +952,12 @@ function processDrawingListRequest()
 											 JOIN schools ON school_id=schools.id
 											 WHERE pdm.id = '.$link_id);
 					// For default tab names for community colleges, use <degree type>: <drawing name>
+					// This occurs when adding a new cc tab to a view.
 					if(strstr($info['school_name'], 'Community College')) {
 						$dt = GetDegreeType($link_id);
+						$dta = GetDegreeTypeAbbr($dt);
 						if(strlen($dt) > 0){
-							$tab_name =  $dt . ': ' . GetDrawingName($link_id, 'post');	
+							$tab_name =  $dta . ': ' . GetDrawingName($link_id, 'post');	
 						} else {
 							//just in case there is no degree type available
 							$tab_name =  GetDrawingName($link_id, 'post');	

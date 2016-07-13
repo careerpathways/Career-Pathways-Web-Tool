@@ -13,7 +13,29 @@
 
 	$items = $DB->MultiQuery("SELECT `id`, `text` FROM `post_legend` ORDER BY `id` ASC");
 ?>
-
+<style>
+	.sbr_row {
+		margin-bottom: 10px;
+	}
+	.sbr_delete {
+		padding-top: 5px;
+	}
+	.sbr_abbreviate .abbreviation {
+		color: blue;
+		cursor: pointer;
+		padding-left: 20px;
+		text-decoration: underline;
+	}
+	.sbr_abbreviate .edit input {
+		
+		width: 100px;
+	}
+	.sbr_abbreviate .edit {
+		display: none; /* initially */
+		float: right;
+		margin-left: 20px;
+	}
+</style>
 	<div style="color: #555555; font-size: 18px;">Configure the POST Legend Symbols using the form below:</div>
 
 	<table border="0" cellpadding="0" cellspacing="0" style="margin: 20px auto 20px auto;">
@@ -50,25 +72,42 @@
 	<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr>
 		<td valign="top" width="50%"><div style="color: #333333; font-size: 15px; margin-bottom: 5px;">High School</div>
 			<div id="sbr_container_HS">
-			<?php
-			$options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="HS" ORDER BY text');
-			foreach( $options as $o )
-			{
-				echo '<div><a href="javascript:void(0);" id="sbr_delete_' . $o['id'] . '" class="sbr_delete">' . SilkIcon('cross.png') . '</a> ' . $o['text'] . '</div>';
-			}
-			?>
+			<?php $options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="HS" ORDER BY text'); ?>			
+				<?php foreach( $options as $o ): ?>
+					<div class="sbr_row" data-id="<?= $o['id'] ?>">
+						<a href="javascript:void(0);" id="sbr_delete_<?= $o['id'] ?>" class="sbr_delete"><?= SilkIcon('cross.png') ?></a>
+						<?= $o['text'] ?>
+						<div class="sbr_abbreviate">
+							<span class="abbreviation" title="Degree Type Abbreviation - click to edit"><?= GetDegreeTypeAbbr($o['text']) ?></span>
+							<div class="edit">
+								<input type="text" value="<?= GetDegreeTypeAbbr($o['text']) ?>" />
+								<button>Save</button>
+							</div>
+						</div>
+					</div>
+				<?php endforeach; ?>
 			</div>
 			<a href="javascript:void(0);" class="sbr_add" id="new_HS"><?=SilkIcon('add.png')?></a> <input type="text" id="sbr_add_text_HS" value="" style="width:300px" />
 		</td>
 		<td valign="top" width="50%"><div style="color: #333333; font-size: 15px; margin-bottom: 5px;">Community College</div>
 			<div id="sbr_container_CC">
-			<?php
-			$options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="CC" ORDER BY text');
-			foreach( $options as $o )
-			{
-				echo '<div><a href="javascript:void(0);" id="sbr_delete_' . $o['id'] . '" class="sbr_delete">' . SilkIcon('cross.png') . '</a> ' . $o['text'] . '</div>';
-			}
-			?>
+				
+				<?php $options = $DB->MultiQuery('SELECT * FROM post_sidebar_options WHERE type="CC" ORDER BY text'); ?>
+				
+				<?php foreach( $options as $o ): ?>
+					<div class="sbr_row" data-id="<?= $o['id'] ?>">
+						<a href="javascript:void(0);" id="sbr_delete_<?= $o['id'] ?>" class="sbr_delete"><?= SilkIcon('cross.png') ?></a>
+						<?= $o['text'] ?>
+						<div class="sbr_abbreviate">
+							<span class="abbreviation" title="Degree Type Abbreviation - click to edit"><?= GetDegreeTypeAbbr($o['text']) ?></span>
+							<div class="edit">
+								<input type="text" value="<?= GetDegreeTypeAbbr($o['text']) ?>" />
+								<button>Save</button>
+							</div>
+						</div>
+					</div>
+				<?php endforeach; ?>
+				
 			</div>
 			<a href="javascript:void(0);" class="sbr_add" id="new_CC"><?=SilkIcon('add.png')?></a> <input type="text" id="sbr_add_text_CC" value="" style="width:300px" />
 		</td>
@@ -179,6 +218,24 @@
 				}, function(data){
 					$("#sbr_delete_"+data.id).parent().remove();
 					bindSidebarButtons();
+				}, "json");
+			});
+			$(".sbr_row .abbreviation").click(function(){
+				$(this).siblings('.edit').show();
+			});
+			$(".sbr_abbreviate button").unbind("click").click(function(){
+				var $this = $(this);
+				var $parent = $(this).parents('.sbr_row'),
+					_id = $parent.attr('data-id'),
+					_abbreviation = $(this).siblings('input').val();
+				$.post("postserv.php?mode=commit&type=sidebar_right", {
+					action: "abbreviate",
+					id: _id,
+					abbreviation: _abbreviation
+				}, function(data){
+					$this.parents('.edit').siblings('.abbreviation').text(_abbreviation);
+					$this.parents('.edit').hide();
+					$this.parents('.edit').siblings('.abbreviation').after($('<span style="background:lightgreen;padding:1px 3px;margin:0 3px;">Saved!</span>').fadeOut(3000));
 				}, "json");
 			});
 			$(".sbr_add").unbind("click").click(function(){
