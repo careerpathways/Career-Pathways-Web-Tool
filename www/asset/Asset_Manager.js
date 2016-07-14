@@ -290,11 +290,13 @@ function assetInfoBack(){
 }
 
 function buildAssetCreatorInfo(asset){
+	console.log(asset);
+
 	var userInfoString = '' 
 		+ asset.first_name + ' ' + asset.last_name 
-		+ '<br />'
-		+ '<div title="' + asset.school_name + '">'
-		+'(' + asset.school_abbr + ')'
+		+ '<br /> aoeuaoeuaoeu'
+		+ '<div title="' + asset.creator_school_name + '">'
+		+'(' + asset.creator_school_abbr + ')'
 		+ '</div>'
 	return userInfoString;
 }

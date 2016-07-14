@@ -214,15 +214,15 @@ class Asset_Manager
 			$_query = 'SELECT a.*, asi.school_id,
 			 u.first_name,
 			 u.last_name,
-			 s.school_name,
-			 s.school_abbr
+			 s.school_name as creator_school_name,
+			 s.school_abbr as creator_school_abbr
 				FROM assets_school_ids asi
 					LEFT JOIN assets a
 						ON a.id = asi.asset_id
 					LEFT JOIN users u
 						ON u.id = a.created_by
 					LEFT JOIN schools s
-						ON s.id = asi.school_id 
+						ON s.id = u.school_id
 				WHERE asi.school_id = ' . (int) $options['school_id'] . '
 				AND a.active = true
 				ORDER BY a.date_created DESC';
