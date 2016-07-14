@@ -253,7 +253,7 @@ function assetInfoShow(usagesReport){
 	$('.section.upload').hide();
 	clearWorkPad();
 	var $asset = $('[data-asset-id="'+usagesReport.asset.id+'"]');
-	var assetUse = buildInformationHTML(usagesReport);
+	var assetUse = buildAssetUsageInformationHTML(usagesReport);
 
 	var h = 
 	'<div class="asset-info">'
@@ -298,7 +298,7 @@ function buildAssetCreatorInfo(asset){
 	return userInfoString;
 }
 
-function buildInformationHTML(usagesReport){
+function buildAssetUsageInformationHTML(usagesReport){
 	var h = '<div class="img-info">';
 	console.log(usagesReport);
 	
@@ -323,7 +323,7 @@ function buildInformationHTML(usagesReport){
 	}
 
 	var drawHTML = function (){
-		h += '<a href="/a/drawings.php?action=draw&version_id=' + drawing_version_id + '">';
+		h += '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '">';
 
 		if ( drawing_name == '' ){
 			h += 'Unnamed Drawing';
@@ -337,8 +337,8 @@ function buildInformationHTML(usagesReport){
 		+ drawing_version
 		+ '): ' 
 		+ drawing_school_name 
-		+ '<a href="/a/' + iconHrefString + 'drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
-		+ '<a href="/a/' + iconHrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
 		+ '<br/>';
 	}
 
@@ -348,7 +348,7 @@ function buildInformationHTML(usagesReport){
 			var drawing_version = usagesReport.usages[i].roadmap_drawing_version_num;
 			var drawing_name = usagesReport.usages[i].roadmap_drawing_name;
 			var drawing_school_name = usagesReport.usages[i].roadmap_drawing_school_name;
-			var iconHrefString = '';
+			var hrefString = '';
 			var drawing_version_id = usagesReport.usages[i].roadmap_drawing_version_id;
 
 			drawHTML();
@@ -357,7 +357,7 @@ function buildInformationHTML(usagesReport){
 			var drawing_version = usagesReport.usages[i].post_drawing_version;
 			var drawing_name = usagesReport.usages[i].post_drawing_name;
 			var drawing_school_name = usagesReport.usages[i].scool_name;
-			var iconHrefString = 'post_';
+			var hrefString = 'post_';
 			var drawing_version_id = usagesReport.usages[i].post_drawing_version_id;
 
 			drawHTML();
