@@ -125,7 +125,6 @@ function setAltText(assetId, altText){
 	$.get('/asset/set_alt_text.php?asset_id=' + assetId + '&alt_text=' + altText, function(isSuccessfull){
 		var successMessage = 'Successfully saved alt text!';
 		var failureMessage = 'It seems there was an error saving the alt text! Please refresh the page and try again.';
-		console.log(isSuccessfull);
 		if (isSuccessfull === true){
 			$('.alt-text-result').html(successMessage);
 			$('.alt-text-result').removeClass('failure');
