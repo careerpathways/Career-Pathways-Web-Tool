@@ -239,7 +239,6 @@ class Asset_Manager
 		return $assets;
 	}
 
-
 	public static function make_asset_url($assetFileName)
 	{
 		return getBaseUrl() . '/asset/' . $assetFileName;
@@ -259,8 +258,7 @@ class Asset_Manager
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
 					}
-					//unserialize the content
-					$c = unserialize($object['roadmap_drawing_content']);
+					$c = $object['roadmap_drawing_content'];
 					
 					$patterns = array();
 					$patterns[0] = '/alt=".*?"/';
@@ -272,10 +270,7 @@ class Asset_Manager
 					$replacements[1] = '\"';
 					$replacements[2] = '\;';
 
-					$c['config']['content'] = preg_replace($patterns, $replacements, $c['config']['content']);
-					$c['config']['content_html'] = preg_replace($patterns, $replacements, $c['config']['content_html']);				
-					//serialize the content
-					$c = serialize($c);
+					$c = preg_replace($patterns, $replacements, $c);	
 
 					//set content in the object in the DB
 					$DB->SingleQuery('UPDATE cpwt_oregon_template.objects

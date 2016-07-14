@@ -128,9 +128,11 @@ function setAltText(assetId, altText){
 		console.log(isSuccessfull);
 		if (isSuccessfull === true){
 			$('.alt-text-result').html(successMessage);
+			$('.alt-text-result').removeClass('failure');
 			$('.alt-text-result').addClass('success');
 		} else {
 			$('.alt-text-result').html(failureMessage);
+			$('.alt-text-result').removeClass('success');
 			$('.alt-text-result').addClass('failure');
 		}
 	});
@@ -300,8 +302,6 @@ function buildAssetCreatorInfo(asset){
 
 function buildAssetUsageInformationHTML(usagesReport){
 	var h = '<div class="img-info">';
-	console.log(usagesReport);
-	
 	if (usagesReport.usages.length != 0) {
 		h += '<u><strong>Used In</strong></u>:';
 	}
@@ -311,7 +311,7 @@ function buildAssetUsageInformationHTML(usagesReport){
 	var drawAltTextInput = function (){
 		if (usagesReport.asset.userCanModify) {
 			h += '<div class="alt-text-editor">'
-				+ '<u><strong>Alt Text:</strong></u>'
+				+ '<u><strong>Title your image for ADA compliance:</strong></u>'
 				+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '" value="' + usagesReport.asset.alt + '">'
 				+ '<button data-asset="alt-text-submit">'
 					+ 'Save Alt Text'
