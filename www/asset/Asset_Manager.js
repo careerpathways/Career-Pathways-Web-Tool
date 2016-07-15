@@ -290,11 +290,9 @@ function assetInfoBack(){
 }
 
 function buildAssetCreatorInfo(asset){
-	console.log(asset);
-
 	var userInfoString = '' 
 		+ asset.first_name + ' ' + asset.last_name 
-		+ '<br /> aoeuaoeuaoeu'
+		+ '<br />'
 		+ '<div title="' + asset.creator_school_name + '">'
 		+'(' + asset.creator_school_abbr + ')'
 		+ '</div>'
