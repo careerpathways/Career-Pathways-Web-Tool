@@ -247,7 +247,6 @@ function moveAssetCancel(assetId){
 }
 
 function assetInfoShow(usagesReport){
-	console.log(usagesReport);
 	msg('');
 	$('.section.existing').hide();
 	$('.section.bucket').hide();
