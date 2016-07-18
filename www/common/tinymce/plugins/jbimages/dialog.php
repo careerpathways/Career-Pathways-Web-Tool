@@ -133,8 +133,8 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 			});
 			$('body').on('click', '[data-asset="info"]', function(){
 				var assetId = $(this).parents('.asset').data('asset-id');
-				$.get('/asset/check_use.php?asset_id='+assetId, function(asset){
-					assetInfoShow(asset);	
+				$.get('/asset/check_use.php?asset_id='+assetId, function(usagesReport){
+					assetInfoShow(usagesReport);
 				});	
 			});
 			<?php endif; ?>

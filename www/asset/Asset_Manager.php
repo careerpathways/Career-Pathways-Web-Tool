@@ -279,7 +279,7 @@ class Asset_Manager
 						SET content = "' . $c . '"
 						WHERE objects.id = '.$object['object_id']
 					);
-					
+
 				} elseif ($object['type'] == "post_drawing"){
 
 					if(!isset($object['post_cell_content'])){
@@ -290,7 +290,6 @@ class Asset_Manager
 					$c = $object['post_cell_content'];
 
 					$c = preg_replace($patterns, $replacements, $c);
-
 					//set content in the post cell in the DB
 					$DB->SingleQuery('UPDATE post_cell
 						SET content = "' . $c . '"

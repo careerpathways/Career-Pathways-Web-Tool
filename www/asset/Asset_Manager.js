@@ -335,8 +335,8 @@ function buildAssetUsageInformationHTML(usagesReport){
 		+ drawing_version
 		+ '): ' 
 		+ drawing_school_name 
-		+ '<a href="/a/' + hrefString + 'drawings.php?action=version_info&version_id=' + drawing_version_id + '" class="edit" title="Version Settings"><img src="/common/silk/wrench.png" width="16" height="16"></a>'
-		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" title="View/Edit"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=drawing_info&amp;id='+main_drawing_version_id+'" class="edit" target="_top"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties"></a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" target="_top" title="View"><img src="/common/silk/picture.png" width="16" height="16"></a>'
 		+ '<br/>';
 	}
 
@@ -348,6 +348,7 @@ function buildAssetUsageInformationHTML(usagesReport){
 			var drawing_school_name = usagesReport.usages[i].roadmap_drawing_school_name;
 			var hrefString = '';
 			var drawing_version_id = usagesReport.usages[i].roadmap_drawing_version_id;
+			var main_drawing_version_id = usagesReport.usages[i].roadmap_drawing_main_id;
 
 			drawHTML();
 		
@@ -357,6 +358,7 @@ function buildAssetUsageInformationHTML(usagesReport){
 			var drawing_school_name = usagesReport.usages[i].scool_name;
 			var hrefString = 'post_';
 			var drawing_version_id = usagesReport.usages[i].post_drawing_version_id;
+			var main_drawing_version_id = usagesReport.usages[i].post_drawing_main_id;
 
 			drawHTML();
 		
