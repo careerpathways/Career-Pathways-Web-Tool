@@ -249,10 +249,22 @@ class Asset_Manager
 		global $SITE, $DB;
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
+		
+		$patterns = array(
+			'/alt=".*?"/',
+			'/"/',
+			'/;/',
+		);
+		
+		$replacements = array(
+			'alt="'.$alt_text.'"',
+			'\"',
+			'\;',
+		);
 
 		if($user_can_modify){
 			//Loop through each asset use and write alt text to db.
-			foreach ($asset_use['usages'] as &$object) {
+			foreach ($asset_use['usages'] as $object) {
 				if ($object['type'] == "roadmap_drawing"){
 
 					if(!isset($object['roadmap_drawing_content'])){
@@ -260,20 +272,10 @@ class Asset_Manager
 					}
 					$c = $object['roadmap_drawing_content'];
 					
-					$patterns = array();
-					$patterns[0] = '/alt=".*?"/';
-					$patterns[1] = '/"/';
-					$patterns[2] = '/;/';
-					
-					$replacements = array();
-					$replacements[0] ='alt="'.$alt_text.'"';
-					$replacements[1] = '\"';
-					$replacements[2] = '\;';
-
-					$c = preg_replace($patterns, $replacements, $c);	
+					$c = preg_replace($patterns, $replacements, $c);
 
 					//set content in the object in the DB
-					$DB->SingleQuery('UPDATE cpwt_oregon_template.objects
+					$DB->SingleQuery('UPDATE objects
 						SET content = "' . $c . '"
 						WHERE objects.id = '.$object['object_id']
 					);
@@ -287,20 +289,10 @@ class Asset_Manager
 					//replace the alt text
 					$c = $object['post_cell_content'];
 
-					$patterns = array();
-					$patterns[0] = '/alt=".*?"/';
-					$patterns[1] = '/"/';
-					$patterns[2] = '/;/';
-					
-					$replacements = array();
-					$replacements[0] ='alt="'.$alt_text.'"';
-					$replacements[1] = '\"';
-					$replacements[2] = '\;';
-
 					$c = preg_replace($patterns, $replacements, $c);
 
 					//set content in the post cell in the DB
-					$DB->SingleQuery('UPDATE cpwt_oregon_template.post_cell
+					$DB->SingleQuery('UPDATE post_cell
 						SET content = "' . $c . '"
 						WHERE post_cell.id = '.$object["post_cell_id"]
 					);
@@ -309,7 +301,7 @@ class Asset_Manager
 			}
 
 			//write alt text to asset
-			$DB->SingleQuery('UPDATE cpwt_oregon_template.assets
+			$DB->SingleQuery('UPDATE assets
 				SET alt = "'.$alt_text.'"
 				WHERE assets.id = '.$asset_id
 			);

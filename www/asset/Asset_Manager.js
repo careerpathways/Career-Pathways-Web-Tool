@@ -5,7 +5,6 @@ www/common/tinymce/plugins/jbimages/dialog.php
 */
 
 var assetReplaceMode = false;
-
 function getBuckets(){
 	$(".work-pad").hide();
 	$.get('/asset/bucket_list.php', function(buckets){
@@ -248,6 +247,7 @@ function moveAssetCancel(assetId){
 }
 
 function assetInfoShow(usagesReport){
+	console.log(usagesReport);
 	msg('');
 	$('.section.existing').hide();
 	$('.section.bucket').hide();
