@@ -1,3 +1,41 @@
+.alt-text-editor * {
+    margin-right: 3px;
+}
+
+.alt-text-editor {
+    margin-top: 5px;
+}
+
+.alt-text-editor button {
+    background: #333;
+    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.25);
+    color: white;
+    cursor: pointer;
+    font-family: verdana, tahoma, arial, sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    line-height: 12px;
+    margin: 2px;
+    margin-top: 0px;
+    padding: 2px;
+    padding-top: 0px;
+    text-shadow: none;
+    vertical-align: top;
+    height: 16px;
+}
+
+.alt-text-result {
+    display: block;
+}
+
+.alt-text-result.success {
+    color: green;
+}
+
+.alt-text-result.failure {
+    color: red;
+}
+
 .asset {
   height: 150px;
   display: inline-block;
@@ -6,6 +44,63 @@
   background: #eee;
   vertical-align: top;
 }
+
+.asset .img-container {
+  width: 100%;
+  height: 100px;
+}
+
+.asset-manager .btn {
+  background: #333;
+  color: white;
+  font-size: 9px;
+  line-height: 12px;
+  margin: 2px;
+  padding: 2px;
+  text-shadow: none;
+  vertical-align: top; 
+}
+
+.asset-manager .btn {
+  background: #333;
+  color: white;
+  font-size: 9px;
+  line-height: 12px;
+  margin: 2px;
+  padding: 2px;
+  text-shadow: none;
+  vertical-align: top;
+}
+
+.asset-manager .btn {
+  color: white;
+  background: #333;
+  font-size:9px;
+  line-height: 12px;
+  margin: 2px;
+  padding: 2px;
+  text-shadow: none;
+  vertical-align: top;
+}
+
+.asset-manager .btn:hover {
+  color:white;
+  background: #333;
+}
+
+.asset-manager .insert.btn {
+  background: #33CC33;
+  padding: 2px 22px;
+}
+
+.asset-manager .delete.btn {
+  background: #990000;
+}
+
+.asset-manager .replace.btn {
+  background: #3333EE;
+}
+
 .asset-manager .heading {
   color: black;
   font-size: 20px;
@@ -18,38 +113,30 @@
   font-weight: normal;
   margin: 10px 0;
 }
-.asset .img-container {
-  width: 100%;
-  height: 100px;
-}
+
+
 .img-container img {
   cursor: pointer;
   height:90px;
   width: auto;
 }
-.asset-manager .btn {
-  color: white;
-  background: #333;
-  font-size:9px;
-  line-height: 12px;
-  margin: 2px;
-  padding: 2px;
-  text-shadow: none;
-  vertical-align: top;
+
+.img-info {
+    text-align: left;
+    display: inline-block;
 }
-.asset-manager .btn:hover {
-  color:white;
-  background: #333;
+
+.img-info .asset-use {
+    margin-top: 3px;
 }
-.asset-manager .insert.btn {
-  background: #33CC33;
-  padding: 2px 22px;
+
+.img-info .asset-use img {
+    margin-left: 7px;
 }
-.asset-manager .delete.btn {
-  background: #990000;
-}
-.asset-manager .replace.btn {
-  background: #3333EE;
+
+.img-info-title {
+    font-weight: bold;
+    font-size: medium;
 }
 
 .section {
@@ -58,6 +145,7 @@
   background: #FFF;
   border-bottom: 1px dashed #eee;
 }
+
 .upload_infobar {
   background: none;
 }
@@ -68,23 +156,28 @@
 .work-pad {
   text-align: center;
 }
+
 .work-pad .asset {
   height: 130px;
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .work-pad .asset .btn {
   display: none;
 }
+
 .work-pad .asset .img-container {
   display: block;
   height: initial;
   margin: 5px auto;
 }
+
 .replace-with-this.btn {
   display: none;
   background: #3333aa;
 }
+
 .replace-with-this.btn:hover {
    background: #3333dd;
 }
@@ -96,14 +189,17 @@
 .section.existing.asset-replace-mode .replace-with-this.btn {
   display: block;
 }
+
 .work-pad .cancel {
   cursor: pointer;
   font-weight: bold;
   margin-bottom: 20px;
 }
+
 .work-pad .step-two-instructions {
   margin: 50px auto;
 }
+
 .work-pad .btn.proceed {
   background: green;
 }
