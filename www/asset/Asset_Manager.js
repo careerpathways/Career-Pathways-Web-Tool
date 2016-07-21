@@ -72,19 +72,19 @@ function getAssets(school_id){
 }
 
 function buildAssetHTML(asset){
-	var h = ''
-    	+ '<div class="asset" data-asset-id="'+asset.id+'">'
+	var h = '<div class="asset" data-asset-id="'+asset.id+'">'
 	    	+ '<div class="img-container">'
 	    		+ '<img src="'+asset.imgSrc+'" alt="' + asset.alt + '" />'
 	    	+ '</div>'
 	    	+ '<div class="controls">'
 		    	+ getButtons(asset)
 	    	+ '</div>'
-	    	+ '<div>'
-	    		+ buildAssetCreatorInfo(asset)
+	    	+ '<div class="creator-info">'	    		
 	    	+ '</div>'
     	+ '</div>';
-    return h;
+    var elm = $(h);
+    buildAssetCreatorInfo(asset, elm.find(".creator-info"));
+    return elm;
 }
 
 function appendAsset(asset){
@@ -288,20 +288,38 @@ function assetInfoBack(){
 	$('.section.upload').show();
 }
 
-function buildAssetCreatorInfo(asset){
-	var userInfoString = '' 
-		+ asset.first_name + ' ' + asset.last_name 
-		+ '<br />'
-		+ '<div title="' + asset.creator_school_name + '">'
-		+'(' + asset.creator_school_abbr + ')'
-		+ '</div>'
-	return userInfoString;
+function buildAssetCreatorInfo(asset, elm){
+	var userInfoString = ''; //defined in buildUserInfoString();
+	var buildUserInfoString = function(fullAsset = null, elm = null){
+		if (fullAsset){
+			asset = fullAsset;
+		}
+		userInfoString = asset.first_name + ' ' + asset.last_name 
+			+ '<br />'
+			+ '<div title="' + asset.creator_school_name + '">'
+			+'(' + asset.creator_school_abbr + ')'
+			+ '</div>'
+		if(elm)
+			elm.html(userInfoString);
+	}
+
+	if (!asset.hasOwnProperty('first_name') ||
+		!asset.hasOwnProperty('last_name') ||
+		!asset.hasOwnProperty('creator_school_name') ||
+		!asset.hasOwnProperty('creator_school_abbr')
+	){
+		$.get('/asset/get.php?asset_id=' + asset.id, function(fullAsset){
+			buildUserInfoString(fullAsset, elm);
+		});
+	} else {
+		buildUserInfoString(null, elm);
+	}
 }
 
 function buildAssetUsageInformationHTML(usagesReport){
 	var h = '<div class="img-info">';
 	if (usagesReport.usages.length != 0) {
-		h += '<u><strong>Used In</strong></u>:';
+		h += '<span class="img-info-title">Used In:</span>';
 	}
 		
 	h += '<br/>';
@@ -309,7 +327,7 @@ function buildAssetUsageInformationHTML(usagesReport){
 	var drawAltTextInput = function (){
 		if (usagesReport.asset.userCanModify) {
 			h += '<div class="alt-text-editor">'
-				+ '<u><strong>Title your image for ADA compliance:</strong></u>'
+				+ '<span class="img-info-title">Title your image for ADA compliance:</span>'
 				+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '" value="' + usagesReport.asset.alt + '">'
 				+ '<button data-asset="alt-text-submit">'
 					+ 'Save Alt Text'
@@ -321,8 +339,6 @@ function buildAssetUsageInformationHTML(usagesReport){
 	}
 
 	var drawHTML = function (){
-		h += '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '">';
-
 		if ( drawing_name == '' ){
 			h += 'Unnamed Drawing';
 		} 
@@ -330,11 +346,10 @@ function buildAssetUsageInformationHTML(usagesReport){
 			h += drawing_name;
 		}
 
-		h += '</a>'
-		+ '(Version '
+		h += '(Version '
 		+ drawing_version
 		+ '): ' 
-		+ drawing_school_name 
+		+ drawing_school_name
 		+ '<a href="/a/' + hrefString + 'drawings.php?action=drawing_info&amp;id='+main_drawing_version_id+'" class="edit" target="_top"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties"></a>'
 		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" target="_top" title="View"><img src="/common/silk/picture.png" width="16" height="16"></a>'
 		+ '<br/>';

@@ -122,28 +122,35 @@ if(isset($_GET['using_tiny_mce']) && $_GET['using_tiny_mce'] == 'false'){
 					}
 				});
 			});
+
 			<?php if(!$inTinyMce): ?>
+			
 			$('body').on('click', '[data-asset="replace"]', function(){
 				var asset_to_replace_id = $(this).parents('.asset').data('asset-id');
 				replaceAssetStart(asset_to_replace_id);
 			});
+
 			$('body').on('click', '[data-asset="move"]', function(){
 				var asset_to_replace_id = $(this).parents('.asset').data('asset-id');
 				moveAssetStart(asset_to_replace_id);
 			});
+
+			<?php endif; ?>
+
 			$('body').on('click', '[data-asset="info"]', function(){
 				var assetId = $(this).parents('.asset').data('asset-id');
 				$.get('/asset/check_use.php?asset_id='+assetId, function(usagesReport){
 					assetInfoShow(usagesReport);
 				});	
 			});
-			<?php endif; ?>
+
 			$('body').on('click', '[data-asset="insert"], #uploaded-images img', function(){
 				var assetId = $(this).parents('.asset').data('asset-id');
 				$.get('/asset/get.php?asset_id=' + assetId, function(asset){
 					insertImage(asset); //tinymce dialog.js			
 				});
 			});
+
 			$('body').on('click', '[data-asset="replacecancel"]', function(){
 				replaceAssetCancel($(this).attr('data-asset-id'));
 			});

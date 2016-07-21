@@ -1226,6 +1226,8 @@ tr.postAssuranceReport.schoolName h2 {
 	color: black;
 }
 
+
+/*===== Image Library =====*/
 .img-info {
     text-align: left;
     display: inline-block;
@@ -1297,6 +1299,11 @@ span.alt-text-result.success {
 
 span.alt-text-result.failure {
     color: red;
+}
+
+.img-info-title {
+    font-weight: bold;
+    font-size: medium;
 }
 
 <?php

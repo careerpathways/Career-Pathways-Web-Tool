@@ -17,9 +17,17 @@ class Asset_Manager
 	public static function get_asset($asset_id, $include_deleted = false)
 	{
 		global $SITE, $DB;
-		$query = 'SELECT * 
-			FROM assets
-			WHERE id = '.$asset_id;
+		$query = 'SELECT a.*,
+		 u.first_name,
+		 u.last_name,
+		 s.school_name as creator_school_name,
+		 s.school_abbr as creator_school_abbr 
+			FROM assets a
+				LEFT JOIN users u
+					ON u.id = a.created_by
+				LEFT JOIN schools s
+					ON s.id = u.school_id
+			WHERE a.id = '.$asset_id;
 		if(!$include_deleted){ //don't include deleted
 			$query .= ' AND active = 1';
 		}
@@ -77,8 +85,8 @@ class Asset_Manager
 	/**
 	 * Move an asset to a new school
 	 * 
-	 * @param  int $asset_id      Id of the asset to move.
-	 * @param  int $bucket_id     Id of the bucket to move the asset to.
+	 * @param  int $asset_id	  Id of the asset to move.
+	 * @param  int $bucket_id	 Id of the bucket to move the asset to.
 	 * @return array status array
 	 */
 	public static function move_asset($asset_id, $bucket_id)
@@ -211,7 +219,8 @@ class Asset_Manager
 		
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
-			$_query = 'SELECT a.*, asi.school_id,
+			$_query = 'SELECT a.*,
+			asi.school_id,
 			 u.first_name,
 			 u.last_name,
 			 s.school_name as creator_school_name,
@@ -498,9 +507,9 @@ class Asset_Manager
 		$htmlObj = str_get_html($htmlString);
 		foreach($htmlObj->find('img') as $e){
 			if($e->getAttribute('data-asset-id') == $assetOriginal['id']){
-	       		$e->setAttribute('src', self::make_asset_url($assetNew['file_name']));
-	       		$e->setAttribute('data-asset-id', $assetNew['id']);
-	       	}
+		   		$e->setAttribute('src', self::make_asset_url($assetNew['file_name']));
+		   		$e->setAttribute('data-asset-id', $assetNew['id']);
+		   	}
 		}
 		return (string) $htmlObj;
 							}
