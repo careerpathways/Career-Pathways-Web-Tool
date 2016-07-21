@@ -72,19 +72,23 @@ function getAssets(school_id){
 }
 
 function buildAssetHTML(asset){
-	var h = '<div class="asset" data-asset-id="'+asset.id+'">'
+	var h = ''
+    	+ '<div class="asset" data-asset-id="'+asset.id+'">'
 	    	+ '<div class="img-container">'
 	    		+ '<img src="'+asset.imgSrc+'" alt="' + asset.alt + '" />'
 	    	+ '</div>'
 	    	+ '<div class="controls">'
 		    	+ getButtons(asset)
 	    	+ '</div>'
-	    	+ '<div class="creator-info">'	    		
+	    	+ '<div>'
+				+ asset.first_name + ' ' + asset.last_name 
+				+ '<br />'
+				+ '<div title="' + asset.creator_school_name + '">'
+				+'(' + asset.creator_school_abbr + ')'
+				+ '</div>'
 	    	+ '</div>'
     	+ '</div>';
-    var elm = $(h);
-    buildAssetCreatorInfo(asset, elm.find(".creator-info"));
-    return elm;
+    return h;
 }
 
 function appendAsset(asset){
@@ -286,34 +290,6 @@ function assetInfoBack(){
 	$('.section.existing').show();
 	$('.section.bucket').show();
 	$('.section.upload').show();
-}
-
-function buildAssetCreatorInfo(asset, elm){
-	var userInfoString = ''; //defined in buildUserInfoString();
-	var buildUserInfoString = function(fullAsset = null, elm = null){
-		if (fullAsset){
-			asset = fullAsset;
-		}
-		userInfoString = asset.first_name + ' ' + asset.last_name 
-			+ '<br />'
-			+ '<div title="' + asset.creator_school_name + '">'
-			+'(' + asset.creator_school_abbr + ')'
-			+ '</div>'
-		if(elm)
-			elm.html(userInfoString);
-	}
-
-	if (!asset.hasOwnProperty('first_name') ||
-		!asset.hasOwnProperty('last_name') ||
-		!asset.hasOwnProperty('creator_school_name') ||
-		!asset.hasOwnProperty('creator_school_abbr')
-	){
-		$.get('/asset/get.php?asset_id=' + asset.id, function(fullAsset){
-			buildUserInfoString(fullAsset, elm);
-		});
-	} else {
-		buildUserInfoString(null, elm);
-	}
 }
 
 function buildAssetUsageInformationHTML(usagesReport){

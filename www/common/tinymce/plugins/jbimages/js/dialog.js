@@ -84,9 +84,11 @@ var jbImagesDialog = {
 		{
 			document.getElementById("upload_in_progress").style.display = 'none';
 			document.getElementById("upload_infobar").style.display = 'block';
-			document.getElementById("upload_infobar").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.upload_complete', 0);			
-			$('#uploaded-images').prepend(buildAssetHTML(result.asset));
-			$("#upload_form_container").fadeIn();
+			document.getElementById("upload_infobar").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.upload_complete', 0);
+			$.get('/asset/get.php?asset_id=' + result.asset.id, function(asset){
+				$('#uploaded-images').prepend(buildAssetHTML(asset));
+				$("#upload_form_container").fadeIn();
+			});
 		}
 	}
 };
