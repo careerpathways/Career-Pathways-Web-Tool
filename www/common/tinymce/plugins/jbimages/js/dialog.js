@@ -85,10 +85,15 @@ var jbImagesDialog = {
 			document.getElementById("upload_in_progress").style.display = 'none';
 			document.getElementById("upload_infobar").style.display = 'block';
 			document.getElementById("upload_infobar").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.upload_complete', 0);
-			$.get('/asset/get.php?asset_id=' + result.asset.id, function(asset){
-				$('#uploaded-images').prepend(buildAssetHTML(asset));
-				$("#upload_form_container").fadeIn();
-			});
+			var altText = prompt('Title your image for ADA compliance:');
+			var assetId = result.asset.id;
+			setAltText(result.asset.id, altText, 
+				function(){
+					$.get('/asset/get.php?asset_id=' + assetId, function(asset){
+						$('#uploaded-images').prepend(buildAssetHTML(asset));
+						$("#upload_form_container").fadeIn();
+					});
+				});
 		}
 	}
 };

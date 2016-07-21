@@ -124,19 +124,25 @@ function deleteAsset(assetId){
 	});	
 }
 
-function setAltText(assetId, altText){
+function setAltText(assetId, altText, callback){
 	$.get('/asset/set_alt_text.php?asset_id=' + assetId + '&alt_text=' + altText, function(isSuccessfull){
 		var successMessage = 'Successfully saved alt text!';
 		var failureMessage = 'It seems there was an error saving the alt text! Please refresh the page and try again.';
-		if (isSuccessfull === true){
-			$('.alt-text-result').html(successMessage);
-			$('.alt-text-result').removeClass('failure');
-			$('.alt-text-result').addClass('success');
-		} else {
-			$('.alt-text-result').html(failureMessage);
-			$('.alt-text-result').removeClass('success');
-			$('.alt-text-result').addClass('failure');
+		if ( $('.alt-text-result') ) {
+			if (isSuccessfull === true){
+				$('.alt-text-result').html(successMessage);
+				$('.alt-text-result').removeClass('failure');
+				$('.alt-text-result').addClass('success');
+			} else {
+				$('.alt-text-result').html(failureMessage);
+				$('.alt-text-result').removeClass('success');
+				$('.alt-text-result').addClass('failure');
+			}
 		}
+		if(typeof callback === 'function'){
+			callback();	
+		}
+
 	});
 }
 
