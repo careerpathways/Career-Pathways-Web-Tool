@@ -1671,7 +1671,7 @@ connectionThicknessMenuA.addItem({
 });
 var connectionLineStyleMenuA = new YAHOO.widget.Menu('connectionLineStyleMenuA');
 connectionLineStyleMenuA.addItem({
-	text: 'Solid',
+	text: 'Solid (default)',
 	onclick: {fn: changeLineDash, obj: "Solid"}
 });
 connectionLineStyleMenuA.addItem({
