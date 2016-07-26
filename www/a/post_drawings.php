@@ -243,8 +243,6 @@ function hideHeader($id, $preview=FALSE) {
 	$post->displayMini();
 }
 
-
-
 function showVersion() {
 	global $DB, $TEMPLATE, $SITE;
 
@@ -273,9 +271,9 @@ function showVersion() {
 	$TEMPLATE->addl_scripts[] = '/common/jquery-1.3.min.js';
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->addl_scripts[] = '/common/URLfunctions1.js';
-if($SITE->hasFeature('approved_program_name')){
-    $TEMPLATE->addl_scripts[] = '/common/APN.js';
-}
+	if($SITE->hasFeature('approved_program_name')){
+	    $TEMPLATE->addl_scripts[] = '/common/APN.js';
+	}
 	if(CanEditVersion($drawing['id'])) {
 		$readonly = false;
 	} else {
@@ -317,6 +315,12 @@ if($SITE->hasFeature('approved_program_name')){
 
 	echo '<div style="margin-bottom: 10px">';
 	echo '<div class="title_img">' . ShowPostHeader($drawing['parent_id']) . '</div>';
+	?>
+	<?php if( $drawing['show_updated'] ): ?>
+		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
+		<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
+	<?php endif; ?>
+	<?php
 	if( $drawing['skillset'] )
 	{
 		echo '<div id="skillset">';
@@ -324,26 +328,24 @@ if($SITE->hasFeature('approved_program_name')){
 		echo '</div>';
 	}
 	echo '</div>';
-	
-	echo '<div id="canvas">';
-	$post->display();
-	echo '</div> <!-- end canvas -->';
-?>
-<script type="text/javascript">
-	$(function(){
-		$(".post_cell .cell_container").each(function(){
-			if($(this).find("img").length > 0) {
-				var h = $(this).parent(".post_cell").height();
-				$(this).css({
-					height: h + "px"
-				});
-			}
+		echo '<div id="canvas">';
+		$post->display();
+		echo '</div> <!-- end canvas -->';
+	?>
+	<script type="text/javascript">
+		$(function(){
+			$(".post_cell .cell_container").each(function(){
+				if($(this).find("img").length > 0) {
+					var h = $(this).parent(".post_cell").height();
+					$(this).css({
+						height: h + "px"
+					});
+				}
+			});
 		});
-	});
-</script>
-<?php
-	PrintFooter();
-
+	</script>
+	<?php
+		PrintFooter();
 }
 
 function copyVersion($version_id) {
@@ -419,7 +421,6 @@ function copyVersion($version_id) {
 		header("Location: ".$_SERVER['PHP_SELF']."?action=draw&version_id=".$new_version_id);
 	}
 }
-
 
 function showDrawingInfo() {
 global $DB, $TEMPLATE;
@@ -724,8 +725,7 @@ function showConfigureRowColForm($version_id) {
 	<?php
 }
 
-function showRowsInDrawing(&$post)
-{
+function showRowsInDrawing(&$post) {
 	foreach( $post->rows as $r )
 	{
 		echo '<div class="rowName">';
@@ -739,8 +739,7 @@ function showRowsInDrawing(&$post)
 	}
 }
 
-function saveRowsAndColumnChanges($id)
-{
+function saveRowsAndColumnChanges($id) {
 	global $DB;
 	
 	$version_id = intval($id);
@@ -761,8 +760,7 @@ function saveRowsAndColumnChanges($id)
 	}
 }
 
-function cancelRowsAndColumnChanges($id)
-{
+function cancelRowsAndColumnChanges($id) {
 	global $DB;
 	
 	$version_id = intval($id);
@@ -780,8 +778,7 @@ function cancelRowsAndColumnChanges($id)
 	}
 }
 
-function configureDeleteCol()
-{
+function configureDeleteCol() {
 	global $DB;
 	
 	$version_id = Request('id');
@@ -801,8 +798,7 @@ function configureDeleteCol()
 	$post->displayMini(TRUE);
 }
 
-function configureAddCol()
-{
+function configureAddCol() {
 	global $DB;
 	
 	$version_id = Request('id');
@@ -833,9 +829,7 @@ function configureAddCol()
 	$post->displayMini();
 }
 
-
-function configureDeleteRow()
-{
+function configureDeleteRow() {
 	global $DB;
 	
 	$row_id = intval(Request('row_id'));
@@ -856,8 +850,7 @@ function configureDeleteRow()
 	}
 }
 
-function configureAddRow()
-{
+function configureAddRow() {
 	global $DB;
 
 	$id = intval(Request('id'));
@@ -918,14 +911,10 @@ function configureAddRow()
 	}
 }
 
-function showMiniDrawing($id)
-{
+function showMiniDrawing($id) {
 	$post = POSTChart::create($id, TRUE);
 	$post->displayMini();
 }
-
-
-
 
 function showVersionInfo() {
 	global $DB, $MODE, $TEMPLATE, $SITE;
@@ -934,9 +923,9 @@ function showVersionInfo() {
 	$TEMPLATE->addl_scripts[] = '/files/greybox.js';
 	$TEMPLATE->AddCrumb('', 'POST Version Settings');
 	$TEMPLATE->toolbar_function = "ShowInfoAndLegend";
-if($SITE->hasFeature('approved_program_name')){
-    $TEMPLATE->addl_scripts[] = '/common/APN.js';
-}
+	if($SITE->hasFeature('approved_program_name')){
+	    $TEMPLATE->addl_scripts[] = '/common/APN.js';
+	}
 	PrintHeader();
 
 	$version_id = Request('version_id');
@@ -965,7 +954,6 @@ function ShowToolbar() {
 
 	showToolbarAndHelp(true, 'standard');
 }
-
 
 function ShowPublishedHelp() {
 	ShowInfobar();

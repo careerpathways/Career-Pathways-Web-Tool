@@ -231,64 +231,64 @@ function showVersion() {
 	PrintHeader();
 	?>
 
-<script
-	type="text/javascript" src="/files/greybox.js"></script>
+	<script
+		type="text/javascript" src="/files/greybox.js"></script>
 
-<style type="text/css" media="print">
-#drawing_canvas,#header,#topbar {
-	display: none;
-}
+	<style type="text/css" media="print">
+		#drawing_canvas,#header,#topbar {
+			display: none;
+		}
 
-#printHelp {
-	width: 5in;
-	margin: auto;
-	margin-top: 2in;
-	padding: 2em;
-	border: 1em dashed black;
-	font-size: 2em;
-	text-align: center;
-	font-weight: bold;
-}
-</style>
+		#printHelp {
+			width: 5in;
+			margin: auto;
+			margin-top: 2in;
+			padding: 2em;
+			border: 1em dashed black;
+			font-size: 2em;
+			text-align: center;
+			font-weight: bold;
+		}
+	</style>
 
-<style type="text/css" media="screen">
-#printHelp {
-	display: none;
-}
-</style>
+	<style type="text/css" media="screen">
+	#printHelp {
+		display: none;
+	}
+	</style>
 
-<div id="printHelp">
-<p>To print, please click the <var>print this version</var> button in
-the toolbar.</p>
-</div>
+	<div id="printHelp">
+	<p>To print, please click the <var>print this version</var> button in
+	the toolbar.</p>
+	</div>
 
-<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
-	<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
-<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
-<script type="text/javascript">
-			function init() {
-				if (arguments.callee.done) return;
-				arguments.callee.done = true;
-				Charts.draw('chartcontainer','toolbar_content');
-			}
+	<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
+		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
+	<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
+	<script type="text/javascript">
+				function init() {
+					if (arguments.callee.done) return;
+					arguments.callee.done = true;
+					Charts.draw('chartcontainer','toolbar_content');
+				}
 
-			/* for Mozilla */
-			if (document.addEventListener) {
-				document.addEventListener("DOMContentLoaded", init, false);
-			}
+				/* for Mozilla */
+				if (document.addEventListener) {
+					document.addEventListener("DOMContentLoaded", init, false);
+				}
 
-			/* for Internet Explorer */
-			/*@cc_on @*/
-			/*@if (@_win32)
-				document.write("<script defer src=\"/c/init.js\"><"+"/script>");
-			/*@end @*/
+				/* for Internet Explorer */
+				/*@cc_on @*/
+				/*@if (@_win32)
+					document.write("<script defer src=\"/c/init.js\"><"+"/script>");
+				/*@end @*/
 
-			/* for other browsers */
-			window.onload = init;
-		</script></div>
+				/* for other browsers */
+				window.onload = init;
+			</script></div>
 
-	<?php
-	PrintFooter();
+		<?php
+		PrintFooter();
 }
 
 function copyVersion($version_id) {

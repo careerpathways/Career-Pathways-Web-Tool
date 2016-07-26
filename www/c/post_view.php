@@ -108,10 +108,12 @@ else
 			echo ShowPostHeader($drawing_main_id);
 		echo '</div>';
 		?>
+
 		<?php if($drawing['show_updated']): ?>
 			<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
-			<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
+			<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
 		<?php endif; ?>
+
 		<?php
 		if( $drawing['skillset'] ) {
 			echo '<div id="skillset">';

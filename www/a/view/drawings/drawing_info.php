@@ -214,9 +214,6 @@ if( $id != "" ) {
                 <td>Publish a version to get the published links for this drawing.</td>
             </tr>
         <?php endif; ?>
-
-        <?php require('version_list.php'); ?>
-
         <tr>
             <th width="115" class="show-updated label">Show "Updated"</th>
             <td>
@@ -227,7 +224,7 @@ if( $id != "" ) {
                     $show_updated = false; //default
                 }
                 ?>
-                <input type="radio" class="true" name="show_updated" <?= $show_updated === true ? 'checked="checked"':'' ?> value="true"> Yes, show "Updated: dd-mm-yyyy" at the top-right of the published drawing.
+                <input type="radio" class="true" name="show_updated" <?= $show_updated === true ? 'checked="checked"':'' ?> value="true"> Yes, show "Last Updated: mm-dd-yyyy" at the top-right of the published drawing.
                 <br>
                 <input type="radio" class="false" name="show_updated" <?= $show_updated === false ? 'checked="checked"':'' ?> value="false"> No, do not show it.
                 <script>
@@ -258,6 +255,9 @@ if( $id != "" ) {
                 </script>
             </td>
         </tr>
+
+        <?php require('version_list.php'); ?>
+
 
         <tr>
             <th width="115">Delete</th>

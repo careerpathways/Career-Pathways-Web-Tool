@@ -34,7 +34,7 @@
 <div class="title_img"><?= ShowRoadmapHeader($drawing['parent_id']) ?></div>
 <?php if($drawing['show_updated']): ?>
 	<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
-	<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;">Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
+	<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
 <?php endif; ?>
 <div class="title_skillset" style="font-size:8pt;font-weight:bold;"><?= l('skillset name')?>: <?= $drawing['skillset'] ?></div>
 
