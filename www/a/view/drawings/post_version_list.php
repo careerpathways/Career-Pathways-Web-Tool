@@ -40,21 +40,17 @@
 					echo '<td><b>Actions</b></td>';
 					echo '<td>';
 						$drawViewText = 'Draw/Edit Version';
-						if( CanEditVersion($v['id'], 'post') ) {
-							if( $v['published'] == 1 || $v['frozen'] == 1 ) {
-								$link = SilkIcon('picture.png');
-								$action = 'view';
-								$drawViewText = 'View Version';
-							} else {
-								$link = SilkIcon('pencil.png');
-								$action = 'draw';
-							}
+						if( CanEditVersion($v['id'], 'post') && //if user can edit drawing
+							$v['published'] != 1 && //and  drawing is not "published"
+							$v['frozen'] != 1 //and drawing is not "frozen"
+						){
+							$link = SilkIcon('pencil.png');
+							$action = 'draw';
 						} else {
 							$link = SilkIcon('picture.png');
 							$action = 'view';
 							$drawViewText = 'View Version';
 						}
-
 						echo '<a href="'.$_SERVER['PHP_SELF'].'?action=' . $action . '&version_id='.$v['id'].'" title="' . $drawViewText . '">'.($v['published']?SilkIcon('picture.png'):$link).'</a>';
 						echo ' &nbsp;&nbsp;&nbsp;';
 						echo '<a href="javascript:preview_drawing('.$v['parent_id'].','.$v['id'].',\'post\')" title="Preview Version">'.SilkIcon('magnifier.png').'</a>';

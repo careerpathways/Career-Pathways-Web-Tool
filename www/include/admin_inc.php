@@ -1,6 +1,6 @@
 <?php
 
-// abstractions to work with USER_ definitions in general.inc.php
+// abstractions to work with USER_ definitions in common/general.inc.php
 function IsAdmin() {
 	return $_SESSION['user_level'] >= CPUSER_STATEADMIN;
 }

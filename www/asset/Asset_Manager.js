@@ -299,6 +299,12 @@ function assetInfoBack(){
 }
 
 function buildAssetUsageInformationHTML(usagesReport){
+
+
+console.log(usagesReport);
+
+
+
 	var h = '<div class="img-info">';
 	if (usagesReport.usages.length != 0) {
 		h += '<span class="img-info-title">Used In:</span>';
@@ -321,45 +327,68 @@ function buildAssetUsageInformationHTML(usagesReport){
 	}
 
 	var drawHTML = function (){
+		var icon;
+		$.ajax({
+			url: '/asset/check_version_permission.php?version_id=' + drawing_version_id, 
+			success: function(canEdit){
+console.log(canEdit);
+console.log(version_is_frozen);
+console.log(version_is_published);
+
+				if (canEdit &&
+					!version_is_frozen &&
+					!version_is_published
+				){
+					icon = "pencil.png";
+				} else {
+					icon = "picture.png";
+				}
+			}, async: false
+		});
+
 		if ( drawing_name == '' ){
 			h += 'Unnamed Drawing';
 		} 
 		else {
 			h += drawing_name;
 		}
-
+		
 		h += '(Version '
 		+ drawing_version
 		+ '): ' 
 		+ drawing_school_name
-		+ '<a href="/a/' + hrefString + 'drawings.php?action=drawing_info&amp;id='+main_drawing_version_id+'" class="edit" target="_top"><img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties"></a>'
-		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" target="_top" title="View"><img src="/common/silk/picture.png" width="16" height="16"></a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=drawing_info&amp;id='+main_drawing_version_id+'" class="edit" target="_top">'
+			+ '<img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties">'		+ '</a>'
+		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" target="_top" title="View">'
+			+' <img src="/common/silk/' + icon + '" width="16" height="16">'
+		+'</a>'
 		+ '<br/>';
 	}
 
 	for (var i = 0; i < usagesReport.usages.length; i++) {
 		h += '<div class="asset-use">';
 		if (usagesReport.usages[i].type == 'roadmap_drawing'){
-			var drawing_version = usagesReport.usages[i].roadmap_drawing_version_num;
 			var drawing_name = usagesReport.usages[i].roadmap_drawing_name;
 			var drawing_school_name = usagesReport.usages[i].roadmap_drawing_school_name;
-			var hrefString = '';
+			var drawing_version = usagesReport.usages[i].roadmap_drawing_version_num;
 			var drawing_version_id = usagesReport.usages[i].roadmap_drawing_version_id;
+			var hrefString = '';
 			var main_drawing_version_id = usagesReport.usages[i].roadmap_drawing_main_id;
+			var version_is_frozen = usagesReport.usages[i].version_is_frozen;
+			var version_is_published = usagesReport.usages[i].version_is_published;
 
-			drawHTML();
-		
 		} else if (usagesReport.usages[i].type == 'post_drawing'){
-			var drawing_version = usagesReport.usages[i].post_drawing_version;
 			var drawing_name = usagesReport.usages[i].post_drawing_name;
 			var drawing_school_name = usagesReport.usages[i].scool_name;
-			var hrefString = 'post_';
+			var drawing_version = usagesReport.usages[i].post_drawing_version;
 			var drawing_version_id = usagesReport.usages[i].post_drawing_version_id;
+			var hrefString = 'post_';
 			var main_drawing_version_id = usagesReport.usages[i].post_drawing_main_id;
-
-			drawHTML();
-		
+			var version_is_frozen = usagesReport.usages[i].version_is_frozen;
+			var version_is_published = usagesReport.usages[i].version_is_published;
 		}
+
+		drawHTML();
 		h += '</div>';
 	}
 
