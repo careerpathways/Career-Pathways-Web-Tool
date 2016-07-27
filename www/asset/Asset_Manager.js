@@ -299,12 +299,6 @@ function assetInfoBack(){
 }
 
 function buildAssetUsageInformationHTML(usagesReport){
-
-
-console.log(usagesReport);
-
-
-
 	var h = '<div class="img-info">';
 	if (usagesReport.usages.length != 0) {
 		h += '<span class="img-info-title">Used In:</span>';
@@ -331,17 +325,15 @@ console.log(usagesReport);
 		$.ajax({
 			url: '/asset/check_version_permission.php?version_id=' + drawing_version_id, 
 			success: function(canEdit){
-console.log(canEdit);
-console.log(version_is_frozen);
-console.log(version_is_published);
-
 				if (canEdit &&
-					!version_is_frozen &&
-					!version_is_published
+					version_is_frozen == 0 &&
+					version_is_published == 0
 				){
-					icon = "pencil.png";
+					viewEditIcon = "pencil.png";
+					viewEditTitle = "Edit";
 				} else {
-					icon = "picture.png";
+					viewEditIcon = "picture.png";
+					viewEditTitle = "View";
 				}
 			}, async: false
 		});
@@ -360,7 +352,7 @@ console.log(version_is_published);
 		+ '<a href="/a/' + hrefString + 'drawings.php?action=drawing_info&amp;id='+main_drawing_version_id+'" class="edit" target="_top">'
 			+ '<img src="/common/silk/cog.png" width="16" height="16" title="Drawing Properties">'		+ '</a>'
 		+ '<a href="/a/' + hrefString + 'drawings.php?action=draw&version_id=' + drawing_version_id + '" class="edit" target="_top" title="View">'
-			+' <img src="/common/silk/' + icon + '" width="16" height="16">'
+			+' <img src="/common/silk/' + viewEditIcon + '" width="16" height="16" title="' + viewEditTitle + '">'
 		+'</a>'
 		+ '<br/>';
 	}
