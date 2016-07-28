@@ -311,9 +311,9 @@ function buildAssetUsageInformationHTML(usagesReport){
 			h += '<div class="alt-text-editor">'
 				+ '<span class="img-info-title">Title your image for ADA compliance:</span>'
 				+ '<input type="text" data-asset="alt-text-input" data-asset-id="' + usagesReport.asset.id + '" value="' + usagesReport.asset.alt + '">'
-				+ '<button data-asset="alt-text-submit">'
+				+ '<div class="btn" data-asset="alt-text-submit">'
 					+ 'Save Alt Text'
-				+ '</button>'
+				+ '</div>'
 				+ '<span class="alt-text-result"></span>';
 				+ '</div>'
 
