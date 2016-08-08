@@ -264,17 +264,11 @@ class Asset_Manager
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
 		
 		$patterns = array(
-			'/alt=".*?"/',
-			'/"/',
-			"/'/",
-			'/;/',
+			'/alt=".*?"/'
 		);
 		
 		$replacements = array(
-			'alt="'.$alt_text.'"',
-			'\"',
-			"\'",
-			'\;',
+			'alt="'.$alt_text.'"'
 		);
 
 		if($user_can_modify){
@@ -285,14 +279,15 @@ class Asset_Manager
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
 					}
-					$c = $object['roadmap_drawing_content'];
-					
-					$c = preg_replace($patterns, $replacements, $c);
+					$c = unserialize($object['roadmap_drawing_content']);
+					$c['config']['content'] = preg_replace($patterns, $replacements, $c['config']['content']);
+					$c['config']['content_html'] = preg_replace($patterns, $replacements, $c['config']['content_html']);
+					$c = serialize($c);
 
 					//set content in the object in the DB
-					$DB->SingleQuery('UPDATE objects
-						SET content = "' . $c . '"
-						WHERE objects.id = '.$object['object_id']
+					$DB->SingleQuery("UPDATE objects
+						SET content = '" . $c . "'
+						WHERE objects.id = " . $object['object_id']
 					);
 
 				} elseif ($object['type'] == "post_drawing"){
@@ -320,9 +315,8 @@ class Asset_Manager
 				WHERE assets.id = '.$asset_id
 			);
 			
-
 		} else {
-			error_log('Failure to write alt text: The asset use type seems to not be a post or roadmap.', 0);
+			error_log('Failure to write alt text: You do not seem to have permission to edit this roadmap.', 0);
 		}
 		return true;
 	}
