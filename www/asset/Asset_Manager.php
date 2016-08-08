@@ -266,12 +266,14 @@ class Asset_Manager
 		$patterns = array(
 			'/alt=".*?"/',
 			'/"/',
+			"/'/",
 			'/;/',
 		);
 		
 		$replacements = array(
 			'alt="'.$alt_text.'"',
 			'\"',
+			"\'",
 			'\;',
 		);
 
