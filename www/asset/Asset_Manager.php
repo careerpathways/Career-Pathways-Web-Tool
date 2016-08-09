@@ -257,31 +257,43 @@ class Asset_Manager
 		return getBaseUrl() . '/asset/' . $assetFileName;
 	}
 
-	public static function set_asset_alt_text( $asset_id, $alt_text )
+	public static function set_asset_alt_text($asset_id, $alt_text)
 	{
 		global $SITE, $DB;
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
-		
-		$patterns = array(
-			'/alt=".*?"/'
+
+		$alt_patterns = array (
+			"/'/",
+			"/;/"
 		);
-		
-		$replacements = array(
-			'alt="'.$alt_text.'"'
+		$alt_replacements = array (
+			"\'",
+			"\;"
 		);
 
+		$content_patterns = array(
+			'/alt=".*?" data-asset-id="' . $asset_id . '"/',
+		);
+		
+		$content_replacements = array(
+			'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"',
+		);
+
+		$alt_text = preg_replace($alt_patterns, $alt_replacements, $alt_text);
+		
 		if($user_can_modify){
 			//Loop through each asset use and write alt text to db.
 			foreach ($asset_use['usages'] as $object) {
 				if ($object['type'] == "roadmap_drawing"){
 
+
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
 					}
 					$c = unserialize($object['roadmap_drawing_content']);
-					$c['config']['content'] = preg_replace($patterns, $replacements, $c['config']['content']);
-					$c['config']['content_html'] = preg_replace($patterns, $replacements, $c['config']['content_html']);
+					$c['config']['content'] = preg_replace($content_patterns, $content_replacements, $c['config']['content']);
+					$c['config']['content_html'] = preg_replace($content_patterns, $content_replacements, $c['config']['content_html']);
 					$c = serialize($c);
 
 					//set content in the object in the DB
@@ -295,18 +307,18 @@ class Asset_Manager
 					if(!isset($object['post_cell_content'])){
 						error_log('Failure to write alt text: Post cell has no content.', 0);
 					}
-
 					//replace the alt text
 					$c = $object['post_cell_content'];
-
-					$c = preg_replace($patterns, $replacements, $c);
+					$c = unserialize($c);
+					$c = preg_replace($content_patterns, $content_replacements, $c);
+					$c = serialize($c);
+		
 					//set content in the post cell in the DB
-					$DB->SingleQuery('UPDATE post_cell
-						SET content = "' . $c . '"
-						WHERE post_cell.id = '.$object["post_cell_id"]
+					$DB->SingleQuery("UPDATE post_cell
+						SET content = '" . $c . "'
+						WHERE post_cell.id = ".$object["post_cell_id"]
 					);
 				}
-
 			}
 
 			//write alt text to asset

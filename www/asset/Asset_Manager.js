@@ -279,16 +279,6 @@ function assetInfoShow(usagesReport){
 	$(".work-pad").show();
 	$('.work-pad').html(h);
 	$asset.clone().insertAfter('.information .heading');
-
-	//prevent special chars
-	$('.alt-text-editor input').bind('keypress', function (event) {
-		var regex = new RegExp("\"|'|;");
-		var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-		if (regex.test(key)) {
-			event.preventDefault();
-			return false;
-		}
-	});
 }
 
 function assetInfoBack(){
