@@ -263,6 +263,7 @@ class Asset_Manager
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
 
+		//sanitize user input
 		$alt_patterns = array (
 			"/'/",
 			"/;/"
@@ -271,29 +272,39 @@ class Asset_Manager
 			"\'",
 			"\;"
 		);
-
-		$content_patterns = array(
-			'/alt=".*?" data-asset-id="' . $asset_id . '"/',
+		$alt_text = preg_replace(
+			$alt_patterns, 
+			$alt_replacements, 
+			$alt_text
 		);
+
 		
-		$content_replacements = array(
-			'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"',
-		);
-
-		$alt_text = preg_replace($alt_patterns, $alt_replacements, $alt_text);
 		
 		if($user_can_modify){
+			//setup for pregreplace
+			$content_pattern = '/alt=".*?" data-asset-id="' . $asset_id . '"/';
+			$content_replacement = 'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"';
+
 			//Loop through each asset use and write alt text to db.
 			foreach ($asset_use['usages'] as $object) {
 				if ($object['type'] == "roadmap_drawing"){
 
-
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
 					}
+
+					//find and replace alt text
 					$c = unserialize($object['roadmap_drawing_content']);
-					$c['config']['content'] = preg_replace($content_patterns, $content_replacements, $c['config']['content']);
-					$c['config']['content_html'] = preg_replace($content_patterns, $content_replacements, $c['config']['content_html']);
+					$c['config']['content'] = preg_replace(
+						$content_pattern, 
+						$content_replacement, 
+						$c['config']['content']
+					);
+					$c['config']['content_html'] = preg_replace(
+						$content_pattern, 
+						$content_replacement, 
+						$c['config']['content_html']
+					);
 					$c = serialize($c);
 
 					//set content in the object in the DB
@@ -309,9 +320,7 @@ class Asset_Manager
 					}
 					//replace the alt text
 					$c = $object['post_cell_content'];
-					$c = unserialize($c);
-					$c = preg_replace($content_patterns, $content_replacements, $c);
-					$c = serialize($c);
+					$c = preg_replace($content_pattern, $content_replacement, $c);
 		
 					//set content in the post cell in the DB
 					$DB->SingleQuery("UPDATE post_cell
