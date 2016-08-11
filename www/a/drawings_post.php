@@ -105,7 +105,12 @@ if( KeyInRequest('id') ) {
 			
 			foreach( $soc as $s )
 			{
-				$check = $DB->SingleQuery('SELECT COUNT(1) AS num FROM olmis_links WHERE drawing_id='.Request('id').' AND olmis_id="'.$s.'"');
+				$check = $DB->SingleQuery('SELECT COUNT(1) 
+					AS num 
+					FROM olmis_links 
+					WHERE drawing_id='.Request('id').' AND olmis_id="'.$s.'"'
+				);
+
 				if( $check['num'] == 0 )
 				{
 					$data = array();
@@ -123,14 +128,25 @@ if( KeyInRequest('id') ) {
 		
 		if( Request('mode') == 'enable' )
 		{
-			$check = $DB->SingleQuery('SELECT COUNT(1) AS num FROM olmis_links WHERE drawing_id='.intval(Request('id')).' AND olmis_id="'.intval(Request('code')).'"');
+			$check = $DB->SingleQuery('SELECT COUNT(1) 
+				AS num 
+				FROM olmis_links 
+				WHERE drawing_id=' . intval(Request('id'))
+				. ' AND olmis_id="' . intval(Request('code')) . '"');
 			if( $check['num'] == 0 )
-				$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id) VALUES ('.intval(Request('id')).',"'.intval(Request('code')).'")');
+				$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id) 
+					VALUES ('.intval(Request('id')).',"'
+					. intval(Request('code')).'")'
+				); 
 		}
 
 		if( Request('mode') == 'disable' )
 		{
-			$DB->Query('DELETE FROM olmis_links WHERE drawing_id = '.intval(Request('id')).' AND olmis_id = "'.intval(Request('code')).'"');
+			$DB->Query('DELETE FROM olmis_links 
+				WHERE drawing_id = '
+				. intval(Request('id'))
+				. ' AND olmis_id = "' . intval(Request('code')) . '"'
+			);
 		}
 	
 		die();
