@@ -72,7 +72,7 @@ class SiteEmail {
 	}
 
 	function Send($debug=false) {
-		global $SITE;
+		global $DB, $SITE, $_SESSION;
 
 		$this->ReplaceVars();
 
@@ -85,8 +85,15 @@ class SiteEmail {
 		}	
 
 		//swiftmailer supports "From" value of: array('email address'=>'email display name')
-		$this->info['sender'] = array($SITE->email() => $SITE->email_name());
-	
+		//If user is logged in
+		if ( $_SESSION['user_level'] != '-1' ) {
+			$this->info['sender'] = array( $this->vars['EMAIL'] => $_SESSION['full_name'] );
+		//If they entered a name in the form
+		} elseif ( Request('name') ){
+			$this->info['sender'] = array( $this->vars['EMAIL'] => Request('name') );
+		} else {
+			$this->info['sender'] = $this->vars['EMAIL'];
+		}
 
 		$message = Swift_Message::newInstance($this->info['subject']);
 		$message->setFrom($this->info['sender']);
@@ -94,7 +101,6 @@ class SiteEmail {
 		$message->setReplyTo($this->info['sender']);
 		//Note: email cc'ing is currently not needed.
 		$message->setBcc($this->info['bcc']);
-
 		if($this->IsHTML){
 			$message->setBody($this->info['emailbody'], 'text/html');
 		} else {
