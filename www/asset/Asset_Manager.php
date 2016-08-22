@@ -264,12 +264,10 @@ class Asset_Manager
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
 
 		$sani_patterns = array (
-			"/'/",
-			"/;/"
+			"/'/"
 		);
 		$sani_replacements = array (
-			"\'",
-			"\;"
+			"\'"
 		);		
 		
 		if($user_can_modify){
@@ -281,12 +279,6 @@ class Asset_Manager
 			foreach ($asset_use['usages'] as $object) {
 				if ($object['type'] == "roadmap_drawing"){
 
-					//sanitize user input
-					$alt_text = preg_replace(
-						$sani_patterns, 
-						$sani_replacements, 
-						$alt_text
-					);
 
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
@@ -294,14 +286,31 @@ class Asset_Manager
 
 					//find and replace alt text
 					$c = unserialize($object['roadmap_drawing_content']);
+					var_dump($c);
+
+					//enter alt text
 					$c['config']['content'] = preg_replace(
 						$content_pattern, 
 						$content_replacement, 
 						$c['config']['content']
 					);
+					//sanitize content
+					$c['config']['content'] = preg_replace(
+						$sani_patterns, 
+						$sani_replacements, 
+						$c['config']['content']
+					);
+
+					//enter alt text
 					$c['config']['content_html'] = preg_replace(
 						$content_pattern, 
 						$content_replacement, 
+						$c['config']['content_html']
+					);
+					//sanitize content
+					$c['config']['content_html'] = preg_replace(
+						$sani_patterns, 
+						$sani_replacements, 
 						$c['config']['content_html']
 					);
 					$c = serialize($c);
