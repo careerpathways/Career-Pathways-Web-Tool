@@ -37,6 +37,33 @@
 	<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
 <?php endif; ?>
 <div class="title_skillset" style="font-size:8pt;font-weight:bold;"><?= l('skillset name')?>: <?= $drawing['skillset'] ?></div>
+<div id="alt-links">
+<?php
+$schls = $DB->VerticalQuery("SELECT * FROM schools WHERE organization_type IN ('CC', 'Other') ORDER BY school_name",'school_abbr','id');
+$accessible_url = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/%%.html';    
+$accessible_url = str_replace(array('$$','%%'),array($drawing['id'],CleanDrawingCode($schls[$drawing['school_id']].'-'.$drawing['full_name'])),$accessible_url);
+
+$testVar = GetDrawingName($drawing['id'], 'roadmap');
+var_dump($testVar);
+
+$pdf_url = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
+$pdf_url = str_replace(
+	array('$$','%%'),
+	array(
+		$drawing['id'],
+		CleanDrawingCode(
+			GetDrawingName($drawing['id'], 'roadmap')
+		)
+	),
+	$pdf_url);
+
+var_dump($drawing);
+?>
+
+	<a href="<?= $accessible_url ?>">Text-Only</a>
+	 | 
+	<a href="http://oregon.ctepathways.org/pdf/<?= $drawing['id']?>/program.pdf">Printable PDF</a>
+</div>
 
 
 <div id="chartcontainer" style="position:relative;"><!-- chview.js will draw the chart here --></div>

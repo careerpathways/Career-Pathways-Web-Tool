@@ -324,7 +324,6 @@ function GetDrawingName($drawing_id, $drawing_type)
 		throw new Exception(__FILE__ . ' - Invalid drawing type specificed to ' . __FUNCTION__ . ': ' . $drawing_type);
 		return '';
 	}
-
 	$drawing = $DB->SingleQuery('SELECT
 		m.name AS alternate_title,
 		p.title AS approved_program_name

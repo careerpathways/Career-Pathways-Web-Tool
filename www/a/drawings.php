@@ -474,7 +474,6 @@ function ShowToolbar() {
 	showToolbarAndHelp(true, 'standard');
 }
 
-
 function ShowPublishedHelp() {
 	ShowInfobar();
 	showToolbarAndHelp(false, 'published');
