@@ -263,22 +263,14 @@ class Asset_Manager
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
 
-		//sanitize user input
-		$alt_patterns = array (
+		$sani_patterns = array (
 			"/'/",
 			"/;/"
 		);
-		$alt_replacements = array (
+		$sani_replacements = array (
 			"\'",
 			"\;"
-		);
-		$alt_text = preg_replace(
-			$alt_patterns, 
-			$alt_replacements, 
-			$alt_text
-		);
-
-		
+		);		
 		
 		if($user_can_modify){
 			//setup for pregreplace
@@ -288,6 +280,13 @@ class Asset_Manager
 			//Loop through each asset use and write alt text to db.
 			foreach ($asset_use['usages'] as $object) {
 				if ($object['type'] == "roadmap_drawing"){
+
+					//sanitize user input
+					$alt_text = preg_replace(
+						$sani_patterns, 
+						$sani_replacements, 
+						$alt_text
+					);
 
 					if(!isset($object['roadmap_drawing_content'])){
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
@@ -318,9 +317,15 @@ class Asset_Manager
 					if(!isset($object['post_cell_content'])){
 						error_log('Failure to write alt text: Post cell has no content.', 0);
 					}
-					//replace the alt text
 					$c = $object['post_cell_content'];
+					//replace the alt text
 					$c = preg_replace($content_pattern, $content_replacement, $c);
+					//sanitize content
+					$c = preg_replace(
+						$sani_patterns, 
+						$sani_replacements, 
+						$c
+					);
 		
 					//set content in the post cell in the DB
 					$DB->SingleQuery("UPDATE post_cell
