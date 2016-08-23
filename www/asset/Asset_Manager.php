@@ -300,8 +300,6 @@ class Asset_Manager
 					$c = $object['post_cell_content'];
 					//replace the alt text
 					$c = preg_replace($content_pattern, $content_replacement, $c);
-
-
 					$DB->Update('post_cell', array('content'=>$c), $object["post_cell_id"]);
 				}
 			}
