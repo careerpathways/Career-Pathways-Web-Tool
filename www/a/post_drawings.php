@@ -315,11 +315,43 @@ function showVersion() {
 
 	echo '<div style="margin-bottom: 10px">';
 	echo '<div class="title_img">' . ShowPostHeader($drawing['parent_id']) . '</div>';
-	?>
-	<?php if( $drawing['show_updated'] ): ?>
+
+	if (is_array($DB->SingleQuery("SELECT * FROM post_drawings WHERE published=1 AND parent_id=".$drawing['id']))){
+		$is_published = true;
+	} else {
+		$is_published = false;
+	}
+?>
+
+	<div class="drawing-info">
+	<?php if($drawing['show_updated']): ?>
 		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
 		<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
 	<?php endif; ?>
+	<?php if($drawing['show_updated'] && $is_published): ?>
+		<br>
+	<?php endif; ?>
+	<?php if($is_published): ?>
+		<div id="alt-links" style="float: right;font-size:8pt;">
+		<?php
+			$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
+
+			$pdf_url = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post/$$/%%.pdf';
+			$pdf_url = str_replace(
+				array('$$','%%'),
+				array(
+					$drawing['parent_id'],
+					CleanDrawingCode(
+						GetDrawingName($drawing['parent_id'], 'post')
+					)
+				),
+				$pdf_url
+			);
+		?>
+			<a href="<?= $pdf_url ?>">Printable PDF</a>
+		</div>
+	<?php endif; ?>
+	</div>
 	<?php
 	if( $drawing['skillset'] )
 	{

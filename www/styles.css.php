@@ -414,7 +414,7 @@ a.edit:hover, a.edit:visited:hover {
 	float: left;
 }
 
-#sideboxes #drawing_canvas.ctpathways .last_modified {
+#sideboxes #drawing_canvas.ctpathways .drawing-info {
     margin-right: 800px;
 }
 
