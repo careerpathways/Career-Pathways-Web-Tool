@@ -265,7 +265,8 @@ class Asset_Manager
 		
 		if($user_can_modify){
 			//setup for pregreplace
-			$content_pattern = '/alt=".*?" data-asset-id="' . $asset_id . '"/';
+			$content_pattern = '/alt=".*?"(?=.*data-asset-id="' . $asset_id . '")/';
+
 			$content_replacement = 'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"';
 
 			//Loop through each asset use and write alt text to db.
