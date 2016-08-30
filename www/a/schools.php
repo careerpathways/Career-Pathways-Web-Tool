@@ -43,7 +43,7 @@ if( KeyInRequest('id') ) {
 			} else {
 				$content['date_created'] = $DB->SQLDate();
 				$school_id = $DB->Insert('schools', $content);
-				
+
 				// Insert default HS headers
 				foreach( array('English', 'Math', 'Science', 'Social Studies', 'Electives', 'Career and Technical Courses', 'Employment') as $num=>$title )
 				{
@@ -104,7 +104,7 @@ if( KeyInRequest('id') ) {
 				$header = 'High Schools';
 				break;
 		}
-	
+
 		$schools = $DB->MultiQuery('SELECT * FROM schools WHERE organization_type="' . $type . '" ORDER BY school_name');
 
 		echo '<h3 style="margin-top:0;margin-bottom:0">' . $header . '</h3>';
@@ -118,26 +118,26 @@ if( KeyInRequest('id') ) {
 			echo '<th width="70">Drawings</th>';
 			if( $type != 'HS' ) echo '<th>Colors</th>';
 		echo '</tr>';
-	
+
 		foreach( $schools as $num=>$s ) {
-	
+
 			echo '<tr class="row'.($num%2).'">';
 				echo '<td><a href="'.$_SERVER['PHP_SELF'].'?id='.$s['id'].'" class="edit">edit</a></td>';
 				echo '<td>'.$s['school_abbr'].'</td>';
 				echo '<td>'.$s['school_name'].'</td>';
-	
+
 				$users = $DB->SingleQuery("SELECT COUNT(*) AS num FROM users WHERE school_id=".$s['id']." AND user_active=1");
 				echo '<td>'.($users['num']==0?'&nbsp;':$users['num']).'</td>';
-	
+
 				//JGD: Added POST Drawing count to total Drawing count in Configure Organizations page
-				$postDrawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawing_main WHERE school_id=".$s['id']."");	
+				$postDrawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM post_drawing_main WHERE school_id=".$s['id']."");
 				$drawings = $DB->SingleQuery("SELECT COUNT(*) AS num FROM drawing_main WHERE school_id=".$s['id']."");
 				$drawingsNum = $drawings['num'] + $postDrawings['num'];
 				//JGD: replaced this line with whats shown below --> echo '<td>'.($drawings['num']==0?'&nbsp;':$drawings['num']).'</td>';
-				
+
 				echo '<td>'.($drawingsNum==0?'&nbsp;':$drawingsNum).'</td>';
 				echo '<td>';
-	
+
 				if( $type != 'HS' )
 				{
 					$str = '';
@@ -152,7 +152,7 @@ if( KeyInRequest('id') ) {
 				}
 			echo '</tr>';
 		}
-	
+
 		echo '</table>';
 	}
 
@@ -262,15 +262,15 @@ global $DB, $STATES;
 		// load all counties for this state.
 		load_counties();
 	} else {
-		// On page load, if this school is being edited, 
+		// On page load, if this school is being edited,
 		// load the correct (saved) state and county.
 		// First, select the state that was saved.
 		$('#school_state').val(school_state);
-		
+
 		// Then load counties for that state, and select the county that was saved.
 		load_counties(function(){
-			$('#county_container').val(school_county);
-		});	
+			$('[name=school_county]').val(school_county);
+		});
 	}
 
 	function load_counties(callback) {
