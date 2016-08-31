@@ -321,9 +321,21 @@ require_once("POSTChart.inc.php");
                         relative_urls : false,
                         plugins : "jbimages,spellchecker,style",
                         theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,link,unlink,|,code",
-                        theme_advanced_buttons2 : "spellchecker,forecolor,backcolor,|,image,jbimages",
+                        theme_advanced_buttons2 : "spellchecker,forecolor,backcolor,|,image,jbimages,|,fontselect",
                         theme_advanced_buttons3 : "",
                         theme_advanced_buttons4 : "",
+                        theme_advanced_fonts :
+					        "Arial=arial,helvetica,sans-serif;"+
+					        "Arial Black=arial black,avant garde;"+
+					        "Comic Sans MS=comic sans ms,sans-serif;"+
+					        "Courier New=courier new,courier;"+
+					        "Georgia=georgia,palatino;"+
+					        "Impact=impact,chicago;"+
+					        "Tahoma=tahoma,arial,helvetica,sans-serif;"+
+					        "Terminal=terminal,monaco;"+
+					        "Times New Roman=times new roman,times;"+
+					        "Trebuchet MS=trebuchet ms,geneva;"+
+					        "Verdana=verdana,geneva", //NOTE - the last one needs to NOT have a semi-colon at the end.
                         theme_advanced_toolbar_location : "top",
                         theme_advanced_toolbar_align : "left",
                         theme_advanced_statusbar_location : false,

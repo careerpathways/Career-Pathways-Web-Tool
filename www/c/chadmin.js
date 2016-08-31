@@ -1079,10 +1079,22 @@ Charts.showEditor = function(mychUtil) {
 		mode : "none",
 		theme : "advanced",
 		plugins : "jbimages,spellchecker,style,table,fullscreen",
-		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontsizeselect",
+		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontsizeselect,fontselect",
 		theme_advanced_buttons2 : "bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,|,image,jbimages,|,cleanup,styleprops,forecolor,backcolor,code",
 		theme_advanced_buttons3 : "tablecontrols,|,spellchecker",
 		theme_advanced_buttons4 : "",
+		theme_advanced_fonts :
+	        "Arial=arial,helvetica,sans-serif;"+
+	        "Arial Black=arial black,avant garde;"+
+	        "Comic Sans MS=comic sans ms,sans-serif;"+
+	        "Courier New=courier new,courier;"+
+	        "Georgia=georgia,palatino;"+
+	        "Impact=impact,chicago;"+
+	        "Tahoma=tahoma,arial,helvetica,sans-serif;"+
+	        "Terminal=terminal,monaco;"+
+	        "Times New Roman=times new roman,times;"+
+	        "Trebuchet MS=trebuchet ms,geneva;"+
+	        "Verdana=verdana,geneva", //NOTE - the last one needs to NOT have a semi-colon at the end.
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_statusbar_location : false,
