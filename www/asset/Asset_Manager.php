@@ -262,27 +262,11 @@ class Asset_Manager
 		global $SITE, $DB;
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
-
-		//sanitize user input
-		$alt_patterns = array (
-			"/'/",
-			"/;/"
-		);
-		$alt_replacements = array (
-			"\'",
-			"\;"
-		);
-		$alt_text = preg_replace(
-			$alt_patterns, 
-			$alt_replacements, 
-			$alt_text
-		);
-
-		
 		
 		if($user_can_modify){
 			//setup for pregreplace
-			$content_pattern = '/alt=".*?" data-asset-id="' . $asset_id . '"/';
+			$content_pattern = '/alt=".*?"(?=.*data-asset-id="' . $asset_id . '")/';
+
 			$content_replacement = 'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"';
 
 			//Loop through each asset use and write alt text to db.
@@ -293,48 +277,36 @@ class Asset_Manager
 						error_log('Failure to write alt text: Roadmap object has no content.', 0);
 					}
 
-					//find and replace alt text
 					$c = unserialize($object['roadmap_drawing_content']);
+					//enter alt text
 					$c['config']['content'] = preg_replace(
 						$content_pattern, 
 						$content_replacement, 
 						$c['config']['content']
 					);
+					//enter alt text
 					$c['config']['content_html'] = preg_replace(
 						$content_pattern, 
 						$content_replacement, 
 						$c['config']['content_html']
 					);
-					$c = serialize($c);
 
 					//set content in the object in the DB
-					$DB->SingleQuery("UPDATE objects
-						SET content = '" . $c . "'
-						WHERE objects.id = " . $object['object_id']
-					);
-
+					$DB->Update('objects', array('content'=>serialize($c)), $object['object_id']);
 				} elseif ($object['type'] == "post_drawing"){
 
 					if(!isset($object['post_cell_content'])){
 						error_log('Failure to write alt text: Post cell has no content.', 0);
 					}
-					//replace the alt text
 					$c = $object['post_cell_content'];
+					//replace the alt text
 					$c = preg_replace($content_pattern, $content_replacement, $c);
-		
-					//set content in the post cell in the DB
-					$DB->SingleQuery("UPDATE post_cell
-						SET content = '" . $c . "'
-						WHERE post_cell.id = ".$object["post_cell_id"]
-					);
+					$DB->Update('post_cell', array('content'=>$c), $object["post_cell_id"]);
 				}
 			}
 
-			//write alt text to asset
-			$DB->SingleQuery('UPDATE assets
-				SET alt = "'.$alt_text.'"
-				WHERE assets.id = '.$asset_id
-			);
+			//write alt text to asset for image library
+			$DB->Update('assets', array('alt'=>$alt_text), $asset_id);
 			
 		} else {
 			error_log('Failure to write alt text: You do not seem to have permission to edit this roadmap.', 0);

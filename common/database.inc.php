@@ -188,11 +188,15 @@ class common_db
 		return $this->InsertID();
 	}
 
-
-	// updates record $id with $data
-	//
-	// it is possible that in the future I would want to add a
-	// check to see if the table and all the keys exist in the database
+	/**
+	 * sanitizes input and updates record $id with $data
+	 * it is possible that in the future I would want to add a
+	 * check to see if the table and all the keys exist in the database
+	 * @param string $table	The table to be updated.
+	 * @param array $data	key = The name of the column to be updated. // value = The value to insert.
+	 * @param string $id    The match to be updated.
+	 * @param string $pk    The column to query against (Default = 'id').
+	 */
 	function Update($table, $data, $id, $pk="id") {
 		$id = $this->Safe($id);
 		$SQL = "UPDATE $table SET ";
