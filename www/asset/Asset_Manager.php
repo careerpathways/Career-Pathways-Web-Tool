@@ -265,9 +265,9 @@ class Asset_Manager
 		
 		if($user_can_modify){
 			//setup for pregreplace
-			$content_pattern = '/alt=".*?"(?=.*data-asset-id="' . $asset_id . '")/';
+			$content_pattern = '/alt="[^"]*"(?=[^>]*data-asset-id="' . $asset_id . '")/';
 
-			$content_replacement = 'alt="'.$alt_text.'" data-asset-id="' . $asset_id . '"';
+			$content_replacement = 'alt="'.$alt_text.'"';
 
 			//Loop through each asset use and write alt text to db.
 			foreach ($asset_use['usages'] as $object) {
@@ -290,7 +290,6 @@ class Asset_Manager
 						$content_replacement, 
 						$c['config']['content_html']
 					);
-
 					//set content in the object in the DB
 					$DB->Update('objects', array('content'=>serialize($c)), $object['object_id']);
 				} elseif ($object['type'] == "post_drawing"){
