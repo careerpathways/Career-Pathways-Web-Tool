@@ -60,7 +60,7 @@ class SiteEmail {
 	 * Update $this->info values with values from $this->vars
 	 */
 	function ReplaceVars() {
-		foreach( array('recipient','bcc','subject','emailbody') AS $key ) {
+		foreach( array('recipient','bcc','subject','emailbody','sender') AS $key ) {
 			foreach( $this->vars as $var=>$value ) {
 				$this->info[$key] = str_replace('##'.$var.'##', $value, $this->info[$key]);
 			}
@@ -84,15 +84,10 @@ class SiteEmail {
 			$this->info['bcc'] = $this->csv_to_array($this->info['bcc']); //if this email needs to bcc someone specific
 		}	
 
+		//Last chance to replace any strange ##EMAIL## value that might be here, since swiftmailer throws error on that.
 		//swiftmailer supports "From" value of: array('email address'=>'email display name')
-		//If user is logged in
-		if ( $_SESSION['user_level'] != '-1' ) {
-			$this->info['sender'] = array( $this->vars['EMAIL'] => $_SESSION['full_name'] );
-		//If they entered a name in the form
-		} elseif ( Request('name') ){
-			$this->info['sender'] = array( $this->vars['EMAIL'] => Request('name') );
-		} else {
-			$this->info['sender'] = $this->vars['EMAIL'];
+		if(!filter_var($this->info['sender'], FILTER_VALIDATE_EMAIL)){
+			$this->info['sender'] = array($SITE->email() => $SITE->email_name());
 		}
 
 		$message = Swift_Message::newInstance($this->info['subject']);
