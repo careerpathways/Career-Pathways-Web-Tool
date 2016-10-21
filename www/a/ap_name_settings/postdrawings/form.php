@@ -29,6 +29,16 @@ if(!$SITE->hasFeature('oregon_skillset')){
 	    <br>
 		<input type="hidden" name="submitted" />
 	    <input type="submit" value="Upload File" />
+	    <br>
+	    These acronyms will not be proper-cased on import (one per line):
+	    <textarea name="exceptions">
+ADV
+AG
+CAD
+CADD
+CTE
+cte
+	    </textarea>
 	</form>
 	<br>
 	<br>

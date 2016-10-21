@@ -1,5 +1,7 @@
 <?php
+require(DIRNAME(DIRNAME(__FILE__)).DIRECTORY_SEPARATOR.'propcase.php');
 ini_set("auto_detect_line_endings", true);
+
 $file = $_FILES["userfile"]["tmp_name"];
 if(!file_exists($file)){ die('Our apologies, there appears to be a problem uploading the file. Please try again or contact your system administrator.'); }
 $handle = fopen($file,"r");
@@ -45,6 +47,9 @@ foreach ($data as $key => $value) {
 		array_push($report['skipped'], $value);
 	} else {
 		if($value['approved_program_name']){
+echo $value['approved_program_name'] . '<br>';
+echo propcase($value['approved_program_name']) . '<br><br>';
+continue;
 			array_push($report['new_programs'], $value);
 			$result = $DB->Insert('programs',
 			    array(
