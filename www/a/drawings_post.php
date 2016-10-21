@@ -333,4 +333,21 @@ if( Request( 'action' ) == 'disable_show_updated' ){
 	echo json_encode(array('success'=>true, 'value'=>0));
 }
 
+// #120235713 - Add PDF and ADA accessible links to top right corner of drawings.
+if( Request( 'action' ) == 'enable_show_pdf_ada_links' ){
+	header('Content-type: application/json');
+	$DB->Update($main_table, array(
+		'show_pdf_ada_links'=>1
+	), Request('id'));
+	echo json_encode(array('success'=>true, 'value'=>1));
+}
+
+if( Request( 'action' ) == 'disable_show_pdf_ada_links' ){
+	header('Content-type: application/json');
+	$DB->Update($main_table, array(
+		'show_pdf_ada_links'=>0
+	), Request('id'));
+	echo json_encode(array('success'=>true, 'value'=>0));
+}
+
 ?>

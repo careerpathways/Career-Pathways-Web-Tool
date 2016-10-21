@@ -322,7 +322,7 @@ function showVersion() {
 		$is_published = false;
 	}
 ?>
-
+<?php /* when clicking the little green tree icon next to a post drawing version */ ?>
 	<div class="drawing-info">
 	<?php if($drawing['show_updated']): ?>
 		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
