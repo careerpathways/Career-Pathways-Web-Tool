@@ -258,6 +258,7 @@ function showVersion() {
 		echo "The record does not exist";
 		die();
 	}
+	$drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=" . $drawing['parent_id']);
 
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
 
@@ -313,25 +314,18 @@ function showVersion() {
 	
 	$post = POSTChart::Create($drawing['id']);
 
-	echo '<div style="margin-bottom: 10px">';
+	echo '<div style="margin-bottom: 14px">';
 	echo '<div class="title_img">' . ShowPostHeader($drawing['parent_id']) . '</div>';
-
-	if (is_array($DB->SingleQuery("SELECT * FROM post_drawings WHERE published=1 AND parent_id=".$drawing['id']))){
-		$is_published = true;
-	} else {
-		$is_published = false;
-	}
-?>
-<?php /* when clicking the little green tree icon next to a post drawing version */ ?>
+	?>
+	<?php /* when clicking the little green tree icon next to a post drawing version */ ?>
 	<div class="drawing-info">
-	<?php if($drawing['show_updated']): ?>
+	<?php if($drawing['published'] && $drawing['show_updated']): ?>
 		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
 		<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
 	<?php endif; ?>
-	<?php if($drawing['show_updated'] && $is_published): ?>
 		<br>
-	<?php endif; ?>
-	<?php if($is_published): ?>
+		<br>
+	<?php if($drawing['published'] && $drawing['show_pdf_ada_links']): ?>
 		<div id="alt-links" style="float: right;font-size:8pt;">
 		<?php
 			$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
@@ -348,14 +342,14 @@ function showVersion() {
 				$pdf_url
 			);
 		?>
-			<a href="<?= $pdf_url ?>">Printable PDF</a>
+			<a href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i>Printable PDF</a>
 		</div>
 	<?php endif; ?>
 	</div>
 	<?php
 	if( $drawing['skillset'] )
 	{
-		echo '<div id="skillset">';
+		echo '<div id="skillset" style="font-size:8pt;font-weight:bold;position:absolute;top:52px;">';
 			echo l('skillset name') . ': ' . $drawing['skillset'];
 		echo '</div>';
 	}

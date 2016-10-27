@@ -67,6 +67,7 @@ echo $this->tag_doctype()."\n";
 <?php
 		$this->HeaderScripts();
 ?>
+<link rel="stylesheet" href="/common/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 		<?php

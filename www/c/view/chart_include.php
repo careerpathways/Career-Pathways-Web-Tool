@@ -22,6 +22,7 @@
 #chartcontainer {
 	/* chview.js will updated chartcontainer with more specific size. 
 	 * These have to be big for initial rendering to take place. */
+	margin-top: 20px;
 	height: 1600px;
 	width: 1200px;
 	overflow:hidden;
@@ -30,28 +31,25 @@
 <script type="text/javascript">
 <?php require('chart_data_js.php'); ?>
 </script>
-<?php 
-
-if (is_array($DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND parent_id=".$drawing['parent_id']))){
-	$is_published = true;
-}else{
-	$is_published = false;
-}
-
-?>
 
 <div class="title_img"><?= ShowRoadmapHeader($drawing['parent_id']) ?></div>
 	<div class="drawing-info">
-	<?php if($drawing['show_updated']): ?>
+		<?php 
+			if($drawing['published'] && $drawing_main['show_pdf_ada_links']){
+				$show_pdf_ada_links = true;
+			} else {
+				$show_pdf_ada_links = false;
+			}
+		?>
+		<?php if($drawing['show_updated']): ?>
 		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
 		<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;">
 			Last Updated: <?= date('n-j-Y', $last_modified_time) ?>
 		</div>
-	<?php endif; ?>
-	<?php if($drawing['show_updated'] && $is_published): ?>
+		<?php endif; ?>
 		<br>
-	<?php endif; ?>
-	<?php if($is_published): ?>
+		<br>
+		<?php if($show_pdf_ada_links): ?>
 		<div id="alt-links" style="float: right;font-size:8pt;">
 			<?php
 			$schls_query = "SELECT * FROM schools WHERE organization_type IN ('CC', 'Other') ORDER BY school_name";
@@ -78,12 +76,15 @@ if (is_array($DB->SingleQuery("SELECT * FROM drawings WHERE published=1 AND pare
 				),
 				$pdf_url
 			);
+			$pdf_link = '<a target="_blank" href="' . $pdf_url . '"><i class="fa fa-file-pdf-o"></i>Printable PDF</a>';
+			$accessible_link = '<a target="_blank" href="'.$accessible_url.'"><i class="fa fa-file-text-o"></i>Text-Only</a>';
+			echo $pdf_link . '|' . $accessible_link;
 			?>
-			<a href="<?= $accessible_url ?>">Text-Only</a> | <a href="<?= $pdf_url ?>">Printable PDF</a>
+
 		</div>
-	<?php endif; ?>
+		<?php endif; ?>
 	</div>
-<div class="title_skillset" style="font-size:8pt;font-weight:bold;">
+<div class="title_skillset" style="font-size:8pt;font-weight:bold;position:absolute;top:22px;">
 	<?= l('skillset name')?>: <?= $drawing['skillset'] ?>
 </div>
 

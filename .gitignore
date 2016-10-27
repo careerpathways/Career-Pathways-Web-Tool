@@ -2,6 +2,8 @@
 
 cache/*/*
 
+common/Amazon-SES-Mailer-PHP/AWSSDKforPHP/sdk-1.5.17.1/*
+
 www/include/*.settings.php
 !www/include/default.settings.php
 

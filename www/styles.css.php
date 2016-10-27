@@ -25,6 +25,7 @@ $RED = "EE3300";
     @import url(/site-template/styles-header.css);
 <?php endif; ?>
 
+
 body
 {
   font-family: verdana, tahoma, arial, sans-serif;
@@ -1207,6 +1208,18 @@ tr.postAssuranceReport.schoolName h2 {
 	font-size: 9px;
 	margin-right: 30px;
 	text-align: right;
+}
+
+#alt-links i.fa:before {
+	margin-right: 5px;
+	display: inline-block;
+	text-decoration: none;
+}
+
+#alt-links a {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 3px;
 }
 
 #toolbar_content {

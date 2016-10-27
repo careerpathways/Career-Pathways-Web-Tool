@@ -41,7 +41,6 @@ if( $mode == 'json' ){
     }
 }
 
-
 if( KeyInRequest('id') ) {
 	if($version_table){
 		//Post Drawings and Roadmap Drawings

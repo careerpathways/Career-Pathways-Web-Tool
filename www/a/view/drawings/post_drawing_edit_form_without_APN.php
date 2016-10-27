@@ -115,7 +115,48 @@
                 </script>
             </td>
         </tr>
-	<tr>
+        <tr>
+            <th width="115" class="show-pdf-ada-links label">Show text only and PDF links</th>
+            <td>
+                <?php
+                if(isset($drawing['show_pdf_ada_links'])){
+                    $show_pdf_ada_links = filter_var($drawing['show_pdf_ada_links'], FILTER_VALIDATE_BOOLEAN); //get reliable boolean from string
+                } else {
+                    $show_pdf_ada_links = false; //default
+                }
+                ?>
+                <input type="radio" class="true" name="show_pdf_ada_links" <?= $show_pdf_ada_links === true ? 'checked="checked"':'' ?> value="true"> Yes, show "Printable PDF" at the top-right of the published drawing.
+                <br>
+                <input type="radio" class="false" name="show_pdf_ada_links" <?= $show_pdf_ada_links === false ? 'checked="checked"':'' ?> value="false"> No, do not show it.
+                <script>
+                    (function($){
+                        $('input[name="show_pdf_ada_links"]').change(function(){
+                            var _action = "disable_show_pdf_ada_links";
+                            if('true' == $(this).val()){
+                                _action = "enable_show_pdf_ada_links";
+                            }
+
+                            $j.post('/a/drawings_post.php',
+                                {
+                                	mode: 'post',
+                                    id: '<?= $drawing['id'] ?>',
+                                    action: _action
+                                }, function(data){
+                                    if(true == data.success){
+                                        $('.show-pdf-ada-links.label .notice').hide(); //in case not fully faded out yet
+                                        $('.show-pdf-ada-links.label').append('<div class="notice" style="color:green;">saved</div>');
+                                        setTimeout(function(){
+                                            $('.show-pdf-ada-links.label .notice').fadeOut(2000);
+                                        },100);
+                                    }
+                                },'json'
+                            );
+                        });
+                    }($j));
+                </script>
+            </td>
+        </tr>
+	</tr>
 <?php require('post_version_list.php');	?>
 
 		<th width="115">Delete</th>
@@ -134,7 +175,7 @@
 		<?php else: ?>
 			You can't delete this drawing because it was created by <a href="/a/users.php?id=<?= $drawing['created_by'] ?>"><?= $DB->GetValue('CONCAT(first_name," ",last_name)','users',$drawing['created_by']) ?></a>. Contact the creator of the drawing or any <a href="/a/users.php">Admin</a> user within your organization to delete this drawing.<br><br>
 			Note: Most of the time, you're trying to delete a version. However, there is no need to delete versions, as the Web Tool is designed to maintain archival records of your POST drawings.
-		<?php endif: ?>
+		<?php endif; ?>
 		</td>
 	</tr>
 </table>
