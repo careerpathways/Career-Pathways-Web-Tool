@@ -25,7 +25,6 @@ $RED = "EE3300";
     @import url(/site-template/styles-header.css);
 <?php endif; ?>
 
-
 body
 {
   font-family: verdana, tahoma, arial, sans-serif;
