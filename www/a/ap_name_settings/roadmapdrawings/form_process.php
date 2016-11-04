@@ -1,4 +1,6 @@
 <?php
+require_once(DIRNAME(DIRNAME(__FILE__)).DIRECTORY_SEPARATOR.'APN_Tools.php');
+
 ini_set("auto_detect_line_endings", true);
 $file = $_FILES["userfile"]["tmp_name"];
 if(!file_exists($file)){ die('Our apologies, there appears to be a problem uploading the file. Please try again or contact your system administrator.'); }
@@ -10,16 +12,28 @@ $report = array(
 	'new_programs' => array(),
 	'skipped' => array()
 );
+//update the exceptions and exclusions in the DB
+$DB->SingleQuery("UPDATE `apn_import` SET `value`=\"$_REQUEST['exceptions']\" WHERE type = \"roadmap\" AND field = \"exceptions\"");
+$DB->SingleQuery("UPDATE `apn_import` SET `value`=\"$_REQUEST['exclusions']\" WHERE type = \"roadmap\" AND field = \"exclusions\"");
+
+
+$apn_exceptions = array_filter(
+	preg_split(
+		"/[\n\s]/",
+		$_REQUEST['exceptions']
+	)
+);
+
+$apn_excluded_terms = $_REQUEST['exclusions'];
 
 //expects a one-row csv with a very particular format.
 //parse the csv, build clean data
 $row = null;
 do {
     if ($row) {
-
-		$title = $row[1]; //will be used as approved program name.
+		//will be used as approved program name.
+		$title = APN_Tools::build_roadmap_APN($row[1], $apn_exceptions, $apn_excluded_terms);
 		$career_area = $row[8]; //will be used for skillset.
-
 		$skillset_id = get_skillset_id($career_area);
 
 		//only add rows to the database if we have a valid skillset ID
@@ -39,9 +53,9 @@ $existing_programs = $DB->MultiQuery('SELECT * FROM programs WHERE `use_for_road
 
 //Insert into database if new approved program name.
 foreach ($data as $key => $value) {
-	$exists = compare($value);
+	$program_exists = apn_exsists($value["approved_program_name"]);
 
-	if($exists){
+	if($program_exists){
 		array_push($report['skipped'], $value);
 	} else {
 		if($value['approved_program_name']){
@@ -58,11 +72,11 @@ foreach ($data as $key => $value) {
 	}
 }
 
-function compare($value){
+function apn_exsists($apn){
 	global $existing_programs;
 	foreach($existing_programs as $ep){
-		if(strtolower($ep["title"]) == strtolower($value["approved_program_name"])){
-			return $ep['id'];
+		if(strtolower($ep["title"]) == strtolower($apn)){
+			return true;
 		}
 	}
 	return false;

@@ -39,6 +39,12 @@ CADD
 CTE
 cte
 	    </textarea>
+	    <br>
+	    <br>
+	    The text on these lines will be excluded from APNs (one per line):
+	    <textarea name="exclusions">
+(SW)
+	    </textarea>
 	</form>
 	<br>
 	<br>

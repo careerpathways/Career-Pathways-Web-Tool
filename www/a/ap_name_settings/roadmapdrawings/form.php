@@ -23,12 +23,29 @@ if(!$SITE->hasFeature('oregon_skillset')){
 	<p>New Approved Program Names will be added to the system for Roadmap Drawings. Duplicates will be ignored.</p>
 	<p><em>Important: Please upload a .csv file. If your file is an excel spreadsheet (.xls or .xlsx) please save it as a .csv with your spreadsheet application before uploading here.<br />For help with Microsoft Excel, <a href="http://office.microsoft.com/en-us/excel-help/import-or-export-text-txt-or-csv-files-HP010099725.aspx#BMexport">see this article</a>. Instructions for Libre Office can be <a href="https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files">found here</a>.</em></p>
 	<?php /* The data encoding type, enctype, MUST be specified as below */ ?>
+	<?php
+		$text_fields = $DB->MultiQuery('SELECT * FROM `apn_import` WHERE type LIKE "roadmap"');
+		foreach ($text_fields as $tf) {
+			if ($tf['field'] == 'exceptions'){
+				$apn_exceptions = trim($tf['value']);
+			} elseif ($tf['field'] == 'exclusions') {
+				$apn_exclusions = trim($tf['value']);
+			}
+		}
+	?>
 	<form enctype="multipart/form-data" action="" method="POST">
 	    File: <input name="userfile" type="file" />
 	    <br>
 	    <br>
 		<input type="hidden" name="submitted" />
 	    <input type="submit" value="Upload File" />
+	    <br>
+	    These acronyms will not be proper-cased on import (one per line):
+	    <textarea name="exceptions"><?= $apn_exceptions ?></textarea>
+	    <br>
+	    <br>
+	    The text on these lines will be excluded from APNs (one per line):
+	    <textarea name="exclusions"><?= $apn_exclusions ?></textarea>
 	</form>
 	<br>
 	<br>

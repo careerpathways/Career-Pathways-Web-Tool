@@ -1,6 +1,17 @@
-<?php
-require(DIRNAME(DIRNAME(__FILE__)).DIRECTORY_SEPARATOR.'propcase.php');
+<?php;
+require_once(DIRNAME(DIRNAME(__FILE__)).DIRECTORY_SEPARATOR.'APN_Tools.php');
+
 ini_set("auto_detect_line_endings", true);
+
+//break up the exception list into an array and get rid of the empty strings
+$apn_exceptions = array_filter(
+	preg_split(
+		"/[\n\s]/",
+		$_REQUEST['exceptions']
+	)
+);
+
+$apn_excluded_terms = array('(SW)');
 
 $file = $_FILES["userfile"]["tmp_name"];
 if(!file_exists($file)){ die('Our apologies, there appears to be a problem uploading the file. Please try again or contact your system administrator.'); }
@@ -17,20 +28,24 @@ $report = array(
 //parse the csv, build clean data
 $row = null;
 do {
-    if ($row) {
-    	if(is_top($row)){
-    		$row2 = fgetcsv($handle); //our data exists across two rows
-    		$program_title = $row[5];
-    		$secondary_course_name = $row[7];
-    		$cluster_title = $row2[5]; //will be used for skillset. Need to map down to the 6 official skillsets.
+    if ($row && is_top($row)){
+		$row2 = fgetcsv($handle); //our data exists across two rows
+		$program_title = $row[5];
+		$secondary_course_name = $row[7];
+		$cluster_title = $row2[5]; //will be used for skillset. Need to map down to the 6 official skillsets.
 
-    		$approved_program_name = build_approved_program_name($program_title, $secondary_course_name);
-			$skillset_id = get_skillset_id($cluster_title);
-			if(strlen($approved_program_name) > 5 && $skillset_id > 0){
-				push_data($approved_program_name, $skillset_id);
-			}
-    	}
-    }
+		$approved_program_name = APN_Tools::build_post_APN(
+			$program_title,
+			$secondary_course_name,
+			$apn_exceptions,
+			$apn_excluded_terms
+		);
+
+		$skillset_id = get_skillset_id($cluster_title);
+		if(strlen($approved_program_name) > 5 && $skillset_id > 0){
+			push_data($approved_program_name, $skillset_id);
+		}
+	}
 } while ($row = fgetcsv($handle));
 
 if(count($data) < 1){
@@ -47,9 +62,6 @@ foreach ($data as $key => $value) {
 		array_push($report['skipped'], $value);
 	} else {
 		if($value['approved_program_name']){
-echo $value['approved_program_name'] . '<br>';
-echo propcase($value['approved_program_name']) . '<br><br>';
-continue;
 			array_push($report['new_programs'], $value);
 			$result = $DB->Insert('programs',
 			    array(
@@ -61,16 +73,6 @@ continue;
 			);
 		}
 	}
-}
-
-function build_approved_program_name($program_title, $secondary_course_name) {
-	$excluded_terms = array('(SW)');
-	$approved_program_name = $program_title . " - " . $secondary_course_name;
-	foreach ($excluded_terms as $term) {
-		$approved_program_name = str_replace($term, "", $approved_program_name);
-	}
-	$approved_program_name = str_replace("  ", " ", $approved_program_name); //remove any double spaces that may occur
-	return $approved_program_name;
 }
 
 function get_skillset_id($cluster_title) {
