@@ -8,6 +8,7 @@
     <?php if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE . 'styles-header.css')): ?>
 	    <link rel="stylesheet" type="text/css" href="<?= getBaseUrl(); ?>/site-template/styles-header.css" />
 	<?php endif; ?>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" media="screen">
   </head>
   <body>
 

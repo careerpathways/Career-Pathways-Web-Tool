@@ -7,7 +7,15 @@ $_REQUEST['d'] = CleanDrawingCode($_REQUEST['d']);
 if( KeyInRequest('version_id') ) {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.id as parent_id, drawing_main.last_modified, drawing_main.show_updated, drawing_main.name, school_id, published, frozen, sk.title AS skillset, program_id
+			drawing_main.id as parent_id,
+            drawing_main.last_modified,
+            drawing_main.show_updated,
+            drawing_main.show_pdf_ada_links,
+            drawing_main.name,
+            school_id,
+            published,
+            frozen,
+            sk.title AS skillset, program_id
 		FROM drawing_main
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
@@ -22,7 +30,16 @@ if( KeyInRequest('version_id') ) {
 } else if( KeyInRequest('v') ) {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.id as parent_id, drawing_main.last_modified, drawing_main.show_updated, drawing_main.name, school_id, published, frozen, sk.title AS skillset, program_id
+			drawing_main.id as parent_id,
+            drawing_main.last_modified,
+            drawing_main.show_updated,
+            drawing_main.show_pdf_ada_links,
+            drawing_main.name,
+            school_id,
+            published,
+            frozen,
+            sk.title AS skillset,
+            program_id
 		FROM drawing_main
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
@@ -36,18 +53,25 @@ if( KeyInRequest('version_id') ) {
 
 } else if (KeyInRequest('id')) {
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
-			drawing_main.id as parent_id, drawing_main.last_modified, drawing_main.show_updated, drawing_main.name, school_id, published, frozen, sk.title AS skillset, program_id
+			drawing_main.id as parent_id,
+            drawing_main.last_modified,
+            drawing_main.show_updated,
+            drawing_main.show_pdf_ada_links,
+            drawing_main.name,
+            school_id,
+            published,
+            frozen,
+            sk.title AS skillset, program_id
 		FROM drawing_main
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE drawing_main.id='".$DB->Safe($_REQUEST['id'])."'
-		AND published=1 
+		AND published=1
                 AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {
 		drawing_not_found('roadmap', $_REQUEST['id']);
 	}
-
 } else {
 
 	$drawing = $DB->SingleQuery("SELECT drawings.id AS id,
@@ -56,7 +80,7 @@ if( KeyInRequest('version_id') ) {
 		JOIN drawings ON drawings.parent_id=drawing_main.id
 		LEFT JOIN oregon_skillsets AS sk ON drawing_main.skillset_id = sk.id
 		WHERE code='".$DB->Safe($_REQUEST['d'])."'
-		AND published=1 
+		AND published=1
                 AND drawings.deleted=0");
 
 	if( !is_array($drawing) ) {

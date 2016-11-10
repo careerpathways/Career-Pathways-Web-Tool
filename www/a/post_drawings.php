@@ -109,7 +109,7 @@ if( KeyInRequest('drawing_id') ) {
 				$DB->Query("UPDATE post_drawings SET published=0 WHERE id=".$drawing_id);
 			}
 		}
-		
+
 		header('Location: '.$_SERVER['PHP_SELF'].'?action=drawing_info&id='.$drawing['parent_id']);
 		die();
 
@@ -132,10 +132,10 @@ if( KeyInRequest('drawing_id') ) {
 
 		if( Request('delete') == 'delete' ) {
 			$drawing_main_id = intval($_REQUEST['id']);
-			
+
 			if( CanDeleteDrawing($drawing_main_id) ) {
 				// when deleting the entire drawing (from drawing_main) actually remove the records
-						
+
 				$versions = $DB->MultiQuery('SELECT id FROM post_drawings WHERE parent_id='.$drawing_main_id);
 				foreach( $versions as $v )
 				{
@@ -169,7 +169,7 @@ if( KeyInRequest('drawing_id') ) {
 			$school_id = $_REQUEST['school_id'];
 		else
 			$school_id = $_SESSION['school_id'];
-		
+
 		if( Request('id') ) {
 			// update requests are only handled through drawings_post.php now.
 		} else {
@@ -186,7 +186,7 @@ if( KeyInRequest('drawing_id') ) {
 				$post->program_id = Request('program_id'); //approved program name id
 			} else {
 				$post->name = Request('name');
-			}	
+			}
 			$post->code = CreateDrawingCodeFromTitle($content['name'],$school_id);
 			$post->sidebar_right = Request('degree_type');
 			$post->createEmptyChart();
@@ -283,7 +283,7 @@ function showVersion() {
 
 
 
-	if( $readonly == false ) 
+	if( $readonly == false )
 	{
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery-ui.js';
 		$TEMPLATE->addl_scripts[] = '/common/jquery/jquery.base64.js';
@@ -309,51 +309,53 @@ function showVersion() {
 		$TEMPLATE->toolbar_function = "ShowReadonlyHelp";
 	}
 
-	
+
 	PrintHeader();
-	
+
 	$post = POSTChart::Create($drawing['id']);
 
 	echo '<div style="margin-bottom: 14px">';
 	echo '<div class="title_img">' . ShowPostHeader($drawing['parent_id']) . '</div>';
 	?>
-	<?php /* when clicking the little green tree icon next to a post drawing version */ ?>
-	<div class="drawing-info">
-	<?php if($drawing['published'] && $drawing['show_updated']): ?>
-		<?php $last_modified_time = strtotime($drawing['last_modified']); ?>
-		<div class="last_modified" style="float: right;font-size:8pt;font-weight:bold;padding-right:5px;">Last Updated: <?= date('n-j-Y', $last_modified_time) ?></div>
-	<?php endif; ?>
-		<br>
-		<br>
-	<?php if($drawing['published'] && $drawing['show_pdf_ada_links']): ?>
-		<div id="alt-links" style="float: right;font-size:8pt;">
-		<?php
-			$schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');
 
-			$pdf_url = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/post/$$/%%.pdf';
-			$pdf_url = str_replace(
-				array('$$','%%'),
-				array(
-					$drawing['parent_id'],
-					CleanDrawingCode(
-						GetDrawingName($drawing['parent_id'], 'post')
-					)
-				),
-				$pdf_url
-			);
-		?>
-			<a href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i>Printable PDF</a>
-		</div>
-	<?php endif; ?>
-	</div>
-	<?php
-	if( $drawing['skillset'] )
-	{
-		echo '<div id="skillset" style="font-size:8pt;font-weight:bold;position:absolute;top:52px;">';
-			echo l('skillset name') . ': ' . $drawing['skillset'];
-		echo '</div>';
-	}
-	echo '</div>';
+	<?php /* when clicking the little green tree icon next to a post drawing version */ ?>
+    <style>
+    .title_skillset {
+        font-size:8pt;
+        font-weight:bold;
+        float:left;
+    }
+    .drawing-info {
+        font-size:8pt;
+        font-weight: bold;
+        text-align:right;
+        padding: 0 3px 10px 3px;
+    }
+    .drawing-info a {
+        color: #001133;
+        text-decoration: none;
+    }
+    </style>
+    <div class="drawing-info">
+        <div class="title_skillset">
+            <?= l('skillset name')?>: <?= $drawing['skillset'] ?>
+        </div>
+
+        <?php if ($drawing['show_updated']): ?>
+            <?php $last_modified_time = strtotime($drawing['last_modified']); ?>
+            <div class="last_modified">
+                Last Updated: <?= date('n-j-Y', $last_modified_time) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($drawing['show_pdf_ada_links']): ?>
+        <div class="alt-links">
+            <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <?php
 		echo '<div id="canvas">';
 		$post->display();
 		echo '</div> <!-- end canvas -->';
@@ -426,7 +428,7 @@ function copyVersion($version_id) {
 				$post->program_id = Request('program_id');
 				$post->skillset_id = Request('skillset_id');
 			} else {
-				// Take from the drawing we're copying. 
+				// Take from the drawing we're copying.
 				$post->name = $drawing_main['name'];;
 				$post->program_id = $drawing_main['program_id'];
 				$post->skillset_id = $drawing_main['skillset_id'];
@@ -453,7 +455,7 @@ global $DB, $TEMPLATE;
 
 	$TEMPLATE->AddCrumb('', 'POST Drawing Properties');
 	$TEMPLATE->toolbar_function = "ShowSymbolLegend";
-	
+
 	PrintHeader();
 
 	$drawing = $DB->SingleQuery("SELECT post_drawing_main.*
@@ -485,13 +487,13 @@ function ShowDrawingForm($id) {
 
 function showConfigureRowColForm($version_id) {
 	global $DB;
-	
+
 	$headerState = $DB->SingleQuery("SELECT header_state FROM post_drawings WHERE id = ". $version_id ." ");
 	$footerState = $DB->SingleQuery("SELECT footer_state FROM post_drawings WHERE id = ". $version_id ." ");
 
-	// Cancel any changes that may have been left open if the window was closed without hitting "cancel" previously	
+	// Cancel any changes that may have been left open if the window was closed without hitting "cancel" previously
 	cancelRowsAndColumnChanges($version_id);
-	
+
 	// Pre-load the header/footer state
 	$DB->Query('UPDATE post_drawings SET header_state_preview=header_state, footer_state_preview=footer_state WHERE id = ' . $version_id);
 
@@ -503,7 +505,7 @@ function showConfigureRowColForm($version_id) {
 		$terms = array('M'=>'Summer', 'F'=>'Fall', 'W'=>'Winter', 'S'=>'Spring', 'U'=>'Summer');
 		$quarters = array(1=>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	}
-	
+
 	?>
 	<div style="margin-left:25px; margin-right:25px; background-color: white; border: 1px #777777 solid"><div class="postGreyboxContent">
 	<style type="text/css">
@@ -539,7 +541,7 @@ function showConfigureRowColForm($version_id) {
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
 			bindDeleteButtons();
-			
+
 			jQuery("#include_footer").change(function(){
 				var action;
 				var id = <?= $version_id ?>;
@@ -553,7 +555,7 @@ function showConfigureRowColForm($version_id) {
 						updateMini();
 					}, "HTML");
 			});
-			
+
 			jQuery("#include_header").change(function(){
 				var action;
 				var id = <?= $version_id ?>;
@@ -567,7 +569,7 @@ function showConfigureRowColForm($version_id) {
 						updateMini();
 					}, "HTML");
 			});
-			
+
 			jQuery(".addRowLink").click(function(){
 				var type = jQuery(this).attr("id").split("_")[1];
 				var data = {action: "add_row", id: <?= $version_id ?>};
@@ -595,7 +597,7 @@ function showConfigureRowColForm($version_id) {
 					default:
 						return false;
 				}
-				
+
 				jQuery.post("/a/post_drawings.php", data,
 					function(data){
 						jQuery("#rowList").html(data);
@@ -603,7 +605,7 @@ function showConfigureRowColForm($version_id) {
 						updateMini();
 					}, "HTML");
 			});
-			
+
 			jQuery(".colButton").click(function(){
 				var mode = jQuery(this).attr("id");
 				jQuery.post("/a/post_drawings.php", {
@@ -612,9 +614,9 @@ function showConfigureRowColForm($version_id) {
 				}, function(data){
 					jQuery("#miniBlockDiagram").html(data);
 				}, "HTML");
-			
+
 			});
-			
+
 		});
 
 		function updateMini() {
@@ -639,10 +641,10 @@ function showConfigureRowColForm($version_id) {
 				}, "HTML");
 			})
 		}
-		
+
 		function saveConfigureDrawingForm() {
 			$("#config_submit, #config_cancel").attr("disabled","disabled");
-			
+
 			jQuery.post("/a/post_drawings.php", {
 				action: "commit_changes",
 				id: <?= $version_id ?>
@@ -653,7 +655,7 @@ function showConfigureRowColForm($version_id) {
 
 		function cancelConfigureDrawingForm() {
 			$("#config_submit, #config_cancel").attr("disabled","disabled");
-			
+
 			jQuery.post("/a/post_drawings.php", {
 				action: "cancel_changes",
 				id: <?= $version_id ?>
@@ -679,16 +681,16 @@ function showConfigureRowColForm($version_id) {
 				<input type="button" class="colButton" value="Add Column" id="add_col" />
 			</tr></table>
 		</div>
-		
+
 		<div style="margin-top:20px; margin-bottom:10px">
 		<div class="rowConfigHead" style="margin-bottom:3px">Block Diagram</div>
 			<div id="miniBlockDiagram"><?php $post->displayMini(); ?></div>
 		</div>
-		
+
 
 	</td>
 	<td valign="top" style="padding-left:30px">
-		
+
 		<div class="rowConfigHead">Add Row</div>
 		<table id="addRowTable">
 		<?php if( $post->type == 'CC' ) { ?>
@@ -730,7 +732,7 @@ function showConfigureRowColForm($version_id) {
 			</tr>
 		<?php } ?>
 		</table>
-		
+
 		<div id="noteboxes" style="margin-top: 120px">
 			<input type="checkbox" id="include_header" name="include_header" <?php if($headerState['header_state'] == 1) { echo 'checked="checked"'; } ?> /><label for="include_header">Include header notes?</label><br/>
 			<input type="checkbox" id="include_footer" name="include_footer" <?php if($footerState['footer_state'] == 1) { echo 'checked="checked"'; } ?> /><label for="include_footer">Include footer notes?</label>
@@ -738,7 +740,7 @@ function showConfigureRowColForm($version_id) {
 
 	</td>
 	</tr></table>
-	
+
 	<div style="text-align:right; margin-right: 10px;">
 		<input type="button" onclick="saveConfigureDrawingForm()" value="Save" class="submit" id="config_submit" />
 		<input type="button" onclick="cancelConfigureDrawingForm()" value="Cancel" class="submit" id="config_cancel" />
@@ -767,7 +769,7 @@ function showRowsInDrawing(&$post) {
 
 function saveRowsAndColumnChanges($id) {
 	global $DB;
-	
+
 	$version_id = intval($id);
 	if( CanEditVersion($version_id) )
 	{
@@ -775,20 +777,20 @@ function saveRowsAndColumnChanges($id) {
 		$DB->Query('DELETE FROM post_row WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
 		$DB->Query('DELETE FROM post_cell WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
 		$DB->Query('DELETE FROM post_col WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="delete"');
-		
+
 		// Mark all added items as committed
 		$DB->Query('UPDATE post_row SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
 		$DB->Query('UPDATE post_cell SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
 		$DB->Query('UPDATE post_col SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
-		
+
 		// Commit the header/footer state changes
-		$DB->Query('UPDATE post_drawings SET header_state=header_state_preview, footer_state=footer_state_preview WHERE id = ' . $version_id);	
+		$DB->Query('UPDATE post_drawings SET header_state=header_state_preview, footer_state=footer_state_preview WHERE id = ' . $version_id);
 	}
 }
 
 function cancelRowsAndColumnChanges($id) {
 	global $DB;
-	
+
 	$version_id = intval($id);
 	if( CanEditVersion($version_id) )
 	{
@@ -796,7 +798,7 @@ function cancelRowsAndColumnChanges($id) {
 		$DB->Query('DELETE FROM post_row WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
 		$DB->Query('DELETE FROM post_cell WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
 		$DB->Query('DELETE FROM post_col WHERE drawing_id='.$id.' AND edit_txn=1 AND edit_action="add"');
-		
+
 		// Un-mark all deleted items
 		$DB->Query('UPDATE post_row SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
 		$DB->Query('UPDATE post_cell SET edit_txn=0, edit_action=null WHERE drawing_id='.$id);
@@ -806,14 +808,14 @@ function cancelRowsAndColumnChanges($id) {
 
 function configureDeleteCol() {
 	global $DB;
-	
+
 	$version_id = Request('id');
 	if( CanEditVersion($version_id) )
 	{
-		$col = $DB->SingleQuery('SELECT * FROM post_col 
-			WHERE drawing_id='.$version_id.' 
+		$col = $DB->SingleQuery('SELECT * FROM post_col
+			WHERE drawing_id='.$version_id.'
 				AND (edit_txn=0 OR (edit_txn=1 AND edit_action="add"))
-			ORDER BY num DESC 
+			ORDER BY num DESC
 			LIMIT 1');
 		$DB->Query('UPDATE post_cell SET edit_txn = 1, edit_action = "delete" WHERE col_id='.$col['id']);
 		$DB->Query('UPDATE post_col SET edit_txn = 1, edit_action = "delete" WHERE id='.$col['id']);
@@ -826,13 +828,13 @@ function configureDeleteCol() {
 
 function configureAddCol() {
 	global $DB;
-	
+
 	$version_id = Request('id');
 	if( CanEditVersion($version_id) )
 	{
 		$last_col = $DB->SingleQuery('SELECT * FROM post_col WHERE drawing_id='.$version_id.' ORDER BY num DESC LIMIT 1');
 		$col_id = $DB->Insert('post_col', array(
-			'drawing_id'=>$version_id, 
+			'drawing_id'=>$version_id,
 			'title'=>'',
 			'edit_txn'=>1,
 			'edit_action'=>'add',
@@ -842,14 +844,14 @@ function configureAddCol() {
 		$rows = $DB->MultiQuery('SELECT id FROM post_row WHERE drawing_id='.$version_id);
 		foreach( $rows as $r )
 			$DB->Insert('post_cell', array(
-				'drawing_id'=>$version_id, 
-				'row_id'=>$r['id'], 
+				'drawing_id'=>$version_id,
+				'row_id'=>$r['id'],
 				'col_id'=>$col_id,
 				'edit_txn'=>1,
 				'edit_action'=>'add'
 			));
 	}
-	
+
 	// TODO
 	$post = POSTChart::create($version_id, TRUE);
 	$post->displayMini();
@@ -857,7 +859,7 @@ function configureAddCol() {
 
 function configureDeleteRow() {
 	global $DB;
-	
+
 	$row_id = intval(Request('row_id'));
 	$version_id = $DB->GetValue('drawing_id', 'post_row', Request('row_id'));
 	if( CanEditVersion($version_id) )
@@ -913,24 +915,24 @@ function configureAddRow() {
 			default:
 				return FALSE;
 		}
-		
+
 		$row_data['edit_txn'] = 1;
 		$row_data['edit_action'] = 'add';
 
 		// create the row record and all the blank cells
 		$row_id = $DB->Insert('post_row', $row_data);
-		
+
 		$cols = $DB->MultiQuery('SELECT id FROM post_col WHERE drawing_id='.$id);
 		foreach( $cols as $c )
 		{
 			$DB->Insert('post_cell', array(
-				'drawing_id'=>$id, 
-				'row_id'=>$row_id, 
+				'drawing_id'=>$id,
+				'row_id'=>$row_id,
 				'col_id'=>$c['id'],
 				'edit_txn'=>1,
 				'edit_action'=>'add'
 			));
-		}		
+		}
 		// TODO
 		$post = POSTChart::create($id, TRUE);
 		showRowsInDrawing($post);
