@@ -248,7 +248,7 @@ chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
 
 
 #install pspell for tinymce spell-checker support
-apt-get install libpspell-dev 
+apt-get install libpspell-dev
 apt-get install php5-pspell
 apt-get install aspell-en
 
@@ -260,6 +260,16 @@ apt-get install aspell-en
 #TODO update paths for washington:
 #mkdir -p /home/wwwcaree/public_html/cache/pdf/
 #chmod -R 777 /home/wwwcaree/public_html/
+
+echo '***************************** Installing Composer and Dependencies *****************************'
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+composer install --working-dir=/home/project/cpwt_oregon_template/core
+
+
+echo '***************************** Installing PHPUnit *****************************'
+wget https://phar.phpunit.de/phpunit-4.8.0.phar
+chmod +x phpunit-4.8.0.phar
+mv phpunit-4.8.0.phar /usr/bin/phpunit
 
 # Install Pear requirements
 pear install Text_Wiki

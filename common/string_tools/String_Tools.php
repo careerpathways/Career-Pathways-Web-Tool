@@ -53,8 +53,8 @@ class String_Tools
 				$match = false;
 				foreach ($exceptions as $exception) {
 					if (strtolower($word) == strtolower($exception)){
-						$words[$i] = strtoupper($exception);
 						$match = true;
+                        break;
 					}
 				}
 				if (!$match){
@@ -75,7 +75,7 @@ class String_Tools
 	 * @return string         string with only single spaces.
 	 */
 	public static function remove_multi_space($string){
-        $string = preg_replace("/ +/", " ", $string);
+        $string = preg_replace("/\s+/", " ", $string);
         return $string;
     }
 

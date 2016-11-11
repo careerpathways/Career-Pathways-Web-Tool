@@ -22,6 +22,15 @@ class APN_ToolsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Program Title - Secondary Course Name", $result, $err_message);
     }
 
+    public function test_build_post_APN_case_doesnt_convert_exceptions(){
+        $exceptions = array("ADV", "AG", "CAD", "CADD", "CTE", "and");
+        $excluded_terms = array();
+        //Proper casing
+        $err_message = 'Lowercase $exception illegally transformed to uppercase.';
+        $result = APN_Tools::build_post_APN("Human and Social Services", "Second", $exceptions, $excluded_terms);
+        $this->assertEquals("Human and Social Services - Second", $result, $err_message);
+    }
+
     public function test_build_post_APN_exceptions(){
         $exceptions = array("ADV", "AG", "CAD", "CADD", "CTE");
         $excluded_terms = array('(SW)');
@@ -147,4 +156,3 @@ class APN_ToolsTest extends PHPUnit_Framework_TestCase
     }
 
 }
-

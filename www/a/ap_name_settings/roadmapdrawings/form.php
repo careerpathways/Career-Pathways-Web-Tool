@@ -15,7 +15,7 @@ if(!$SITE->hasFeature('oregon_skillset')){
 }
 ?>
 
-<?php if(isset($_POST['submitted'])):
+<?php if(isset($_REQUEST['submitted'])):
 	require('form_process.php'); ?>
 <?php else: ?>
 
@@ -24,7 +24,7 @@ if(!$SITE->hasFeature('oregon_skillset')){
 	<p><em>Important: Please upload a .csv file. If your file is an excel spreadsheet (.xls or .xlsx) please save it as a .csv with your spreadsheet application before uploading here.<br />For help with Microsoft Excel, <a href="http://office.microsoft.com/en-us/excel-help/import-or-export-text-txt-or-csv-files-HP010099725.aspx#BMexport">see this article</a>. Instructions for Libre Office can be <a href="https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files">found here</a>.</em></p>
 	<?php /* The data encoding type, enctype, MUST be specified as below */ ?>
 	<?php
-		$text_fields = $DB->MultiQuery('SELECT * FROM `apn_import` WHERE type LIKE "roadmap"');
+		$text_fields = $DB->MultiQuery('SELECT * FROM `apn_import` WHERE type="roadmap"');
 		foreach ($text_fields as $tf) {
 			if ($tf['field'] == 'exceptions'){
 				$apn_exceptions = trim($tf['value']);
@@ -33,7 +33,7 @@ if(!$SITE->hasFeature('oregon_skillset')){
 			}
 		}
 	?>
-	<form enctype="multipart/form-data" action="" method="POST">
+	<form enctype="multipart/form-data" action="?dryrun=true" method="POST">
 	    File: <input name="userfile" type="file" />
 	    <br>
 	    <br>
