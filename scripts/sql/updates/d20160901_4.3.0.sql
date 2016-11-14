@@ -10,11 +10,9 @@ UPDATE `post_drawing_main` SET `show_pdf_ada_links` = false;
 
 CREATE TABLE IF NOT EXISTS `apn_import` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `type` VARCHAR(50) DEFAULT NULL,
-  `field` VARCHAR(50) DEFAULT NULL,
+  `field` VARCHAR(50) UNIQUE DEFAULT NULL,
   `value` LONGTEXT DEFAULT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `unique_index`(`type`, `field`)
+  PRIMARY KEY  (`id`)
 );
 
 /* LL #120235713 ***********END**************/

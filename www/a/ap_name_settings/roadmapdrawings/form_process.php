@@ -1,6 +1,6 @@
 <?php
-// Handles file upload logic
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'common.php');
+// Handles file upload logic, etc
+require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'form_process_common.php');
 
 $data = array(); //after parsing the csv, this array holds the structured data
 
@@ -9,33 +9,13 @@ $report = array(
     'skipped' => array(),
 );
 
-// After user submits, save/update exception list that they've entered.
-// Do not run this on the non-dryrun pass, since these values aren't POSTed by
-// the form.
-if($isDryrun){
-    echo 'Saving exceptions';
-    //update the exceptions and exclusions in the DB
-    $exceptions = $DB->safe($_POST['exceptions']);
-    $exclusions = $DB->safe($_POST['exclusions']);
-    // TODO insert if new...
-    $DB->SingleQuery("UPDATE `apn_import` SET `value`=\"$exceptions\" WHERE type = \"roadmap\" AND field = \"exceptions\"");
-    $DB->SingleQuery("UPDATE `apn_import` SET `value`=\"$exclusions\" WHERE type = \"roadmap\" AND field = \"exclusions\"");
-}
-
-// Query for these, even if we've just saved them during dry-run.
-$exceptions = $DB->SingleQuery('SELECT * FROM `apn_import` WHERE `type`="roadmap" and `field`="exceptions"');
-$exclusions = $DB->SingleQuery('SELECT `value` FROM `apn_import` WHERE `type`="roadmap" and `field`="exclusions"');
-var_dump($exceptions);
-$apn_exceptions = explode("\n", $exceptions);
-$apn_exclusions = explode("\n", $exclusions);
-
 //expects a one-row csv with a very particular format.
 //parse the csv, build clean data
 $row = null;
 do {
     if ($row) {
         //will be used as approved program name.
-        $title = APN_Tools::build_roadmap_APN($row[1], $apn_exceptions, $apn_excluded_terms);
+        $title = APN_Tools::build_roadmap_APN($row[1], $apn_exceptions, array()); //not supporting excluded terms right now
         $career_area = $row[8]; //will be used for skillset.
         $skillset_id = get_skillset_id($career_area);
 
@@ -124,67 +104,6 @@ function push_data($title, $skillset_id)
         'skillset_id' => $skillset_id,
     );
 }
-
 ?>
 
-<?php if ($isDryrun): ?>
-    <h3>Proceed?</h3>
-    <a href="?dryrun=false&submitted=true&file=<?= urlencode($file) ?>">Yes</a>
-    <br />
-    <br />
-    <div>
-        <h4>Exceptions</h4>
-        <?php implode($apn_exceptions, ', '); ?>
-    </div>
-    <div>
-        <h4>Exclusions</h4>
-        <?php implode($apn_exclusions, ', '); ?>
-    </div>
-
-    <h3>New Programs</h3>
-    <div>
-        <em><?= count($report['new_programs']) ?> to be imported.</em>
-    </div>
-    <br />
-    <?php if(count($report['new_programs']) > 0): ?>
-        <?php foreach($report['new_programs'] as $np): ?>
-            <div>
-                <?= $np['approved_program_name'] ?>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div>
-            No new (unique) program names found.
-        </div>
-    <?php endif;?>
-
-    <br />
-    <br />
-
-    <h3>Skipping</h3>
-    <div>
-        <em><?= count($report['skipped']) ?> skipped because they'd be duplicates.</em>
-    </div>
-    <br />
-    <?php if(count($report['skipped']) > 0): ?>
-        <?php foreach($report['skipped'] as $np): ?>
-            <div>
-                <?= $np['approved_program_name'] ?>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div>
-            Not skipping any programs.
-        </div>
-    <?php endif;?>
-
-    <?php //print_r($data);?>
-
-<?php else: ?>
-
-    <h3>File Uploaded Successfully!</h3>
-    <p>Number of new Approved Program Names: <?php echo count($report['new_programs']); ?></p>
-    <p>Number skipped because they already exist: <?php echo count($report['skipped']); ?></p>
-    <p><a href="/">Return to home page &gt;&gt;</a></p>
-
-<?php endif; ?>
+<?php require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'form_process_proceed.php'); ?>
