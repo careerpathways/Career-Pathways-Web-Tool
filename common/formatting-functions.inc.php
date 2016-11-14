@@ -1,5 +1,5 @@
 <?php
-
+include("simple_html_dom.php");
 
 function ShowLoginForm($email="") {
 global $SITE;
@@ -54,12 +54,12 @@ function showPublishForm($mode)
 		$version = $DB->SingleQuery('SELECT * FROM post_drawings WHERE id='.$version_id);
 	else
 		$version = $DB->SingleQuery('SELECT * FROM drawings WHERE id='.$version_id);
-	
+
 	?>
 	<div style="border: 1px solid rgb(119, 119, 119); margin-left: 15px; margin-right: 15px; background-color: white; padding: 15px;">
 	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-		<p>Are you sure you want to <?=$version['published'] == 0?'':'un'?>publish this version? 
-			<?= $version['published'] == 0 ? 
+		<p>Are you sure you want to <?=$version['published'] == 0?'':'un'?>publish this version?
+			<?= $version['published'] == 0 ?
 				'Any web pages that are embedding this drawing will automatically be updated to this version.' :
 				'This drawing will no longer be visible in any web pages that embed it.' ?>
 		</p>
@@ -133,35 +133,60 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $read
 function SearchForOLMISLinks($content)
 {
 	global $DB;
-	
+
 	// 1. parse $content for olmis urls
-	// 2. for any ids that are not in the database, parse the olmis page to find the job title
+	// 2. for any ids that are not in the database, parse the drawing content to
+    //    find the job title.
 	// 3. return an array of IDs
 	//e.g. https://www.qualityinfo.org/jc-oprof/?at=1&amp;t1=434171~434171~4101000000~0
 	$soc = array();
 	if( preg_match_all('/(qualityinfo\.org|olmis\.emp\.state\.or\.us)[^"]*t1=[^~]+~([0-9]{6})~/', $content, $matches) )
-	foreach( $matches[2] as $m )
+	foreach( $matches[2] as $m ) {
 		if( !in_array($m, $soc) )
 		{
 			$soc[] = $m;
 		}
+    }
 
+    // Add all OLMIS titles that don't yet exist in the olmis_codes table.
+    // #118325745 - take OLMIS titles from drawing content, rather than
+    // quality info website.
 	foreach( $soc as $s )
 	{
 		$query = $DB->SingleQuery('SELECT * FROM olmis_codes WHERE olmis_id = "'.$s.'"');
 		if( !is_array($query) )
 		{
-            $url = BuildOlmisLink($s);
-			$content = file_get_contents($url);
-			if( preg_match('|"reportSubTitle">for ([^0-9\(\)]+) \(|', $content, $match) )
-			{
-				$title = $match[1];
-				$DB->Insert('olmis_codes', array('olmis_id'=>$s, 'job_title'=>$title));
-			}
+            // Didn't find this OLMIS id in the db, let's try and add it.
+            try {
+                $_c = unserialize($content);
+                if(isset($_c['config']['content'])){
+                    $c = $_c['config']['content'];
+                    $html = new simple_html_dom();
+                    $html->load($c);
+                    $anchors = $html->find('a');
+                    foreach ($anchors as $a) {
+                        // If OLMIS Id is found in href value, this is a new
+                        // OLMIS title that needs to be added to the olmis_codes
+                        // table in the db.
+                        if (strstr($a->getAttribute('href'), $s)) {
+                            // Strip any HTML tags (span, etc)
+                            $str = strip_tags($a->innertext);
+                            // Replace spaces, tabs and newlines
+                            // Credit: "Cez" on http://stackoverflow.com/questions/2326125/remove-multiple-whitespaces
+                            $title = preg_replace(array('/\s{2,}/', '/[\t\n]/'), ' ', $str);
+                            // Add to db
+                            $DB->Insert('olmis_codes', array('olmis_id'=>$s, 'job_title'=>$title));
+                        }
+                    }
+                }
+            } catch(Exception $e) {
+                // TODO log error
+                echo $e->getMessage();
+            }
 		}
 	}
 
-	return $soc;	
+	return $soc;
 }
 
 
@@ -237,7 +262,7 @@ function ShowViewHeader($view_id)
 /**
  * Generic function to create drawing header markup.
  * Use ShowRoadmapHeader or ShowPostHeader instead.
- * 
+ *
  * @return string
  */
 function _BuildDrawingHeader($school_abbr = null, $head1, $head2, $name_to_use)
@@ -254,7 +279,7 @@ function _BuildDrawingHeader($school_abbr = null, $head1, $head2, $name_to_use)
 		. '</div>'
 		. '
 			<script type="application/javascript">
-				window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>\') 
+				window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"><\/script>\')
 			</script>
 			<script type="application/javascript">
 				(function($){
@@ -278,7 +303,7 @@ function _BuildDrawingHeader($school_abbr = null, $head1, $head2, $name_to_use)
 
 /**
  * Get the abbreviation for a drawing's school.
- * 
+ *
  * @param [type] $drawing_id   string or int - Main drawing id.
  * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post'
  * @return string The school abbreviation
@@ -298,14 +323,14 @@ function GetSchoolAbbr($drawing_id, $drawing_type)
 	$drawing = $DB->SingleQuery('SELECT school_abbr
 		FROM ' . $table . ' AS m
 		JOIN schools ON m.school_id=schools.id
-		
+
 		WHERE m.id = '.$drawing_id);
 	return $drawing['school_abbr'];
 }
 
 /**
  * Get the name for a drawing based on ID and type.
- * 
+ *
  * @param mixed $drawing_id  string or int - Main drawing id.
  * @param string $drawing_type type of drawing to lookup, either 'roadmap' or 'post' or 'post_views'
  * @return string The proper title for the drawing.
@@ -354,11 +379,11 @@ function GetDegreeType($drawing_main_id)
 		. ' AND published=1
 		 ORDER BY last_modified DESC'); //this might conflict with /a/post_views.php order by name. See near $degreeTypeConditionQuery
 	if(is_array($res) && isset($res['sidebar_text_right'])){
-		return $res['sidebar_text_right'];	
+		return $res['sidebar_text_right'];
 	} else {
 		return null;
 	}
-	
+
 }
 
 /**
@@ -378,7 +403,7 @@ function GetDegreeTypeAbbr($degreeType, $fallback = true)
 		return $res['abbreviation'];
 	} else {
 		if($fallback){
-			return $degreeType; //couldn't find abbreviation	
+			return $degreeType; //couldn't find abbreviation
 		} else {
 			return '';
 		}
@@ -409,7 +434,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 			break;
 		case 'post':
 			$draw_page = 'post_drawings.php';
-			break;		
+			break;
 	}
 
 	if( count($mains) == 0 ) {
@@ -493,7 +518,7 @@ function ShowDrawingList(&$mains, $type='pathways') {
 function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 {
 	global $DB;
-	
+
 	$connections = $DB->MultiQuery('SELECT post_id, tab_name, sort
 		FROM vpost_links AS v
 		JOIN post_drawing_main AS d ON v.post_id=d.id
@@ -559,4 +584,3 @@ function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
 	echo '</table>';
 	return $count;
 }
-

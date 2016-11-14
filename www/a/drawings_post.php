@@ -47,12 +47,12 @@ if( KeyInRequest('id') ) {
 		$drawing = $DB->SingleQuery("SELECT *
 			FROM $version_table AS v, $main_table AS m
 			WHERE v.parent_id=m.id
-			AND m.id=".intval(Request('id')));	
+			AND m.id=".intval(Request('id')));
 	} else {
 		//Post Views
 		$drawing = $DB->SingleQuery("SELECT *
 			FROM $main_table AS m
-			WHERE m.id=".intval(Request('id')));	
+			WHERE m.id=".intval(Request('id')));
 	}
 
 	if( !(Request('id') == "" || is_array($drawing) && (IsAdmin() || $drawing['school_id'] == $_SESSION['school_id'])) ) {
@@ -64,7 +64,7 @@ if( KeyInRequest('id') ) {
 	{
 		if( Request('mode') == 'find' )
 		{
-			$drawings = $DB->MultiQuery('SELECT * FROM drawings WHERE parent_id='.intval(Request('id')));
+			$drawings = $DB->MultiQuery('SELECT * FROM drawings WHERE published=1 AND parent_id='.intval(Request('id')));
 			$soc = array();
 			foreach( $drawings as $d )
 			{
@@ -74,6 +74,7 @@ if( KeyInRequest('id') ) {
 					AND (content LIKE "%qualityinfo.org%" OR content LIKE "%olmis.org%" OR content LIKE "%olmis.emp.state.or.us%")');
 				foreach( $content as $c )
 				{
+                    // Searches for OLMIS Links and caches OLMIS titles
 					$soc = array_merge($soc, SearchForOLMISLinks($c['content']));
 				}
 			}
@@ -90,10 +91,10 @@ if( KeyInRequest('id') ) {
 			if( $checkboxes == '' )
 				$html = '<div style="">No new OLMIS links were found in this drawing</div>';
 			else
-			{	
+			{
 				$html = '<div style="margin-top:15px;font-weight: bold;">Add this roadmap to one or more occupational reports</div>';
 				$html .= $checkboxes;
-			}		
+			}
 
 			echo '('.json_encode(array('olmis'=>$html)).')';
 		}
@@ -101,12 +102,12 @@ if( KeyInRequest('id') ) {
 		if( Request('mode') == 'add' )
 		{
 			$soc = SearchForOLMISLinks(Request('content'));
-			
+
 			foreach( $soc as $s )
 			{
-				$check = $DB->SingleQuery('SELECT COUNT(1) 
-					AS num 
-					FROM olmis_links 
+				$check = $DB->SingleQuery('SELECT COUNT(1)
+					AS num
+					FROM olmis_links
 					WHERE drawing_id='.Request('id').' AND olmis_id="'.$s.'"'
 				);
 
@@ -121,33 +122,33 @@ if( KeyInRequest('id') ) {
 			}
 
 			$html = ShowOlmisCheckboxes(Request('id'));
-		
+
 			echo '('.json_encode(array('olmis'=>$html)).')';
 		}
-		
+
 		if( Request('mode') == 'enable' )
 		{
-			$check = $DB->SingleQuery('SELECT COUNT(1) 
-				AS num 
-				FROM olmis_links 
+			$check = $DB->SingleQuery('SELECT COUNT(1)
+				AS num
+				FROM olmis_links
 				WHERE drawing_id=' . intval(Request('id'))
 				. ' AND olmis_id="' . intval(Request('code')) . '"');
 			if( $check['num'] == 0 )
-				$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id) 
+				$DB->Query('INSERT INTO olmis_links (drawing_id, olmis_id)
 					VALUES ('.intval(Request('id')).',"'
 					. intval(Request('code')).'")'
-				); 
+				);
 		}
 
 		if( Request('mode') == 'disable' )
 		{
-			$DB->Query('DELETE FROM olmis_links 
+			$DB->Query('DELETE FROM olmis_links
 				WHERE drawing_id = '
 				. intval(Request('id'))
 				. ' AND olmis_id = "' . intval(Request('code')) . '"'
 			);
 		}
-	
+
 		die();
 	} //end olmis
 
@@ -165,7 +166,7 @@ if( KeyInRequest('id') ) {
 				} else {
 					$DB->Update($main_table, array(
 						'skillset_id'=>intval(Request('skillset_id'))
-					), Request('id'));	
+					), Request('id'));
 				}
 			}
 
@@ -173,13 +174,13 @@ if( KeyInRequest('id') ) {
 				$programs_ = $DB->MultiQuery('SELECT * FROM programs WHERE skillset_id='.intval(Request('skillset_id')).' ORDER BY title');
 			else
 				$programs_ = $DB->MultiQuery('SELECT * FROM programs ORDER BY title');
-			
+
 			$programs = array(array('id'=>'0', 'title'=>'Not Listed'));
 			foreach( $programs_ as $p )
 			{
 				$programs[] = array('id'=>$p['id'], 'title'=>$p['title']);
 			}
-			
+
 			echo json_encode($programs);
 		}
 		else
@@ -247,13 +248,13 @@ if( KeyInRequest('id') ) {
 	if( isset($_REQUEST['title']) ){
 	$content['name'] = $_REQUEST['title'];
 	}
-	
+
 	if( isset($_REQUEST['program_id']) ){
 		$content['program_id'] = $_REQUEST['program_id'];
-	
+
 	}
     //$content['name_approved'] = $_REQUEST['name_approved'];
-    
+
 	$content['last_modified'] = $DB->SQLDate();
 	$content['last_modified_by'] = $_SESSION['user_id'];
 
@@ -263,7 +264,7 @@ if( KeyInRequest('id') ) {
 	{
 		$t = $DB->SingleQuery('SELECT * FROM '.$main_table.' WHERE id='.intval($_REQUEST['id']));
 		$program = $DB->SingleQuery('SELECT * FROM programs WHERE id = '.$drawing['program_id']);
-		
+
 		if($SITE->hasFeature('approved_program_name')){
 			if($main_table == 'drawing_main'){
 				//roadmap
@@ -272,7 +273,7 @@ if( KeyInRequest('id') ) {
 			} elseif ($main_table === 'vpost_views') {
 				//post view
 				$headerImage = ShowViewHeader($_REQUEST['id']);
-				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'post_views');				
+				$t['full_name'] = GetDrawingName($_REQUEST['id'], 'post_views');
 			} else {
 				//post drawing
 				$headerImage = ShowPostHeader($_REQUEST['id']);
@@ -283,24 +284,24 @@ if( KeyInRequest('id') ) {
 			if( count($program) > 0 )
 				$t['full_name'] = $t['name'] == '' ? $program['title'] : $t['name'];
 			$header = ShowRoadmapHeader(intval(Request('id')));
-			echo '('.json_encode(array('title'=>$t['name'], 'header'=>$header, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';	
+			echo '('.json_encode(array('title'=>$t['name'], 'header'=>$header, 'code'=>CleanDrawingCode($school_abbr.'_'.$t['full_name']))).')';
 		}
 	}
 }
 
-if( Request('drawing_id') ) 
+if( Request('drawing_id') )
 {
 	// permissions check
 	$drawing = GetDrawingInfo(intval(Request('drawing_id')), $mode);
-	if( !($drawing['school_id'] == $_SESSION['school_id'] || 
-		  $drawing['created_by'] == $_SESSION['user_id'] || 
+	if( !($drawing['school_id'] == $_SESSION['school_id'] ||
+		  $drawing['created_by'] == $_SESSION['user_id'] ||
 		  $drawing['last_modified_by'] == $_SESSION['user_id']) &&
 		!isAdmin() )
 	{
 		die('403 Forbidden');
 	}
 
-	if( Request('note') !== false ) 
+	if( Request('note') !== false )
 	{
 		$content = array();
 		$content['note'] = $_REQUEST['note'];
@@ -311,7 +312,7 @@ if( Request('drawing_id') )
 	{
 		$DB->Update($version_table, array('frozen'=>1), intval(Request('drawing_id')));
 	}
-	
+
 	die('200 OK');
 }
 
