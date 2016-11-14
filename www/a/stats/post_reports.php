@@ -17,19 +17,32 @@ padding: 2px 4px;
 
 PrintStatsMenu();
 
-
+$org_type_list = $DB->VerticalQuery(
+  "SELECT schools.*
+  FROM schools
+  INNER JOIN users ON users.school_id=schools.id
+  GROUP BY schools.id
+  ORDER BY school_name", 
+  'organization_type',
+  'school_name'
+);
 
 $numHSUsers = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM users u
-JOIN schools s ON u.school_id = s.id
-WHERE organization_type="HS"');
+  SELECT COUNT(1) AS num
+  FROM users u
+  JOIN schools s ON u.school_id = s.id
+  WHERE organization_type="HS"
+');
+
 $numHSUsers = $numHSUsers['num'];
+
 $numCCUsers = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM users u
-JOIN schools s ON u.school_id = s.id
-WHERE organization_type="CC"');
+  SELECT COUNT(1) AS num
+  FROM users u
+  JOIN schools s ON u.school_id = s.id
+  WHERE organization_type="CC"
+');
+
 $numCCUsers = $numCCUsers['num'];
 
 
@@ -915,6 +928,25 @@ $inclusion_list = array();
   }
 
 ksort($inclusion_list);
+
+//subtotal for all community colleges
+$cc_subtotal_views = 0;
+$cc_subtotal_complete = 0;
+$cc_subtotal_hs_only = 0;
+$cc_subtotal_cc_only = 0;
+
+//subtotal for all high schools
+$hs_subtotal_views = 0;
+$hs_subtotal_complete = 0;
+$hs_subtotal_hs_only = 0;
+$hs_subtotal_cc_only = 0;
+
+//subtotal for all "other orgs"
+$other_org_subtotal_views = 0;
+$other_org_subtotal_complete = 0;
+$other_org_subtotal_hs_only = 0;
+$other_org_subtotal_cc_only = 0;
+
 //totals for all schools
 $total_views = 0;
 $total_complete = 0;
@@ -922,65 +954,103 @@ $total_hs_only = 0;
 $total_cc_only = 0;
 
 echo '<div class="section">';
-echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization</th>';
-  echo '<th>Total Embedded<br />POST Views</th>';
-  echo '<th>Full POST Views</th>';
-  echo '<th>TOP (HS)<br />POST Views Only</th>';
-  echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
-echo '</tr>';
-$trClass = new Cycler('row_light', 'row_dark');
-  foreach($inclusion_list as $school_name => $viewDoc){
-    $number_complete = 0;
-    $number_hs_only = 0;
-    $number_cc_only = 0;
-    foreach($viewDoc['views'] as $view){
-      if(isset($view['has_hs']) && isset($view['has_cc'])){
-        $number_complete++;
-      } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
-        $number_hs_only++;
-      } else {
-        $number_cc_only++;
-      }
-    }
-  
-    //add counts from this org to total
-    $total_views += count($viewDoc['views']);
-    $total_complete += $number_complete;
-    $total_hs_only += $number_hs_only;
-    $total_cc_only += $number_cc_only;
-
-    echo '<tr class="' . $trClass . '">';
-      echo '<td>' . $school_name . '</td>';
-      echo '<td>' . count($viewDoc['views']) . '</td>';
-      echo '<td>' . $number_complete . '</td>';
-      echo '<td>' . $number_hs_only . '</td>';
-      echo '<td>' . $number_cc_only . '</td>';
+  echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
+  echo '<table>';
+    echo '<tr class="drawing_main">';
+      echo '<th>Organization</th>';
+      echo '<th>Total Embedded<br />POST Views</th>';
+      echo '<th>Full POST Views</th>';
+      echo '<th>TOP (HS)<br />POST Views Only</th>';
+      echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
     echo '</tr>';
 
-  }
+    $trClass = new Cycler('row_light', 'row_dark');
+    foreach($inclusion_list as $school_name => $viewDoc){
+      $number_complete = 0;
+      $number_hs_only = 0;
+      $number_cc_only = 0;
+      foreach($viewDoc['views'] as $view){
+        if(isset($view['has_hs']) && isset($view['has_cc'])){
+          $number_complete++;
+        } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
+          $number_hs_only++;
+        } else {
+          $number_cc_only++;
+        }
+      }
 
-echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
-  echo '<td>Total</td>';
-  echo '<td>' . $total_views . '</td>';
-  echo '<td>' . $total_complete . '</td>';
-  echo '<td>' . $total_hs_only . '</td>';
-  echo '<td>' . $total_cc_only . '</td>';
-echo '</tr>';
+      echo '<tr class="' . $trClass . '">';
+        echo '<td>' . $school_name . '</td>';
+        echo '<td>' . count($viewDoc['views']) . '</td>';
+        echo '<td>' . $number_complete . '</td>';
+        echo '<td>' . $number_hs_only . '</td>';
+        echo '<td>' . $number_cc_only . '</td>';
+      echo '</tr>';
 
-echo '</table>';
+      switch ($org_type_list[$school_name]) {
+          case 'CC':
+            $cc_subtotal_views += count($viewDoc['views']);
+            $cc_subtotal_complete += $number_complete;
+            $cc_subtotal_hs_only += $number_hs_only;
+            $cc_subtotal_cc_only += $number_cc_only;
+          break;
+
+          case 'HS':
+            $hs_subtotal_views += count($viewDoc['views']);
+            $hs_subtotal_complete += $number_complete;
+            $hs_subtotal_hs_only += $number_hs_only;
+            $hs_subtotal_cc_only += $number_cc_only;
+          break;
+
+          case 'Other':
+            $other_org_subtotal_views += count($viewDoc['views']);
+            $other_org_subtotal_complete += $number_complete;
+            $other_org_subtotal_hs_only += $number_hs_only;
+            $other_org_subtotal_cc_only += $number_cc_only;
+          break;
+         
+          default:
+          break;
+       } 
+
+      //add counts from this org to total
+      $total_views += count($viewDoc['views']);
+      $total_complete += $number_complete;
+      $total_hs_only += $number_hs_only;
+      $total_cc_only += $number_cc_only;
+    }
+
+    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+      echo '<td>CC Subtotal</td>';
+      echo '<td>' . $cc_subtotal_views . '</td>';
+      echo '<td>' . $cc_subtotal_complete . '</td>';
+      echo '<td>' . $cc_subtotal_hs_only . '</td>';
+      echo '<td>' . $cc_subtotal_cc_only . '</td>';
+    echo '</tr>';
+    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+      echo '<td>HS Subtotal</td>';
+      echo '<td>' . $hs_subtotal_views . '</td>';
+      echo '<td>' . $hs_subtotal_complete . '</td>';
+      echo '<td>' . $hs_subtotal_hs_only . '</td>';
+      echo '<td>' . $hs_subtotal_cc_only . '</td>';
+    echo '</tr>';
+    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+      echo '<td>Other Org Subtotal</td>';
+      echo '<td>' . $other_org_subtotal_views . '</td>';
+      echo '<td>' . $other_org_subtotal_complete . '</td>';
+      echo '<td>' . $other_org_subtotal_hs_only . '</td>';
+      echo '<td>' . $other_org_subtotal_cc_only . '</td>';
+    echo '</tr>';
+    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+      echo '<td>Total</td>';
+      echo '<td>' . $total_views . '</td>';
+      echo '<td>' . $total_complete . '</td>';
+      echo '<td>' . $total_hs_only . '</td>';
+      echo '<td>' . $total_cc_only . '</td>';
+    echo '</tr>';
+  echo '</table>';
 echo '</div>';
   
-
-
-
-
-
-
-
-
 //used in report (below)
 $num_unlinked = 0; 
 
