@@ -988,30 +988,30 @@ echo '<div class="section">';
       echo '</tr>';
 
       switch ($org_type_list[$school_name]) {
-          case 'CC':
-            $cc_subtotal_views += count($viewDoc['views']);
-            $cc_subtotal_complete += $number_complete;
-            $cc_subtotal_hs_only += $number_hs_only;
-            $cc_subtotal_cc_only += $number_cc_only;
-          break;
+        case 'CC':
+          $cc_subtotal_views += count($viewDoc['views']);
+          $cc_subtotal_complete += $number_complete;
+          $cc_subtotal_hs_only += $number_hs_only;
+          $cc_subtotal_cc_only += $number_cc_only;
+        break;
 
-          case 'HS':
-            $hs_subtotal_views += count($viewDoc['views']);
-            $hs_subtotal_complete += $number_complete;
-            $hs_subtotal_hs_only += $number_hs_only;
-            $hs_subtotal_cc_only += $number_cc_only;
-          break;
+        case 'HS':
+          $hs_subtotal_views += count($viewDoc['views']);
+          $hs_subtotal_complete += $number_complete;
+          $hs_subtotal_hs_only += $number_hs_only;
+          $hs_subtotal_cc_only += $number_cc_only;
+        break;
 
-          case 'Other':
-            $other_org_subtotal_views += count($viewDoc['views']);
-            $other_org_subtotal_complete += $number_complete;
-            $other_org_subtotal_hs_only += $number_hs_only;
-            $other_org_subtotal_cc_only += $number_cc_only;
-          break;
-         
-          default:
-          break;
-       } 
+        case 'Other':
+          $other_org_subtotal_views += count($viewDoc['views']);
+          $other_org_subtotal_complete += $number_complete;
+          $other_org_subtotal_hs_only += $number_hs_only;
+          $other_org_subtotal_cc_only += $number_cc_only;
+        break;
+       
+        default:
+        break;
+      } 
 
       //add counts from this org to total
       $total_views += count($viewDoc['views']);
