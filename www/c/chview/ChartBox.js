@@ -47,6 +47,10 @@ ChartBox = Class.create(Widget, {
      * Handles special case where we need rounded corners if title is hidden.
      */
     getInnerRectangleProps: function() {
+        if('transparent' !== this.config.color_background && !this.config.color_background.includes('#')){
+            this.config.color_background = '#' + this.config.color_background;
+        }
+
         var _props = {
             fillColor: this.config.color_background,
             fill: true,
