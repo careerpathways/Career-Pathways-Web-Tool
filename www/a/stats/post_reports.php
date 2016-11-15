@@ -4,6 +4,18 @@ include('stats.inc.php');
 PrintHeader();
 
 ?>
+<script type="text/javascript">
+  function toggleTableDisplayByID(id){
+    var table = document.getElementById(id);
+    if (table.style.display == 'table'){
+      table.style.display = 'none';
+    } else {
+      table.style.display = 'table';
+    }
+  }
+
+</script>
+
 <style type="text/css">
 .section {
 margin-bottom: 40px;
@@ -58,83 +70,90 @@ echo '<p><i>Active means that they are doing more than just logging on, and that
 
 # Active High School Users
 echo '<div class="section">';
-echo '<h3>How many of the ('.$numHSUsers.') High School users are "actively" creating POST Drawings/Views?</h3>';
-# Report a sum total, as well as a list of user and organization names.
+  echo '<h3>How many of the ('.$numHSUsers.') High School users are "actively" creating POST Drawings/Views?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table001\')">Show/Hide</a>';
+  # Report a sum total, as well as a list of user and organization names.
 
-$activeHSUsers = getActiveUsers('HS');
+  $activeHSUsers = getActiveUsers('HS');
 
-echo '<p><b>Total: ' . count($activeHSUsers) . '</b></p>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Name</th>';
-  echo '<th>Organization</th>';
-  echo '<th>Number</th>';
-  echo '<th>Last Activity</th>';
-echo '</tr>';
-foreach($activeHSUsers as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
-    echo '<td>' . $row['school_name'] . '</td>';
-    echo '<td>' . $row['num'] . '</td>';
-    echo '<td>' . $row['last_activity'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<p><b>Total: ' . count($activeHSUsers) . '</b></p>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table001" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Name</th>';
+        echo '<th>Organization</th>';
+        echo '<th>Number</th>';
+        echo '<th>Last Activity</th>';
+      echo '</tr>';
+      foreach($activeHSUsers as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
+          echo '<td>' . $row['school_name'] . '</td>';
+          echo '<td>' . $row['num'] . '</td>';
+          echo '<td>' . $row['last_activity'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 # Active Community College Users
 echo '<div class="section">';
-echo '<h3>How many of the ('.$numCCUsers.') Community College users are "actively" creating POST Drawings/Views?</h3>';
-# Report a sum total, as well as a list of user and organization names.
+  echo '<h3>How many of the ('.$numCCUsers.') Community College users are "actively" creating POST Drawings/Views?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table002\')">Show/Hide</a>';
+  # Report a sum total, as well as a list of user and organization names.
 
-$activeCCUsers = getActiveUsers('CC');
+  $activeCCUsers = getActiveUsers('CC');
 
-echo '<p><b>Total: ' . count($activeCCUsers) . '</b></p>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Name</th>';
-  echo '<th>Organization</th>';
-  echo '<th>Number</th>';
-  echo '<th>Last Activity</th>';
-echo '</tr>';
-foreach($activeCCUsers as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
-    echo '<td>' . $row['school_name'] . '</td>';
-    echo '<td>' . $row['num'] . '</td>';
-    echo '<td>' . $row['last_activity'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<p><b>Total: ' . count($activeCCUsers) . '</b></p>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table002" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Name</th>';
+        echo '<th>Organization</th>';
+        echo '<th>Number</th>';
+        echo '<th>Last Activity</th>';
+      echo '</tr>';
+      foreach($activeCCUsers as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
+          echo '<td>' . $row['school_name'] . '</td>';
+          echo '<td>' . $row['num'] . '</td>';
+          echo '<td>' . $row['last_activity'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo "</div>";
 echo '</div>';
-
 
 # Top Developers of POST Drawings/Views
 echo '<div class="section">';
-echo '<h3>Who are the most active developers for POST Drawings/Views?</h3>';
-echo '<p><i>Top 15 Users</i></p>';
-# List user and organization names.
-$topPOSTUsers = getTopPOSTUsers();
+  echo '<h3>Who are the most active developers for POST Drawings/Views?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table003\')">Show/Hide Top 15 Users</a>';
+  # List user and organization names.
+  $topPOSTUsers = getTopPOSTUsers();
 
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Name</th>';
-  echo '<th>Organization</th>';
-  echo '<th>Number</th>';
-  echo '<th>Last Activity</th>';
-echo '</tr>';
-foreach($topPOSTUsers as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
-    echo '<td>' . $row['school_name'] . '</td>';
-    echo '<td>' . $row['num'] . '</td>';
-    echo '<td>' . $row['last_activity'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table003" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Name</th>';
+        echo '<th>Organization</th>';
+        echo '<th>Number</th>';
+        echo '<th>Last Activity</th>';
+      echo '</tr>';
+      foreach($topPOSTUsers as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['name'] . '</a></td>';
+          echo '<td>' . $row['school_name'] . '</td>';
+          echo '<td>' . $row['num'] . '</td>';
+          echo '<td>' . $row['last_activity'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
@@ -146,206 +165,218 @@ echo '<h2>Development of POST Drawings</h2>';
 
 # High School POST Drawing sections created by High School Users
 echo '<div class="section">';
-echo '<h3>How many HS sections were created by HS users?</h3>';
+  echo '<h3>How many HS sections were created by HS users?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table004\')">Show/Hide</a>';
 
-$sections = $DB->MultiQuery('
-SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
-ds.school_name, ds.id AS school_id,
-SUM(d.published) AS published,
-COUNT(vpost_links.id) AS num_views
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id
-JOIN users u ON dm.created_by = u.id
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
-JOIN schools ds ON ds.id = u.school_id
-LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY dm.last_modified DESC
-');
+  $sections = $DB->MultiQuery('
+  SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
+  u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name,
+  ds.school_name, ds.id AS school_id,
+  SUM(d.published) AS published,
+  COUNT(vpost_links.id) AS num_views
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id
+  JOIN users u ON dm.created_by = u.id
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
+  JOIN schools ds ON ds.id = u.school_id
+  LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY dm.last_modified DESC
+  ');
 
-echo '<p>';
-  echo '<b>Total: ' . count($sections) . '</b><br />';
-  echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
-echo '</p>';
+  echo '<p>';
+    echo '<b>Total: ' . count($sections) . '</b><br />';
+    echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
+  echo '</p>';
 
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Drawing</th>';
-  echo '<th>Published</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($sections as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
-    echo '<td>' . ($row['published'] ? 'Yes' : 'No') . '</td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table004" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Drawing</th>';
+        echo '<th>Published</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($sections as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
+          echo '<td>' . ($row['published'] ? 'Yes' : 'No') . '</td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
 # High School POST Drawing sections in POST Views
 echo '<div class="section">';
-echo '<h4>Of the published HS sections, how many have been included in a POST View? For which HSs?</h4>';
-$sections = $DB->MultiQuery('
-SELECT ds.school_name, dm.name AS drawing_name, dm.id, COUNT(vpost_links.id) AS num_views, ds.id AS school_id
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
-JOIN users u ON dm.created_by = u.id
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
-JOIN schools ds ON ds.id = u.school_id
-JOIN vpost_links ON vpost_links.post_id = dm.id
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY ds.school_name
-');
+  echo '<h3>Of the published HS sections, how many have been included in a POST View? For which HSs?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table005\')">Show/Hide</a>';
+  $sections = $DB->MultiQuery('
+  SELECT ds.school_name, dm.name AS drawing_name, dm.id, COUNT(vpost_links.id) AS num_views, ds.id AS school_id
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
+  JOIN users u ON dm.created_by = u.id
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
+  JOIN schools ds ON ds.id = u.school_id
+  JOIN vpost_links ON vpost_links.post_id = dm.id
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY ds.school_name
+  ');
 
-$HSPostDrawingsInAView = $DB->MultiQuery('
-SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id,
-SUM(d.published) AS published,
-COUNT(vpost_links.id) AS num_views
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id
-JOIN users u ON dm.created_by = u.id
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
-JOIN schools ds ON ds.id = u.school_id
-LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY dm.last_modified DESC
-');
+  $HSPostDrawingsInAView = $DB->MultiQuery('
+  SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id,
+  SUM(d.published) AS published,
+  COUNT(vpost_links.id) AS num_views
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id
+  JOIN users u ON dm.created_by = u.id
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "HS"
+  JOIN schools ds ON ds.id = u.school_id
+  LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY dm.last_modified DESC
+  ');
 
-echo '<p>';
-   echo '<b>In a POST View: ' . count(array_filter($HSPostDrawingsInAView, 'count_drawings_in_a_view')) . '</b>';
-echo '</p>';
+  echo '<p>';
+    echo '<b>In a POST View: ' . count(array_filter($HSPostDrawingsInAView, 'count_drawings_in_a_view')) . '</b>';
+  echo '</p>';
 
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Drawing</th>';
-  echo '<th>In Views</th>';
-  echo '<th>Organization</th>';
-echo '</tr>';
-foreach($sections as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
-    echo '<td>' . $row['num_views'] . '</td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table005" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Drawing</th>';
+        echo '<th>In Views</th>';
+        echo '<th>Organization</th>';
+      echo '</tr>';
+      foreach($sections as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
+          echo '<td>' . $row['num_views'] . '</td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
 # HS POST Drawings created by Community College Users
 echo '<div class="section">';
 
-echo '<table width="100%"><tr>';
-echo '<td width="50%" valign="top">';
-echo '<h4>POST Drawings Created for HSs by a Community College</h4>';
+  echo '<table width="100%"><tr>';
+  echo '<td width="50%" valign="top">';
+  echo '<h3>POST Drawings Created for HSs by a Community College</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table006\')">Show/Hide</a>';
 
-$sections = $DB->MultiQuery('
-SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name, 
-SUM(d.published) AS published,
-COUNT(1) AS num_views
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id
-JOIN users u ON u.id = dm.created_by
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY dm.last_modified DESC
-');
+  $sections = $DB->MultiQuery('
+  SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name,
+  SUM(d.published) AS published,
+  COUNT(1) AS num_views
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id
+  JOIN users u ON u.id = dm.created_by
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
+  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY dm.last_modified DESC
+  ');
 
-echo '<p>';
-  echo '<b>Total: ' . count($sections) . '</b><br />';
-  echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
-echo '</p>';
+  echo '<p>';
+    echo '<b>Total: ' . count($sections) . '</b><br />';
+    echo '<b>Published: ' . count(array_filter($sections, 'count_published_drawings')) . '</b><br />';
+  echo '</p>';
 
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization</th>';
-  echo '<th>Drawing</th>';
-  echo '<th>Published</th>';
-  echo '<th>Created By</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($sections as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
-    echo '<td>' . ($row['published'] ? 'Yes' : 'No') . '</td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['org_id'] . '">' . $row['org_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table006" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization</th>';
+        echo '<th>Drawing</th>';
+        echo '<th>Published</th>';
+        echo '<th>Created By</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($sections as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
+          echo '<td>' . ($row['published'] ? 'Yes' : 'No') . '</td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['org_id'] . '">' . $row['org_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 # High School POST Drawing sections in POST Views created by CC's
 echo '<div class="section">';
-echo '<h4>Of the CC created published HS sections, how many have been included in a POST View? For which HSs?</h4>';
+  echo '<h3>Of the CC created published HS sections, how many have been included in a POST View? For which HSs?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table007\')">Show/Hide</a>';
 
-$sections = $DB->MultiQuery('
-SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name, 
-COUNT(vpost_links.id) AS num_views, ds.id AS school_id
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
-JOIN users u ON dm.created_by = u.id
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-JOIN vpost_links ON vpost_links.post_id = dm.id
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY ds.school_name
-');
+  $sections = $DB->MultiQuery('
+  SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name,
+  COUNT(vpost_links.id) AS num_views, ds.id AS school_id
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
+  JOIN users u ON dm.created_by = u.id
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
+  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
+  JOIN vpost_links ON vpost_links.post_id = dm.id
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY ds.school_name
+  ');
 
-$HSPostDrawingsInAView = $DB->MultiQuery('
-SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id,
-SUM(d.published) AS published,
-COUNT(vpost_links.id) AS num_views
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id
-JOIN users u ON dm.created_by = u.id
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
-WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
-GROUP BY dm.id
-ORDER BY dm.last_modified DESC
-');
+  $HSPostDrawingsInAView = $DB->MultiQuery('
+  SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id,
+  SUM(d.published) AS published,
+  COUNT(vpost_links.id) AS num_views
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id
+  JOIN users u ON dm.created_by = u.id
+  JOIN schools us ON us.id = u.school_id AND us.organization_type = "CC"
+  JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
+  LEFT JOIN vpost_links ON vpost_links.post_id = dm.id
+  WHERE dm.school_id IN (SELECT id FROM schools WHERE organization_type = "HS")
+  GROUP BY dm.id
+  ORDER BY dm.last_modified DESC
+  ');
 
-echo '<p>';
-   echo '<b>In a POST View: ' . count(array_filter($HSPostDrawingsInAView, 'count_drawings_in_a_view')) . '</b>';
-echo '</p>';
+  echo '<p>';
+     echo '<b>In a POST View: ' . count(array_filter($HSPostDrawingsInAView, 'count_drawings_in_a_view')) . '</b>';
+  echo '</p>';
 
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization</th>';
-  echo '<th>Drawing</th>';
-  echo '<th>In Views</th>';
-  echo '<th>Created By</th>';
-echo '</tr>';
-foreach($sections as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
-    echo '<td>' . $row['num_views'] . '</td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['org_id'] . '">' . $row['org_name'] . '</a></td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table007" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization</th>';
+        echo '<th>Drawing</th>';
+        echo '<th>In Views</th>';
+        echo '<th>Created By</th>';
+      echo '</tr>';
+      foreach($sections as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $row['id'] . '">' . $row['drawing_name'] . '</a></td>';
+          echo '<td>' . $row['num_views'] . '</td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['org_id'] . '">' . $row['org_name'] . '</a></td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 # CC POST Drawings
@@ -372,388 +403,406 @@ $CCPostDrawingsPublished = $CCPostDrawingsPublished['num'];
 
 # Summary of published CC POST Drawings
 echo '<div class="section">';
-echo '<h3>There are ' . $CCPostDrawingsPublished . ' Published CC POST Drawings</h3>';
-echo '<p>POST Views with a published CC drawing: ' . $CCPostDrawingsInAView . '</b><br />';
-echo '</p>';
-# Provide a breakdown of how many published POST Drawings for each CC (such as Lane Community College, 20)
-$publishedCCDrawingsForSchools = $DB->MultiQuery('
-SELECT s.school_name, COUNT(dm.id) AS num_drawings
-FROM post_drawing_main dm
-JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
-JOIN schools s on dm.school_id = s.id AND s.organization_type = "CC"
-GROUP BY dm.school_id
-ORDER BY num_drawings DESC
-');
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization</th>';
-  echo '<th>Published</th>';
-echo '</tr>';
-foreach($publishedCCDrawingsForSchools as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td>' . $row['num_drawings'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<h3>There are ' . $CCPostDrawingsPublished . ' Published CC POST Drawings</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table008\')">Show/Hide</a>';
+  echo '<p>POST Views with a published CC drawing: ' . $CCPostDrawingsInAView . '</b><br />';
+  echo '</p>';
+  # Provide a breakdown of how many published POST Drawings for each CC (such as Lane Community College, 20)
+  $publishedCCDrawingsForSchools = $DB->MultiQuery('
+  SELECT s.school_name, COUNT(dm.id) AS num_drawings
+  FROM post_drawing_main dm
+  JOIN post_drawings d ON dm.id = d.parent_id AND d.published = 1
+  JOIN schools s on dm.school_id = s.id AND s.organization_type = "CC"
+  GROUP BY dm.school_id
+  ORDER BY num_drawings DESC
+  ');
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table008" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization</th>';
+        echo '<th>Published</th>';
+      echo '</tr>';
+      foreach($publishedCCDrawingsForSchools as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td>' . $row['num_drawings'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 # Breakdown of POST Drawings and POST Views created by an ESD
 echo '<div class="section">';
 
-$num = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM post_drawing_main dm
-JOIN users u ON u.id = dm.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-');
-$num_post_drawings = $num['num'];
+  $num = $DB->SingleQuery('
+  SELECT COUNT(1) AS num
+  FROM post_drawing_main dm
+  JOIN users u ON u.id = dm.created_by
+  JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+  ');
+  $num_post_drawings = $num['num'];
 
-$num = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-');
-$num_post_views = $num['num'];
-echo '<h3>' . $num_post_drawings . ' POST Drawings and ' . $num_post_views . ' POST Views have been created by an ESD (Other org)</h3>';
+  $num = $DB->SingleQuery('
+  SELECT COUNT(1) AS num
+  FROM vpost_views v
+  JOIN users u ON u.id = v.created_by
+  JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+  ');
+  $num_post_views = $num['num'];
+  echo '<h3>' . $num_post_drawings . ' POST Drawings and ' . $num_post_views . ' POST Views have been created by an ESD (Other org)</h3>';
 
-# HS POST Drawings created by an ESD
-echo '<div class="section">';
+  # HS POST Drawings created by an ESD
+  echo '<div class="section">';
+    echo '<table width="100%"><tr>';
+      echo '<td width="50%" valign="top">';
+        echo '<h3>POST Drawings Created for HSs</h3>';
+        echo '<a onclick="toggleTableDisplayByID(\'table009\')">Show/Hide</a><br>';
 
-echo '<table width="100%"><tr>';
-echo '<td width="50%" valign="top">';
-echo '<h4>POST Drawings Created for HSs</h4>';
+        $drawings = $DB->MultiQuery('
+        SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+        FROM post_drawing_main dm
+        JOIN users u ON u.id = dm.created_by
+        JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+        JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
+        GROUP BY school_id
+        ORDER BY num DESC
+        ');
 
-$drawings = $DB->MultiQuery('
-SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-FROM post_drawing_main dm
-JOIN users u ON u.id = dm.created_by
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-GROUP BY school_id
-ORDER BY num DESC
-');
+        $numHSdwgs = $DB->SingleQuery('
+        SELECT COUNT(1) AS num
+        FROM post_drawing_main dm
+        JOIN users u ON u.id = dm.created_by
+        JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+        JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
+        ');
+        $num_post_HSdwgs = $numHSdwgs['num'];
 
-$numHSdwgs = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM post_drawing_main dm
-JOIN users u ON u.id = dm.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "HS"
-');
-$num_post_HSdwgs = $numHSdwgs['num'];
+        echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
+        echo '<b>Total Drawings: ' . $num_post_HSdwgs . '</b>';
+        if(count($drawings) > 0) {
+          $trClass = new Cycler('row_light', 'row_dark');
+          echo '<div id="table009" style="display:none;">';
+            echo '<table>';
+              echo '<tr class="drawing_main">';
+                echo '<th>Organization</th>';
+                echo '<th>Drawings</th>';
+              echo '</tr>';
+              foreach($drawings as $row) {
+                echo '<tr class="' . $trClass . '">';
+                  echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+                  echo '<td>' . $row['num'] . '</td>';
+                echo '</tr>';
+              }
+            echo '</table>';
+          echo '</div>';
+        }
+      echo '</td>';
 
-echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
-echo '<b>Total Drawings: ' . $num_post_HSdwgs . '</b>';
-if(count($drawings) > 0) {
-  $trClass = new Cycler('row_light', 'row_dark');
-  echo '<table>';
-  echo '<tr class="drawing_main">';
-    echo '<th>Organization</th>';
-    echo '<th>Drawings</th>';
-  echo '</tr>';
-  foreach($drawings as $row) {
-    echo '<tr class="' . $trClass . '">';
-      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-      echo '<td>' . $row['num'] . '</td>';
-    echo '</tr>';
-  }
-  echo '</table>';
-}
+      # HS POST Views created by an ESD
+      echo '<td width="50%" valign="top">';
+      echo '<h3>POST Views Created for HSs</h3>';
+      echo '<a onclick="toggleTableDisplayByID(\'table010\')">Show/Hide</a><br>';
 
-echo '</td>';
+      $drawings = $DB->MultiQuery('
+      SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+      FROM vpost_views v
+      JOIN users u ON u.id = v.created_by
+      JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+      JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
+      GROUP BY school_id
+      ORDER BY num DESC
+      ');
 
-# HS POST Views created by an ESD
-echo '<td width="50%" valign="top">';
-echo '<h4>POST Views Created for HSs</h4>';
+      $numHSviews = $DB->SingleQuery('
+      SELECT COUNT(1) AS num
+      FROM vpost_views v
+      JOIN users u ON u.id = v.created_by
+      JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+      JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
+      ');
+      $num_post_HSviews = $numHSviews['num'];
 
-$drawings = $DB->MultiQuery('
-SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
-GROUP BY school_id
-ORDER BY num DESC
-');
+      echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
+      echo '<b>Total Views: ' . $num_post_HSviews . '</b>';
+      if(count($drawings) > 0) {
+        $trClass = new Cycler('row_light', 'row_dark');
+        echo '<div id="table010" style="display:none;">';
+          echo '<table>';
+            echo '<tr class="drawing_main">';
+              echo '<th>Organization</th>';
+              echo '<th>Views</th>';
+            echo '</tr>';
+            foreach($drawings as $row) {
+              echo '<tr class="' . $trClass . '">';
+                echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+                echo '<td>' . $row['num'] . '</td>';
+              echo '</tr>';
+            }
+          echo '</table>';
+        echo '</div>';
+      }
 
-$numHSviews = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "HS"
-');
-$num_post_HSviews = $numHSviews['num'];
+    echo '</tr></table>';
+  echo '</div>';
 
-echo '<b>Total High Schools: ' . count($drawings) . '</b><br />';
-echo '<b>Total Views: ' . $num_post_HSviews . '</b>';
-if(count($drawings) > 0) {
-  $trClass = new Cycler('row_light', 'row_dark');
-  echo '<table>';
-  echo '<tr class="drawing_main">';
-    echo '<th>Organization</th>';
-    echo '<th>Views</th>';
-  echo '</tr>';
-  foreach($drawings as $row) {
-    echo '<tr class="' . $trClass . '">';
-      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-      echo '<td>' . $row['num'] . '</td>';
-    echo '</tr>';
-  }
-  echo '</table>';
-}
 
-echo '</tr></table>';
+  # CC POST Drawings created by an ESD
+  echo '<div class="section">';
+    echo '<table width="100%"><tr>';
+      echo '<td width="50%" valign="top">';
+        echo '<h3>POST Drawings Created for CCs or Others</h3>';
+        echo '<a onclick="toggleTableDisplayByID(\'table011\')">Show/Hide</a><br>';
+
+        $drawings = $DB->MultiQuery('
+        SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+        FROM post_drawing_main dm
+        JOIN users u ON u.id = dm.created_by
+        JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+        JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type IN ("CC","Other")
+        GROUP BY school_id
+        ORDER BY num DESC
+        ');
+
+        $numCCdwgs = $DB->SingleQuery('
+        SELECT COUNT(1) AS num
+        FROM post_drawing_main dm
+        JOIN users u ON u.id = dm.created_by
+        JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+        JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "CC"
+        ');
+        $num_post_CCdwgs = $numCCdwgs['num'];
+
+        echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
+        echo '<b>Total Drawings: ' . $num_post_CCdwgs . '</b>';
+        if(count($drawings) > 0) {
+          $trClass = new Cycler('row_light', 'row_dark');
+          echo '<div id="table011" style="display:none;">';
+            echo '<table>';
+              echo '<tr class="drawing_main">';
+                echo '<th>Organization</th>';
+                echo '<th>Drawings</th>';
+              echo '</tr>';
+              foreach($drawings as $row) {
+                echo '<tr class="' . $trClass . '">';
+                  echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+                  echo '<td>' . $row['num'] . '</td>';
+                echo '</tr>';
+              }
+            echo '</table>';
+          echo '</div>';
+        }
+
+      echo '</td>';
+
+      # CC POST Views created by an ESD
+      echo '<td width="50%" valign="top">';
+        echo '<h3>POST Views Created for CCs or Others</h3>';
+        echo '<a onclick="toggleTableDisplayByID(\'table012\')">Show/Hide</a><br>';
+
+        $drawings = $DB->MultiQuery('
+        SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
+        FROM vpost_views v
+        JOIN users u ON u.id = v.created_by
+        JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
+        JOIN schools ds ON ds.id = v.school_id AND ds.organization_type IN ("CC", "Other")
+        GROUP BY school_id
+        ORDER BY num DESC
+        ');
+
+        $numCCviews = $DB->SingleQuery('
+        SELECT COUNT(1) AS num
+        FROM vpost_views v
+        JOIN users u ON u.id = v.created_by
+        JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+        JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
+        ');
+        $num_post_CCviews = $numCCviews['num'];
+
+        echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
+        echo '<b>Total Views: ' . $num_post_CCviews . '</b>';
+        if(count($drawings) > 0) {
+          $trClass = new Cycler('row_light', 'row_dark');
+          echo '<div id="table012" style="display:none;">';
+            echo '<table>';
+              echo '<tr class="drawing_main">';
+                echo '<th>Organization</th>';
+                echo '<th>Views</th>';
+              echo '</tr>';
+              foreach($drawings as $row) {
+                echo '<tr class="' . $trClass . '">';
+                  echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+                  echo '<td>' . $row['num'] . '</td>';
+                echo '</tr>';
+              }
+            echo '</table>';
+          echo '</div>';
+        }
+      echo '</td>';
+    echo '</tr></table>';
+  echo '</div>';
+
+  # Total POST Views created by an ESD
+  echo '<div class="section">';
+    $esdPOSTViews = $DB->MultiQuery('
+    SELECT v.id, v.name, vs.id AS school_id, vs.school_name, CONCAT(u.first_name, " ", u.last_name) AS user_name, u.id AS user_id
+    FROM vpost_views v
+    JOIN users u ON u.id = v.created_by
+    JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
+    JOIN schools vs ON vs.id = v.school_id
+    ');
+    echo '<h3>' . count($esdPOSTViews) . ' POST Views have been created by ESDs</h3>';
+    echo '<a onclick="toggleTableDisplayByID(\'table013\')">Show/Hide</a>';
+    $trClass = new Cycler('row_light', 'row_dark');
+    echo '<div id="table013" style="display:none;">';
+      echo '<table>';
+        echo '<tr class="drawing_main">';
+          echo '<th>View</th>';
+          echo '<th>Organization</th>';
+          echo '<th>User</th>';
+        echo '</tr>';
+        foreach($esdPOSTViews as $row) {
+          echo '<tr class="' . $trClass . '">';
+            echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+            echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+            echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '</tr>';
+        }
+      echo '</table>';
+    echo '</div>';
+  echo '</div>';
 echo '</div>';
 
-
-# CC POST Drawings created by an ESD
+# POST Views that have NO POST Drawings attached
 echo '<div class="section">';
-echo '<table width="100%"><tr>';
-echo '<td width="50%" valign="top">';
-echo '<h4>POST Drawings Created for CCs or Others</h4>';
-
-$drawings = $DB->MultiQuery('
-SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-FROM post_drawing_main dm
-JOIN users u ON u.id = dm.created_by
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type IN ("CC","Other")
-GROUP BY school_id
-ORDER BY num DESC
-');
-
-$numCCdwgs = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM post_drawing_main dm
-JOIN users u ON u.id = dm.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-JOIN schools ds ON ds.id = dm.school_id AND ds.organization_type = "CC"
-');
-$num_post_CCdwgs = $numCCdwgs['num'];
-
-echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
-echo '<b>Total Drawings: ' . $num_post_CCdwgs . '</b>';
-if(count($drawings) > 0) {
+  $emptyPOSTViews = $DB->MultiQuery('
+  SELECT v.id, v.name, v.last_modified,
+  s.id AS school_id, s.school_name,
+  u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
+  FROM vpost_views v
+  LEFT JOIN vpost_links l ON l.vid = v.id
+  JOIN schools s ON v.school_id = s.id
+  JOIN users u ON v.created_by = u.id
+  WHERE l.id IS NULL
+  ORDER BY last_modified DESC
+  ');
+  echo '<h3>' . count($emptyPOSTViews) . ' POST Views have no POST Drawings attached</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table014\')">Show/Hide</a>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<table>';
-  echo '<tr class="drawing_main">';
-    echo '<th>Organization</th>';
-    echo '<th>Drawings</th>';
-  echo '</tr>';
-  foreach($drawings as $row) {
-    echo '<tr class="' . $trClass . '">';
-      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-      echo '<td>' . $row['num'] . '</td>';
-    echo '</tr>';
-  }
-  echo '</table>';
-}
-
-echo '</td>';
-
-# CC POST Views created by an ESD
-echo '<td width="50%" valign="top">';
-echo '<h4>POST Views Created for CCs or Others</h4>';
-
-$drawings = $DB->MultiQuery('
-SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools us ON us.id = u.school_id AND us.organization_type = "Other"
-JOIN schools ds ON ds.id = v.school_id AND ds.organization_type IN ("CC", "Other")
-GROUP BY school_id
-ORDER BY num DESC
-');
-
-$numCCviews = $DB->SingleQuery('
-SELECT COUNT(1) AS num
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-JOIN schools ds ON ds.id = v.school_id AND ds.organization_type = "CC"
-');
-$num_post_CCviews = $numCCviews['num'];
-
-echo '<b>Total Organizations: ' . count($drawings) . '</b><br />';
-echo '<b>Total Views: ' . $num_post_CCviews . '</b>';
-if(count($drawings) > 0) {
-  $trClass = new Cycler('row_light', 'row_dark');
-  echo '<table>';
-  echo '<tr class="drawing_main">';
-    echo '<th>Organization</th>';
-    echo '<th>Views</th>';
-  echo '</tr>';
-  foreach($drawings as $row) {
-    echo '<tr class="' . $trClass . '">';
-      echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-      echo '<td>' . $row['num'] . '</td>';
-    echo '</tr>';
-  }
-  echo '</table>';
-}
-
-echo '</tr></table>';
-echo '</div>';
-
-# Total POST Views created by an ESD
-echo '<div class="section">';
-$esdPOSTViews = $DB->MultiQuery('
-SELECT v.id, v.name, vs.id AS school_id, vs.school_name, CONCAT(u.first_name, " ", u.last_name) AS user_name, u.id AS user_id
-FROM vpost_views v
-JOIN users u ON u.id = v.created_by
-JOIN schools s ON s.id = u.school_id AND s.organization_type = "Other"
-JOIN schools vs ON vs.id = v.school_id
-');
-echo '<h4>' . count($esdPOSTViews) . ' POST Views have been created by ESDs</h4>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-echo '</tr>';
-foreach($esdPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-  echo '</tr>';
-}
-echo '</table>';
-echo '</div>';
-
-echo '</div>';
-
-# POST VIews that have NO POST Drawings attached
-echo '<div class="section">';
-$emptyPOSTViews = $DB->MultiQuery('
-SELECT v.id, v.name, v.last_modified,
-s.id AS school_id, s.school_name,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
-FROM vpost_views v
-LEFT JOIN vpost_links l ON l.vid = v.id
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
-WHERE l.id IS NULL
-ORDER BY last_modified DESC
-');
-echo '<h3>' . count($emptyPOSTViews) . ' POST Views have no POST Drawings attached</h3>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($emptyPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<div id="table014" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>View</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($emptyPOSTViews as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
 # POST Views that have "test" in their name
 echo '<div class="section">';
-$testPOSTViews = $DB->MultiQuery('
-SELECT v.id, v.name, v.last_modified,
-s.id AS school_id, s.school_name,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
-FROM vpost_views v
-JOIN schools s ON v.school_id = s.id
-JOIN users u ON v.created_by = u.id
-WHERE name LIKE "%test%"
-');
-echo '<h3>' . count($testPOSTViews) . ' POST Views have "test" in their name</h3>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-  echo '<th>Age</th>';
-echo '</tr>';
-foreach($testPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-    echo '<td>' . relative_time($row['last_modified']) . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $testPOSTViews = $DB->MultiQuery('
+    SELECT v.id, v.name, v.last_modified,
+    s.id AS school_id, s.school_name,
+    u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
+    FROM vpost_views v
+    JOIN schools s ON v.school_id = s.id
+    JOIN users u ON v.created_by = u.id
+    WHERE name LIKE "%test%"
+  ');
+  echo '<h3>' . count($testPOSTViews) . ' POST Views have "test" in their name</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table015\')">Show/Hide</a>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table015" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>View</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+        echo '<th>Age</th>';
+      echo '</tr>';
+      foreach($testPOSTViews as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+          echo '<td>' . relative_time($row['last_modified']) . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
-
-
-
-
-
-
 
 # post views that have high school and CC in them.
 echo '<div class="section">';
-echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
-$postViews = $DB->MultiQuery('
-SELECT v.id, v.name, v.last_modified,
-s.id AS school_id, s.school_name,
-u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
-FROM vpost_views v
-LEFT JOIN vpost_links l ON v.id = l.vid
-LEFT JOIN schools s ON v.school_id = s.id
-LEFT JOIN users u ON v.created_by = u.id
-GROUP BY v.id
-ORDER BY v.last_modified DESC
-');
+  echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table016\')">Show/Hide</a> <br>';
+  $postViews = $DB->MultiQuery('
+  SELECT v.id, v.name, v.last_modified,
+  s.id AS school_id, s.school_name,
+  u.id AS user_id, CONCAT(u.first_name, " ", u.last_name) AS user_name
+  FROM vpost_views v
+  LEFT JOIN vpost_links l ON v.id = l.vid
+  LEFT JOIN schools s ON v.school_id = s.id
+  LEFT JOIN users u ON v.created_by = u.id
+  GROUP BY v.id
+  ORDER BY v.last_modified DESC
+  ');
 
-$totalPostViews = $postViews; //used in summary report (below)
+  $totalPostViews = $postViews; //used in summary report (below)
 
-$fullPOSTViews = array();
-foreach($postViews as $row) {
-  $numTypes = $DB->MultiQuery('
-SELECT organization_type, COUNT(1) AS num_types
-FROM vpost_links l
-JOIN post_drawing_main dm ON l.post_id = dm.id
-JOIN schools s ON s.id = dm.school_id
-WHERE vid = ' . $row['id'] . '
-AND organization_type IN ("HS","CC")
-GROUP BY organization_type
-');
-  if(count($numTypes) == 2){
-    // Skip rows that don't have both CC and HS drawings
-    $row['num_types'] = count($numTypes);
-    $fullPOSTViews[] = $row;
+  $fullPOSTViews = array();
+  foreach($postViews as $row) {
+    $numTypes = $DB->MultiQuery('
+  SELECT organization_type, COUNT(1) AS num_types
+  FROM vpost_links l
+  JOIN post_drawing_main dm ON l.post_id = dm.id
+  JOIN schools s ON s.id = dm.school_id
+  WHERE vid = ' . $row['id'] . '
+  AND organization_type IN ("HS","CC")
+  GROUP BY organization_type
+  ');
+    if(count($numTypes) == 2){
+      // Skip rows that don't have both CC and HS drawings
+      $row['num_types'] = count($numTypes);
+      $fullPOSTViews[] = $row;
+    }
   }
-}
 
-echo '<b>Total: ' . count($fullPOSTViews) . '</b>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($fullPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<b>Total: ' . count($fullPOSTViews) . '</b>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table016" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>View</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($fullPOSTViews as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_views.php?id=' . $row['id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
@@ -779,87 +828,91 @@ FROM vpost_views v
 
 
 echo '<div class="section">';
-echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
+  echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table017\')">Show/Hide</a> <br>';
 
-//build exclusion list
-$exclusionList = array();
-foreach($postViews as $row) {
-  if($row['type'] !== 'HS'){
-    $exclusionList[$row['view_id']] = 1;
-  }
-}
-$HSonlyPOSTViews = array();
-foreach($postViews as $row) {
-  if(!array_key_exists($row['view_id'], $exclusionList)){
-    if($row['view_id'] > 0){
-      $HSonlyPOSTViews[$row['view_id']] = $row;
+  //build exclusion list
+  $exclusionList = array();
+  foreach($postViews as $row) {
+    if($row['type'] !== 'HS'){
+      $exclusionList[$row['view_id']] = 1;
     }
   }
-}
+  $HSonlyPOSTViews = array();
+  foreach($postViews as $row) {
+    if(!array_key_exists($row['view_id'], $exclusionList)){
+      if($row['view_id'] > 0){
+        $HSonlyPOSTViews[$row['view_id']] = $row;
+      }
+    }
+  }
 
-$doc = array();
+  $doc = array();
 
-echo '<b>Total: ' . count($HSonlyPOSTViews) . '</b>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($HSonlyPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<b>Total: ' . count($HSonlyPOSTViews) . '</b>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table017" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>View</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($HSonlyPOSTViews as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
-
-
 echo '<div class="section">';
-echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
+  echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table018\')">Show/Hide</a> <br>';
 
-//build exclusion list
-$exclusionList = array();
-foreach($postViews as $row) {
-  if($row['type'] !== 'CC'){
-    $exclusionList[$row['view_id']] = 1;
-  }
-}
-$CConlyPOSTViews = array();
-foreach($postViews as $row) {
-  if(!array_key_exists($row['view_id'], $exclusionList)){
-    if($row['view_id'] > 0){
-      $CConlyPOSTViews[$row['view_id']] = $row;
+  //build exclusion list
+  $exclusionList = array();
+  foreach($postViews as $row) {
+    if($row['type'] !== 'CC'){
+      $exclusionList[$row['view_id']] = 1;
     }
   }
-}
+  $CConlyPOSTViews = array();
+  foreach($postViews as $row) {
+    if(!array_key_exists($row['view_id'], $exclusionList)){
+      if($row['view_id'] > 0){
+        $CConlyPOSTViews[$row['view_id']] = $row;
+      }
+    }
+  }
 
-$doc = array();
+  $doc = array();
 
-echo '<b>Total: ' . count($CConlyPOSTViews) . '</b>';
-$trClass = new Cycler('row_light', 'row_dark');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>View</th>';
-  echo '<th>Organization</th>';
-  echo '<th>User</th>';
-  echo '<th>Last Modified</th>';
-echo '</tr>';
-foreach($CConlyPOSTViews as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
-    echo '<td>' . $row['last_modified'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  echo '<b>Total: ' . count($CConlyPOSTViews) . '</b>';
+  $trClass = new Cycler('row_light', 'row_dark');
+  echo '<div id="table018" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>View</th>';
+        echo '<th>Organization</th>';
+        echo '<th>User</th>';
+        echo '<th>Last Modified</th>';
+      echo '</tr>';
+      foreach($CConlyPOSTViews as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/post_views.php?id=' . $row['view_id'] . '">' . ($row['name'] ? $row['name'] : '(No Name)') . '</a></td>';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td><a href="/a/users.php?id=' . $row['user_id'] . '">' . $row['user_name'] . '</a></td>';
+          echo '<td>' . $row['last_modified'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
@@ -955,102 +1008,105 @@ $total_cc_only = 0;
 
 echo '<div class="section">';
   echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
-  echo '<table>';
-    echo '<tr class="drawing_main">';
-      echo '<th>Organization</th>';
-      echo '<th>Total Embedded<br />POST Views</th>';
-      echo '<th>Full POST Views</th>';
-      echo '<th>TOP (HS)<br />POST Views Only</th>';
-      echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
-    echo '</tr>';
-
-    $trClass = new Cycler('row_light', 'row_dark');
-    foreach($inclusion_list as $school_name => $viewDoc){
-      $number_complete = 0;
-      $number_hs_only = 0;
-      $number_cc_only = 0;
-      foreach($viewDoc['views'] as $view){
-        if(isset($view['has_hs']) && isset($view['has_cc'])){
-          $number_complete++;
-        } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
-          $number_hs_only++;
-        } else {
-          $number_cc_only++;
-        }
-      }
-
-      echo '<tr class="' . $trClass . '">';
-        echo '<td>' . $school_name . '</td>';
-        echo '<td>' . count($viewDoc['views']) . '</td>';
-        echo '<td>' . $number_complete . '</td>';
-        echo '<td>' . $number_hs_only . '</td>';
-        echo '<td>' . $number_cc_only . '</td>';
+  echo '<a onclick="toggleTableDisplayByID(\'table019\')">Show/Hide</a>';
+  echo '<div id="table019" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization</th>';
+        echo '<th>Total Embedded<br />POST Views</th>';
+        echo '<th>Full POST Views</th>';
+        echo '<th>TOP (HS)<br />POST Views Only</th>';
+        echo '<th>BOTTOM (CC)<br />POST Views Only</th>';
       echo '</tr>';
 
-      switch ($org_type_list[$school_name]) {
-        case 'CC':
-          $cc_subtotal_views += count($viewDoc['views']);
-          $cc_subtotal_complete += $number_complete;
-          $cc_subtotal_hs_only += $number_hs_only;
-          $cc_subtotal_cc_only += $number_cc_only;
-        break;
+      $trClass = new Cycler('row_light', 'row_dark');
+      foreach($inclusion_list as $school_name => $viewDoc){
+        $number_complete = 0;
+        $number_hs_only = 0;
+        $number_cc_only = 0;
+        foreach($viewDoc['views'] as $view){
+          if(isset($view['has_hs']) && isset($view['has_cc'])){
+            $number_complete++;
+          } elseif (isset($view['has_hs']) && !isset($view['has_cc'])){
+            $number_hs_only++;
+          } else {
+            $number_cc_only++;
+          }
+        }
 
-        case 'HS':
-          $hs_subtotal_views += count($viewDoc['views']);
-          $hs_subtotal_complete += $number_complete;
-          $hs_subtotal_hs_only += $number_hs_only;
-          $hs_subtotal_cc_only += $number_cc_only;
-        break;
+        echo '<tr class="' . $trClass . '">';
+          echo '<td>' . $school_name . '</td>';
+          echo '<td>' . count($viewDoc['views']) . '</td>';
+          echo '<td>' . $number_complete . '</td>';
+          echo '<td>' . $number_hs_only . '</td>';
+          echo '<td>' . $number_cc_only . '</td>';
+        echo '</tr>';
 
-        case 'Other':
-          $other_org_subtotal_views += count($viewDoc['views']);
-          $other_org_subtotal_complete += $number_complete;
-          $other_org_subtotal_hs_only += $number_hs_only;
-          $other_org_subtotal_cc_only += $number_cc_only;
-        break;
-       
-        default:
-        break;
-      } 
+        switch ($org_type_list[$school_name]) {
+          case 'CC':
+            $cc_subtotal_views += count($viewDoc['views']);
+            $cc_subtotal_complete += $number_complete;
+            $cc_subtotal_hs_only += $number_hs_only;
+            $cc_subtotal_cc_only += $number_cc_only;
+          break;
 
-      //add counts from this org to total
-      $total_views += count($viewDoc['views']);
-      $total_complete += $number_complete;
-      $total_hs_only += $number_hs_only;
-      $total_cc_only += $number_cc_only;
-    }
+          case 'HS':
+            $hs_subtotal_views += count($viewDoc['views']);
+            $hs_subtotal_complete += $number_complete;
+            $hs_subtotal_hs_only += $number_hs_only;
+            $hs_subtotal_cc_only += $number_cc_only;
+          break;
 
-    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
-      echo '<td>CC Subtotal</td>';
-      echo '<td>' . $cc_subtotal_views . '</td>';
-      echo '<td>' . $cc_subtotal_complete . '</td>';
-      echo '<td>' . $cc_subtotal_hs_only . '</td>';
-      echo '<td>' . $cc_subtotal_cc_only . '</td>';
-    echo '</tr>';
-    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
-      echo '<td>HS Subtotal</td>';
-      echo '<td>' . $hs_subtotal_views . '</td>';
-      echo '<td>' . $hs_subtotal_complete . '</td>';
-      echo '<td>' . $hs_subtotal_hs_only . '</td>';
-      echo '<td>' . $hs_subtotal_cc_only . '</td>';
-    echo '</tr>';
-    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
-      echo '<td>Other Org Subtotal</td>';
-      echo '<td>' . $other_org_subtotal_views . '</td>';
-      echo '<td>' . $other_org_subtotal_complete . '</td>';
-      echo '<td>' . $other_org_subtotal_hs_only . '</td>';
-      echo '<td>' . $other_org_subtotal_cc_only . '</td>';
-    echo '</tr>';
-    echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
-      echo '<td>Total</td>';
-      echo '<td>' . $total_views . '</td>';
-      echo '<td>' . $total_complete . '</td>';
-      echo '<td>' . $total_hs_only . '</td>';
-      echo '<td>' . $total_cc_only . '</td>';
-    echo '</tr>';
-  echo '</table>';
+          case 'Other':
+            $other_org_subtotal_views += count($viewDoc['views']);
+            $other_org_subtotal_complete += $number_complete;
+            $other_org_subtotal_hs_only += $number_hs_only;
+            $other_org_subtotal_cc_only += $number_cc_only;
+          break;
+
+          default:
+          break;
+        }
+
+        //add counts from this org to total
+        $total_views += count($viewDoc['views']);
+        $total_complete += $number_complete;
+        $total_hs_only += $number_hs_only;
+        $total_cc_only += $number_cc_only;
+      }
+
+      echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+        echo '<td>CC Subtotal</td>';
+        echo '<td>' . $cc_subtotal_views . '</td>';
+        echo '<td>' . $cc_subtotal_complete . '</td>';
+        echo '<td>' . $cc_subtotal_hs_only . '</td>';
+        echo '<td>' . $cc_subtotal_cc_only . '</td>';
+      echo '</tr>';
+      echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+        echo '<td>HS Subtotal</td>';
+        echo '<td>' . $hs_subtotal_views . '</td>';
+        echo '<td>' . $hs_subtotal_complete . '</td>';
+        echo '<td>' . $hs_subtotal_hs_only . '</td>';
+        echo '<td>' . $hs_subtotal_cc_only . '</td>';
+      echo '</tr>';
+      echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+        echo '<td>Other Org Subtotal</td>';
+        echo '<td>' . $other_org_subtotal_views . '</td>';
+        echo '<td>' . $other_org_subtotal_complete . '</td>';
+        echo '<td>' . $other_org_subtotal_hs_only . '</td>';
+        echo '<td>' . $other_org_subtotal_cc_only . '</td>';
+      echo '</tr>';
+      echo '<tr style="font-weight:bold;" class="' . $trClass . '">';
+        echo '<td>Total</td>';
+        echo '<td>' . $total_views . '</td>';
+        echo '<td>' . $total_complete . '</td>';
+        echo '<td>' . $total_hs_only . '</td>';
+        echo '<td>' . $total_cc_only . '</td>';
+      echo '</tr>';
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
-  
+
 //used in report (below)
 $num_unlinked = 0; 
 
@@ -1080,81 +1136,85 @@ function comp($a, $b) {
 }
 
 echo '<div class="section">';
-echo '<h3>Total # of unlinked Oregon Skill Set POST Drawings:</h3>';
-echo '<b>Total # of unlinked Oregon Skill Set POST Drawings: '.$num_unlinked.'</b><br>';
+  echo '<h3>Total # of unlinked Oregon Skill Set POST Drawings: '.$num_unlinked.'</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table020\')">Show/Hide</a>';
 
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization Name</th>';
-  echo '<th>Title of POST View</th>';
-  echo '<th>titles of POST Drawings with missing Oregon Skill Set</th>';
-echo '</tr>';
+  echo '<div id="table020" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization Name</th>';
+        echo '<th>Title of POST View</th>';
+        echo '<th>titles of POST Drawings with missing Oregon Skill Set</th>';
+      echo '</tr>';
 
-$trClass = new Cycler('row_light', 'row_dark');
-$current_view_school_name = null;
-$current_view_id = null;
-$blank_cell = '<td>&nbsp;</td>';
+      $trClass = new Cycler('row_light', 'row_dark');
+      $current_view_school_name = null;
+      $current_view_id = null;
+      $blank_cell = '<td>&nbsp;</td>';
 
-foreach ($view_drawings_no_skillset as $view_drawing) {
-  echo '<tr class="' . $trClass . '">';
-    if($current_view_school_name !== $view_drawing['view_school_name']){
-      $current_view_school_name = $view_drawing['view_school_name'];
-      echo '<td>' . $view_drawing['view_school_name'] . '</td>';  
-    } else {
-      echo $blank_cell;
-    }
-    if($current_view_id !== $view_drawing['view_id']){
-      $current_view_id = $view_drawing['view_id'];
-      echo '<td><a href="/a/post_views.php?id=' . $view_drawing['view_id'] . '">' . $view_drawing['view_name'] . ' (id: ' .$view_drawing['view_id']. ')</a></td>';
-    } else {
-      echo $blank_cell;
-    }
-    
-    echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $view_drawing['drawing_id'] . '">' . $view_drawing['drawing_name'] . ' (id: ' .$view_drawing['drawing_id']. ')</a></td>';
-  echo '</tr>';
-}
-   
-echo '</table>';
+      foreach ($view_drawings_no_skillset as $view_drawing) {
+        echo '<tr class="' . $trClass . '">';
+          if($current_view_school_name !== $view_drawing['view_school_name']){
+            $current_view_school_name = $view_drawing['view_school_name'];
+            echo '<td>' . $view_drawing['view_school_name'] . '</td>';
+          } else {
+            echo $blank_cell;
+          }
+          if($current_view_id !== $view_drawing['view_id']){
+            $current_view_id = $view_drawing['view_id'];
+            echo '<td><a href="/a/post_views.php?id=' . $view_drawing['view_id'] . '">' . $view_drawing['view_name'] . ' (id: ' .$view_drawing['view_id']. ')</a></td>';
+          } else {
+            echo $blank_cell;
+          }
+
+          echo '<td><a href="/a/post_drawings.php?action=drawing_info&id=' . $view_drawing['drawing_id'] . '">' . $view_drawing['drawing_name'] . ' (id: ' .$view_drawing['drawing_id']. ')</a></td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 } else { //else !hasFeature('approved_program_name')
 
 # Summary of Embedded POST Views
 echo '<div class="section">';
-$numEmbedded = $DB->MultiQuery('
-SELECT e.id, e.drawing_id
-FROM external_links e
-WHERE e.`type` = "post"
-GROUP BY e.drawing_id
-');
-echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
-# such as Lane Community College, 20
+  $numEmbedded = $DB->MultiQuery('
+  SELECT e.id, e.drawing_id
+  FROM external_links e
+  WHERE e.`type` = "post"
+  GROUP BY e.drawing_id
+  ');
+  echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
+  echo '<a onclick="toggleTableDisplayByID(\'table021\')">Show/Hide</a>';
+  # such as Lane Community College, 20
 
-$embedded = $DB->MultiQuery('
-SELECT s.id AS school_id, s.school_name, COUNT(tmp.id) AS num
-FROM
-(SELECT e.id, e.drawing_id
-FROM external_links e
-WHERE e.`type` = "post"
-GROUP BY e.drawing_id
-) tmp
-JOIN vpost_views v ON v.id = tmp.drawing_id
-JOIN schools s ON s.id = v.school_id
-GROUP BY s.id
-ORDER BY num DESC
-');
-echo '<table>';
-echo '<tr class="drawing_main">';
-  echo '<th>Organization</th>';
-  echo '<th>Number</th>';
-echo '</tr>';
-foreach($embedded as $row) {
-  echo '<tr class="' . $trClass . '">';
-    echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
-    echo '<td>' . $row['num'] . '</td>';
-  echo '</tr>';
-}
-echo '</table>';
+  $embedded = $DB->MultiQuery('
+  SELECT s.id AS school_id, s.school_name, COUNT(tmp.id) AS num
+  FROM
+  (SELECT e.id, e.drawing_id
+  FROM external_links e
+  WHERE e.`type` = "post"
+  GROUP BY e.drawing_id
+  ) tmp
+  JOIN vpost_views v ON v.id = tmp.drawing_id
+  JOIN schools s ON s.id = v.school_id
+  GROUP BY s.id
+  ORDER BY num DESC
+  ');
+  echo '<div id="table021" style="display:none;">';
+    echo '<table>';
+      echo '<tr class="drawing_main">';
+        echo '<th>Organization</th>';
+        echo '<th>Number</th>';
+      echo '</tr>';
+      foreach($embedded as $row) {
+        echo '<tr class="' . $trClass . '">';
+          echo '<td><a href="/a/schools.php?id=' . $row['school_id'] . '">' . $row['school_name'] . '</a></td>';
+          echo '<td>' . $row['num'] . '</td>';
+        echo '</tr>';
+      }
+    echo '</table>';
+  echo '</div>';
 echo '</div>';
 
 
