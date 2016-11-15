@@ -1,5 +1,5 @@
 /****************************************************************
-Charts -- the full canvas for a particular drawing, on which chart items can 
+Charts -- the full canvas for a particular drawing, on which chart items can
 be placed
  ****************************************************************/
 
@@ -7,11 +7,11 @@ document.observe('chart:drawn', function(e) {
 	var toolbar = document.createElement('div');
 	Charts.toolbar = toolbar;
 	toolbar.className = 'toolbar';
-  
+
 	//Charts.addToolbarButton('line', ChartLine);
 	//Charts.addToolbarButton('arrow', ChartLine, {arrowheadAtEnd: true});
 	//Charts.addToolbarButton('box', ChartBox);
-	
+
 	// firefox needs the 'return false' to cancel the delete
 	document.onkeydown = function(e) {
 		if (e.keyCode == Event.KEY_BACKSPACE && !document.editingBox && !document.editingTitle) {
@@ -23,7 +23,7 @@ document.observe('chart:drawn', function(e) {
 			return false;
 		}
 	}.bindAsEventListener();
-  
+
 	document.observe('keydown', function(evt) {
 		var captured = true;
 		//deletion request
@@ -31,7 +31,7 @@ document.observe('chart:drawn', function(e) {
 			Charts.selectedComponent.remove();
 			Charts.selectedComponent = null;
 		}
-		//clipboard request (cut, copy, paste, etc.) 
+		//clipboard request (cut, copy, paste, etc.)
 		else if((evt.ctrlKey || evt.metaKey) && Charts.selectedComponent && !document.editingBox && !document.editingTitle ) {
 			switch(evt.keyCode) {
 			case 67: // ctrl+c
@@ -47,19 +47,19 @@ document.observe('chart:drawn', function(e) {
 					document.chClipboard.remove();
 					break;
 				default:
-					captured = false;										        
+					captured = false;
 			}
 		} else if( evt.keyCode == 27 && Charts.selectedComponent ) {
 			Charts.selectedComponent.mUp();
 		} else {
 			captured = false;
 		}
-		
+
 		if( captured ) {
 			Event.stop(evt);
 		}
 	});
-  
+
   chColor.each(function(color) {
     var cButton = document.createElement('div');
     cButton.className = 'button color';
@@ -76,7 +76,7 @@ document.observe('chart:drawn', function(e) {
 	});
     toolbar.appendChild(cButton);
   });
-  
+
   var clear = document.createElement('div');
   clear.style.clear = 'both';
   toolbar.appendChild(clear);
@@ -85,7 +85,7 @@ document.observe('chart:drawn', function(e) {
   ddhelp.className = "tiny";
   ddhelp.innerHTML = "Select a box, line, or connection and click a color";
   toolbar.appendChild(ddhelp);
-  
+
   Charts.toolbarContainer.appendChild(toolbar);
 
   // greybox overlay for tinymce (replaced fckeditor)
@@ -110,17 +110,17 @@ document.observe('chart:drawn', function(e) {
 	pageVDivider.className = 'chVDivider';
 	pageVDivider.innerHTML = '';
 	Charts.element.appendChild(pageVDivider);
-	
+
 	// add the horizontal page divider
 	var pageHDivider = document.createElement('div');
 	pageHDivider.className = 'chHDivider';
 	pageHDivider.innerHTML = '';
 	Charts.element.appendChild(pageHDivider);
 
-  
+
 
   Charts.fck = {Config: {}}; //new FCKeditor("PathwaysEditor");
-  
+
 	Charts.element.observe('contextmenu', function(e) {
 		var pointer = e.pointer();
 		var position = Charts.positionWithin(pointer);
@@ -132,9 +132,9 @@ document.observe('chart:drawn', function(e) {
 		else {
 			Charts.contextMenuTarget = null;
 		}
-		
+
 		var menu;
-		
+
 		if (Charts.contextMenuTarget) {
 			switch (Charts.contextMenuTarget.type) {
 				case 'box':
@@ -154,54 +154,54 @@ document.observe('chart:drawn', function(e) {
 		else {
 			menu = Charts.contextMenu;
 		}
-		
+
 		Charts.contextMenuPosition = {
 			x: pointer.x,
 			y: pointer.y
 		};
-		
+
 		menu.cfg.setProperty('x', Charts.contextMenuPosition.x);
 		menu.cfg.setProperty('y', Charts.contextMenuPosition.y);
 		menu.show();
-		
+
 		e.stop();
 	});
-	
+
 	Charts.element.observe('mousedown', function(e) {
 		if (document.editingTitle || !e.isLeftClick()) {
-			return;	
+			return;
 		}
-		
+
 		var pointer = e.pointer();
 		var position = Charts.positionWithin(pointer);
-		
+
 		Charts.activeControl = Charts.getControlPointContaining(position);
 		Charts.mouseDownPosition = position;
-		
+
 		if (Charts.activeControl) {
 			Charts.positionDeltas = Geometry.deltas(position, Charts.activeControl);
 			e.stop();
 			return;
 		}
   		var shape = Charts.getShapeContaining(position);
-  		
+
 		if (!shape || (shape.widget && shape.widget != Charts.selectedComponent)) {
 			if (shape) {
 				Charts._select(shape.widget);
-				
+
 			}
 			else {
 				Charts._deselect();
 			}
-			
+
 			Charts.redraw();
 		}
-		
+
 		if (Charts.selectedComponent) {
 			Charts.activeControl = Charts.selectedComponent;
 			Charts.positionDeltas = Geometry.deltas(position, Charts.activeControl);
 		}
-		
+
   		if (shape){
   			e.stop();
   		}
@@ -212,28 +212,28 @@ document.observe('chart:drawn', function(e) {
 		// if there is an active control and the control can be moved
 		if (Charts.activeControl && Charts.activeControl.applyPosition) {
 			Charts.controlReshaped = true;
-			
+
 			var position = Charts.positionWithin(e.pointer());
 			var offsetPosition = Geometry.translatedPoint(position, Charts.positionDeltas);
-			
+
 			if (Charts.snapToGrid && !e.altKey) {
 				offsetPosition.x = Charts.gridSize * Math.round(offsetPosition.x / Charts.gridSize);
 				offsetPosition.y = Charts.gridSize * Math.round(offsetPosition.y / Charts.gridSize);
 			}
-			
+
 			offsetPosition.x = Math.max(Charts.drawingArea.x, offsetPosition.x);
 			offsetPosition.y = Math.max(Charts.drawingArea.y, offsetPosition.y);
-			
+
 			var maxX = Charts.drawingArea.bottomRight.x;
 			var maxY = Charts.drawingArea.bottomRight.y;
 			if (Charts.activeControl.getShape) {
 				maxX -= Charts.activeControl.getShape().getBounds().width;
 				maxY -= Charts.activeControl.getShape().getBounds().height;
 			}
-			
+
 			offsetPosition.x = Math.min(maxX, offsetPosition.x);
 			offsetPosition.y = Math.min(maxY, offsetPosition.y);
-			
+
 			Charts.activeControl.applyPosition(offsetPosition, e.shiftKey);
 			Charts.activeControl.x = offsetPosition.x;
 			Charts.activeControl.y = offsetPosition.y;
@@ -247,25 +247,25 @@ document.observe('chart:drawn', function(e) {
 			}
 		}*/
 	});
-	
+
 	Charts.element.observe('mouseup', function(e) {
 		if (Charts.activeControl) {
 			if (Charts.controlReshaped) {
 				Charts.selectedComponent.onReshape();
 			}
 			Charts.activeControl = null;
-			
+
 			// the selected component could have moved, so update the control points
 			Charts._select(Charts.selectedComponent);
-			
+
 			Charts.redraw();
 		}
-		
+
 		Charts.controlReshaped = false;
 	});
-	
+
 	Charts.drawingArea = new Geometry.Bounds([Geometry.ORIGIN, Geometry.translatedPoint(Geometry.ORIGIN, Charts.element.offsetWidth, Charts.element.offsetHeight)]);
-	
+
 	Charts.snapToGrid = true;
 });
 
@@ -282,23 +282,23 @@ Object.extend(Charts, {
 			oncomplete();
 		}});
 	},
-	
+
 	//_beginRedraw: function(canvas) {},
-	
+
 	_finishRedraw: function(context) {
 		// draw the highlight box
 		if (Charts.selectedComponent && ! Charts.activeControl) {
 			var bounds = Charts.selectedComponent.getShape().getBounds();
-			
+
 			context.lineWidth = 3;
 			context.strokeStyle = '#ffffff';
 			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
 			context.lineWidth = 2;
 			context.strokeStyle = SELECTED_COLOR;
 			context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
-			
+
 		}
-		
+
 		// draw control points
 		if (Charts.controlPoints) {
 			Charts.controlPoints.each(function(p) {
@@ -311,12 +311,12 @@ Object.extend(Charts, {
 			});
 		}
 	},
-  
+
 	getShapeContaining: function(position) {
 		if (Charts.selectedComponent && Charts.selectedComponent.getShape().getBounds().contains(position)) {
 			return Charts.selectedComponent.getShape();
 		}
-		
+
 		for (var i = Charts.layers.length - 1; i >= 0; --i) {
 			var layer = Charts.layers[i];
 			if (layer) {
@@ -329,7 +329,7 @@ Object.extend(Charts, {
 			}
 		}
 	},
-	
+
 	/** Adds a button to the toolbar. The button will display the name,
 	 * and invoke the onclick when clicked.
 	 */
@@ -342,16 +342,16 @@ Object.extend(Charts, {
 		});
 		Charts.toolbar.appendChild(button);
 	},
-	
+
 	debug: function(txt) {
 		$('debugDiv').innerHTML = txt;
 	},
-	
+
 	// TODO document this
 	whichi: function() {
 		return 'edit';
 	},
-	
+
 	confirmDelete: function(type) {
 		return confirm('Are you sure you want to delete this ' + type + '?\n\nYou cannot undo this action.');
 	},
@@ -359,7 +359,7 @@ Object.extend(Charts, {
 	positionWithin: function(pointer) {
 		return Geometry.translatedPoint(pointer, -Charts.elementOffset.left, -Charts.elementOffset.top)
 	},
-	
+
 	getControlPointContaining: function(point) {
 		if (Charts.controlPoints) {
 			return Charts.controlPoints.find(function(controlPoint) {
@@ -370,13 +370,13 @@ Object.extend(Charts, {
 			return null;
 		}
 	},
-	
+
 	createComponent: function(type, options, callback) {
 		var newOptions = Object.clone(type.DEFAULT_OPTIONS);
 		newOptions.config = Object.clone(type.DEFAULT_OPTIONS.config);
-		
+
 		Object.extend(newOptions, options || {});
-		
+
 		var widget = new type(newOptions);
 		newOptions.type = widget.getType();
 		Charts.getID(widget, newOptions, function() {
@@ -386,26 +386,26 @@ Object.extend(Charts, {
 			}
 		});
 	},
-	
+
 	unregisterComponent: function(component) {
 		Charts.components = Charts._removeArrayElement(Charts.components, component);
 		var shape = component.getShape();
 		Charts.layers[shape.layerIndex] = Charts._removeArrayElement(Charts.layers[shape.layerIndex], shape);
-		
+
 		if (component.type != 'connection') {
 			Charts.widgets.unset(component.id);
 		}
-		
+
 		if (Charts.selectedComponent == component) {
 			Charts._deselect();
 		}
 	},
-	
+
 	_deselect: function() {
 		Charts.selectedComponent = null;
 		Charts.controlPoints = null;
 	},
-	
+
 	_select: function(component) {
 		Charts.selectedComponent = component;
 		if (component) {
@@ -415,7 +415,7 @@ Object.extend(Charts, {
 			Charts.controlPoints = null;
 		}
 	},
-	
+
 	_removeArrayElement: function(array, element) {
 		var index = element.index;
 
@@ -428,7 +428,7 @@ Object.extend(Charts, {
 			newArray[i] = array[i + 1];
 			newArray[i].index = i;
 		}
-		
+
 		return newArray;
 	}
 });
@@ -454,16 +454,16 @@ var WidgetAdmin = {
     	}
       if (this.mMoveHandler) document.stopObserving('mousemove', this.mMoveHandler);
       if (this.mUpHandler) document.stopObserving('mouseup', this.mUpHandler);
-      
+
       if (this.elem) {
       	Charts.element.removeChild(this.elem);
       }
       chUtil.ajax({id: this.id,
                    a: 'remove'});
-                   
+
       // remove all connections to and from this widget
       this.getConnections().invoke('disconnect', true);
-      
+
       Charts.unregisterComponent(this);
       Charts.redraw();
     },
@@ -478,15 +478,15 @@ var WidgetAdmin = {
       chUtil.ajax({id: this.id,
                    a: 'update',
                    content: { config: {color: color}}});
-                   
+
       //any connections should inherit the same color, unless that color is transparent.
       if(color !== 'transparent'){
 		this.getOutgoingConnections().invoke('setColor', color);
       }
-      
+
       this._onSetColor();
     },
-    
+
     _onSetColor: function() {
     	this.shape.setStyle('color', '#' + this.config.color);
     },
@@ -503,7 +503,7 @@ var WidgetAdmin = {
 		this._onSetColorBackground();
     },
 
-    _onSetColorBackground: function() {    	
+    _onSetColorBackground: function() {
     	this.shape.setStyle('fillColor', '#' + this.config.color_background);
     }
 }
@@ -524,7 +524,7 @@ ChartLine.addMethods({
   	var startControlPoint = Object.clone(this.getStartPoint());
   	startControlPoint.applyPosition = this.applyPointPosition.bind(this, this.startPoint, this.endPoint);
   	startControlPoint.color = START_COLOR;
-  	
+
   	var endControlPoint = Object.clone(this.getEndPoint());
   	endControlPoint.applyPosition = this.applyPointPosition.bind(this, this.endPoint, this.startPoint);
   	endControlPoint.color = END_COLOR;
@@ -533,7 +533,7 @@ ChartLine.addMethods({
   		endControlPoint
 	];
   },
-  
+
   applyPointPosition: function(point, otherPoint, position, constrain) {
   	if (constrain) {
   		var deltas = Geometry.deltas(position, otherPoint);
@@ -544,14 +544,14 @@ ChartLine.addMethods({
   			position.y = otherPoint.y;
   		}
   	}
-  	
+
   	point.x = position.x;
   	point.y = position.y;
-  	
+
   	this.reposition();
   },
-  
-	duplicate: function(callback) {		
+
+	duplicate: function(callback) {
 		return Charts.createComponent(ChartLine, {
 			startPoint: Geometry.translatedPoint(this.startPoint, 0, 30),
 			endPoint: Geometry.translatedPoint(this.endPoint, 0, 30),
@@ -559,9 +559,9 @@ ChartLine.addMethods({
 			config: {
 				color: this.config.color
           	}
-		}, callback);      
+		}, callback);
     },
-    
+
 	onReshape: function() {
 		chUtil.ajax({
 			id: this.id,
@@ -576,7 +576,7 @@ ChartLine.addMethods({
 					y: this.endPoint.y
 				}
 			}
-		});      
+		});
     },
     changeLineDash: function(lineDashStyle) {
 		this.shape.style.lineDashStyle = lineDashStyle;
@@ -594,7 +594,7 @@ ChartLine.addMethods({
 		var deltas = Geometry.deltas(this, position);
 		this.startPoint = Geometry.translatedPoint(this.startPoint, deltas);;
 		this.endPoint = Geometry.translatedPoint(this.endPoint, deltas);
-		
+
 		this.reposition();
 	}
 });
@@ -612,15 +612,15 @@ ChartBox.DEFAULT_OPTIONS = {
 	}
 };
 
-ChartBox.addMethods({  
+ChartBox.addMethods({
     setProgram: function(program){
       this.config.program = program;
       chUtil.ajax({a: 'setProgram',
                    object_id: this.id,
                    program_id: program });
-      
-      this.setColor();     
-    },    
+
+      this.setColor();
+    },
     changeTitle: function() {
 	  if( document.editingTitle ) return;
       var self = this;
@@ -635,10 +635,20 @@ ChartBox.addMethods({
 	  document.editingTitle = true;
     },
     changeTitleColor: function(color) {
-    	this.elem.children[0].style.color = '#' + color;
+        if(color === 'transparent'){
+			//this.outerRectangle.setStyle('fillColor', 'rgba(0,0,0,0)');
+            this.elem.children[0].style.color =  'rgba(0,0,0,0)';
+            this.config.color_title = 'transparent'; //make sure this.reposition() knows about this change
+    	} else {
+    		this.elem.children[0].style.color = '#' + color;
+            this.config.color_title = color; //make sure this.reposition() knows about this change
+    	}
+
     	chUtil.ajax({id: this.id,
                    a: 'update',
                    content: { config: {color_title: color}}});
+
+        this.reposition(); //update view
     },
     saveTitle: function(input) {
       this.titleElement.innerHTML = input.value || '&nbsp;';
@@ -656,7 +666,7 @@ ChartBox.addMethods({
 	  Charts.showEditor(this);
 	  document.editingBox = true;
     },
-    
+
     duplicate: function(callback) {
 		return Charts.createComponent(ChartBox, {
 			x: parseInt(this.x),
@@ -672,7 +682,7 @@ ChartBox.addMethods({
 			}
 		}, callback);
 	},
-  
+
     /** Handles a connection action (click, etc.) for a box */
     connect: function(){
         //first click means we are setting the connection source and waiting for more info
@@ -682,28 +692,28 @@ ChartBox.addMethods({
           linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
-        
-        //don't allow links to objects we have already linked to        
+
+        //don't allow links to objects we have already linked to
         if(Charts.waitingConnectionSource.outgoingConnectionExists(this)) {
             return;
         }
-        
+
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
-        
+
         //clicking self toggles connection source off and on
-        if(Charts.waitingConnectionSource.id == this.id){                           
+        if(Charts.waitingConnectionSource.id == this.id){
           Charts.waitingConnectionSource = null;
           return;
         }
-    	
-        //second click means we are setting the connection destination               
+
+        //second click means we are setting the connection destination
         var connection = this.connectFrom(Charts.waitingConnectionSource);
-        
+
         //remove half-link-waiting indicators regardless of what connection attempt has been made
         Charts.waitingConnectionSource = null;
     },
-    
+
     connectFrom: function(beginning) {
     	var data = Connection.determineDefaultConnectionData(beginning, this);
     	var params = Object.clone(data);
@@ -712,28 +722,28 @@ ChartBox.addMethods({
 			destination_id: this.id,
 			a: 'connect'
 		});
-		
+
 		var connection = new Connection(beginning, this, data);
-		
+
 		chUtil.ajax(params, function(ajax) {
 			connection.id = ajax.responseText;
-			
+
 			Charts.registerComponent(connection);
-			
+
 			// TODO does this really belong here? should be in event-handling code
 			Charts.redraw();
 		}.bind(this));
-		
+
 		return connection;
     },
-    
+
     getControlPoints: function() {
     	var left = this.getAnchorPointPosition({side: Side.LEFT, position: 50});
     	left.applyPosition = this.applyLeftPosition.bind(this);
-    	
+
     	var right = this.getAnchorPointPosition({side: Side.RIGHT, position: 50});
     	right.applyPosition = this.applyRightPosition.bind(this);
-    	
+
     	if (this.w < this.getMinimumContentWidth()) {
     		left.color = '#ff0000';
     		right.color = '#ff0000';
@@ -743,46 +753,46 @@ ChartBox.addMethods({
     		right
     	];
     },
-    
+
     getMinimumContentWidth: function() {
 		this.contentElement.style.overflow = 'visible';
 		this.titleElement.style.overflow = 'visible';
 		var result = Math.max(this.titleElement.offsetWidth, this.contentElement.offsetWidth) / Charts.textSizeMultiplier + 20;
-		
+
 		this.contentElement.style.overflow = 'hidden';
 		this.titleElement.style.overflow = 'hidden';
-		
+
 		return result;
     },
-    
+
     applyRightPosition: function(position) {
     	this.w = Math.max(position.x - this.getLeft(), ChartBox.ABSOLUTE_MINIMUM_WIDTH);
     	this._onWidthChange(position, Side.RIGHT);
     },
-    
+
     applyLeftPosition: function(position) {
     	this.w = Math.max(this.getRight() - position.x, ChartBox.ABSOLUTE_MINIMUM_WIDTH);
     	this.x = position.x;
     	this._onWidthChange(position, Side.LEFT);
     },
-    
+
     _onWidthChange: function(position, side) {
     	this.repositionElement();
     	this._onContentChange();
     	this.reposition();
-    	
+
     	var newPosition = this.getAnchorPointPosition({side: side, position: 50});
     	position.x = newPosition.x;
     	position.y = newPosition.y;
     },
-    
+
     applyPosition: function(position) {
     	this.x = position.x;
     	this.y = position.y;
     	this.repositionElement();
     	this.reposition();
     },
-    
+
     _onSetColor: function() {
     	if(this.config.color === 'transparent'){
 			this.outerRectangle.setStyle('fillColor', 'rgba(0,0,0,0)');
@@ -824,15 +834,15 @@ ChartCircle.DEFAULT_OPTIONS = {
 	}
 };
 
-ChartCircle.addMethods({  
+ChartCircle.addMethods({
     setProgram: function(program){
       this.config.program = program;
       chUtil.ajax({a: 'setProgram',
                    object_id: this.id,
                    program_id: program });
-      
-      this.setColor();     
-    },    
+
+      this.setColor();
+    },
     changeTitle: function() {
 	  if( document.editingTitle ) return;
       var self = this;
@@ -868,7 +878,7 @@ ChartCircle.addMethods({
 	  Charts.showEditor(this);
 	  document.editingBox = true;
     },
-    
+
     duplicate: function(callback) {
 		return Charts.createComponent(ChartCircle, {
 			x: parseInt(this.x),
@@ -884,7 +894,7 @@ ChartCircle.addMethods({
 			}
 		}, callback);
 	},
-  
+
     /** Handles a connection action (click, etc.) for a box */
     connect: function(){
         //first click means we are setting the connection source and waiting for more info
@@ -894,28 +904,28 @@ ChartCircle.addMethods({
           linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_HERE_LABEL);
           return;
         }
-        
-        //don't allow links to objects we have already linked to        
+
+        //don't allow links to objects we have already linked to
         if(Charts.waitingConnectionSource.outgoingConnectionExists(this)) {
             return;
         }
-        
+
         linkBoxesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
         linkCirclesMenuItem.cfg.setProperty('text', LINK_TO_LABEL);
-        
+
         //clicking self toggles connection source off and on
-        if(Charts.waitingConnectionSource.id == this.id){                           
+        if(Charts.waitingConnectionSource.id == this.id){
           Charts.waitingConnectionSource = null;
           return;
         }
-    	
-        //second click means we are setting the connection destination               
+
+        //second click means we are setting the connection destination
         var connection = this.connectFrom(Charts.waitingConnectionSource);
-        
+
         //remove half-link-waiting indicators regardless of what connection attempt has been made
         Charts.waitingConnectionSource = null;
     },
-    
+
     connectFrom: function(beginning) {
     	var data = Connection.determineDefaultConnectionData(beginning, this);
     	var params = Object.clone(data);
@@ -924,28 +934,28 @@ ChartCircle.addMethods({
 			destination_id: this.id,
 			a: 'connect'
 		});
-		
+
 		var connection = new Connection(beginning, this, data);
-		
+
 		chUtil.ajax(params, function(ajax) {
 			connection.id = ajax.responseText;
-			
+
 			Charts.registerComponent(connection);
-			
+
 			// TODO does this really belong here? should be in event-handling code
 			Charts.redraw();
 		}.bind(this));
-		
+
 		return connection;
     },
-    
+
     getControlPoints: function() {
     	var left = this.getAnchorPointPosition({side: Side.LEFT, position: 50});
     	left.applyPosition = this.applyLeftPosition.bind(this);
-    	
+
     	var right = this.getAnchorPointPosition({side: Side.RIGHT, position: 50});
     	right.applyPosition = this.applyRightPosition.bind(this);
-    	
+
     	if (this.w < this.getMinimumContentWidth()) {
     		left.color = '#ff0000';
     		right.color = '#ff0000';
@@ -955,46 +965,46 @@ ChartCircle.addMethods({
     		right
     	];
     },
-    
+
     getMinimumContentWidth: function() {
 		this.contentElement.style.overflow = 'visible';
 		this.titleElement.style.overflow = 'visible';
 		var result = Math.max(this.titleElement.offsetWidth, this.contentElement.offsetWidth) / Charts.textSizeMultiplier + 20;
-		
+
 		this.contentElement.style.overflow = 'hidden';
 		this.titleElement.style.overflow = 'hidden';
-		
+
 		return result;
     },
-    
+
     applyRightPosition: function(position) {
     	this.w = Math.max(position.x - this.getLeft(), ChartCircle.ABSOLUTE_MINIMUM_WIDTH);
     	this._onWidthChange(position, Side.RIGHT);
     },
-    
+
     applyLeftPosition: function(position) {
     	this.w = Math.max(this.getRight() - position.x, ChartCircle.ABSOLUTE_MINIMUM_WIDTH);
     	this.x = position.x;
     	this._onWidthChange(position, Side.LEFT);
     },
-    
+
     _onWidthChange: function(position, side) {
     	this.repositionElement();
     	this._onContentChange();
     	this.reposition();
-    	
+
     	var newPosition = this.getAnchorPointPosition({side: side, position: 50});
     	position.x = newPosition.x;
     	position.y = newPosition.y;
     },
-    
+
     applyPosition: function(position) {
     	this.x = position.x;
     	this.y = position.y;
     	this.repositionElement();
     	this.reposition();
     },
-    
+
     _onSetColor: function() {
     	if(this.config.color === 'transparent'){
 			this.outerCircle.setStyle('fillColor', 'rgba(0,0,0,0)');
@@ -1028,14 +1038,14 @@ var chUtil = {};
 chUtil.ajax = function(post, callback) {
 	post.version_id = Charts.versionId;
   var params = chUtil.toPost(post);
-  
+
   if (window.XMLHttpRequest) var ajax = new XMLHttpRequest();
-  else if (window.ActiveXObject) var ajax = new ActiveXObject("Microsoft.XMLHTTP");  
-  
+  else if (window.ActiveXObject) var ajax = new ActiveXObject("Microsoft.XMLHTTP");
+
   ajax.onreadystatechange = function () {
                               chUtil.ajaxRsc(ajax, callback);
                             }
-  
+
   ajax.open('POST', 'chserv.php', true);
   ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   if (document.cookie) ajax.setRequestHeader('Cookie', document.cookie);
@@ -1131,7 +1141,7 @@ Charts.insertFCKcontent = function() {
 			   a: 'update',
 			   content: {config: {content_html: thexhtml, content: thexhtml}}}
 			 );
-	
+
 	this.mychUtil._onContentChange();
 	this.mychUtil.reposition();
 	this.mychUtil = null;
@@ -1155,39 +1165,39 @@ Connection.addMethods({
 	remove: function() {
 		if (!Charts.confirmDelete('connection')) {
 			return;
-		} 
-		
+		}
+
 		this.disconnect();
-		
+
 		Charts.redraw();
 	},
-	
+
 	/** Disconnect this connection. */
 	disconnect: function(){
 	    //remove from database
 	    chUtil.ajax({source_id: this.source.id,
 	                 destination_id: this.destination.id,
 	                 a: 'disconnect'});
-      
-	    //remove from source and destination widgets 
+
+	    //remove from source and destination widgets
 	    this.source.unregisterOutgoingConnection(this);
 	    this.destination.unregisterIncomingConnection(this);
-	    
+
 	    Charts.unregisterComponent(this);
 	},
-	
+
 	/** Sets the anchor point on the source widget. */
 	anchorSource: function(anchorPoint) {
 		this.sourceAnchorPoint = anchorPoint;
 		this.onPropertyChange({'source_side': anchorPoint.side, 'source_position': anchorPoint.position});
 	},
-	
+
 	/** Sets the anchor point on the destination widget. */
 	anchorDestination: function(anchorPoint) {
 		this.destinationAnchorPoint = anchorPoint;
 		this.onPropertyChange({'destination_side': anchorPoint.side, 'destination_position': anchorPoint.position});
 	},
-	
+
 	/** Sets the number of line segments used to draw the connection.
 	 *  Only values 1-3 are supported.
 	 */
@@ -1195,23 +1205,23 @@ Connection.addMethods({
 		this.numSegments = numSegments;
 		this.onPropertyChange({'num_segments': numSegments});
 	},
-	
-	/** Sets the axis of the line extending from the source anchor point. 
+
+	/** Sets the axis of the line extending from the source anchor point.
 	 *  @param sourceAxis either 'x' or 'y'
 	 */
 	setSourceAxis: function(sourceAxis) {
 		this.sourceAxis = sourceAxis;
 		this.onPropertyChange({'source_axis': sourceAxis});
 	},
-	
+
 	setColor: function(color) {
 		if(color !== 'transparent'){
-			this.color = color;	
+			this.color = color;
 			this.shape.setStyle('color', '#' + color);
 			this.onPropertyChange({'color': color});
 		}
 	},
-	
+
 	autoposition: function() {
 		var data = Connection.determineDefaultConnectionData(this.source, this.destination);
 		this.sourceAnchorPoint = {side: data.source_side, position: data.source_position};
@@ -1220,7 +1230,7 @@ Connection.addMethods({
 		this.numSegments = data.num_segments;
 		this.onPropertyChange(data);
 	},
-	
+
 	onPropertyChange: function(properties) {
 		var data = {
             a: 'update',
@@ -1231,10 +1241,10 @@ Connection.addMethods({
 			data[key] = properties[key];
 		}
 		chUtil.ajax(data);
-        
+
 		this.reposition();
 	},
-	
+
 	getControlPoints: function() {
 		var startControlPoint = Object.clone(this.startPoint);
 		startControlPoint.applyPosition = this.applyAnchorPointPosition.bind(this, this.source, this.sourceAnchorPoint, this.startPoint);
@@ -1250,7 +1260,7 @@ Connection.addMethods({
 			return [startControlPoint];
 		}
 	},
-	
+
 	applyAnchorPointPosition: function(control, anchorPoint, point, position) {
 		var translated = Geometry.translatedPoint(position, -control.getLeft(), -control.getTop());
 		if (Side.isHorizontal(anchorPoint.side)) {
@@ -1263,7 +1273,7 @@ Connection.addMethods({
 		position.x = point.x;
 		position.y = point.y;
 	},
-	
+
 	onReshape: function() {
 		this.onPropertyChange({
 			'source_side': this.sourceAnchorPoint.side,
@@ -1283,7 +1293,7 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 	var down = destination.getTop() - source.getBottom();
 	var left = source.getLeft() - destination.getRight();
 	var right = destination.getLeft() - source.getRight();
-	
+
 	switch (Math.max(up, down, left, right)) {
 		case up:
 			data = {
@@ -1314,16 +1324,16 @@ Connection.determineDefaultConnectionData = function(source, destination) {
 			};
 			break;
 	}
-	
+
 	data.num_segments = 1;
 	data.source_position = 50;
 	data.destination_position = 50;
-	
+
 	if(typeof source.config.color !== 'string' || source.config.color === 'transparent' || source.config.color.indexOf('rgba') > -1){
 		source.config.color = '000000';
 	}
 	data.color = source.config.color.replace('#','');
-	
+
 	return data;
 };
 
@@ -1452,18 +1462,18 @@ var onDrawGridSelect = function() {
 var onNewLineSelect = function(type, args, value) {
 	var options = value || {};
 	var position = Charts.positionWithin(Charts.contextMenuPosition);
-	
+
 	Object.extend(options, {
 		startPoint: {
 			x: position.x,
 			y: position.y
-		}, 
+		},
 		endPoint: {
 			x: position.x + 100,
 			y: position.y + 100
 		}
 	});
-	 
+
 	Charts.createComponent(ChartLine, options, Charts.redraw.bind(Charts));
 };
 
@@ -1480,7 +1490,7 @@ var onGridSizeSelect = function() {
 	var gridSize = prompt('Edit grid size', Charts.gridSize);
 	if (gridSize != null) {
 		Charts.gridSize = Math.max(2, parseInt(gridSize));
-		
+
 		if (Charts.drawGrid) {
 			Charts.redraw();
 		}
@@ -1501,7 +1511,7 @@ types.each(function(type) {
 });
 typeMenu.subscribe('show', function() {
 	var box = Charts.contextMenuTarget;
-	
+
 	selectMenuItemWithOnclickObj(typeMenu, box.config.program);
 });
 
@@ -1536,6 +1546,10 @@ titleColors.each(function(color) {
 		text: '<span style="border:1px solid grey;background-color: #' + color + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
 		onclick: {fn: onEditTitleColorSelect, obj: color, scope: boxTitleColorMenu}
 	});
+});
+boxTitleColorMenu.addItem({
+	text: '<span title="Transparent" style="border:1px solid grey;color:red;padding: 0 3px;" title="Transparent">&#216;</span>',
+	onclick: {fn: onEditTitleColorSelect, obj: 'transparent', scope: boxTitleColorMenu}
 });
 // create the box connection menu item
 var linkBoxesMenuItem = new YAHOO.widget.MenuItem(LINK_TO_LABEL, {onclick: {fn: onLinkToSelect}});
@@ -1613,12 +1627,12 @@ var addAnchorPointMenuItems = function(menu) {
 		{text: 'Left', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_LEFT}},
 		{text: 'Right', onclick: {fn: onAnchorPointSelect, scope: menu, obj: AnchorPoint.MIDDLE_RIGHT}},
 	]]);
-	
+
 	menu.subscribe('show', function() {
 		var connection = Charts.contextMenuTarget;
-		
+
 		var anchorPoint = menu == anchorSourceMenu ? connection.sourceAnchorPoint : connection.destinationAnchorPoint;
-		
+
 		menu.getItems().each(function(item) {
 			var obj = item.cfg.getProperty('onclick').obj;
 			item.cfg.setProperty('checked', obj.side == anchorPoint.side && obj.position == anchorPoint.position);

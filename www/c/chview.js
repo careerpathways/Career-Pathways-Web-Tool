@@ -5,7 +5,7 @@ Charts = {
 	if (window.G_vmlCanvasManager) {
 		window.G_vmlCanvasManager.init_(document);
 	}
-		
+
     if (canvas_container) {
     	Charts.element = $(canvas_container);
     	Charts._afterOpen = function() {
@@ -31,11 +31,11 @@ Charts = {
 
 
     Charts.elementOffset = Charts.element.cumulativeOffset();
-    
+
     if (toolbar_container) {
     	Charts.toolbarContainer = $(toolbar_container);
     }
-    
+
     Charts.textSizeMonitor = new TextSizeMonitor(Charts.element);
     Charts.textSizeMonitor.start();
     Charts.textSizeMultiplier = Charts.textSizeMonitor.getSize() / Charts.textSizeMonitor.getBaseSize();
@@ -49,11 +49,11 @@ Charts = {
     	})
     	Charts.redraw();
     });
-    
+
     Charts.createCanvas(Charts.element.offsetWidth, Charts.element.offsetHeight);
-    
+
     Charts.element.addClassName('yui-skin-sam');
-	
+
 	Charts.setData({
 		versionId: versionId,
 		widgets: chData,
@@ -61,12 +61,12 @@ Charts = {
 		drawing_status: drawing_status
 	});
   },
-  
+
 	createCanvas: function(width, height) {
 		if (Charts.canvas) {
 			Charts.element.removeChild(Charts.canvas);
 		}
-		
+
 		Charts.canvas = document.createElement('canvas');
 		Charts._realCanvas = Charts.canvas.getContext;
 		if (Charts._realCanvas && Charts.printing) {
@@ -77,11 +77,11 @@ Charts = {
 		}
 		Charts.canvas.setAttribute('width', width * Charts.canvasScale);
 		Charts.canvas.setAttribute('height', height * Charts.canvasScale);
-		
+
 		// this makes firefox happy (for printing)
 		Charts.canvas.style.width = (width) + 'px';
 		Charts.canvas.style.height = (height) + 'px';
-		
+
 		if (!Charts._realCanvas) {
 			Charts.canvas.id = Charts.element.id + '_canvas';
 			Charts.element.appendChild(Charts.canvas);
@@ -91,12 +91,12 @@ Charts = {
 			Charts.element.appendChild(Charts.canvas);
 		}
 		Charts.canvas = $(Charts.canvas);
-		
+
 		Charts.canvas.style.position = "absolute";
 		Charts.canvas.style.top = "0";
 		Charts.canvas.style.left = "0";
 		Charts.canvas.style.zIndex = "-100";
-	    
+
 	    Charts.ctx = Charts.canvas.getContext('2d');
 	},
 
@@ -115,9 +115,9 @@ Charts = {
 				Charts.canvas.style.background = 'url(' + Charts.backgroundImageUrl + ')';
 			}
 		}
-	
+
 		// add all the widgets
-		data.widgets.each(function(properties) {   
+		data.widgets.each(function(properties) {
 			var component = null;
 			switch (properties['type']) {
 				case 'line':
@@ -132,29 +132,29 @@ Charts = {
 					break;
 				case 'circle':
 					component = new ChartCircle(properties);
-					break;    
+					break;
 			}
-			Charts.registerComponent(component);             
+			Charts.registerComponent(component);
 		});
-	
+
     //once all widgets are translated and drawn we can draw links between them (currently only boxes support this feature)
-    data.connections.each(function(data) {         
+    data.connections.each(function(data) {
    		var source = Charts.getWidget(data.source_object_id);
    		var destination = Charts.getWidget(data.destination_object_id);
          var connection = new Connection(source, destination, data);
          Charts.registerComponent(connection);
     });
-    
-    
+
+
     if (Charts._afterOpen) {
     	Charts._afterOpen();
 	}
     //Charts.reposition();
     Charts.redraw();
-    
+
     Charts.element.fire('chart:drawn', {chart: Charts});
   },
-	
+
 	/** Registers a component with the chart.
 	 *  A registered component has it's shapes added to the chart. */
 	registerComponent: function(component) {
@@ -163,23 +163,23 @@ Charts = {
 		// TODO belongs in component
 		component.shape = component.createShape();
 		component.shape.widget = component;
-		
+
 		Charts.addShape(component.getShape(), component.getLayer());
-		
+
 		Charts.components.push(component);
-		
+
 		if (component.type != 'connection') {
 			Charts.widgets.set(component.id, component);
 		}
-    
+
 		component.reposition();
 	},
-	
+
 	/** Returns the widget with the specified id. */
 	getWidget: function(id) {
 		return Charts.widgets.get(id);
 	},
-	
+
 	/** Adds a shape to the chart. */
 	addShape: function(shape, layerIndex) {
 		layerIndex = layerIndex || 0;
@@ -192,7 +192,7 @@ Charts = {
 		shape.layerIndex = layerIndex;
 		layer[shape.index] = shape;
 	},
-	
+
 	/** Moves a shape forward in the stacking order. */
 	moveShapeForward: function(shape) {
 		if (shape.index < Charts.layers[shape.layerIndex].length - 1) {
@@ -203,7 +203,7 @@ Charts = {
 			return false;
 		}
 	},
-	
+
 	/** Moves a shape backwards in the stacking order. */
 	moveShapeBackward: function(shape) {
 		if (shape.index > 0) {
@@ -214,19 +214,19 @@ Charts = {
 			return false;
 		}
 	},
-	
+
 	/* Reverses the order of two shapes. */
 	_swapShapeOrder: function(l, i, j) {
 		var shapeI = Charts.layers[l][i];
 		var shapeJ = Charts.layers[l][j];
-		
+
 		shapeI.index = j;
 		shapeJ.index = i;
-		
+
 		Charts.layers[l][i] = shapeJ;
 		Charts.layers[l][j] = shapeI;
 	},
-	
+
 	/* Repositions all shapes in the chart. */
 	reposition: function() {
 		Charts.components.invoke('reposition');
@@ -234,28 +234,28 @@ Charts = {
 			Charts.controlPoints = Charts.selectedComponent.getControlPoints();
 		}
 	},
-	
-	/** Redraws all shapes in the chart. 
+
+	/** Redraws all shapes in the chart.
 	function redraw() */
 	redraw: function() {
 		var context = Charts.ctx;
-		
+
 		context.save();
 		var scale = Charts.textSizeMultiplier * Charts.canvasScale;
 		context.scale(scale, scale);
-		
+
 		if (Charts.printing) {
 			if (Prototype.Browser.Gecko) {
 				context.fillStyle = '#ffffff';
 				context.fillRect(0, 0, Charts.canvas.width, Charts.canvas.height);
-					
+
 				if (Charts.backgroundImageUrl) {
 					if (!Charts._backgroundImage) {
 						context.restore();
 						Charts._backgroundImage = new Image();
 						Charts._backgroundImage.src = Charts.backgroundImageUrl;
 						Charts._backgroundImage.onload = Charts.redraw;
-						
+
 						return;
 					}
 					else {
@@ -265,14 +265,14 @@ Charts = {
 							}
 						}
 					}
-					
+
 				}
 			}
 		}
 		else {
 			context.clearRect(0, 0, Charts.canvas.width, Charts.canvas.height);
 		}
-		
+
 		if (Charts.drawGrid && Charts.drawingArea) {
 			context.strokeStyle = Charts.gridColor;
 			context.lineWidth = 1;
@@ -282,7 +282,7 @@ Charts = {
 				context.moveTo(x, 0);
 				context.lineTo(x, Charts.drawingArea.height);
 				context.stroke();
-				
+
 			}
 			for (var y = .5; y < Charts.drawingArea.bottomRight.y; y += Charts.gridSize) {
 				context.beginPath();
@@ -291,11 +291,11 @@ Charts = {
 				context.stroke();
 			}
 		}
-		
+
 		var layer;
 		for (var i = 0, layerLen = Charts.layers.length; i < layerLen; ++i) {
 			layer = Charts.layers[i];
-			
+
 			if (layer) {
 				// draw the shapes
 				for (var j = 0, len = layer.length; j < len; ++j) {
@@ -303,14 +303,14 @@ Charts = {
 				}
 			}
 		}
-		
+
 		Charts._finishRedraw(context);
-		
+
 		context.restore();
 	},
-	
+
 	_finishRedraw: function(context) {},
-	
+
 	redrawNeeded: function(bounds) {
 		this.needsRedraw = true;
 	}
@@ -319,8 +319,8 @@ Charts = {
 var Component = Class.create({
     getShape: function() {
     	return this.shape;
-    }, 
-    
+    },
+
     getLayer: function() {
     	return 0;
     }
@@ -341,12 +341,12 @@ var Widget = Class.create(Component, {
     y: 0,
     h: 0,
     w: 0,
-          
+
 	initialize: function(options) {
 		this.config = {color: DEFAULT_COLOR};
 		this.entity = true;
 		Object.extend(this, options || {});
-		
+
 		this.type = this.getType();
 		if (!chColor.include(this.config.color) && this.config.color !== 'transparent') {
 			this.config.color = DEFAULT_COLOR;
@@ -357,85 +357,85 @@ var Widget = Class.create(Component, {
 		this.connectionIDs = [];
 		this.outgoingConnections = new Hash();
 		this.incomingConnections = new Hash();
-		
+
 		if (this.getElem) {
 			Charts.element.appendChild(this.getElem());
 			this.repositionElement();
 			this._onContentChange();
 		}
-		
+
 		if (this.setup) {
 			this.setup();
 		}
 	},
-    
+
     setColor: function(color) {
-      this.color = color;       
+      this.color = color;
     },
-	
+
 	/** Returns all connections (both incoming and outgoing). */
 	getConnections: function() {
 		// Array.concat isn't working in ie7
 	   return [this.getIncomingConnections(), this.getOutgoingConnections()].flatten();
 	},
-	
+
 	/** Registers an outgoing connection (a connection from this widget to another). */
 	registerOutgoingConnection: function(connection) {
 		this.outgoingConnections.set(connection.destination.id, connection);
 	},
-	
+
 	/** Returns all outoing connections. */
 	getOutgoingConnections: function() {
 		return this.outgoingConnections.values();
 	},
-	
+
 	/** Removes an outgoing connection. */
 	unregisterOutgoingConnection: function(connection) {
 		this.outgoingConnections.unset(connection.destination.id);
 	},
-	
+
 	/** Registers an incoming connection (a connection from another widget to this widget). */
 	registerIncomingConnection: function(connection) {
 		this.incomingConnections.set(connection.source.id, connection);
 	},
-	
+
 	/** Returns all incoming connections. */
 	getIncomingConnections: function() {
 		return this.incomingConnections.values();
 	},
-	
+
 	/** Removes an incoming connection. */
 	unregisterIncomingConnection: function(connection) {
 		this.incomingConnections.unset(connection.source.id);
 	},
-	
+
 	/** Returns true if this widget has a connection to the destination. */
 	outgoingConnectionExists: function(destination) {
 		return this.outgoingConnections.get(destination.id) != null;
 	},
-	
+
     reposition: function() {},
-    
+
     getWidth: function() {
     	return parseInt(this.w);
     },
-    
+
     getHeight: function() {
     	return parseInt(this.h);
     },
-    
+
     getTop: function() {
     	return parseInt(this.y) - 19; //
     },
-    
+
     getLeft: function() {
     	return parseInt(this.x);
     },
-    
+
     getBottom: function() {
     	return this.getTop() + this.getHeight();
     },
-    
+
     getRight: function() {
     	return this.getLeft() + this.getWidth();
     }
@@ -452,14 +452,14 @@ ChartLine = Class.create(Widget, {
 	getType: function() {
 		return 'line';
 	},
-	
+
 	setup: function() {
 		var isVertical = this.config.direction && (this.config.direction == VERTICAL || this.config.direction == 'n' || this.config.direction == 's');
 		var isOldVersion = false;
 		if (!this.startPoint) {
 			var a = {x: this.getLeft() + (isVertical ? 7 : 0), y: this.getTop() + (isVertical ? 0 : 7)};
 			var b = Geometry.translatedPoint(a, isVertical ? 0 : this.getWidth(), isVertical ? this.getHeight() : 0);
-			
+
 			if (this.config.direction == 'n' || this.config.direction == 'w') {
 				this.startPoint = b;
 				this.endPoint = a;
@@ -474,15 +474,15 @@ ChartLine = Class.create(Widget, {
 			this.endPoint = Widget.toIntegerPoint(this.endPoint);
 		}
 	},
-  
+
 	getStartPoint: function() {
 		return this.startPoint;
 	},
-  
+
 	getEndPoint: function() {
 		return this.endPoint;
 	},
-	
+
 	createShape: function() {
 		return new Path(
 			[Geometry.ORIGIN, Geometry.ORIGIN],
@@ -494,13 +494,13 @@ ChartLine = Class.create(Widget, {
 			}
 		);
 	},
-  
+
 	reposition: function() {
 		this.shape.setPoints([
 			this.getStartPoint(),
 			this.getEndPoint()
 		]);
-		
+
 		var bounds = this.shape.getBounds();
 		this.x = bounds.x;
 		this.y = bounds.y;
@@ -534,32 +534,68 @@ ChartBox = Class.create(Widget, {
 	getType: function() {
 		return 'box';
 	},
-	
+
     elem: null,
-    
+
 	getElem: function() {
-		/* NOTE: putting the class in the constructor, i.e. 
+		/* NOTE: putting the class in the constructor, i.e.
 		 * new Element('div', {'class': 'ctepathwaysBox'}); doesn't work in IE
 		 * 8 with Prototype earlier than v1.6.1. See
 		 * https://prototype.lighthouseapp.com/projects/8886/tickets/529 */
 		this.elem = new Element('div').addClassName('ctepathwaysBox');
-		
+
 		if (this.w > 0) this.elem.style.width = (this.getWidth() - 20) + 'px';
 
 		this.titleElement = new Element('div').addClassName('ctepathwaysBoxTitle');
 	    this.contentElement = new Element('div').addClassName('ctepathwaysBoxContent');
-	    
+
 	    this.elem.appendChild(this.titleElement);
 	    this.elem.appendChild(this.contentElement);
-	    
+
 	    this.titleElement.update(this.config.title || '&nbsp;');
 	    this.contentElement.update(this.config.content_html);
-		this.titleElement.style.color = '#' + this.config.color_title || '#ffffff';
+
+        // Set default color if not defined
+        if (!this.config.color_title) {
+            this.config.color_title = 'ffffff';
+        }
+
+        // Assign color value. Special case for transparent.
+        if (this.config.color_title == 'transparent') {
+            this.titleElement.style.color = 'rgba(0,0,0,0)';
+        } else {
+            this.titleElement.style.color = '#' + this.config.color_title;
+        }
 
 		this.elem.style.zIndex = "0";
 		return this.elem;
     },
-  
+
+    /**
+     * Small helper function to get correct properties for innerRectangle.
+     * Handles special case where we need rounded corners if title is hidden.
+     */
+    getInnerRectangleProps: function() {
+        var _props = {
+            fillColor: this.config.color_background,
+            fill: true,
+            bottomLeftRadius: this.borderThickness,
+            bottomRightRadius: this.borderThickness
+        };
+
+        // Round the inner rectangles top corners if the title is transparent.
+        // We hide the title if it's transparent (by removing its geometry)
+        if (this.config.color_title == 'transparent') {
+            _props.topLeftRadius = this.borderThickness;
+            _props.topRightRadius = this.borderThickness;
+        } else {
+            //Make sure to remove rounded corners, e.g. when interactively editing.
+            _props.topLeftRadius = 0;
+            _props.topRightRadius = 0;
+        }
+        return _props;
+    },
+
   createShape: function() {
   	this.borderThickness = 5;
   	if(this.config.color_background === 'transparent'){
@@ -567,15 +603,11 @@ ChartBox = Class.create(Widget, {
   	} else {
   		this.config.color_background = '#' + this.config.color_background;
   	}
+
   	this.innerRectangle = new Rectangle(
-  		{x: 0, y: 0}, 0, 0,
-  		{
-  			fillColor: this.config.color_background,
-  			fill: true,
-  			bottomLeftRadius: this.borderThickness,
-  			bottomRightRadius: this.borderThickness
-  		}
+  		{x: 0, y: 0}, 0, 0, this.getInnerRectangleProps()
   	);
+
     if(this.config.color === 'transparent'){
   		this.config.color = 'rgba(0,0,0,0)';
   	} else {
@@ -591,22 +623,22 @@ ChartBox = Class.create(Widget, {
   			radius: this.borderThickness * 2
   		}
   	);
-  	
+
   	return new CompoundShape([this.outerRectangle, this.innerRectangle]);
   },
-	
+
 	getLayer: function() {
 		return 1;
 	},
-	
+
     getHeight: function() {
     	return this.height;
     },
-    
+
     /** Returns the position of the anchor point. */
     getAnchorPointPosition: function(anchorPoint) {
     	var result;
-    	
+
     	switch (anchorPoint.side) {
     		case Side.TOP:
     			result = {y: this.getTop()};
@@ -621,7 +653,7 @@ ChartBox = Class.create(Widget, {
 				result = {x: this.getRight()};
 				break;
     	}
-    	
+
     	switch (anchorPoint.side) {
     		case Side.TOP:
     		case Side.BOTTOM:
@@ -632,49 +664,76 @@ ChartBox = Class.create(Widget, {
 				result.y = this.getTop() + this.getHeight() * anchorPoint.position / 100;
 				break;
     	}
-    	
+
     	return result;
     },
-    
+
 	repositionElement: function() {
 		this.elem.style.top = (this.getTop()) * Charts.textSizeMultiplier + 'px';
 		this.elem.style.left = (this.getLeft() + 10) * Charts.textSizeMultiplier + 'px';
 		this.elem.style.width = (this.getWidth() - 20) * Charts.textSizeMultiplier + 'px';
-		var titlePadding = 4 * Charts.textSizeMultiplier + 'px';
-		this.titleElement.style.paddingTop = titlePadding;
-		this.titleElement.style.paddingBottom = titlePadding;
 	},
-	
+
+    /** @deprecated */
 	_onContentChange: function() {
-		this.titleHeight = this.titleElement.offsetHeight / Charts.textSizeMultiplier;
-		this.contentHeight = this.contentElement.offsetHeight / Charts.textSizeMultiplier;
-		this.height = this.titleHeight + this.contentHeight + 10;
+        // This work is now handled within this.reposition() for consolidation
 	},
-    
+
     reposition: function() {
+        var titlePadding = 4 * Charts.textSizeMultiplier + 'px';
+        this.titleElement.style.paddingTop = titlePadding;
+        this.titleElement.style.paddingBottom = titlePadding;
+
+        var titlePadding,
+            titleHeight,
+            contentHeight,
+            totalHeight;
+
+        if (this.config.color_title == 'transparent') {
+            // Title is hidden, alter the ChartBox's geometry as necessary.
+            titlePadding = 0;
+            titleHeight = this.borderThickness;
+        } else {
+            titlePadding = 4 * Charts.textSizeMultiplier + 'px';
+            titleHeight = this.titleElement.offsetHeight / Charts.textSizeMultiplier;
+        }
+
+        contentHeight = this.contentElement.offsetHeight / Charts.textSizeMultiplier;
+        totalHeight = titleHeight + contentHeight + 10;
+
+        this.titleElement.style.paddingTop = titlePadding;
+		this.titleElement.style.paddingBottom = titlePadding;
+        this.titleHeight = titleHeight
+        this.contentHeight = contentHeight;
+
+		this.height = totalHeight;
+
+// console.log('titlePadding ' + titlePadding);
+// console.log('titleHeight ' + titleHeight);
+// console.log('contentHeight ' + contentHeight);
+// console.log('totalHeight ' + totalHeight);
+
     	var pos = {
     		x: this.getLeft(),
     		y: this.getTop()
     	};
-    	
+
     	var thickness = this.borderThickness;
     	this.outerRectangle.reposition(pos, this.getWidth(), this.getHeight());
-    	
+
+
     	this.innerRectangle.reposition(
     		Geometry.translatedPoint(pos, thickness, this.titleHeight),
     		this.getWidth() - thickness * 2,
     		this.getHeight() - thickness - this.titleHeight
     	);
-    	
-    	this.innerRectangle.setStyles({
-    		bottomLeftRadius: this.borderThickness,
-  			bottomRightRadius: this.borderThickness
-    	});
-    	
+
+    	this.innerRectangle.setStyles(this.getInnerRectangleProps());
+
     	this.outerRectangle.setStyle('radius', thickness * 2);
-    	
+
     	this.shape.recalculateBounds();
-    	
+
     	this.getConnections().invoke('reposition');
     }
 });
@@ -687,24 +746,24 @@ ChartCircle = Class.create(Widget, {
 	getType: function() {
 		return 'circle';
 	},
-	
+
     elem: null,
-    
+
 	getElem: function() {
-		/* NOTE: putting the class in the constructor, i.e. 
+		/* NOTE: putting the class in the constructor, i.e.
 		 * new Element('div', {'class': 'ctepathwaysCircle'}); doesn't work in IE
 		 * 8 with Prototype earlier than v1.6.1. See
 		 * https://prototype.lighthouseapp.com/projects/8886/tickets/529 */
 		this.elem = new Element('div').addClassName('ctepathwaysCircle');
-		
+
 		if (this.w > 0) this.elem.style.width = (this.getWidth() - 20) + 'px';
 
 		this.titleElement = new Element('div').addClassName('ctepathwaysCircleTitle');
 	    this.contentElement = new Element('div').addClassName('ctepathwaysCircleContent');
-	    
+
 	    //this.elem.appendChild(this.titleElement);
 	    this.elem.appendChild(this.contentElement);
-	    
+
 	    this.titleElement.update(this.config.title || '&nbsp;');
 	    this.contentElement.update(this.config.content_html);
 		this.titleElement.style.color = '#' + this.config.color_title || '#ffffff';
@@ -712,7 +771,7 @@ ChartCircle = Class.create(Widget, {
 		this.elem.style.zIndex = "0";
 		return this.elem;
     },
-  
+
   createShape: function() {
   	this.borderThickness = 5;
   	this.innerCircle = new Circle(
@@ -734,22 +793,22 @@ ChartCircle = Class.create(Widget, {
   			radius: this.borderThickness * 2
   		}
   	);
-  	
+
   	return new CompoundShape([this.outerCircle, this.innerCircle]);
   },
-	
+
 	getLayer: function() {
 		return 1;
 	},
-	
+
     getHeight: function() {
     	return this.height;
     },
-    
+
     /** Returns the position of the anchor point. */
     getAnchorPointPosition: function(anchorPoint) {
     	var result;
-    	
+
     	switch (anchorPoint.side) {
     		case Side.TOP:
     			result = {y: this.getTop()};
@@ -764,7 +823,7 @@ ChartCircle = Class.create(Widget, {
 				result = {x: this.getRight()};
 				break;
     	}
-    	
+
     	switch (anchorPoint.side) {
     		case Side.TOP:
     		case Side.BOTTOM:
@@ -775,10 +834,10 @@ ChartCircle = Class.create(Widget, {
 				result.y = this.getTop() + this.getHeight() * anchorPoint.position / 100;
 				break;
     	}
-    	
+
     	return result;
     },
-    
+
 	repositionElement: function() {
 		this.elem.style.top = (this.getTop()) * Charts.textSizeMultiplier + 'px';
 		this.elem.style.left = (this.getLeft() + 10) * Charts.textSizeMultiplier + 'px';
@@ -787,19 +846,19 @@ ChartCircle = Class.create(Widget, {
 		this.titleElement.style.paddingTop = titlePadding;
 		this.titleElement.style.paddingBottom = titlePadding;
 	},
-	
+
 	_onContentChange: function() {
 		this.titleHeight = this.titleElement.offsetHeight / Charts.textSizeMultiplier;
 		this.contentHeight = this.contentElement.offsetHeight / Charts.textSizeMultiplier;
 		this.height = this.titleHeight + this.contentHeight + 10;
 	},
-    
+
     reposition: function() {
     	var posOuter = {
     		x: this.getLeft(),
     		y: this.getTop()
     	};
-    	
+
     	var thickness = this.borderThickness;
     	this.outerCircle.reposition(posOuter, this.getWidth(), this.getHeight());
 
@@ -807,43 +866,43 @@ ChartCircle = Class.create(Widget, {
     		x: this.getLeft() + thickness,
     		y: this.getTop() + thickness
     	};
-    	
+
     	this.innerCircle.reposition(
     		posInner,
     		this.getWidth() - thickness * 2,
     		this.getHeight() - (thickness *2) - this.titleHeight
     	);
-    	
+
     	this.innerCircle.setStyles({
     		bottomLeftRadius: this.borderThickness,
   			bottomRightRadius: this.borderThickness
     	});
-    	
+
     	this.outerCircle.setStyle('radius', thickness * 2);
-    	
+
     	this.shape.recalculateBounds();
-    	
+
     	this.getConnections().invoke('reposition');
     }
 });
 
 
 /**
-  Connection -- a linking between two chart widgets, which can be a 
+  Connection -- a linking between two chart widgets, which can be a
   composite of different view components
   {generic chUtil} source
-  {generic chUtil} destination  
+  {generic chUtil} destination
 */
 var Connection = Class.create(Component, {
 	sourceAnchorPoint: AnchorPoint.TOP_LEFT,
 	destinationAnchorPoint: AnchorPoint.TOP_LEFT,
 	numSegments: 3,
 	sourceAxis: 'x',
-	
+
 	getType: function() {
 		return 'connection';
 	},
-	
+
 	initialize: function(source, destination, data) {
 		this.data = data;
 		this.source = source;
@@ -851,9 +910,9 @@ var Connection = Class.create(Component, {
 		this.color = this.source.config.color;
 		this.startPoint = {};
 		this.endPoint = {};
-		
+
 		this.chart = Charts;
-		
+
 		if (data) {
 			this.id = data.id;
 			this.sourceAnchorPoint = {side: data.source_side, position: data.source_position};
@@ -871,10 +930,10 @@ var Connection = Class.create(Component, {
 		//connections must be registered with thier respective boxes
 		this.source.registerOutgoingConnection(this);
 		this.destination.registerIncomingConnection(this);
-		
+
 		this.type = 'connection';
 	},
-	
+
 	createShape: function() {
 		return new Path(
 			[Geometry.ORIGIN, Geometry.ORIGIN],
@@ -886,12 +945,12 @@ var Connection = Class.create(Component, {
 			}
 		);
 	},
-	
+
 	reposition: function() {
 		var startPoint = this.source.getAnchorPointPosition(this.sourceAnchorPoint);
     	var endPoint = this.destination.getAnchorPointPosition(this.destinationAnchorPoint);
     	var midPoint;
-    	
+
     	if (this.numSegments < 3 && this.numSegments > 0) {
     		if (this.sourceAxis == 'x') {
     			midPoint = {x: endPoint.x, y: startPoint.y};
@@ -900,9 +959,9 @@ var Connection = Class.create(Component, {
     			var midPoint = {x: startPoint.x, y: endPoint.y};
     		}
     	}
-		
+
 		var points;
-		
+
 		if (this.numSegments == 0) {
 			points = [startPoint, endPoint];
 		}
@@ -925,14 +984,14 @@ var Connection = Class.create(Component, {
 				points = [startPoint, jointPoint1, jointPoint2, endPoint];
 		    }
     	}
-    	
+
     	this.shape.setPoints(points);
-		
+
 		this.bounds = this.shape.getBounds();
-		
+
 		this.startPoint.x = startPoint.x;
 		this.startPoint.y = startPoint.y;
-		
+
 		this.endPoint.x = endPoint.x;
 		this.endPoint.y = endPoint.y;
 	}
@@ -944,7 +1003,7 @@ Object.extend(Math, {
 	minArray: function(array) {
 		return Math.min.apply(Math, array);
 	},
-	
+
 	maxArray: function(array) {
 		return Math.max.apply(Math, array);
 	}
@@ -955,42 +1014,42 @@ Object.extend(Math, {
 ******************************************************************************/
 var Geometry = {
 	ORIGIN: {x: 0, y: 0},
-	
+
 	bounds: function(a, b) {
 		var points = $A(arguments);
 		return new Geometry.Bounds(points);
 	},
-	
+
 	/** A rectangle that surrounds a set of points. */
 	Bounds: Class.create({
-		/** Creates a boundary object for a set of points, with an optional 
+		/** Creates a boundary object for a set of points, with an optional
 		 *  fudge factor for containment checking.
 		 */
 		initialize: function(points, fudge) {
-			this.fudge = fudge || 0; 
+			this.fudge = fudge || 0;
 			var xCoords = points.pluck('x');
 			var yCoords = points.pluck('y');
-			
+
 			this.left = this.x = Math.minArray(xCoords);
      		this.top = this.y = Math.minArray(yCoords);
-     		
+
      		this.topLeft = {
      			x: this.x,
      			y: this.y
      		}
-     		
+
      		this.right = Math.maxArray(xCoords);
      		this.bottom = Math.maxArray(yCoords);
-     		
+
      		this.bottomRight = {
      			x: this.right,
      			y: this.bottom
      		}
-     		
+
      		this.width = this.right - this.left;
      		this.height = this.bottom - this.top;
 		},
-		
+
 		/** Returns whether the point is within the fudge factor of the bounds. */
 		contains: function(point) {
 			if (this.fudge <= 0) {
@@ -1000,7 +1059,7 @@ var Geometry = {
 				return Geometry.gte(point, Geometry.translatedPoint(this.topLeft, -this.fudge, -this.fudge)) && Geometry.lte(point, Geometry.translatedPoint(this.bottomRight, this.fudge, this.fudge));
 			}
 		},
-		
+
 		/** Returns a new bounds the includes the current bounds and the parameter. */
 		compound: function(that) {
 			return new Geometry.Bounds([
@@ -1010,18 +1069,18 @@ var Geometry = {
 				that.bottomRight
 			]);
 		},
-		
+
 		/** Returns a new bounds that include the current points and the new points. */
 		expanded: function(points) {
 			return new Geometry.Bounds(points).compound(this);
 		},
-		
+
 		/** Returns the top left and bottom right points of the boundary. */
 		getPoints: function() {
 			return [this.topLeft, this.bottomRight];
 		}
 	}),
-	
+
 	/** Returns the difference between the start and and end points, as an x,y tuple. */
 	deltas: function(start, end) {
 		return {
@@ -1029,17 +1088,17 @@ var Geometry = {
 			y: end.y - start.y
 		};
 	},
-	
+
 	/** Returns the distance from the point to the origin. */
 	length: function(delta) {
 		return Math.sqrt(delta.x * delta.x + delta.y * delta.y);
 	},
-	
+
 	/** Returns the distance between two points. */
 	abs: function(a, b) {
 		return Geometry.length(Geometry.deltas(a, b));
 	},
-	
+
 	/** Returns a point translated by another point or x and y amounts. */
 	translatedPoint: function(point) {
 		if (arguments.length == 3) {
@@ -1055,7 +1114,7 @@ var Geometry = {
 			}
 		}
 	},
-	
+
 	/** Returns a point scaled by a factor. */
 	scaledPoint: function(point, factor) {
 		return {
@@ -1063,14 +1122,14 @@ var Geometry = {
 			y: point.y * factor
 		};
 	},
-	
+
 	/** Returns whether the first argument is positioned the same or to the
 	 *  bottom right of the second argument.
 	 */
 	gte: function(lhs, rhs) {
 		return lhs.x >= rhs.x && lhs.y >= rhs.y;
 	},
-	
+
 	/** Returns whether the first argument is positioned the same or to the
 	 *  top left of the second argument.
 	 */
@@ -1089,7 +1148,7 @@ var AbstractShape = Class.create({
 	getBounds: function() {
 		return this.bounds;
 	},
-	
+
 	/** Resets all styles or a sets single style property of the shape. */
 	setStyle: function(style) {
 		if (arguments.length == 2) {
@@ -1100,19 +1159,19 @@ var AbstractShape = Class.create({
 		else {
 			this.style = style;
 		}
-		
+
 		this.onStyleChange(this.style);
 	},
-	
+
 	/** Sets a set of styles on the shape. */
 	setStyles: function(styles) {
 		$H(styles).each(function(entry) {
 			this.style[entry.key] = entry.value;
 		}.bind(this));
-		
+
 		this.onStyleChange(this.style);
 	},
-	
+
 	/** Called when the style of the shape changes. */
 	onStyleChange: function() {}
 });
@@ -1124,55 +1183,55 @@ var Path = Class.create(AbstractShape, {
 		this.setPoints(points);
 		this.style = style;
 	},
-	
+
 	/** Sets the points that comprise the path. */
 	setPoints: function(points) {
 		this.points = points;
-		
+
 		this.refreshPoints();
 	},
-	
+
 	/** Refreshes the points if they have changed outside of the path. */
 	refreshPoints: function() {
 		var points = this.points;
 		if (points.length > 0) {
 			var previousPoint = points[0];
-			
+
 			var point;
-			
+
 			for (var i = 1, len = points.length; i < len; ++i) {
 				point = points[i];
 				point.delta = Geometry.deltas(previousPoint, point);
 				point.length = Geometry.length(point.delta);
 				point.theta = Math.atan2(point.delta.y, point.delta.x);
-				
+
 				previousPoint = point;
 			}
 		}
-		
+
 		this.bounds = new Geometry.Bounds(points, 6);
 	},
-	
+
 	/** Returns the path's points. */
 	getPoints: function() {
 		return this.points;
 	},
-	
+
 	draw: function(context) {
 		var arrowheadAtEnd = this.style.arrowheadAtEnd;
 		var arrowheadAtStart = this.style.arrowheadAtStart;
 		context.lineWidth = parseInt(this.style.lineWidth) || 5; //lineWidth is stored in DB as "thickness"
-		
+
 		//default
 		context.strokeStyle = context.fillStyle = this.style.color;
-		
-		
+
+
 		switch(this.style.lineDashStyle) {
 			case 'DashedShort':
 				context.lineCap = 'square';
 				//setLineDash only supported in IE 11+
 				if(context.setLineDash){
-					context.setLineDash([(.1)*context.lineWidth, (2)*context.lineWidth]);	
+					context.setLineDash([(.1)*context.lineWidth, (2)*context.lineWidth]);
 				}
 				break;
 			case 'DashedLong':
@@ -1188,31 +1247,31 @@ var Path = Class.create(AbstractShape, {
 				}
 				break;
 		}
-	
-				
+
+
 		context.beginPath();
-		
+
 		var previousPoint = this.points[0];
 		var point;
-		
+
 		context.save();
 		if (context.lineWidth % 2 == 1) {
 			context.translate(-.5, -.5);
 		}
-		
+
 		context.moveTo(Math.round(previousPoint.x), Math.round(previousPoint.y));
-		
+
 		if (arrowheadAtEnd) {
 			var arrowLength = context.lineWidth * ARROW_LENGTH_MULTIPLIER;
 			var arrowThickness = context.lineWidth * ARROW_THICKNESS_MULTIPLIER;
 		}
-		
+
 		var arrowheadThisSegment;
-		
+
 		for (var k = 1, len = this.points.length; k < len; ++k) {
 			point = this.points[k];
 			arrowheadThisSegment = (k == len - 1 && arrowheadAtEnd);
-			
+
 			var endPoint;
 			if (arrowheadThisSegment) {
 				endPoint = {
@@ -1224,33 +1283,33 @@ var Path = Class.create(AbstractShape, {
 				endPoint = point;
 			}
 			context.lineTo(Math.round(endPoint.x), Math.round(endPoint.y));
-			
+
 			previousPoint = point;
 		}
-		
+
 		context.stroke();
-		
+
 		if (arrowheadAtEnd) {
 			context.translate(previousPoint.x, previousPoint.y);
 			context.rotate(point.theta);
 			context.translate(-previousPoint.x, -previousPoint.y);
-			
+
 			context.beginPath();
 			context.moveTo(point.x - arrowLength, point.y - arrowThickness / 2);
 			context.lineTo(point.x, point.y);
     		context.lineTo(point.x - arrowLength, point.y + arrowThickness / 2);
     		context.fill();
 		}
-		
+
 		context.restore();
 	},
-	
+
 	contains: function(point) {
 		if (this.bounds.contains(point)) {
 			// FIXME implement
 		}
 	},
-	
+
 	// TODO test
 	intersects: function(line) {
 		if (this.start.x == line.start.x && this.start.y == line.start.y ||
@@ -1259,31 +1318,31 @@ var Path = Class.create(AbstractShape, {
 		    this.end.x == line.end.y && this.start.y == line.end.y) {
 			return false;
 		}
-		
+
 		var a = this.start;
 		var b = Geometry.translatedPoint(this.end, -a.x, -a.y);
 		var c = Geometry.translatedPoint(line.start, -a.x, -a.y);
 		var d = Geometry.translatedPoint(line.end, -a.x, -a.y);
-		
+
 		var cos = b.x / this.length;
 		var sin = b.y / this.length;
-		
+
 		c = {
 			x: c.x * cos + c.y * sin,
 			y: c.y * cos - c.x * sin
 		};
-		
+
 		d = {
 			x: d.x * cos + d.y * sin,
 			y: d.y * cos + d.x * sin
 		};
-		
+
 		if (c.x < 0 && d.x < 0 || c.x > 0 && d.x > 0) {
 			return false;
 		}
-		
+
 		var position = d.x + (c.x - d.x) * d.y / (d.y - c.y);
-		
+
 		if (position < 0 || position > this.length) {
 			return false;
 		}
@@ -1297,12 +1356,12 @@ var CompoundShape = Class.create(AbstractShape, {
 		this.bounds = null;
 		this.resetShapes(components);
 	},
-	
+
 	/** Returns the points that make up all of the components. */
 	getPoints: function() {
 		return this.components.invoke('getPoints').flatten();
 	},
-	
+
 	/** Adds a component to the compound shape, expanding the bounding
 	 *  rectangle to include the new shape.
 	 */
@@ -1315,25 +1374,25 @@ var CompoundShape = Class.create(AbstractShape, {
 			this.bounds = this.bounds.compound(component.getBounds());
 		}
 	},
-	
+
 	/** Replaces all current shapes in the compound shape. */
 	resetShapes: function(components) {
 		this.components = components || [];
-		
+
 		this.recalculateBounds();
 	},
-	
+
 	/** Recalculates the boundary rectangle. Used if the shapes that comprise
 	 *  the compound shape are repositioned.
 	 */
 	recalculateBounds: function() {
 		this.bounds = new Geometry.Bounds(this.components.invoke('getBounds').invoke('getPoints').flatten());
 	},
-	
+
 	draw: function(context) {
 		this.components.invoke('draw', context);
 	},
-	
+
 	/** Returns true if any of the shapes that comprise the compound shape
 	 *  contain the point.
 	 */
@@ -1351,15 +1410,15 @@ var Rectangle = Class.create(AbstractShape, {
 		this.reposition(position, width, height);
 		this.setStyle(style);
 	},
-	
+
 	reposition: function(position, width, height) {
 		this.position = position;
 		this.width = width;
 		this.height = height;
-		
+
 		this.bounds = Geometry.bounds(position, Geometry.translatedPoint(position, width, height));
 	},
-	
+
 	onStyleChange: function(style) {
 		if (style.radius) {
 			style.topLeftRadius = style.topRightRadius = style.bottomLeftRadius = style.bottomRightRadius = style.radius;
@@ -1371,7 +1430,7 @@ var Rectangle = Class.create(AbstractShape, {
 			style.bottomRightRadius = style.bottomRightRadius || 0;
 		}
 	},
-	
+
 	draw: function(context) {
 		if (this.style.strokeWidth){
 			context.lineWidth = this.style.strokeWidth;
@@ -1383,7 +1442,7 @@ var Rectangle = Class.create(AbstractShape, {
 		if (this.style.strokeColor) {
 			context.strokeStyle = this.style.strokeColor;
 		}
-		
+
 		var x = this.position.x;
 		var y = this.position.y;
 		var width = this.width;
@@ -1420,15 +1479,15 @@ var Circle = Class.create(AbstractShape, {
 		this.reposition(position, width, height);
 		this.setStyle(style);
 	},
-	
+
 	reposition: function(position, width, height) {
 		this.position = position;
 		this.width = width;
 		this.height = height;
-		
+
 		this.bounds = Geometry.bounds(position, Geometry.translatedPoint(position, width, height));
 	},
-	
+
 	onStyleChange: function(style) {
 		if (style.radius) {
 			style.topLeftRadius = style.topRightRadius = style.bottomLeftRadius = style.bottomRightRadius = style.radius;
@@ -1440,7 +1499,7 @@ var Circle = Class.create(AbstractShape, {
 			style.bottomRightRadius = style.bottomRightRadius || 0;
 		}
 	},
-	
+
 	draw: function(context) {
 		function drawEllipseWithBezier(ctx, x, y, w, h, fill) {
 			var kappa = .5522848,
@@ -1464,7 +1523,7 @@ var Circle = Class.create(AbstractShape, {
 			ctx.fill();
 			ctx.restore();
 		}
-		
+
 
 		if (this.style.strokeWidth){
 			context.lineWidth = this.style.strokeWidth;
@@ -1476,11 +1535,11 @@ var Circle = Class.create(AbstractShape, {
 		if (this.style.strokeColor) {
 			context.strokeStyle = this.style.strokeColor;
 		}
-		
+
 		var x = this.position.x;
 		var y = this.position.y;
-		
-		
+
+
 		var width = this.width;
 		var height = this.height;
 
@@ -1518,39 +1577,39 @@ var Circle = Class.create(AbstractShape, {
 var TextSizeMonitor = Class.create({
 	initialize: function(parentElement) {
 		this.parentElement = $(parentElement);
-		
+
 		this.element = document.createElement('span');
 		this.element.id = 'textSizeMonitor' + TextSizeMonitor.index++;
 		this.element.innerHTML = '&nbsp;';
 		this.element.style.position = 'absolute';
 		this.element.style.left = '-10000px';
-		
+
 		this.parentElement.insertBefore(this.element, this.parentElement.firstChild);
 		this.currentSize = this.getSize();
 		this.baseSize = this.currentSize;
 	},
-	
+
 	start: function() {
 		if (!this.interval) {
 			this.interval = window.setInterval(this._check.bind(this), TextSizeMonitor.DELAY);
 		}
 	},
-	
+
 	stop: function() {
 		if (this.interval) {
 			window.clearInterval(this.interval);
 			this.interval = null;
 		}
 	},
-	
+
 	getBaseSize: function() {
 		return this.baseSize;
 	},
-	
+
 	getSize: function() {
 		return this.element.offsetHeight;
 	},
-	
+
 	_check: function() {
 		var newSize = this.getSize();
 		if (newSize !== this.currentSize) {
