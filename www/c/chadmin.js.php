@@ -1,0 +1,19 @@
+<?php
+	header("Content-type: text/javascript");
+    include('chadmin/constants.js');
+    include('chadmin/observe1.js');
+    include('chadmin/Charts.extend.js');
+    include('chadmin/WidgetAdmin.js');
+    include('chadmin/ChartLine.extend.js');
+    include('chadmin/ChartBox.extend.js');
+    include('chadmin/ChartCircle.extend.js');
+    include('chadmin/chUtil.js');
+    include('chadmin/Charts.extend2.js');
+    include('chadmin/Connection.extend.js');
+    include('chadmin/menuCallbacks.js');
+    include('chadmin/menuInit.js');
+    include('chadmin/menuChartBox.js');
+    include('chadmin/menuChartCircle.js');
+    include('chadmin/menuConnection.js');
+    include('chadmin/menuCharts.js');
+    include('chadmin/observe2.js');
