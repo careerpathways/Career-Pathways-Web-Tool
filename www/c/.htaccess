@@ -26,6 +26,8 @@ RewriteRule ^study/([0-9]+)/[^\.]+\.(html|js) vpost_view.php?id=$1&format=$2 [nc
 
 
 RewriteRule ^postedit.js$ postedit.js.php [nc,qsa]
+RewriteRule ^chview.js$ chview.js.php [nc,qsa]
+RewriteRule ^chadmin.js$ chadmin.js.php [nc,qsa]
 RewriteRule ^olmis\.(.+)$ olmis.php?format=$1 [nc,qsa]
 RewriteRule ^cis_roadmap\.(.+)$ cis_roadmap.php?format=$1 [nc,qsa]
 RewriteRule ^cis_post_view\.(.+)$ cis_post_view.php?format=$1 [nc,qsa]
