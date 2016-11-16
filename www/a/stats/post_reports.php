@@ -34,7 +34,7 @@ $org_type_list = $DB->VerticalQuery(
   FROM schools
   INNER JOIN users ON users.school_id=schools.id
   GROUP BY schools.id
-  ORDER BY school_name", 
+  ORDER BY school_name",
   'organization_type',
   'school_name'
 );
@@ -919,7 +919,7 @@ echo '</div>';
 
 
 $view_drawings = $DB->MultiQuery('
-SELECT  v.id                AS view_id, 
+SELECT  v.id                AS view_id,
         v.name              AS view_name,
         v.last_modified     AS view_last_modified,
         sv.id               AS view_school_id,
@@ -1108,7 +1108,7 @@ echo '<div class="section">';
 echo '</div>';
 
 //used in report (below)
-$num_unlinked = 0; 
+$num_unlinked = 0;
 
 //only viewdrawings without a skillset are being reported
 $view_drawings_no_skillset = array();
@@ -1220,7 +1220,7 @@ echo '</div>';
 
 } //end else hasFeature('approved_program_name')
 
-PrintFooter();
+
 
 
 
@@ -1316,3 +1316,108 @@ echo date('Y-m-d', $i) . "\t" . relative_time(date('Y-m-d', $i)) . "\n";
 echo '</pre>';
 */
 }
+
+?>
+
+
+<?php
+$apn_roadmap = $DB->MultiQuery('SELECT
+                            dm.name as alt_title,
+                            dm.program_id as apn_id,
+                            s.school_name as school_name,
+                            s.id as school_id,
+                            drawings.published as published
+                        FROM drawings
+                            LEFT JOIN drawing_main as dm
+                                ON drawings.parent_id = dm.id
+                            LEFT JOIN schools as s
+                                ON dm.school_id = s.id
+                        WHERE
+                            drawings.published = 1');
+
+$apn_post = $DB->MultiQuery('SELECT
+                            dm.name as alt_title,
+                            dm.program_id as apn_id,
+                            s.school_name as school_name,
+                            s.id as school_id,
+                            post_drawings.published as published
+                        FROM post_drawings
+                            LEFT JOIN post_drawing_main as dm
+                                ON post_drawings.parent_id = dm.id
+                            LEFT JOIN schools as s
+                                ON dm.school_id = s.id
+                        WHERE
+                            post_drawings.published = 1');
+
+// Make one large array since both drawing types are structured the same
+$apn = array_merge($apn_roadmap, $apn_post);
+
+$report = array();
+foreach($apn as $a) {
+    if(!is_array($report[$a['school_id']])) {
+        $report[$a['school_id']] = array(
+            'total' => 0,
+            'only_alt' => 0,
+            'only_apn' => 0,
+            'both' => 0,
+            'neither' => 0,
+            'school_name' => $a['school_name']
+        );
+    }
+
+    $report[$a['school_id']]['total'] += 1;
+
+    if ($a['apn_id'] > 0) {
+        if (strlen($a['alt_title']) > 0) {
+            $report[$a['school_id']]['both'] += 1;
+        } else {
+            $report[$a['school_id']]['only_apn'] += 1;
+        }
+    } else {
+        if (strlen($a['alt_title']) > 0) {
+            $report[$a['school_id']]['only_alt'] += 1;
+        } else {
+            $report[$a['school_id']]['neither'] += 1;
+        }
+    }
+}
+
+usort($report, 'sort_alpha');
+function sort_alpha($a, $b){
+    return strnatcmp($a['school_name'], $b['school_name']);
+}
+//var_dump($report);
+?>
+<h2>APN - Approved Program Name</h2>
+<div class="section">
+    <h3>Oregon Web Tool - STATS - Use of Approved Program Name Fields</h3>
+
+    <a onclick="toggleTableDisplayByID('apn-use')">Show/Hide</a>
+    <div id="apn-use" style="display:none;">
+        <table>
+            <tr class="drawing_main">
+                <th>Organization Name</th>
+                <th>Total Published Drawings</th>
+                <th>Only Alt Title</th>
+                <th>Only Approved</th>
+                <th>Both Alt and Approved</th>
+                <th>Neither Alt nor Approved</th>
+            </tr>
+            <?php $apn = array(); ?>
+            <?php foreach ($report as $r): ?>
+                <tr>
+                    <td><?= $r['school_name'] ?></td>
+                    <td><?= $r['total'] ?></td>
+                    <td><?= $r['only_alt'] ?></td>
+                    <td><?= $r['only_apn'] ?></td>
+                    <td><?= $r['both'] ?></td>
+                    <td><?= $r['neither'] ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+</div>
+
+
+
+<?php PrintFooter(); ?>
