@@ -30,6 +30,11 @@ padding: 2px 4px;
 .toggle-table.open {
   display: block;
 }
+
+.alt-bg:nth-child(odd) {
+  background: #E4E4E4
+}
+
 </style>
 <?php
 
@@ -1411,8 +1416,8 @@ function sort_alpha($a, $b){
                 <th>Neither Alt nor Approved</th>
             </tr>
             <?php $apn = array(); ?>
-            <?php foreach ($report as $r): ?>
-                <tr>
+            <?php foreach ($report as $i => $r): ?>
+                <tr class="alt-bg">
                     <td><?= $r['school_name'] ?></td>
                     <td><?= $r['total'] ?></td>
                     <td><?= $r['only_alt'] ?></td>
