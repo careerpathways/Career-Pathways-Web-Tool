@@ -5,7 +5,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>Charts</title>
     <script type="text/javascript" src="/files/prototype.js"></script>
-    <script type="text/javascript" src="chview.js?id=1"></script>
+    <script type="text/javascript" src="chview.js?id=1&ver=<?= VERSION_CORE ?>"></script>
     <script type="text/javascript" src="chadmin.js"></script>
     <style type="text/css">@import 'chstyle.css';</style>
   </head>

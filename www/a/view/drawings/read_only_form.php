@@ -10,7 +10,7 @@ $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/text.html';
 $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
 
-$embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
+$embed_code = '<div id="pathwaysContainer" style="width:100%;"></div>
 <script type="text/javascript" src="http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/embed.js"></script>';
 
 $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school_abbr','id');

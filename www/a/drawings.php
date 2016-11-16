@@ -264,7 +264,7 @@ function showVersion() {
 
 	<div id="drawing_canvas" class="ctpathways"><?php require('c/view/chart_include.php'); ?>
 		<?php if (!($drawing['published']==1 || $drawing['frozen']==1 || KeyInRequest('view') || $readonly)) : ?>
-	<script type="text/javascript" src="/c/chadmin.js"></script> <?php endif; ?>
+	<script type="text/javascript" src="/c/chadmin.js?ver=<?= VERSION_CORE ?>"></script> <?php endif; ?>
 	<script type="text/javascript">
 				function init() {
 					if (arguments.callee.done) return;

@@ -110,4 +110,4 @@ $pdf_url = str_replace(
     <?php
 } ?>
 <script type="text/javascript" src="<?= getBaseUrl() ?>/files/prototype.js"></script>
-<script type="text/javascript" src="<?= getBaseUrl() ?>/c/chview.js"></script>
+<script type="text/javascript" src="<?= getBaseUrl() ?>/c/chview.js?ver=<?= VERSION_CORE ?>"></script>

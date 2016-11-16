@@ -9,7 +9,7 @@ $xml_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/published/$$/%%.xml';
 $pdf_link = 'http://'.$_SERVER['SERVER_NAME'].'/pdf/$$/%%.pdf';
 $accessible_link = 'http://'.$_SERVER['SERVER_NAME'].'/c/text/$$/%%.html';
 
-$embed_code = '<div id="pathwaysContainer" style="width:100%; height:600px"></div>
+$embed_code = '<div id="pathwaysContainer" style="width:100%;"></div>
 <script type="text/javascript" src="'.getBaseUrl().'/c/published/$$/embed.js"></script>';
 
 
