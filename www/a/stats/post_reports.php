@@ -1,18 +1,13 @@
 <?php
 include('stats.inc.php');
-
+$TEMPLATE->addl_scripts[] = '/common/jquery-3.1.1.min.js';
 PrintHeader();
 
 ?>
 <script type="text/javascript">
-  function toggleTableDisplayByID(id){
-    var table = document.getElementById(id);
-    if (table.style.display == 'table'){
-      table.style.display = 'none';
-    } else {
-      table.style.display = 'table';
-    }
-  }
+$('body').on('click', '.toggle-btn', function(){
+  $(this).siblings('.toggle-table').toggleClass('open');
+});
 
 </script>
 
@@ -22,6 +17,18 @@ margin-bottom: 40px;
 }
 .section td, .section th {
 padding: 2px 4px;
+}
+
+.toggle-btn {
+  cursor: pointer;
+}
+
+.toggle-table {
+  display: none;
+}
+
+.toggle-table.open {
+  display: block;
 }
 </style>
 <?php
@@ -71,14 +78,14 @@ echo '<p><i>Active means that they are doing more than just logging on, and that
 # Active High School Users
 echo '<div class="section">';
   echo '<h3>How many of the ('.$numHSUsers.') High School users are "actively" creating POST Drawings/Views?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table001\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   # Report a sum total, as well as a list of user and organization names.
 
   $activeHSUsers = getActiveUsers('HS');
 
   echo '<p><b>Total: ' . count($activeHSUsers) . '</b></p>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table001" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Name</th>';
@@ -101,14 +108,14 @@ echo '</div>';
 # Active Community College Users
 echo '<div class="section">';
   echo '<h3>How many of the ('.$numCCUsers.') Community College users are "actively" creating POST Drawings/Views?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table002\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   # Report a sum total, as well as a list of user and organization names.
 
   $activeCCUsers = getActiveUsers('CC');
 
   echo '<p><b>Total: ' . count($activeCCUsers) . '</b></p>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table002" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Name</th>';
@@ -131,12 +138,12 @@ echo '</div>';
 # Top Developers of POST Drawings/Views
 echo '<div class="section">';
   echo '<h3>Who are the most active developers for POST Drawings/Views?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table003\')">Show/Hide Top 15 Users</a>';
+  echo '<a class="toggle-btn">Show/Hide Top 15 Users</a>';
   # List user and organization names.
   $topPOSTUsers = getTopPOSTUsers();
 
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table003" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Name</th>';
@@ -166,7 +173,7 @@ echo '<h2>Development of POST Drawings</h2>';
 # High School POST Drawing sections created by High School Users
 echo '<div class="section">';
   echo '<h3>How many HS sections were created by HS users?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table004\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
 
   $sections = $DB->MultiQuery('
   SELECT dm.id, dm.name AS drawing_name, dm.last_modified,
@@ -191,7 +198,7 @@ echo '<div class="section">';
   echo '</p>';
 
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table004" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Drawing</th>';
@@ -217,7 +224,7 @@ echo '</div>';
 # High School POST Drawing sections in POST Views
 echo '<div class="section">';
   echo '<h3>Of the published HS sections, how many have been included in a POST View? For which HSs?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table005\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   $sections = $DB->MultiQuery('
   SELECT ds.school_name, dm.name AS drawing_name, dm.id, COUNT(vpost_links.id) AS num_views, ds.id AS school_id
   FROM post_drawing_main dm
@@ -251,7 +258,7 @@ echo '<div class="section">';
   echo '</p>';
 
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table005" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Drawing</th>';
@@ -276,7 +283,7 @@ echo '<div class="section">';
   echo '<table width="100%"><tr>';
   echo '<td width="50%" valign="top">';
   echo '<h3>POST Drawings Created for HSs by a Community College</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table006\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
 
   $sections = $DB->MultiQuery('
   SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name,
@@ -298,7 +305,7 @@ echo '<div class="section">';
   echo '</p>';
 
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table006" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization</th>';
@@ -323,7 +330,7 @@ echo '</div>';
 # High School POST Drawing sections in POST Views created by CC's
 echo '<div class="section">';
   echo '<h3>Of the CC created published HS sections, how many have been included in a POST View? For which HSs?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table007\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
 
   $sections = $DB->MultiQuery('
   SELECT dm.id, dm.name AS drawing_name, dm.last_modified, ds.school_name, ds.id AS school_id, us.id AS org_id, us.school_name AS org_name,
@@ -359,7 +366,7 @@ echo '<div class="section">';
   echo '</p>';
 
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table007" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization</th>';
@@ -404,7 +411,7 @@ $CCPostDrawingsPublished = $CCPostDrawingsPublished['num'];
 # Summary of published CC POST Drawings
 echo '<div class="section">';
   echo '<h3>There are ' . $CCPostDrawingsPublished . ' Published CC POST Drawings</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table008\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   echo '<p>POST Views with a published CC drawing: ' . $CCPostDrawingsInAView . '</b><br />';
   echo '</p>';
   # Provide a breakdown of how many published POST Drawings for each CC (such as Lane Community College, 20)
@@ -417,7 +424,7 @@ echo '<div class="section">';
   ORDER BY num_drawings DESC
   ');
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table008" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization</th>';
@@ -458,7 +465,7 @@ echo '<div class="section">';
     echo '<table width="100%"><tr>';
       echo '<td width="50%" valign="top">';
         echo '<h3>POST Drawings Created for HSs</h3>';
-        echo '<a onclick="toggleTableDisplayByID(\'table009\')">Show/Hide</a><br>';
+        echo '<a class="toggle-btn">Show/Hide</a><br>';
 
         $drawings = $DB->MultiQuery('
         SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
@@ -483,7 +490,7 @@ echo '<div class="section">';
         echo '<b>Total Drawings: ' . $num_post_HSdwgs . '</b>';
         if(count($drawings) > 0) {
           $trClass = new Cycler('row_light', 'row_dark');
-          echo '<div id="table009" style="display:none;">';
+          echo '<div class="toggle-table">';
             echo '<table>';
               echo '<tr class="drawing_main">';
                 echo '<th>Organization</th>';
@@ -503,7 +510,7 @@ echo '<div class="section">';
       # HS POST Views created by an ESD
       echo '<td width="50%" valign="top">';
       echo '<h3>POST Views Created for HSs</h3>';
-      echo '<a onclick="toggleTableDisplayByID(\'table010\')">Show/Hide</a><br>';
+      echo '<a class="toggle-btn">Show/Hide</a><br>';
 
       $drawings = $DB->MultiQuery('
       SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
@@ -528,7 +535,7 @@ echo '<div class="section">';
       echo '<b>Total Views: ' . $num_post_HSviews . '</b>';
       if(count($drawings) > 0) {
         $trClass = new Cycler('row_light', 'row_dark');
-        echo '<div id="table010" style="display:none;">';
+        echo '<div class="toggle-table">';
           echo '<table>';
             echo '<tr class="drawing_main">';
               echo '<th>Organization</th>';
@@ -553,7 +560,7 @@ echo '<div class="section">';
     echo '<table width="100%"><tr>';
       echo '<td width="50%" valign="top">';
         echo '<h3>POST Drawings Created for CCs or Others</h3>';
-        echo '<a onclick="toggleTableDisplayByID(\'table011\')">Show/Hide</a><br>';
+        echo '<a class="toggle-btn">Show/Hide</a><br>';
 
         $drawings = $DB->MultiQuery('
         SELECT "drawing" AS type, dm.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
@@ -578,7 +585,7 @@ echo '<div class="section">';
         echo '<b>Total Drawings: ' . $num_post_CCdwgs . '</b>';
         if(count($drawings) > 0) {
           $trClass = new Cycler('row_light', 'row_dark');
-          echo '<div id="table011" style="display:none;">';
+          echo '<div class="toggle-table">';
             echo '<table>';
               echo '<tr class="drawing_main">';
                 echo '<th>Organization</th>';
@@ -599,7 +606,7 @@ echo '<div class="section">';
       # CC POST Views created by an ESD
       echo '<td width="50%" valign="top">';
         echo '<h3>POST Views Created for CCs or Others</h3>';
-        echo '<a onclick="toggleTableDisplayByID(\'table012\')">Show/Hide</a><br>';
+        echo '<a class="toggle-btn">Show/Hide</a><br>';
 
         $drawings = $DB->MultiQuery('
         SELECT "view" AS type, v.id, ds.school_name, ds.id AS school_id, COUNT(1) AS num
@@ -624,7 +631,7 @@ echo '<div class="section">';
         echo '<b>Total Views: ' . $num_post_CCviews . '</b>';
         if(count($drawings) > 0) {
           $trClass = new Cycler('row_light', 'row_dark');
-          echo '<div id="table012" style="display:none;">';
+          echo '<div class="toggle-table">';
             echo '<table>';
               echo '<tr class="drawing_main">';
                 echo '<th>Organization</th>';
@@ -653,9 +660,9 @@ echo '<div class="section">';
     JOIN schools vs ON vs.id = v.school_id
     ');
     echo '<h3>' . count($esdPOSTViews) . ' POST Views have been created by ESDs</h3>';
-    echo '<a onclick="toggleTableDisplayByID(\'table013\')">Show/Hide</a>';
+    echo '<a class="toggle-btn">Show/Hide</a>';
     $trClass = new Cycler('row_light', 'row_dark');
-    echo '<div id="table013" style="display:none;">';
+    echo '<div class="toggle-table">';
       echo '<table>';
         echo '<tr class="drawing_main">';
           echo '<th>View</th>';
@@ -688,9 +695,9 @@ echo '<div class="section">';
   ORDER BY last_modified DESC
   ');
   echo '<h3>' . count($emptyPOSTViews) . ' POST Views have no POST Drawings attached</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table014\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table014" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>View</th>';
@@ -723,9 +730,9 @@ echo '<div class="section">';
     WHERE name LIKE "%test%"
   ');
   echo '<h3>' . count($testPOSTViews) . ' POST Views have "test" in their name</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table015\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table015" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>View</th>';
@@ -750,7 +757,7 @@ echo '</div>';
 # post views that have high school and CC in them.
 echo '<div class="section">';
   echo '<h3>How many "full" POST Views exist? This includes both top HS section and lower CC section together.</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table016\')">Show/Hide</a> <br>';
+  echo '<a class="toggle-btn">Show/Hide</a> <br>';
   $postViews = $DB->MultiQuery('
   SELECT v.id, v.name, v.last_modified,
   s.id AS school_id, s.school_name,
@@ -785,7 +792,7 @@ echo '<div class="section">';
 
   echo '<b>Total: ' . count($fullPOSTViews) . '</b>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table016" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>View</th>';
@@ -829,7 +836,7 @@ FROM vpost_views v
 
 echo '<div class="section">';
   echo '<h3>How many POST Views exist that only include top High School Sections?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table017\')">Show/Hide</a> <br>';
+  echo '<a class="toggle-btn">Show/Hide</a> <br>';
 
   //build exclusion list
   $exclusionList = array();
@@ -851,7 +858,7 @@ echo '<div class="section">';
 
   echo '<b>Total: ' . count($HSonlyPOSTViews) . '</b>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table017" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>View</th>';
@@ -873,7 +880,7 @@ echo '</div>';
 
 echo '<div class="section">';
   echo '<h3>How many POST Views exist that only include bottom Community College Sections?</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table018\')">Show/Hide</a> <br>';
+  echo '<a class="toggle-btn">Show/Hide</a> <br>';
 
   //build exclusion list
   $exclusionList = array();
@@ -895,7 +902,7 @@ echo '<div class="section">';
 
   echo '<b>Total: ' . count($CConlyPOSTViews) . '</b>';
   $trClass = new Cycler('row_light', 'row_dark');
-  echo '<div id="table018" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>View</th>';
@@ -1008,8 +1015,8 @@ $total_cc_only = 0;
 
 echo '<div class="section">';
   echo '<h3>Provide a quick breakdown on the types of POST Views:</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table019\')">Show/Hide</a>';
-  echo '<div id="table019" style="display:none;">';
+  echo '<a class="toggle-btn">Show/Hide</a>';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization</th>';
@@ -1137,9 +1144,9 @@ function comp($a, $b) {
 
 echo '<div class="section">';
   echo '<h3>Total # of unlinked Oregon Skill Set POST Drawings: '.$num_unlinked.'</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table020\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
 
-  echo '<div id="table020" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization Name</th>';
@@ -1185,7 +1192,7 @@ echo '<div class="section">';
   GROUP BY e.drawing_id
   ');
   echo '<h3>Provide a quick breakdown on who owns each of the ' . count($numEmbedded) . ' embedded POST Views.</h3>';
-  echo '<a onclick="toggleTableDisplayByID(\'table021\')">Show/Hide</a>';
+  echo '<a class="toggle-btn">Show/Hide</a>';
   # such as Lane Community College, 20
 
   $embedded = $DB->MultiQuery('
@@ -1201,7 +1208,7 @@ echo '<div class="section">';
   GROUP BY s.id
   ORDER BY num DESC
   ');
-  echo '<div id="table021" style="display:none;">';
+  echo '<div class="toggle-table">';
     echo '<table>';
       echo '<tr class="drawing_main">';
         echo '<th>Organization</th>';
@@ -1392,8 +1399,8 @@ function sort_alpha($a, $b){
 <div class="section">
     <h3>Oregon Web Tool - STATS - Use of Approved Program Name Fields</h3>
 
-    <a onclick="toggleTableDisplayByID('apn-use')">Show/Hide</a>
-    <div id="apn-use" style="display:none;">
+    <a class="toggle-btn">Show/Hide</a>
+    <div class="toggle-table">
         <table>
             <tr class="drawing_main">
                 <th>Organization Name</th>
