@@ -246,7 +246,6 @@ function hideHeader($id, $preview=FALSE) {
 function showVersion() {
 	global $DB, $TEMPLATE, $SITE;
 
-
 	$drawing = $DB->SingleQuery('SELECT main.*, d.parent_id, d.published, d.frozen, schools.school_abbr, d.id, os.title AS skillset
 		FROM post_drawing_main AS main
 		JOIN post_drawings AS d ON d.parent_id = main.id
@@ -260,6 +259,17 @@ function showVersion() {
 	}
 	$drawing_main = $DB->SingleQuery("SELECT * FROM post_drawing_main WHERE id=" . $drawing['parent_id']);
 
+	$pdf_url = getBaseUrl().'/pdf/post/$$/%%.pdf';
+	$pdf_url = str_replace(
+	    array('$$', '%%'),
+	    array(
+	        $drawing['parent_id'],
+	        CleanDrawingCode(
+	            GetDrawingName($drawing['parent_id'], 'post')
+	        ),
+	    ),
+	    $pdf_url
+	);
 	$TEMPLATE->addl_styles[] = "/c/pstyle.css";
 
 	//Allow site-template to over-ride header styles
@@ -349,9 +359,9 @@ function showVersion() {
         <?php endif; ?>
 
         <?php if ($drawing['show_pdf_ada_links']): ?>
-        <div class="alt-links">
-            <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
-        </div>
+	        <div class="alt-links">
+	            <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
+	        </div>
         <?php endif; ?>
     </div>
 

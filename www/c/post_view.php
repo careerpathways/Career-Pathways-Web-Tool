@@ -154,7 +154,7 @@ else
                 </div>
             <?php endif; ?>
 
-		    <?php if (1$isPDF): ?>
+		    <?php if (!$isPDF): ?>
 	            <?php if ($drawing['show_pdf_ada_links']): ?>
 	            <div class="alt-links">
 	                <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
