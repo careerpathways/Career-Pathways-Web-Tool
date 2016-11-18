@@ -47,7 +47,7 @@ ChartBox = Class.create(Widget, {
      * Handles special case where we need rounded corners if title is hidden.
      */
     getInnerRectangleProps: function() {
-        if('transparent' !== this.config.color_background && !this.config.color_background.includes('#')){
+        if('transparent' !== this.config.color_background && this.config.color_background.indexOf('#') < 0){
             this.config.color_background = '#' + this.config.color_background;
         }
 
@@ -189,7 +189,8 @@ ChartBox = Class.create(Widget, {
         this.titleElement.style.paddingBottom = titlePadding;
         this.titleHeight = titleHeight
         this.contentHeight = contentHeight;
-
+        // Shift content up and down according to title height
+        this.contentElement.style.top = titleHeight + 3 +'px';
         this.height = totalHeight;
 
         // console.log('titlePadding ' + titlePadding);
