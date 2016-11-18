@@ -68,6 +68,13 @@ $pdf_url = str_replace(
     ),
     $pdf_url
 );
+
+//create a boolean for the case that this is a pdf render
+if(isset($_GET['isPDF'])){
+    $isPDF = true;
+} else {
+    $isPDF = false;
+}
 ?>
 <script type="text/javascript">
 <?php require 'chart_data_js.php'; ?>
@@ -87,12 +94,14 @@ $pdf_url = str_replace(
         </div>
     <?php endif; ?>
 
-    <?php if ($drawing['show_pdf_ada_links']): ?>
-    <div class="alt-links">
-        <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
-        |
-        <a target="_blank" href="<?= $accessible_url ?>"><i class="fa fa-file-text-o"></i> Text-Only</a>
-    </div>
+    <?php if (!$isPDF): ?>
+        <?php if ($drawing['show_pdf_ada_links']): ?>
+        <div class="alt-links">
+            <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
+            |
+            <a target="_blank" href="<?= $accessible_url ?>"><i class="fa fa-file-text-o"></i> Text-Only</a>
+        </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 

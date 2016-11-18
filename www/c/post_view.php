@@ -93,6 +93,13 @@ $pdf_url = str_replace(
     ),
     $pdf_url
 );
+
+//create a boolean for the case that this is a pdf render
+if(isset($_GET['isPDF'])){
+    $isPDF = true;
+} else {
+    $isPDF = false;
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -147,10 +154,12 @@ else
                 </div>
             <?php endif; ?>
 
-            <?php if ($drawing['show_pdf_ada_links']): ?>
-            <div class="alt-links">
-                <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
-            </div>
+		    <?php if (1$isPDF): ?>
+	            <?php if ($drawing['show_pdf_ada_links']): ?>
+	            <div class="alt-links">
+	                <a target="_blank" href="<?= $pdf_url ?>"><i class="fa fa-file-pdf-o"></i> Printable PDF</a>
+	            </div>
+	            <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>

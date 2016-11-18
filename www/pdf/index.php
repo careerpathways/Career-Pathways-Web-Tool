@@ -87,8 +87,8 @@ if(!file_exists($fullPath) || filemtime($fullPath))
         $session_id = session_id();
         session_write_close();
         
-        $command  =  $SITE->wkhtmltopdf_bin() .' "'. $url . '&session_id='.$session_id.'" ' . $fullPath;
-        
+        $command  =  $SITE->wkhtmltopdf_bin() .' "'. $url . '&session_id='.$session_id.'&isPDF" ' . $fullPath;
+
         logmsg ("Shell_exec command: " . $command);
         $retval = shell_exec($command);
         //$retval = shell_exec('wkhtmltopdf-amd64 "' . $url . '" ' . $fullPath);
