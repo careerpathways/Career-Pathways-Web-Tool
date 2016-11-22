@@ -1,7 +1,8 @@
 <?php
 include("simple_html_dom.php");
 
-function ShowLoginForm($email="") {
+function ShowLoginForm($email="") 
+{
 global $SITE;
 
 	if( $SITE->force_https_login() ) {
@@ -43,9 +44,6 @@ global $SITE;
 	echo str_repeat('<br/>',20);
 }
 
-
-
-
 function showPublishForm($mode)
 {
 	global $DB;
@@ -80,7 +78,8 @@ function showPublishForm($mode)
 	<?php
 }
 
-function BuildOlmisLink($socCode) {
+function BuildOlmisLink($socCode) 
+{
     return "https://www.qualityinfo.org/jc-oprof/?at=1&t1={$socCode}~{$socCode}~4101000000~0";
 }
 
@@ -188,7 +187,6 @@ function SearchForOLMISLinks($content)
 
 	return $soc;
 }
-
 
 function ShowBrowserNotice()
 {
@@ -383,7 +381,6 @@ function GetDegreeType($drawing_main_id)
 	} else {
 		return null;
 	}
-
 }
 
 /**
@@ -410,7 +407,8 @@ function GetDegreeTypeAbbr($degreeType, $fallback = true)
 	}
 }
 
-function strnatcmpDrawingName($a,$b){
+function strnatcmpDrawingName($a,$b)
+{
 	return strnatcmp($a['DrawingName'],$b['DrawingName']);
 }
 
@@ -424,7 +422,8 @@ function ShowPostViewHeader($view_id)
 	return '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($view['name']) . '.png" alt="' . $view['name'] . '" width="800" height="19" />';
 }
 
-function ShowDrawingList(&$mains, $type='pathways') {
+function ShowDrawingList(&$mains, $type='pathways') 
+{
 	global $DB;
 
 	switch( $type )
@@ -512,7 +511,6 @@ function ShowDrawingList(&$mains, $type='pathways') {
 		echo '</tr>';
 		echo '</table>';
 	}
-
 }
 
 function ShowSmallDrawingConnectionList($drawing_id, $type=null, $links=array())
