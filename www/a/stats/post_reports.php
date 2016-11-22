@@ -1365,6 +1365,13 @@ $apn_post = $DB->MultiQuery('SELECT
 $apn = array_merge($apn_roadmap, $apn_post);
 
 $report = array();
+$totals = array(
+    'total' => 0,
+    'only_alt' => 0,
+    'only_apn' => 0,
+    'both' => 0,
+    'neither' => 0
+);
 foreach($apn as $a) {
     if(!is_array($report[$a['school_id']])) {
         $report[$a['school_id']] = array(
@@ -1378,18 +1385,23 @@ foreach($apn as $a) {
     }
 
     $report[$a['school_id']]['total'] += 1;
+    $totals['total'] += 1;
 
     if ($a['apn_id'] > 0) {
         if (strlen($a['alt_title']) > 0) {
             $report[$a['school_id']]['both'] += 1;
+            $totals['both'] += 1;
         } else {
             $report[$a['school_id']]['only_apn'] += 1;
+            $totals['only_apn'] += 1;
         }
     } else {
         if (strlen($a['alt_title']) > 0) {
             $report[$a['school_id']]['only_alt'] += 1;
+            $totals['only_alt'] += 1;
         } else {
             $report[$a['school_id']]['neither'] += 1;
+            $totals['neither'] += 1;
         }
     }
 }
@@ -1426,6 +1438,15 @@ function sort_alpha($a, $b){
                     <td><?= $r['neither'] ?></td>
                 </tr>
             <?php endforeach; ?>
+
+            <tr class="alt-bg" style="font-weight:bold;">
+                <td>Totals</td>
+                <td><?= $totals['total'] ?></td>
+                <td><?= $totals['only_alt'] ?></td>
+                <td><?= $totals['only_apn'] ?></td>
+                <td><?= $totals['both'] ?></td>
+                <td><?= $totals['neither'] ?></td>
+            </tr>
         </table>
     </div>
 </div>
