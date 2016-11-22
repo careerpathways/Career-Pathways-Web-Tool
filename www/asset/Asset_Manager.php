@@ -1,8 +1,7 @@
 <?php
 if(!defined('DIR_CORE')){
-	include("inc.php");	
+	include("inc.php");
 }
-include("simple_html_dom.php");
 include("Asset_Permission.php");
 
 define('URL_ASSET', '/asset/');
@@ -21,7 +20,7 @@ class Asset_Manager
 		 u.first_name,
 		 u.last_name,
 		 s.school_name as creator_school_name,
-		 s.school_abbr as creator_school_abbr 
+		 s.school_abbr as creator_school_abbr
 			FROM assets a
 				LEFT JOIN users u
 					ON u.id = a.created_by
@@ -46,21 +45,21 @@ class Asset_Manager
 	public static function get_asset_by_filename($filename)
 	{
 		global $SITE, $DB;
-		$asset = $DB->SingleQuery('SELECT * 
+		$asset = $DB->SingleQuery('SELECT *
 			FROM assets
 			WHERE file_name = "'.$filename.'"
 			AND active = 1
 		');
 		if($asset){
 			$assetPath = $SITE->asset_path();
-			return $assetPath . $filename;	
+			return $assetPath . $filename;
 		}
 	}
 
 	public static function delete_asset($asset_id)
 	{
 		global $DB;
-		$asset = $DB->SingleQuery('SELECT * 
+		$asset = $DB->SingleQuery('SELECT *
 			FROM assets
 			LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id
 			WHERE id = "'.$asset_id.'"
@@ -84,7 +83,7 @@ class Asset_Manager
 
 	/**
 	 * Move an asset to a new school
-	 * 
+	 *
 	 * @param  int $asset_id	  Id of the asset to move.
 	 * @param  int $bucket_id	 Id of the bucket to move the asset to.
 	 * @return array status array
@@ -94,7 +93,7 @@ class Asset_Manager
 		global $DB;
 		if(isset($asset_id) && is_int($asset_id) && $asset_id >= 0
 			&& isset($bucket_id) && is_int($bucket_id) && $bucket_id >= 0) {
-			
+
 			$_asset = $DB->Query('SELECT * FROM assets WHERE id = '.$asset_id);
 
 			// User is allowed to move an asset if they can delete the original, and they can write to destination bucket.
@@ -102,7 +101,7 @@ class Asset_Manager
 				$DB->Query('UPDATE assets_school_ids
 					SET school_id='.$bucket_id.'
 					WHERE asset_id = '.$asset_id);
-				$asset = $DB->SingleQuery('SELECT * 
+				$asset = $DB->SingleQuery('SELECT *
 					FROM assets
 					LEFT JOIN assets_school_ids on assets.id = assets_school_ids.asset_id
 					LEFT JOIN schools on schools.id = assets_school_ids.school_id
@@ -116,7 +115,7 @@ class Asset_Manager
 				return array(
 					'status'=>'success',
 					'message'=>'Image successfully moved to ' . $bucket_name
-				);	
+				);
 			} else {
 				return array(
 					'status'=>'failure',
@@ -133,7 +132,7 @@ class Asset_Manager
 
 	/**
 	 * Get a list of items using the asset specified.
-	 * 
+	 *
 	 * @param  int $asset_id Id of the asset to look for.
 	 * @return array Number of, and list of ids of drawings that use the asset.
 	 */
@@ -142,8 +141,8 @@ class Asset_Manager
 		global $DB;
 		//Adding slashes to avoid mysql syntax errors.
 		$tail = addslashes('data-asset-id="' . $asset_id . '"'); // e.g. data-asset-id=\"12\"
-		
-		$roadmap_drawings = $DB->MultiQuery('SELECT 
+
+		$roadmap_drawings = $DB->MultiQuery('SELECT
 				"roadmap_drawing" as type,
 				a.id as asset_id,
 				a.alt as asset_alt_text,
@@ -168,12 +167,12 @@ class Asset_Manager
 				ON dm.id = d.parent_id
 			LEFT JOIN schools s
 				ON s.id = dm.school_id
-			WHERE o.content 
-				LIKE "%'.$tail.'%" 
+			WHERE o.content
+				LIKE "%'.$tail.'%"
 			GROUP BY roadmap_drawing_version_id
 			ORDER BY roadmap_drawing_main_id ASC');
 
-		$post_drawings = $DB->MultiQuery('SELECT 
+		$post_drawings = $DB->MultiQuery('SELECT
 				"post_drawing" as type,
 				a.id as asset_id,
 				a.alt as asset_alt_text,
@@ -197,7 +196,7 @@ class Asset_Manager
 			LEFT JOIN schools s
 				ON s.id = pdm.school_id
 
-			WHERE content 
+			WHERE content
 				LIKE "%'.$tail.'%"
 			GROUP BY post_drawing_version_id
 			ORDER BY post_drawing_main_id ASC');
@@ -213,14 +212,14 @@ class Asset_Manager
 
 	/**
 	 * Get a list of assets.
-	 * 
+	 *
 	 * @param  array $options
 	 * @return array
 	 */
 	public static function get_assets($options)
 	{
 		global $SITE, $DB;
-		
+
 		if(isset($options['school_id']) && $options['school_id'] >= 0){
 			//return only assets for this school
 			$_query = 'SELECT a.*,
@@ -262,7 +261,7 @@ class Asset_Manager
 		global $SITE, $DB;
 		$asset_use = self::check_use($asset_id);
 		$user_can_modify = Asset_Permission::can_modify($_SESSION['user_id'], $asset_id);
-		
+
 		if($user_can_modify){
 			//setup for pregreplace
 			$content_pattern = '/alt="[^"]*"(?=[^>]*data-asset-id="' . $asset_id . '")/';
@@ -280,14 +279,14 @@ class Asset_Manager
 					$c = unserialize($object['roadmap_drawing_content']);
 					//enter alt text
 					$c['config']['content'] = preg_replace(
-						$content_pattern, 
-						$content_replacement, 
+						$content_pattern,
+						$content_replacement,
 						$c['config']['content']
 					);
 					//enter alt text
 					$c['config']['content_html'] = preg_replace(
-						$content_pattern, 
-						$content_replacement, 
+						$content_pattern,
+						$content_replacement,
 						$c['config']['content_html']
 					);
 					//set content in the object in the DB
@@ -306,7 +305,7 @@ class Asset_Manager
 
 			//write alt text to asset for image library
 			$DB->Update('assets', array('alt'=>$alt_text), $asset_id);
-			
+
 		} else {
 			error_log('Failure to write alt text: You do not seem to have permission to edit this roadmap.', 0);
 		}
@@ -315,9 +314,9 @@ class Asset_Manager
 
 	/**
 	 * Get a list of asset buckets for the given user.
-	 * A bucket is an id and a label, used to group assets. 
+	 * A bucket is an id and a label, used to group assets.
 	 * It's basically a school id and a school name, but there is an additional one called "Site Wide"
-	 * 
+	 *
 	 * Results are based on user permission level.
 	 * @param  object $user
 	 * @return array
@@ -343,8 +342,8 @@ class Asset_Manager
 		//Get buckets for other schools that have assets
 		if(CanEditOtherSchools()){
 			//don't get school id 0
-			$query = 'SELECT id AS school_id, school_name 
-				FROM schools 	
+			$query = 'SELECT id AS school_id, school_name
+				FROM schools
 				WHERE id > 0';
 			//exclude this user's school (included above)
 			if(isset($_SESSION['school_id']) && $_SESSION['school_id'] > 0){
@@ -354,7 +353,7 @@ class Asset_Manager
 			$other_schools_buckets = $DB->MultiQuery($query);
 			$buckets = array_merge($buckets, $other_schools_buckets);
 		}
-		
+
 		//Assign permissions to each bucket.
 		foreach($buckets as &$bucket){
 			//User can create assets in this bucket, or not.
@@ -369,7 +368,7 @@ class Asset_Manager
 
 	/**
 	 * Replace an asset with another one.
-	 * 
+	 *
 	 * @param  int $assetIdOriginal
 	 * @param  int $assetIdNew
 	 * @return array $result Details about how things went.
@@ -397,7 +396,7 @@ class Asset_Manager
 			$result['message'] = "There are no Roadmap or POST Drawings using that image. If you don't wish to keep the image, delete the image instead.";
 			return $result;
 		}
-		
+
 		$original_asset = self::get_asset($assetIdOriginal);
 		$new_asset = self::get_asset($assetIdNew);
 
@@ -444,7 +443,7 @@ class Asset_Manager
 		$c['config']['content_html'] = self::replace_asset_in_html($c['config']['content_html'], $assetOriginal, $assetNew);
 
 		$DB->Update('objects',array('content'=>serialize($c)), $objectId);
-		
+
 		$result['status'] = 'success';
 		$result['message'] = 'Updated roadmap object id ' . $objectId;
 
@@ -470,20 +469,20 @@ class Asset_Manager
 		);
 
 		$c = $DB->SingleQuery('SELECT * FROM post_cell WHERE id = ' . $postCellId);
-		
+
 		if(!isset($c['content'])){
 			$result['status'] = 'failure';
 			$result['message'] = 'POST Drawing/post_cell has no content.';
 			return $result;
 		}
-		
+
 		$c['content'] = self::replace_asset_in_html($c['content'], $assetOriginal, $assetNew);
-		
+
 		$DB->Update('post_cell',array('content'=>$c['content']), $postCellId);
 
 		$result['status'] = 'success';
 		$result['message'] = 'Updated post cell id ' . $postCellId;
-		
+
 		return $result;
 	}
 
