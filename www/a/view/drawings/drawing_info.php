@@ -77,7 +77,7 @@ if( $id != "" ) {
                 </div>
             </td>
         </tr>
-        
+
         <?php if($SITE->hasFeature('approved_program_name')): ?>
          	<?php include('apn.php'); ?>
         <?php else: ?>
@@ -102,7 +102,7 @@ if( $id != "" ) {
 					echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', $drawing['skillset_id'], array('0'=>''));
 				?></div></td>
 			</tr>
-			<?php 
+			<?php
 				} //endif 'oregon_skillset'
 			?>
 			<tr class="editable">
@@ -116,7 +116,11 @@ if( $id != "" ) {
                 <th width="115">OLMIS</th>
                 <td>
                     <div id="olmis_links">
-                        <?=ShowOlmisCheckboxes($drawing['id'], false, "This published roadmap is publicly accessible from the following OLMIS occupational reports:")?>
+                        <?php
+                        $_txt =  "This published roadmap is publicly accessible from the following OLMIS occupational reports:"
+                            . "<br /><i>Note: The title shown here may not reflect the occupation title(s) in your drawing.</i>";
+                        ?>
+                        <?=ShowOlmisCheckboxes($drawing['id'], false, $_txt)?>
                     </div>
                     <div id="olmis_search"></div>
                     <a href="javascript:void(0);" id="olmis_expand" class="edit"><?=SilkIcon('link_go.png')?> Add Link</a>
@@ -444,7 +448,7 @@ $j(document).ready(function(){
 	});
 
 	// OLMIS stuff
-	
+
 	$j("#olmis_expand").click(function(){
 		$j("#olmis_add").slideDown(300);
 	});
@@ -457,12 +461,12 @@ $j(document).ready(function(){
 			 mode: "find"},
 			function(data){
 				json = eval(data);
-				$j("#olmis_search").html(json.olmis);				
+				$j("#olmis_search").html(json.olmis);
 				$j("#olmis_add").slideUp(300);
 				bindOlmisCheckboxes();
 			});
 	});
-	
+
 	$j("#enter_olmis_links").click(function(){
 		$j.post("/a/drawings_post.php",
 			{id: '<?=intval($drawing['id'])?>',
@@ -508,7 +512,7 @@ $j(document).ready(function(){
 			}
 		);
 	});
-	
+
 	$j('#program select').bind('change', function() {
 		if( $j(this).val() == 0 ) {
 			$j("#drawing_title_label").html("Program Name");
@@ -537,7 +541,7 @@ $j(document).ready(function(){
 					json = eval(data);
 					if( json == null )
 					{
-	
+
 					}
 					else
 					{
@@ -584,7 +588,7 @@ $j(document).ready(function(){
 	});
 
 	// OLMIS stuff
-	
+
 	$j("#olmis_expand").click(function(){
 		$j("#olmis_add").slideDown(300);
 	});
@@ -597,12 +601,12 @@ $j(document).ready(function(){
 			 mode: "find"},
 			function(data){
 				json = eval(data);
-				$j("#olmis_search").html(json.olmis);				
+				$j("#olmis_search").html(json.olmis);
 				$j("#olmis_add").slideUp(300);
 				bindOlmisCheckboxes();
 			});
 	});
-	
+
 	$j("#enter_olmis_links").click(function(){
 		$j.post("/a/drawings_post.php",
 			{id: '<?=intval($drawing['id'])?>',
@@ -627,7 +631,7 @@ function bindOlmisCheckboxes()
 	$j("#olmis_links input").unbind("click").click(function(){
 		var id = $j(this).attr("id").split("_")[1];
 		mode = ($j(this).attr("checked") ? "enable" : "disable");
-			
+
 		$j.post("/a/drawings_post.php",
 			{id: '<?=intval($drawing['id'])?>',
 			 action: "olmis",
@@ -655,7 +659,7 @@ function bindOlmisCheckboxes()
 				$j("#olmischk_"+id).appendTo("#olmis_links");
 				bindOlmisCheckboxes();
 			});
-	});	
+	});
 }
 
 <?php if( $drawing['id'] && CanDeleteDrawing($drawing['id'], 'pathways') ): ?>
@@ -669,4 +673,3 @@ function bindOlmisCheckboxes()
 <?php endif; ?>
 
 </script>
-

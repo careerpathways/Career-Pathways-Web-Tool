@@ -1,7 +1,7 @@
 <?php
 include("simple_html_dom.php");
 
-function ShowLoginForm($email="") 
+function ShowLoginForm($email="")
 {
 global $SITE;
 
@@ -78,7 +78,7 @@ function showPublishForm($mode)
 	<?php
 }
 
-function BuildOlmisLink($socCode) 
+function BuildOlmisLink($socCode)
 {
     return "https://www.qualityinfo.org/jc-oprof/?at=1&t1={$socCode}~{$socCode}~4101000000~0";
 }
@@ -101,7 +101,7 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $read
 				if(!$readonly)
 					$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" '.($defaultChecked?'checked="checked"':'').'/> ';
                 $url = BuildOlmisLink($o['olmis_id']);
-				$html .= '<a href="'.$url.'">'.$o['title'].'</a></div>';
+				$html .= '<a href="'.$url.'">'.$o['olmis_id'].' - '.$o['title'].'</a></div>';
 			}
 		}
 	}
@@ -123,7 +123,7 @@ function ShowOlmisCheckboxes($drawing_id, $defaultChecked=false, $text='', $read
 			$html .= '<div id="olmischk_'.$o['olmis_id'].'">';
 			if(!$readonly)
 				$html .= '<input type="checkbox" id="olmis_'.$o['olmis_id'].'" checked="checked" /> ';
-			$html .= $link . '<img src="/images/olmis-16.gif" /></a> ' . $link . $o['title'] . '</a></div>';
+			$html .= $link . '<img src="/images/olmis-16.gif" /></a> ' . $link . $o['olmis_id'].' - ' . $o['title'] . '</a></div>';
 		}
 	}
 	return $html;
@@ -422,7 +422,7 @@ function ShowPostViewHeader($view_id)
 	return '<img src="/files/titles/post/' . base64_encode('-') . '/' . base64_encode($view['name']) . '.png" alt="' . $view['name'] . '" width="800" height="19" />';
 }
 
-function ShowDrawingList(&$mains, $type='pathways') 
+function ShowDrawingList(&$mains, $type='pathways')
 {
 	global $DB;
 
