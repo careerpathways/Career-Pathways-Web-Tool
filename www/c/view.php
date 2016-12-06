@@ -152,19 +152,20 @@ if( $_REQUEST['page'] == 'text' ) {
 			fr.setAttribute("src", "<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html");
 			fr.setAttribute("frameborder", 0);
             fr.setAttribute("scrolling", "auto");
-            fr.setAttribute("id", "idIframe");
-            fr.setAttribute("onload", "iframeLoaded()");
+            fr.setAttribute("onload", "iframeLoaded(fr)");
 		}
 
-        function iframeLoaded() {
-            var iFrameID = document.getElementById('idIframe');
-            if(iFrameID) {
-                var contentHeight = iFrameID.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
-                document.getElementById('pathwaysContainer').setAttribute("height", contentHeight);
-                iFrameID.height = "";
-                iFrameID.height = iFrameID.contentWindow.document.body.scrollHeight;
+        function iframeLoaded(fr) {
+            if(fr) {
+                fr.contentWindow.addEventListener('message', function(event) {
+				        console.log(event.data);
+				});
 
-            }   
+                var contentHeight = fr.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
+                document.getElementById('pathwaysContainer').setAttribute("height", contentHeight);
+                fr.height = "";
+                fr.height = fr.contentWindow.document.body.scrollHeight;
+            }
         }
 		document.getElementById('pathwaysContainer').appendChild(fr);
 <?php
@@ -173,6 +174,3 @@ if( $_REQUEST['page'] == 'text' ) {
 		require('view/html.php');
 	}
 }
-
-
-
