@@ -565,13 +565,20 @@ elseif( KeyInRequest('id') )
                 </tr>
             <?php endif; ?>
 
-            <?php if( $school['organization_type'] != 'Other'): ?>
+            <?php if( $school['organization_type'] = 'Other'): ?>
+                <tr>
+                    <th width="115"><?=l('program name label')?></th>
+                    <td><div id="program"><?php
+                            echo GenerateSelectBoxDB('programs', 'other_org_program_id', 'id', 'title', 'title', '', array('0'=>''));
+                            ?></div></td>
+                </tr>
+            <?php else: ?>
                 <tr>
                     <th width="115"><?=l('program name label')?></th>
                     <td><div id="program"><?php
                             echo GenerateSelectBoxDB('programs', 'program_id', 'id', 'title', 'title', '', array('0'=>'Not Listed'));
                             ?></div></td>
-                </tr>    
+                </tr>
             <?php endif; ?>
 
             <tr>
@@ -1057,7 +1064,12 @@ function processCreateRequest()
 	$view = array();
 	$view['name'] = (string) Request('name');
     if($SITE->hasFeature('approved_program_name')){
-        $view['program_id'] = Request('program_id');
+        if (Request('program_id')){
+            $view['program_id'] = Request('program_id');
+        }
+        if (Request('other_org_program_id')){
+            $view['program_id'] = Request('other_org_program_id');
+        }
     }
 	$view['school_id'] = (IsAdmin() ? Request('school_id') : $_SESSION['school_id']);
 	$view['date_created'] = $DB->SQLDate();
