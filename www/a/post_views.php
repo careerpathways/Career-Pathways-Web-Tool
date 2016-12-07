@@ -1151,7 +1151,7 @@ function processSignViewRequest()
 }
 
 function getEmbedCode($id, $name){
-	$embed_code = '<div id="postContainer" style="width:100%; height:600px"></div>';
+	$embed_code = '<div id="postContainer" style="width:100%;"></div>';
 	$embed_code .= '<script type="text/javascript" src="'.getBaseUrl().'/c/study/$$/embed.js"></script>';
 	$patterns = array('$$','%%');
 	$replacements = array($id, CleanDrawingCode($name));

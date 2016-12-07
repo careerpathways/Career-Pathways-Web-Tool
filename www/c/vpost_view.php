@@ -63,7 +63,6 @@ if( Request('format') == 'html' )
     if ($SITE->hasFeature('post_assurances')){
         $view = $DB->SingleQuery('SELECT published FROM vpost_views WHERE id='.Request('id'));
         $userId = $_SESSION['user_id'];
-        //die(print_r($_SESSION));
         if($userId==-1 && !$view['published']){
             header('Status: 404 Not Found');?>
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -296,10 +295,24 @@ elseif( Request('format') == 'js' )
 			fr.setAttribute("src", iFrameSrc);
 			fr.setAttribute("frameborder", "0");
 			fr.setAttribute("scrolling", "auto");
+            fr.setAttribute("onload", "iframeLoaded(fr)");
 		}
+
+		function iframeLoaded(fr) {
+            if(fr) {
+                fr.contentWindow.addEventListener('message', function(event) {
+				        console.log(event.data);
+				});
+
+                var contentHeight = fr.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
+                document.getElementById('postContainer').setAttribute("height", contentHeight);
+                fr.height = "";
+                fr.height = fr.contentWindow.document.body.scrollHeight;
+            }
+        }
 		document.getElementById('postContainer').appendChild(fr);
 <?php
-	
+
 }
 
 ?>
