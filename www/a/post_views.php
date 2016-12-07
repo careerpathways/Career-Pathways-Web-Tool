@@ -78,9 +78,6 @@ if( IsAdmin() ) {
 }
 $school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
 
-
-
-
 if( $id )
 {
 	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
@@ -100,108 +97,101 @@ if( $id )
             </div>
 		</td>
 	</tr>
+	<?php if($SITE->hasFeature('approved_program_name')): ?>
+		<?php 
+		$drawing = $view; //apn.php uses "$drawing"
+		$drawing['skillset_id'] = $view['oregon_skillsets_id'];
+		include('view/drawings/apn.php');
+		?>
+	<?php else: ?>
+		<tr class="editable">
+			<th width="115">Occupation/Program</th>
+			<td>
+				<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
+				<div id="title_edit" style="display:none">
+					<input type="text" id="drawing_title" name="name" size="80" value="<?= $view['name'] ?>">
+					<input type="button" class="submit tiny" value="Save" id="title_btn" onclick="saveTitle()">
+					<span id="checkNameResponse" class="error"></span>
+				</div>
+			</td>
+		</tr>
+		<tr class="editable">
+			<th width="115">Organization</th>
+	                <td><b><?= $schools[$school_id] ?></b></td>
+	        </tr>
+		<?php if($SITE->hasFeature('oregon_skillset')):
+		       if (empty($view['oregon_skillsets_id'])) {
+		               $skillSet = array('title'=>'');
+		       } else {
+		               $skillSet = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id='.$view['oregon_skillsets_id']);
+		       }
+		?>
+			<tr class="editable">
+				<th width="115"><?=l('skillset name')?></th>
+			       <td valign="top">
+		               <div id="skillSet_fixed">
+	                       <span id="skillSet_value"><?= $skillSet['title'] ?></span>
+	                       <a href="javascript:showSkillSetChange()" class="tiny">edit</a>
+		               </div>
 
-<?php if($SITE->hasFeature('approved_program_name')): ?>
-	<?php 
-	$drawing = $view; //apn.php uses "$drawing"
-	$drawing['skillset_id'] = $view['oregon_skillsets_id'];
-	include('view/drawings/apn.php');
-	?>
-<?php else: ?>
-	
-	<tr class="editable">
-		<th width="115">Occupation/Program</th>
-		<td>
-			<div id="title_fixed"><span id="title_value"><?= $view['name'] ?></span> <a href="javascript:showTitleChange()" class="tiny">edit</a></div>
-			<div id="title_edit" style="display:none">
-				<input type="text" id="drawing_title" name="name" size="80" value="<?= $view['name'] ?>">
-				<input type="button" class="submit tiny" value="Save" id="title_btn" onclick="saveTitle()">
-				<span id="checkNameResponse" class="error"></span>
-			</div>
-		</td>
-	</tr>
-	<tr class="editable">
-		<th width="115">Organization</th>
-                <td><b><?= $schools[$school_id] ?></b></td>
-        </tr>
-<?php
-if($SITE->hasFeature('oregon_skillset')){
-       if (empty($view['oregon_skillsets_id'])) {
-               $skillSet = array('title'=>'');
-       } else {
-               $skillSet = $DB->SingleQuery('SELECT * FROM oregon_skillsets WHERE id='.$view['oregon_skillsets_id']);
-       }
-?>
-<tr class="editable">
-	<th width="115"><?=l('skillset name')?></th>
-       <td valign="top">
-               <div id="skillSet_fixed">
-                       <span id="skillSet_value"><?= $skillSet['title'] ?></span>
-                       <a href="javascript:showSkillSetChange()" class="tiny">edit</a>
-               </div>
+				       <div id="skillSet_edit" style="display:none">
+			               <?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
+			               <?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
+			               <input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
+			               <span id="checkSkillSetResponse" class="error"></span>
+				       </div>
 
-       <div id="skillSet_edit" style="display:none">
-               <?php echo GenerateSelectBoxDB('oregon_skillsets', 'drawing_skill_set', 'id', 'title', 'title', '', array(''=>'')); ?>
-               <?php /* <input type="text" id="drawing_skill_set" name="skillSet" size="80" value="<?= $skillSet['title'] ?>">  */?>
-               <input type="button" class="submit tiny" value="Save" id="submitButton" onclick="saveskillSet()">
-               <span id="checkSkillSetResponse" class="error"></span>
-       </div>
-
-       <?php
-               //echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
-       ?>
-       </td>
-</tr>
-<?php
-} //end if oregon_skillset
-?>
-<?php endif; //approved_program_name ?>
-        <?php if($view['published']){?>
-        <tr>
-		<th width="115">Embed Code</th>
-                <td>
-			<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
-		</td>
-	</tr>
-        
-	<tr>
-		<th valign="top" width="115">External Link</th>
-		<td>
-			<?php 
-			if($external = getExternalDrawingLink($id, 'post_views'))
-			{
-				?>
-				<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
-				<input type="text" style="width:496px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" />
+				       <?php
+				        	//echo GenerateSelectBoxDB('oregon_skillsets', 'skillset_id', 'id', 'title', 'title', '', array(''=>''));
+				       ?>
+			       </td>
+			</tr>
+		<?php endif;?>
+	<?php endif;?>
+    <?php if($view['published']):?>
+	    <tr>
+			<th width="115">Embed Code</th>
+	        <td>
+				<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
+			</td>
+		</tr>
+		<tr>
+			<th valign="top" width="115">External Link</th>
+			<td>
+				<?php 
+				if($external = getExternalDrawingLink($id, 'post_views')): ?>
+					<div style="width:16px; float:left;"><a href="<?=$external?>" target="_blank"><?=SilkIcon('link.png')?></a></div>
+					<input type="text" style="width:496px;" value="<?=$external?>" onclick="this.select()" id="external_link_url" />
 					<input type="button" id="external_link_save" value="save" class="submit small" /><br />
 					<div style="width:560px;">The primary URL is linked on external web pages such as MyPathCareers.org. To change, edit the URL above or select a URL from the list below.</div>
-				<?php 
-			}
-			?>
-			<br />
-		</td>
-        </tr>
-        <?php 
-                require('view/drawings/external_links.php');
-        } //endif (published)?>
-        <tr>
+				<?php endif; ?>
+				<br />
+			</td>
+	    </tr>
+    	<?php require('view/drawings/external_links.php'); ?>
+    <?php endif; ?>
+    <tr>
 		<th width="115">HTML Link</th>
-                <td>
-			<div id="drawing_link"><?php
-			echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
-			$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))),$published_link);
-			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
-			?></div>
+        <td>
+			<div id="drawing_link">
+				<?php
+					echo '<div style="width:16px; float:left;"><a href="javascript:preview_postview(' . $view['id'] . ',0,\'post_view\')">' . SilkIcon('magnifier.png') . '</a></div>';
+					$url = str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))),$published_link);
+					echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
+				?>
+			</div>
 		</td>
 	</tr>
 	<tr>
 		<th width="115">PDF Link</th>
 		<td>
-			<div id="drawing_link_pdf"><?php
-			$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))), $pdf_link);
-			echo '<div style="width:16px; float:left;"><a href="' . $url . '">' . SilkIcon('page_white_acrobat.png') . '</a></div>';
-			echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
-			?></div>
+			<div id="drawing_link_pdf">
+				<?php
+					$url = str_replace(array('$$','%%') ,array($view['id'], CleanDrawingCode(GetDrawingName($view['id'],  'post_views'))), $pdf_link);
+					echo '<div style="width:16px; float:left;"><a href="' . $url . '">' . SilkIcon('page_white_acrobat.png') . '</a></div>';
+					echo '<input type="text" style="width:544px" value="'.$url.'" onclick="this.select()" />';
+				?>
+			</div>
 		</td>
 	</tr>
 	<tr>
@@ -254,21 +244,21 @@ if($SITE->hasFeature('oregon_skillset')){
                 </td>
             </tr>
             <?php if ($count > 0): ?>
-            <tr>
-                <th width="115">&nbsp;</th>
-                <td>
-                    <?php if ($signaturesRequired): ?>
-                        <?php if ($signaturesReceived): ?>
-                            <p>There <?= $signaturesReceived>1 ? 'are' : 'is' ?> currently <strong><?= $signaturesReceived ?></strong> assurance signature<?= $signaturesReceived>1 ? 's' : '' ?> on file (<?= $signaturesReceived>1 ? 'the most recent ' : '' ?>dated <?= date_format(new DateTime($recentDate),'Y-m-d') ?>)
-                            and <strong><?= $signaturesRequired ?></strong> still pending.</p>
-                        <?php else: ?>
-                            <p>There are currently no assurance signatures on file.</p>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <p>All <?= $signaturesReceived ?> assurance signatures have been recorded as of <?= date_format(new DateTime($recentDate),'Y-m-d') ?>.</p>
-                    <?php endif; ?>
-                </td>
-            </tr>
+	            <tr>
+	                <th width="115">&nbsp;</th>
+	                <td>
+	                    <?php if ($signaturesRequired): ?>
+	                        <?php if ($signaturesReceived): ?>
+	                            <p>There <?= $signaturesReceived>1 ? 'are' : 'is' ?> currently <strong><?= $signaturesReceived ?></strong> assurance signature<?= $signaturesReceived>1 ? 's' : '' ?> on file (<?= $signaturesReceived>1 ? 'the most recent ' : '' ?>dated <?= date_format(new DateTime($recentDate),'Y-m-d') ?>)
+	                            and <strong><?= $signaturesRequired ?></strong> still pending.</p>
+	                        <?php else: ?>
+	                            <p>There are currently no assurance signatures on file.</p>
+	                        <?php endif; ?>
+	                    <?php else: ?>
+	                        <p>All <?= $signaturesReceived ?> assurance signatures have been recorded as of <?= date_format(new DateTime($recentDate),'Y-m-d') ?>.</p>
+	                    <?php endif; ?>
+	                </td>
+	            </tr>
             <?php endif; ?>
         <?php endif; ?>
         </table>
