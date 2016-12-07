@@ -56,11 +56,12 @@ $schls = $DB->VerticalQuery("SELECT * FROM schools ORDER BY school_name",'school
 <?php
 $school = $DB->SingleQuery('SELECT * FROM schools WHERE id = ' . $drawing['school_id']);
 if( $SITE->hasFeature('olmis') && $school['organization_type'] != 'Other' && is_array($published) ) {
+$txt = 'This published roadmap is publicly accessible from the following OLMIS occupational reports:<br /><i>Note: The title shown here may not reflect the occupation title(s) in your drawing.</i>";'
 ?>
 <tr class="editable">
 	<th>OLMIS</th>
 	<td>
-		<div id="olmis_links"><?=ShowOlmisCheckboxes($drawing['id'], false, "This published roadmap is publicly accessible from the following OLMIS occupational reports:", true)?></div>
+		<div id="olmis_links"><?=ShowOlmisCheckboxes($drawing['id'], false, $txt, true)?></div>
 	</td>
 </tr>
 <?php
