@@ -11,12 +11,8 @@ $embed_code = '<iframe width="800" height="600" src="'.$published_link.'" frameb
 $embed_code = '<div id="postContainer" style="width:100%; height:600px"></div>
 <script type="text/javascript" src="'.getBaseUrl().'/c/study/$$/embed.js"></script>';
 
-
-
 $MODE = 'post_views';
 ModuleInit('post_views');
-
-
 
 if (KeyInRequest('action')) {
 	$action = $_REQUEST['action'];
@@ -77,7 +73,6 @@ if( IsAdmin() ) {
 	$school_id = $_SESSION['school_id'];
 }
 $school = $DB->SingleQuery("SELECT * FROM schools WHERE id=$school_id");
-
 if( $id )
 {
 	$view = $DB->SingleQuery('SELECT * FROM vpost_views WHERE id='.$id);
@@ -152,7 +147,9 @@ if( $id )
 	    <tr>
 			<th width="115">Embed Code</th>
 	        <td>
-				<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()"><?= htmlspecialchars(str_replace(array('$$','%%'),array($view['id'],CleanDrawingCode($view['name'])),$embed_code)) ?></textarea>
+				<textarea style="width:560px;height:40px;" class="code" id="embed_code" onclick="this.select()">
+					<?= getEmbedCode($view['id'], $view['name']); ?>
+				</textarea>
 			</td>
 		</tr>
 		<tr>
@@ -780,18 +777,23 @@ else
 			echo '<tr>';
 				echo '<th width="20">&nbsp;</th>';
 				echo '<th>Occupation/Program</th>';
-				echo '<th>URL</th>';
+				echo '<th>URL/Embed Code</th>';
 				echo '<th width="240">Organization</th>';
 			echo '</tr>';
 		foreach( $views as $i=>$v )
 		{
+			$embed_code = getEmbedCode($v['id'], $v['name']);
 			echo '<tr class="row' . ($i%2) . '">';
 				echo '<td><img src="/images/blank.gif" width="16" height="16" /></td>';
 		
 				echo '<td>' . $v['name'] . '</td>';
 				$url = 'http://'.$_SERVER['SERVER_NAME'].'/c/study/'.$v['id'].'/'.CleanDrawingCode($v['name']).'.html';
-				echo '<td><input type="text" style="width: 300px" value="'.$url.'" onclick="this.select()" /><a href="'.$url.'" target="_blank">'.SilkIcon('link.png').'</a></td>';
-		
+				echo '<td>';
+					echo '<input type="text" style="width: 300px" value="'.$url.'" onclick="this.select()" />';
+					echo '<a href="'.$url.'" target="_blank">'.SilkIcon('link.png').'</a><br/>';
+					echo '<input type="text" style="width: 300px" value="'.$embed_code.'" onclick="this.select()" />';
+					echo SilkIcon('page_white_code.png');
+				echo '</td>';
 				echo '<td>' . $v['school_name'] . '</td>';
 			echo '</tr>';
 		}
@@ -1019,8 +1021,7 @@ function processDrawingListRequest()
 			echo 'No published drawings were found for this combination of school and degree type.';
 		}
 		echo '</div>';
-	}	
-	
+	}
 }
 
 
@@ -1052,15 +1053,15 @@ function processChangeNameRequest()
 
 function processCreateRequest()
 {
-        global $DB;
-        global $SITE;
-        $last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
-        $code = base_convert($last['id']*16, 10, 26);
-
+    global $DB;
+    global $SITE;
+    $last = $DB->SingleQuery('SELECT MAX(id) AS id FROM vpost_views');
+    $code = base_convert($last['id']*16, 10, 26);
 	$newCode = '';
-	for( $i=0; $i<strlen($code); $i++ )
-		$newCode .= chr(ord('a')+base_convert(substr($code, $i, 1), 26, 10));
 
+	for( $i=0; $i<strlen($code); $i++ ){
+		$newCode .= chr(ord('a')+base_convert(substr($code, $i, 1), 26, 10));
+	}
 	$view = array();
 	$view['name'] = (string) Request('name');
     if($SITE->hasFeature('approved_program_name')){
@@ -1097,14 +1098,14 @@ function processCreateRequest()
 
 function processTabNameRequest()
 {
-        global $DB;
-        
-        //JGD: Don't restrict the character set of the tab name. Per Effie.
-        //$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
-        $tab_name = Request('tab_name');
-        $tab_sort = intval(Request('tab_sort'));
-        $DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
-        echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
+    global $DB;
+
+    //JGD: Don't restrict the character set of the tab name. Per Effie.
+    //$tab_name = preg_replace('/[^a-zA-Z0-9 \-]/', '', Request('tab_name'));
+    $tab_name = Request('tab_name');
+    $tab_sort = intval(Request('tab_sort'));
+    $DB->Query('UPDATE vpost_links SET tab_name = "'.$tab_name.'", sort = "'.$tab_sort.'" WHERE vid = ' . intval(Request('vid')) . ' AND post_id = ' . intval(Request('post_id')));
+    echo json_encode(array('name'=>$tab_name, 'sort'=>$tab_sort));
 }
 
 
@@ -1147,4 +1148,13 @@ function processSignViewRequest()
     } else {
         header('Location: post_views.php?id=' . $viewId);
     }
+}
+
+function getEmbedCode($id, $name){
+	$embed_code = '<div id="postContainer" style="width:100%; height:600px"></div>';
+	$embed_code .= '<script type="text/javascript" src="'.getBaseUrl().'/c/study/$$/embed.js"></script>';
+	$patterns = array('$$','%%');
+	$replacements = array($id, CleanDrawingCode($name));
+
+	return htmlspecialchars(str_replace($patterns, $replacements, $embed_code));
 }
