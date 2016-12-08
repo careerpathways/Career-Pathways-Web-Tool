@@ -157,10 +157,6 @@ if( $_REQUEST['page'] == 'text' ) {
 
         function iframeLoaded(fr) {
             if(fr) {
-                fr.contentWindow.addEventListener('message', function(event) {
-				        console.log(event.data);
-				});
-
                 var contentHeight = fr.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
                 document.getElementById('pathwaysContainer').setAttribute("height", contentHeight);
                 fr.height = "";

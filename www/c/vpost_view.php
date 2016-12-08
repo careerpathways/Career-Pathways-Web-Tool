@@ -300,10 +300,6 @@ elseif( Request('format') == 'js' )
 
 		function iframeLoaded(fr) {
             if(fr) {
-                fr.contentWindow.addEventListener('message', function(event) {
-				        console.log(event.data);
-				});
-
                 var contentHeight = fr.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
                 document.getElementById('postContainer').setAttribute("height", contentHeight);
                 fr.height = "";
