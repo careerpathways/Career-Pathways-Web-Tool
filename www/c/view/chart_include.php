@@ -23,7 +23,7 @@
     /* chview.js will updated chartcontainer with more specific size.
     * These have to be big for initial rendering to take place. */
     margin-top: 20px;
-    height: 1600px;
+    height: 3200px;
     width: 1200px;
     overflow:hidden;
 }
