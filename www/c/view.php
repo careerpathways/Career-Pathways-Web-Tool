@@ -110,60 +110,73 @@ if( $_REQUEST['page'] == 'text' ) {
 	else if ($format === 'js') {
 		header("Content-type: text/javascript");
 ?>
-		document.write('<script src="<?=getBaseUrl()?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+encodeURIComponent(window.location.href)+'"></script>');
+    document.write('<script src="<?=getBaseUrl()?>/c/log/pathways/<?=$_REQUEST['id']?>?url='+encodeURIComponent(window.location.href)+'"></script>');
+    var cont = "<?=(Request('container')?Request('container'):'pathwaysContainer')?>";
+    var pc = document.getElementById(cont);
 
-		var pc = document.getElementById("<?=(Request('container')?Request('container'):'pathwaysContainer')?>");
+    /**
+    * detect IE
+    * returns version of IE or false, if browser is not Internet Explorer
+    */
+    function IEversion() {
+      var ua = window.navigator.userAgent;
 
-        /**
-		 * detect IE
-		 * returns version of IE or false, if browser is not Internet Explorer
-		 */
-		function IEversion() {
-		    var ua = window.navigator.userAgent;
+      var msie = ua.indexOf('MSIE ');
+      if (msie > 0) {
+        // IE 10 or older => return version number
+        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+      }
 
-		    var msie = ua.indexOf('MSIE ');
-		    if (msie > 0) {
-		        // IE 10 or older => return version number
-		        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-		    }
+      var trident = ua.indexOf('Trident/');
+      if (trident > 0) {
+        // IE 11 => return version number
+        var rv = ua.indexOf('rv:');
+        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+      }
 
-		    var trident = ua.indexOf('Trident/');
-		    if (trident > 0) {
-		        // IE 11 => return version number
-		        var rv = ua.indexOf('rv:');
-		        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-		    }
+      var edge = ua.indexOf('Edge/');
+      if (edge > 0) {
+        // IE 12 => return version number
+        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+      }
 
-		    var edge = ua.indexOf('Edge/');
-		    if (edge > 0) {
-		       // IE 12 => return version number
-		       return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-		    }
+      // other browser
+      return false;
+    }
 
-		    // other browser
-		    return false;
-		}
+    if( IEversion() && IEversion() < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
+      var fr = document.createElement('<iframe src="<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
+    } else {
+      var fr = document.createElement('iframe');
+      fr.setAttribute("width", pc.style.width);
+      fr.setAttribute("src", "<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html");
+      fr.setAttribute("frameborder", 0);
+      fr.setAttribute("scrolling", "auto");
+    }
 
-        if( IEversion() && IEversion() < 9.0 && typeof VBArray != "undefined" ) {  //all IE < 9
-			var fr = document.createElement('<iframe src="<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html" width="'+pc.style.width+'" height="'+pc.style.height+'" frameborder="0" scrolling="auto"></iframe>');
-		} else {
-			var fr = document.createElement('iframe');
-			fr.setAttribute("width", pc.style.width);
-			fr.setAttribute("src", "<?=getBaseUrl()?>/c/published/<?=$_REQUEST['id']?>/embed.html");
-			fr.setAttribute("frameborder", 0);
-            fr.setAttribute("scrolling", "auto");
-            fr.setAttribute("onload", "iframeLoaded(fr)");
-		}
+    // Adjust height of container element and iFrame element itself, based on height of document within the iFrame.
+    // Listen for a cross-origin message from the document within the iFrame.
+    // That message should be posted to this window via the "parent" object.
+    window.addEventListener("message", function(e) {
+      try {
+        if (e.data && e.data.messageId === 'drawingDocumentLoaded') {
+          console.log(e, "<?=getBaseUrl()?>");
+          // Remove "http:" or "https://" for looser comparison since the embed script could be changed.
+          if(e.origin.replace(/^(http:|https:)/g, "") == "<?=getBaseUrl()?>".replace(/^(http:|https:)/g, "")){
+            // We get drawingHeight as a value from postMessage() (in the page that was loaded into the iFrame)
+            // Set pathways container height based on the iFrame's document's height
+            pc.setAttribute("height", e.data.drawingHeight + 'px');
 
-        function iframeLoaded(fr) {
-            if(fr) {
-                var contentHeight = fr.contentWindow.document.body.scrollHeight; //add a small amount to compensate for scrollbar
-                document.getElementById('pathwaysContainer').setAttribute("height", contentHeight);
-                fr.height = "";
-                fr.height = fr.contentWindow.document.body.scrollHeight;
-            }
+            // Set pathways container iFrame element height based on the iFrame's document's height
+            fr.setAttribute("height", e.data.drawingHeight + 'px');
+          }
         }
-		document.getElementById('pathwaysContainer').appendChild(fr);
+      } catch(e) {
+        // send log?
+      }
+    }, false);
+
+    document.getElementById('pathwaysContainer').appendChild(fr);
 <?php
 	}
 	else {

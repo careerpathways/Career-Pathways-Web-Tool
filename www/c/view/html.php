@@ -20,6 +20,13 @@
 		Charts.printing = true;
 		<?php } ?>
 		Charts.draw('chartcontainer');
+
+    // Broadcast a message to the parent window so it knows the height of this document.
+    // Allows cross-origin communication, since this document is likely loaded from a different domain than the page with the iFrame.
+    if(window.postMessage) {
+      // messageId helps the message callback identify this message.
+      parent.postMessage({messageId: 'drawingDocumentLoaded', drawingHeight: document.body.scrollHeight}, "*");
+    }
 	</script>
 
 	<?php
