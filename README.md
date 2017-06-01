@@ -23,7 +23,7 @@ Copy the `www/htaccess` file to `www/.htaccess` and modify it to point to your `
 
 
 ## Set Up Database
-Configure the database username and password in your `*.settings.php` file. If you can't create your own file, you will have to edit the `default.settings.php` file directly, just make sure not to commit that file back to the repository.
+Configure the database username and password in your `www/include/*.settings.php` file. If you can't create your own file, you will have to edit the `default.settings.php` file directly, just make sure not to commit that file back to the repository.
 
 Install the database tables from the `scripts/sql/schema.sql` file provided. After the tables are created, run the `scripts/sql/initdata.sql` file to insert some default data.
 
@@ -94,3 +94,10 @@ drwxr-xr-x  2 apache   apache    4096 2011-03-24 14:15 examples
 drwxr-xr-x  3 apache   apache    4096 2011-03-24 14:15 scripts
 drwxr-xr-x 12 apache   apache    4096 2011-03-24 14:29 www
 ```
+
+
+# Additional Information
+## PHP Includes
+This project is set up to use php includes and modifies the include path. See `www/Vagrant/bootstrap.sh` where Apache virtual sites are defined for a line similar to `php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"`
+
+Notice that now, when you see `include('x.php');` in PHP, these paths will be checked as well.
