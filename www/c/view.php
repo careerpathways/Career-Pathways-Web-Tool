@@ -114,6 +114,12 @@ if( $_REQUEST['page'] == 'text' ) {
     var cont = "<?=(Request('container')?Request('container'):'pathwaysContainer')?>";
     var pc = document.getElementById(cont);
 
+    // If a height is specified on the embed container, resize the iFrame to
+    // that height, not the full height of the drawing.
+    // If a height is not defined, expand the container and iFrame to the
+    // drawing's full height.
+    var expandHeight;
+
     /**
     * detect IE
     * returns version of IE or false, if browser is not Internet Explorer
@@ -154,25 +160,35 @@ if( $_REQUEST['page'] == 'text' ) {
       fr.setAttribute("scrolling", "auto");
     }
 
+    if(pc.hasAttribute('height')) {
+      expandHeight = pc.getAttribute('height');
+    } else if(pc.style.height) {
+      expandHeight = pc.style.height;
+    }
+
     // Adjust height of container element and iFrame element itself, based on height of document within the iFrame.
     // Listen for a cross-origin message from the document within the iFrame.
     // That message should be posted to this window via the "parent" object.
     window.addEventListener("message", function(e) {
-      try {
-        if (e.data && e.data.messageId === 'drawingDocumentLoaded') {
-          console.log(e, "<?=getBaseUrl()?>");
-          // Remove "http:" or "https://" for looser comparison since the embed script could be changed.
-          if(e.origin.replace(/^(http:|https:)/g, "") == "<?=getBaseUrl()?>".replace(/^(http:|https:)/g, "")){
-            // We get drawingHeight as a value from postMessage() (in the page that was loaded into the iFrame)
-            // Set pathways container height based on the iFrame's document's height
-            pc.setAttribute("height", e.data.drawingHeight + 'px');
+      if(undefined !== expandHeight) {
+        // Set pathways container iFrame element height based on the iFrame's document's height
+        fr.setAttribute("height", expandHeight);
+      } else {
+        try {
+          if (e.data && e.data.messageId === 'drawingDocumentLoaded') {
+            // Remove "http:" or "https://" for looser comparison since the embed script could be changed.
+            if(e.origin.replace(/^(http:|https:)/g, "") == "<?=getBaseUrl()?>".replace(/^(http:|https:)/g, "")){
+              // We get drawingHeight as a value from postMessage() (in the page that was loaded into the iFrame)
+              // Set pathways container height based on the iFrame's document's height
+              pc.setAttribute("height", e.data.drawingHeight + 'px');
 
-            // Set pathways container iFrame element height based on the iFrame's document's height
-            fr.setAttribute("height", e.data.drawingHeight + 'px');
+              // Set pathways container iFrame element height based on the iFrame's document's height
+              fr.setAttribute("height", e.data.drawingHeight + 'px');
+            }
           }
+        } catch(e) {
+          // send log?
         }
-      } catch(e) {
-        // send log?
       }
     }, false);
 
