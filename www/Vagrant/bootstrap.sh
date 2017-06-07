@@ -2,6 +2,11 @@
 
 # https://github.com/Divi/VagrantBootstrap
 
+# ----------------------------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------------------------- #
+# ---------------------------- This set up is for Ubuntu 12.04 'precise' ------------------------ #
+# ----------------------------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------------------------- #
 
 # ------------------------------------------------
 # Project Name, set in Vagrantfile
@@ -33,15 +38,19 @@ User vagrant
 Group vagrant
 EnableSendFile off" > /etc/apache2/httpd.conf
 
-echo "<VirtualHost *:80>
+echo "
+Listen 8080
+NameVirtualHost *:8080
+
+<VirtualHost *:80>
 ServerAdmin webmaster@localhost
-DocumentRoot /home/project/$projectName/www/
+DocumentRoot /home/project/$projectName/core/www/
 
 CustomLog \${APACHE_LOG_DIR}/access.log combined
 ErrorLog \${APACHE_LOG_DIR}/error.log
 LogLevel warn
 
-<Directory /home/project/$projectName/www/>
+<Directory /home/project/$projectName/core/www/>
     Options -Indexes +FollowSymLinks -MultiViews
     AllowOverride All
     Order allow,deny
@@ -49,29 +58,46 @@ LogLevel warn
 </Directory>
 
 <IfModule mod_php5.c>
-  php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"
+  php_value include_path \".:/home/project/$projectName/include:/home/project/$projectName/core/common\"
 </IfModule>
+
+Alias /site-template /home/project/$projectName/include/site-template
+<Directory /home/project/$projectName/include/site-template>
+        Order allow,deny
+        allow from all
+</Directory>
+
 
 </VirtualHost>" > /etc/apache2/sites-available/default
 
-echo "<IfModule mod_ssl.c>
+echo "
+Listen 8443
+NameVirtualHost *:8443
+
+<IfModule mod_ssl.c>
 <VirtualHost *:443>
 ServerAdmin webmaster@localhost
-DocumentRoot /home/project/$projectName/www/
+DocumentRoot /home/project/$projectName/core/www/
 
 CustomLog \${APACHE_LOG_DIR}/access.log combined
 ErrorLog \${APACHE_LOG_DIR}/error.log
 LogLevel warn
 
-<Directory /home/project/$projectName/www/>
+<Directory /home/project/$projectName/core/www/>
     Options -Indexes +FollowSymLinks -MultiViews
     AllowOverride All
     Order allow,deny
     allow from all
 </Directory>
 
+Alias /site-template /home/project/$projectName/include/site-template
+<Directory /home/project/$projectName/include/site-template>
+        Order allow,deny
+        allow from all
+</Directory>
+
 <IfModule mod_php5.c>
-  php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"
+  php_value include_path \".:/home/project/$projectName/include:/home/project/$projectName/core/common\"
 </IfModule>
 
 SSLEngine on
@@ -221,30 +247,24 @@ echo '***************************** Installing phpmyadmin **********************
 apt-get install -y phpmyadmin
 echo "Include /etc/phpmyadmin/apache.conf" >> /etc/apache2/httpd.conf
 
+echo '***************************** Reconfiguring phpmyadmin *****************************'
+dpkg-reconfigure phpmyadmin
 
-
-
-
-/home/project/$projectName/www/
 echo '***************************** Project-specific settings *****************************'
 # -------------------
 # Install wkhtmltopdf and its dependencies
 # -------------------
-apt-get install -y libjpeg8
-apt-get install -y fontconfig
-apt-get install -y libxrender1
+#apt-get -f install
+apt-get install -y libjpeg8 fontconfig libxrender1 xfonts-base xfonts-75dpi
 
 # wkhtmltopdf is incomplete via apt-get, so we wget the .deb and dpkg it instead
-wget --output-document 'wkhtmltox.deb' 'http://downloads.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb'
+wget --output-document 'wkhtmltox.deb' 'https://downloads.wkhtmltopdf.org/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-precise-amd64.deb'
 chown vagrant 'wkhtmltox.deb'
 dpkg -i 'wkhtmltox.deb'
+rm 'wkhtmltox.deb'
 
 # codebase looks for wkhtmltopdf in a different spot, set up a sym link to avoid error
 ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-i386
-
-# the application stores pdf's here
-mkdir -p '/web2/oregon.ctepathways.org/cache/pdf/'
-chown vagant '/web/oregon.ctepathways.org/cache/pdf/'
 
 
 #install pspell for tinymce spell-checker support
@@ -253,6 +273,12 @@ apt-get install php5-pspell
 apt-get install aspell-en
 
 
+# the application stores pdfs, log files, and images
+mkdir -p '/home/project/cache'
+mkdir -p '/home/project/assets'
+chown -R vagrant:vagrant '/home/project'
+chmod -R 755 '/home/project'
+
 # -------------------
 # Create cache folder and make sure it's writable
 # -------------------
@@ -260,6 +286,9 @@ apt-get install aspell-en
 #TODO update paths for washington:
 #mkdir -p /home/wwwcaree/public_html/cache/pdf/
 #chmod -R 777 /home/wwwcaree/public_html/
+
+# Install Pear requirements
+pear install Text_Wiki
 
 echo '***************************** Installing Composer and Dependencies *****************************'
 curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
@@ -271,22 +300,24 @@ wget https://phar.phpunit.de/phpunit-4.8.0.phar
 chmod +x phpunit-4.8.0.phar
 mv phpunit-4.8.0.phar /usr/bin/phpunit
 
-# Install Pear requirements
-pear install Text_Wiki
+
+#Install core
+#Using shared core instead, see Vagrantfile
+#git clone -b core https://github.com/careerpathways/Career-Pathways-Web-Tool.git /home/project/$projectName/core
+
 
 # Install Amazon SES Mailer
-git clone https://github.com/geoloqi/Amazon-SES-Mailer-PHP.git Amazon-SES-Mailer-PHP
-pear -D auto_discover=1 install pear.amazonwebservices.com/sdk
+#git clone https://github.com/geoloqi/Amazon-SES-Mailer-PHP.git /home/project/$projectName/core/common/Amazon-SES-Mailer-PHP
+
+#wget http://pear.amazonwebservices.com/get/sdk-1.5.17.1.tgz
+#tar -zxvf sdk-1.5.17.1.tgz
+#mv sdk-1.5.17.1 /home/project/$projectName/core/common/Amazon-SES-Mailer-PHP/AWSSDKforPHP
+#rm sdk-1.5.17.1.tgz
 
 
-#Default-settings.php and settings.php are both used.  So they need to setup and the same.
-sed -i 's#^php_value.*$#php_value include_path  ".:/home/project/$projectName/www/include/:/home/project/$projectName/common/"#g' /home/project/$projectName/www/.htaccess
-
-sed -i 's#helpdesk@careermaphumboldt.com#michael.calabrese+lccpost@lunarlogic.com#g' /home/project/$projectName/www/include/default.settings.php
-#sed -i "s#DBname\s\?=\s\?'\w\+'#DBname = 'pathways_pierce'#g" /home/project/$projectName/www/include/default.settings.php
-sed -i "s#DBuser\s\?=\s\?'\w\+'#DBuser = 'root'#g" /home/project/$projectName/www/include/default.settings.php
-sed -i "s#DBpass\s\?=\s\?'[^']\+'#DBpass = 'devsu'#g" /home/project/$projectName/www/include/default.settings.php
-ln -s /home/project/$projectName/www/include/default.settings.php /home/project/$projectName/www/include/settings.php
+#sed -i 's#helpdesk@careermaphumboldt.com#aaron.martins+lccpost@lunarlogic.com#g' /home/project/$projectName/include/default.settings.php
+#sed -i "s#DBuser\s\?=\s\?'\w\+'#DBuser = 'root'#g" /home/project/$projectName/include/default.settings.php
+#sed -i "s#DBpass\s\?=\s\?'[^']\+'#DBpass = 'devsu'#g" /home/project/$projectName/include/default.settings.php
 
 
 #TODO change:
