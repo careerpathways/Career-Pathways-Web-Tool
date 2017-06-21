@@ -101,3 +101,9 @@ drwxr-xr-x 12 apache   apache    4096 2011-03-24 14:29 www
 This project is set up to use php includes and modifies the include path. See `www/Vagrant/bootstrap.sh` where Apache virtual sites are defined for a line similar to `php_value include_path \".:/home/project/$projectName/www/include:/home/project/$projectName/common\"`
 
 Notice that now, when you see `include('x.php');` in PHP, these paths will be checked as well.
+
+
+# Release Process
+* Update `(core)/common/version.php` with appropriate version number.
+* Add config and release notes to `(core)/CHANGELOG.md`
+* Tag the release, e.g. `4.3.0`
