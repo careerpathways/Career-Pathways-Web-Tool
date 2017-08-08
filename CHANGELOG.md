@@ -56,7 +56,7 @@
 * Adds font choice to Roadmap and POST Drawings.
 * Fixes Schools information not displaying correctly on create school page.
 
-## 4.2.x (August 24, 2017)
+## 4.2.x (August 24, 2016)
 ### Config
 * Execute `(core)/scripts/sql/updates/d20160621_add_show_updated_column.sql`
 * Execute `(core)/scripts/sql/updates/d20160623_add_alt_column_to_assets_table.sql`
