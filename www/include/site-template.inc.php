@@ -151,14 +151,14 @@ if(isset($SITE) && method_exists($SITE, 'google_analytics')){
 		<script src="/common/actb.js" type="text/javascript"></script>
 
 		<!-- Core + Skin CSS -->
-		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.4.0/build/menu/assets/skins/sam/menu.css" />
+		<link rel="stylesheet" type="text/css" href="/common/yahoo/yui/2.4.1/build/menu/assets/skins/sam/menu.css" />
 
 		<!-- Dependencies -->
-		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.0/build/container/container_core-min.js"></script>
+		<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+		<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/container/container_core-min.js"></script>
 
 		<!-- Source File -->
-		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.0/build/menu/menu-min.js"></script>
+		<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/menu/menu-min.js"></script>
 
 		<?php
 		if( $this->is_chart_page ) {

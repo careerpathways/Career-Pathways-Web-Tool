@@ -43,13 +43,13 @@ if( !is_array($school) ) {
 <br>
 
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/dragdrop/dragdrop-min.js" ></script>
+<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/dragdrop/dragdrop-min.js" ></script>
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/utilities/utilities.js" ></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/slider/slider-min.js" ></script>
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.4.1/build/colorpicker/assets/skins/sam/colorpicker.css">
-<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/colorpicker/colorpicker-beta-min.js"></script>
+<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/utilities/utilities.js" ></script>
+<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/slider/slider-min.js" ></script>
+<link rel="stylesheet" type="text/css" href="/common/yahoo/yui/2.4.1/build/colorpicker/assets/skins/sam/colorpicker.css">
+<script type="text/javascript" src="/common/yahoo/yui/2.4.1/build/colorpicker/colorpicker-beta-min.js"></script>
 
 <script type="text/javascript">
 

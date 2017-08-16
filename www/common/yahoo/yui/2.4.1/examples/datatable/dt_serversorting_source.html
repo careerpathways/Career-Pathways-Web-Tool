@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+</head>
+
+<body class="yui-skin-sam">
+<h1>Server-side Sorting</h1>
+<div id="serversorting"></div>
+
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript">
+var loader = new YAHOO.util.YUILoader();
+loader.insert({
+    require: ["fonts", "connection", "json", "datatable"],
+    base: '../../build/',
+    onSuccess: function() {
+        YAHOO.example.ServerSorting = new function() {
+            // Column definitions
+            var myColumnDefs = [
+                {key:"id", label:"ID", sortable:true},
+                {key:"name", label:"Name", sortable:true},
+                {key:"date", label:"Date", sortable:true},
+                {key:"price", label:"Price", sortable:true},
+                {key:"number", label:"Number", sortable:true},
+                {key:"address", label:"Address", sortable:true},
+                {key:"company", label:"Company", sortable:true},
+                {key:"desc", label:"Description", sortable:true},
+                {key:"age", label:"Age", sortable:true},
+                {key:"title", label:"Title", sortable:true},
+                {key:"phone", label:"Phone", sortable:true},
+                {key:"email", label:"Email", sortable:true},
+                {key:"zip", label:"Zip", sortable:true},
+                {key:"country", label:"Country", sortable:true}
+            ];
+
+            // DataSource instance
+            this.myDataSource = new YAHOO.util.DataSource("assets/php/json_proxy.php?");
+            this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+            this.myDataSource.responseSchema = {
+                resultsList: "records",
+                fields: ["id","name","date","price","number","address","company","desc","age","title","phone","email","zip","country"]
+            };
+
+            // DataTable instance
+            var oConfigs = {
+                initialRequest: "sort=id&dir=asc&results=100", // Server parameters
+                sortedBy:{key:"id", dir:"asc"} // Set up initial column headers
+            };
+            this.myDataTable = new YAHOO.widget.DataTable("serversorting", myColumnDefs,
+                    this.myDataSource, oConfigs);
+
+            // Custom code to parse the raw server data for sortedby values
+            this.myDataSource.doBeforeCallback = function(oRequest, oRawResponse, oParsedResponse) {
+                var oSelf = YAHOO.example.ServerSorting;
+                var oDataTable = oSelf.myDataTable;
+
+                // Get sortedby values
+                var oRawResponse = YAHOO.lang.JSON.parse(oRawResponse); // Parse the JSON data
+                var sortCol = oRawResponse.sort; // Which column is sorted
+                var sortDir = oRawResponse.dir; // Which sort direction
+
+                // Update the config sortedBy with new values
+                var newSortedBy = {
+                    key: sortCol,
+                    dir: sortDir
+                }
+                oDataTable.set("sortedBy", newSortedBy);
+
+                // Let the DataSource parse the rest of the response
+                return oParsedResponse;
+            };
+
+            // Override function for custom sorting
+            this.myDataTable.sortColumn = function(oColumn) {
+                // Which direction
+                var sDir = "asc";
+                // Already sorted?
+                if(oColumn.key === this.get("sortedBy").key) {
+                    sDir = (this.get("sortedBy").dir === "asc") ?
+                            "desc" : "asc";
+                }
+
+                var newRequest = "sort=" + oColumn.key + "&dir=" + sDir + "&results=100&startIndex=0";
+                this.getDataSource().sendRequest(newRequest, this.onDataReturnInitializeTable, this);
+            };
+        };
+    }
+});
+</script>
+</body>
+</html>

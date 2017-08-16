@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Server-side Pagination and Sorting, with Browser History Manager</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/utilities/utilities.js"></script>
+<script type="text/javascript" src="../../build/history/history.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-beta.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-beta.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for this example */
+#dt-pag-nav { margin-bottom:1em; } /* custom pagination UI */
+#yui-history-iframe {
+  position:absolute;
+  top:0; left:0;
+  width:1px; height:1px; /* avoid scrollbars */
+  visibility:hidden;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class=" yui-skin-sam">
+
+<h1>Server-side Pagination and Sorting, with Browser History Manager</h1>
+
+<div class="exampleIntro">
+	<p>This example combines server-side pagination and sorting with the Browser
+History Manager for managing states.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<iframe id="yui-history-iframe" src="assets/html/blank.html"></iframe>
+<input id="yui-history-field" type="hidden">
+
+<div id="dt-pag-nav">
+    <span id="prevLink">&lt;</span> Showing items
+    <span id="startIndex">0</span> - <span id="endIndex">24</span>
+    <span id="ofTotal"></span> <span id="nextLink">&gt;</span>
+</div>
+<div id="serverintegration"></div>
+
+<script type="text/javascript" src="assets/js/json.js"></script>
+<script type="text/javascript">
+YAHOO.example.ServerIntegration = new function() {
+    // Function to return initial config values,
+    // which could be the default set, or parsed from a bookmarked state
+    this.getInitialConfig = function() {
+        // Parse bookmarked state
+        var tmpHash = {};
+        if(location.hash.substring(1).length > 0) {
+            var sBookmark = location.hash.substring(1);
+            sBookmark = sBookmark.substring(sBookmark.indexOf("=")+1);
+            var aPairs = sBookmark.split("&");
+            for(var i=0; i<aPairs.length; i++) {
+                var sPair = aPairs[i];
+                if(sPair.indexOf("=") > 0) {
+                    var n = sPair.indexOf("=");
+                    var sParam = aPairs[i].substring(0,n);
+                    var sValue = aPairs[i].substring(n+1);
+                    tmpHash[sParam] = sValue;
+                }
+            }
+        }
+
+        // Validate values
+
+        var newResults = parseInt(tmpHash["results"],10);
+        if(!YAHOO.lang.isNumber(newResults)) {
+            newResults = 25;
+        }
+
+        var newStart = parseInt(tmpHash["startIndex"],10);
+        if(!YAHOO.lang.isValue(newStart)) {
+             newStart = 0;
+        }
+
+        var newSort = tmpHash["sort"];
+        if(!YAHOO.lang.isValue(newSort)) {
+            newSort = "id";
+        }
+
+        var newDir = tmpHash["dir"];
+        if(!YAHOO.lang.isValue(newDir)) {
+            newDir = "asc";
+        }
+
+        return {
+            paginator: {
+                rowsThisPage: newResults,
+                startRecordIndex: newStart
+            },
+            sortedBy: {
+                key: newSort,
+                dir: newDir
+            },
+            initialRequest: "results="+newResults+"&startIndex="+newStart+"&sort="+newSort+"&dir="+newDir
+        };
+    };
+
+    this.initialConfig = this.getInitialConfig();
+    this.myBookmarkedState = YAHOO.util.History.getBookmarkedState("myDataTable");
+    this.myInitialState = this.myBookmarkedState ||
+            ("results=" + this.initialConfig.paginator.rowsThisPage +
+            "&startIndex=" + this.initialConfig.paginator.startRecordIndex +
+            "&sort=" + this.initialConfig.sortedBy.key +
+            "&dir=" + this.initialConfig.sortedBy.dir);
+    this.myBookmarkHandler = function(newBookmark) {
+        var oSelf = YAHOO.example.ServerIntegration;
+        oSelf.myDataSource.sendRequest(newBookmark, oSelf.myDataTable.onDataReturnInitializeTable, oSelf.myDataTable);
+    };
+
+    YAHOO.util.History.register("myDataTable", this.myInitialState, this.myBookmarkHandler);
+
+    YAHOO.util.History.onLoadEvent.subscribe(function() {
+        // Column definitions
+        var myColumnDefs = [
+            {key:"id", label:"ID", sortable:true},
+            {key:"name", label:"Name", sortable:true},
+            {key:"date", label:"Date", sortable:true},
+            {key:"price", label:"Price", sortable:true},
+            {key:"number", label:"Number", sortable:true}
+        ];
+
+        // Instantiate DataSource
+        this.myDataSource = new YAHOO.util.DataSource("assets/php/json_proxy.php?");
+        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+        this.myDataSource.responseSchema = {
+            resultsList: "records",
+            fields: ["id","name","date","price","number"]
+        };
+
+        // Instantiate DataTable
+        this.myDataTable = new YAHOO.widget.DataTable("serverintegration", myColumnDefs,
+                this.myDataSource, this.initialConfig);
+
+        // Custom code to parse the raw server data for Paginator values and page links and sort UI
+        this.myDataSource.doBeforeCallback = function(oRequest, oRawResponse, oParsedResponse) {
+            var oSelf = YAHOO.example.ServerIntegration;
+            var oDataTable = oSelf.myDataTable;
+
+            var oRawResponse = oRawResponse.parseJSON(); //JSON.parse(oRawResponse);
+            var recordsReturned = oRawResponse.recordsReturned;
+            var startIndex = oRawResponse.startIndex;
+            var endIndex = startIndex + recordsReturned -1;
+            var totalRecords = oRawResponse.totalRecords;
+            var sort = oRawResponse.sort;
+            var dir = oRawResponse.dir;
+
+            // Update the DataTable Paginator with new values
+            var newPag = {
+                recordsReturned: recordsReturned,
+                startRecordIndex: startIndex,
+                endIndex: endIndex,
+                totalResults: totalRecords
+            }
+            oDataTable.updatePaginator(newPag);
+
+            // Update the links UI
+            YAHOO.util.Dom.get("prevLink").innerHTML = (startIndex === 0) ? "&lt;" :
+                    "<a href=\"#previous\" alt=\"Show previous items\">&lt;</a>" ;
+            YAHOO.util.Dom.get("nextLink").innerHTML =
+                    (endIndex >= totalRecords) ? "&gt;" :
+                    "<a href=\"#next\" alt=\"Show next items\">&gt;</a>";
+            YAHOO.util.Dom.get("startIndex").innerHTML = startIndex;
+            YAHOO.util.Dom.get("endIndex").innerHTML = endIndex;
+            YAHOO.util.Dom.get("ofTotal").innerHTML = " of " + totalRecords;
+
+            // Update the config sortedBy with new values
+            var newSortedBy = {
+                key: sort,
+                dir: dir
+            }
+            oDataTable.set("sortedBy", newSortedBy);
+
+            return oParsedResponse;
+        };
+
+        // Hook up custom pagination
+        this.getPage = function(nStartRecordIndex, nResults) {
+            // If a new value is not passed in
+            // use the old value
+            if(!YAHOO.lang.isValue(nResults)) {
+                nResults = this.myDataTable.get("paginator").totalRecords;
+            }
+            // Invalid value
+            if(!YAHOO.lang.isValue(nStartRecordIndex)) {
+                return;
+            }
+
+            var oSortedBy = this.myDataTable.get("sortedBy");
+            var newBookmark = "startIndex=" + nStartRecordIndex + "&results=" + nResults +
+                    "&sort=" + oSortedBy.key + "&dir=" + oSortedBy.dir ;
+            YAHOO.util.History.navigate("myDataTable", newBookmark);
+        };
+        this.getPreviousPage = function(e) {
+            YAHOO.util.Event.stopEvent(e);
+            // Already at first page
+            if(this.myDataTable.get("paginator").startRecordIndex === 0) {
+                return;
+            }
+            var newStartRecordIndex = this.myDataTable.get("paginator").startRecordIndex - this.myDataTable.get("paginator").rowsThisPage;
+            this.getPage(newStartRecordIndex);
+        };
+        this.getNextPage = function(e) {
+            YAHOO.util.Event.stopEvent(e);
+            // Already at last page
+            if(this.myDataTable.get("paginator").startRecordIndex +
+                    this.myDataTable.get("paginator").rowsThispage >=
+                    this.myDataTable.get("paginator").totalRecords) {
+                return;
+            }
+            var newStartRecordIndex = (this.myDataTable.get("paginator").startRecordIndex + this.myDataTable.get("paginator").rowsThisPage);
+            this.getPage(newStartRecordIndex);
+        };
+        YAHOO.util.Event.addListener(YAHOO.util.Dom.get("prevLink"), "click", this.getPreviousPage, this, true);
+        YAHOO.util.Event.addListener(YAHOO.util.Dom.get("nextLink"), "click", this.getNextPage, this, true);
+
+        // Override function for custom sorting
+        this.myDataTable.sortColumn = function(oColumn) {
+            // Which direction
+            var sDir = "asc";
+            // Already sorted?
+            if(oColumn.key === this.get("sortedBy").key) {
+                sDir = (this.get("sortedBy").dir === "asc") ?
+                        "desc" : "asc";
+            }
+
+            var oPag = this.get("paginator");
+            var newBookmark = "sort=" + oColumn.key + "&dir=" + sDir + "&results=" + oPag.rowsThisPage + "&startIndex=0";
+            YAHOO.util.History.navigate("myDataTable", newBookmark);
+        };
+    }, this, true);
+
+    YAHOO.util.History.initialize("yui-history-field", "yui-history-iframe");
+};
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>
