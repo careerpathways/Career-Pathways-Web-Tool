@@ -1,11 +1,17 @@
 # Career Pathways Web Tool Release Log
 *Since 4.0.0 (September 17, 2015)*
 
+
+
 ## Upcoming Release
 ### Config
+* None, currently.
 
 ### Release Notes
 * Add CHANGELOG.md to project.
+* Include Yahoo YUI files within core.
+* Update licensing.
+
 
 
 
