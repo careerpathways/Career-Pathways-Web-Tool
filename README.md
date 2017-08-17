@@ -105,5 +105,5 @@ Notice that now, when you see `include('x.php');` in PHP, these paths will be ch
 
 # Release Process
 * Update `(core)/common/version.php` with appropriate version number.
-* Add config and release notes to `(core)/CHANGELOG.md`
+* *Add config and release notes to `(core)/CHANGELOG.md`*
 * Tag the release, e.g. `4.3.0`
