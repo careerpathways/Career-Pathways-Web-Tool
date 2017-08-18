@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Creating a Resizable Panel</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="../../build/container/container.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class=" yui-skin-sam">
+
+<h1>Creating a Resizable Panel</h1>
+
+<div class="exampleIntro">
+	<p>Operating systems offer windows that can be resized, often by dragging from the lower right-hand corner (and, on Microsoft Windows, from the window edges). This example of the Panel Control implements resizability by creating a subclass which provides a handle for resizing the panel from the lower right-hand corner.  Click the button below to show the panel, then use the bottom-right corner to resize it.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style type="text/css">
+
+#panel1 .bd {
+
+    height: 300px;
+
+}
+
+
+/* Resize Panel CSS */
+
+.yui-panel-container .yui-resizepanel .bd {
+
+    overflow: auto;
+    background-color: #fff;
+
+}
+
+
+/*
+    PLEASE NOTE: It is necessary to toggle the "overflow" property 
+    of the body element between "hidden" and "auto" in order to 
+    prevent the scrollbars from remaining visible after the the 
+    ResizePanel is hidden.  For more information on this issue, 
+    read the comments in the "container-core.css" file.
+*/
+
+.yui-panel-container.hide-scrollbars .yui-resizepanel .bd {
+
+    overflow: hidden;
+
+}
+
+.yui-panel-container.show-scrollbars .yui-resizepanel .bd {
+
+    overflow: auto;
+
+}		
+
+
+/*
+    PLEASE NOTE: It is necessary to set the "overflow" property of
+    the underlay element to "visible" in order for the 
+    scrollbars on the body of a ResizePanel instance to be 
+    visible.  By default the "overflow" property of the underlay 
+    element is set to "auto" when a Panel is made visible on
+    Gecko for Mac OS X to prevent scrollbars from poking through
+    it on that browser + platform combintation.  For more 
+    information on this issue, read the comments in the 
+    "container-core.css" file.
+*/
+
+.yui-panel-container.show-scrollbars .underlay {
+
+    overflow: visible;
+
+}
+
+.yui-resizepanel .resizehandle { 
+
+     position: absolute; 
+     width: 10px; 
+     height: 10px; 
+     right: 0;
+     bottom: 0; 
+     margin: 0; 
+     padding: 0; 
+     z-index: 1; 
+     background: url(assets/img/corner_resize.gif) left bottom no-repeat;
+     cursor: se-resize;
+
+ }
+
+</style>
+
+<script type="text/javascript">
+
+// BEGIN RESIZEPANEL SUBCLASS //
+
+YAHOO.widget.ResizePanel = function(el, userConfig) {
+
+    if (arguments.length > 0) {
+
+        YAHOO.widget.ResizePanel.superclass.constructor.call(this, el, userConfig);
+
+    }
+
+}
+
+YAHOO.widget.ResizePanel.CSS_PANEL_RESIZE = "yui-resizepanel";
+
+YAHOO.widget.ResizePanel.CSS_RESIZE_HANDLE = "resizehandle";
+
+YAHOO.extend(YAHOO.widget.ResizePanel, YAHOO.widget.Panel, {
+
+    init: function(el, userConfig) {
+    
+        YAHOO.widget.ResizePanel.superclass.init.call(this, el);
+    
+        this.beforeInitEvent.fire(YAHOO.widget.ResizePanel);
+        
+        var Dom = YAHOO.util.Dom,
+            Event = YAHOO.util.Event,
+            oInnerElement = this.innerElement,
+            oResizeHandle = document.createElement("DIV"),
+            sResizeHandleId = this.id + "_resizehandle";
+         
+         oResizeHandle.id = sResizeHandleId;
+         oResizeHandle.className = YAHOO.widget.ResizePanel.CSS_RESIZE_HANDLE;
+    
+        Dom.addClass(oInnerElement, YAHOO.widget.ResizePanel.CSS_PANEL_RESIZE);
+    
+        this.resizeHandle = oResizeHandle;
+    
+        function initResizeFunctionality() {
+    
+            var me = this,
+                oHeader = this.header,
+                oBody = this.body,
+                oFooter = this.footer,
+                nStartWidth,
+                nStartHeight,
+                aStartPos,
+                nBodyBorderTopWidth,
+                nBodyBorderBottomWidth,
+                nBodyTopPadding,
+                nBodyBottomPadding,
+                nBodyOffset;
+    
+    
+            oInnerElement.appendChild(oResizeHandle);
+    
+            this.ddResize = new YAHOO.util.DragDrop(sResizeHandleId, this.id);
+    
+            this.ddResize.setHandleElId(sResizeHandleId);
+    
+            this.ddResize.onMouseDown = function(e) {
+    
+                nStartWidth = oInnerElement.offsetWidth;
+                nStartHeight = oInnerElement.offsetHeight;
+    
+                if (YAHOO.env.ua.ie && document.compatMode == "BackCompat") {
+                
+                    nBodyOffset = 0;
+                
+                }
+                else {
+    
+                    nBodyBorderTopWidth = parseInt(Dom.getStyle(oBody, "borderTopWidth"), 10),
+                    nBodyBorderBottomWidth = parseInt(Dom.getStyle(oBody, "borderBottomWidth"), 10),
+                    nBodyTopPadding = parseInt(Dom.getStyle(oBody, "paddingTop"), 10),
+                    nBodyBottomPadding = parseInt(Dom.getStyle(oBody, "paddingBottom"), 10),
+                    
+                    nBodyOffset = nBodyBorderTopWidth + nBodyBorderBottomWidth + nBodyTopPadding + nBodyBottomPadding;
+                
+                }
+    
+                me.cfg.setProperty("width", nStartWidth + "px");
+    
+                aStartPos = [Event.getPageX(e), Event.getPageY(e)];
+    
+            };
+            
+            this.ddResize.onDrag = function(e) {
+    
+                var aNewPos = [Event.getPageX(e), Event.getPageY(e)],
+                
+                    nOffsetX = aNewPos[0] - aStartPos[0],
+                    nOffsetY = aNewPos[1] - aStartPos[1],
+                    
+                    nNewWidth = Math.max(nStartWidth + nOffsetX, 10),
+                    nNewHeight = Math.max(nStartHeight + nOffsetY, 10),
+                    
+                    nBodyHeight = (nNewHeight - (oFooter.offsetHeight + oHeader.offsetHeight + nBodyOffset));
+    
+                me.cfg.setProperty("width", nNewWidth + "px");
+    
+                if (nBodyHeight < 0) {
+    
+                    nBodyHeight = 0;
+    
+                }
+    
+                oBody.style.height =  nBodyHeight + "px";
+    
+            };
+        
+        }
+    
+    
+        function onBeforeShow() {
+    
+           initResizeFunctionality.call(this);
+    
+           this.unsubscribe("beforeShow", onBeforeShow);
+    
+        }
+    
+    
+        function onBeforeRender() {
+    
+            if (!this.footer) {
+    
+                this.setFooter("");
+    
+            }
+    
+            if (this.cfg.getProperty("visible")) {
+    
+                initResizeFunctionality.call(this);
+    
+            }
+            else {
+    
+                this.subscribe("beforeShow", onBeforeShow);
+            
+            }
+            
+            this.unsubscribe("beforeRender", onBeforeRender);
+    
+        }
+    
+    
+        this.subscribe("beforeRender", onBeforeRender);
+    
+    
+        if (userConfig) {
+    
+            this.cfg.applyConfig(userConfig, true);
+    
+        }
+    
+        this.initEvent.fire(YAHOO.widget.ResizePanel);
+    
+    },
+    
+    toString: function() {
+    
+        return "ResizePanel " + this.id;
+    
+    }
+
+});
+
+// END RESIZEPANEL SUBCLASS //
+
+YAHOO.util.Event.onDOMReady(function () {
+
+    var oPanel1 = new YAHOO.widget.ResizePanel("panel1", { width: "300px", fixedcenter: true, constraintoviewport: true, visible: false } );
+    oPanel1.render();
+
+    YAHOO.util.Event.on("showbutton", "click", oPanel1.show, null, oPanel1);
+    YAHOO.util.Event.on("hidebutton", "click", oPanel1.hide, null, oPanel1);
+
+});
+
+</script>
+
+<div>
+    <button id="showbutton">Show panel1</button> 
+    <button id="hidebutton">Hide panel1</button>
+</div>
+
+<div id="panel1">
+    <div class="hd">ResizePanel #1 from Markup</div>
+    <div class="bd">
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse nulla. Fusce mauris massa, rutrum eu, imperdiet ut, placerat at, nunc. Vestibulum consequat ligula ut lacus. Nulla nec pede. Fusce consequat, augue et eleifend ornare, nibh mi dapibus lorem, ut lacinia turpis eros at eros. Proin laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla velit. Fusce id sem sit amet felis porta mollis. Aliquam erat volutpat. Etiam tortor. Donec dui felis, pretium quis, vulputate et, molestie non, nisi.</p>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse nulla. Fusce mauris massa, rutrum eu, imperdiet ut, placerat at, nunc. Vestibulum consequat ligula ut lacus. Nulla nec pede. Fusce consequat, augue et eleifend ornare, nibh mi dapibus lorem, ut lacinia turpis eros at eros. Proin laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla velit. Fusce id sem sit amet felis porta mollis. Aliquam erat volutpat. Etiam tortor. Donec dui felis, pretium quis, vulputate et, molestie non, nisi.</p>
+    </div>
+</div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>
