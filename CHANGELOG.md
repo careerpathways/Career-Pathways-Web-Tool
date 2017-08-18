@@ -1,11 +1,11 @@
 # Career Pathways Web Tool Release Log
-*Since 4.0.0 (September 17, 2015)*
+*(Since September 17, 2015)*
 
 
 
-## Upcoming Release
+## 4.3.2 (August 18, 2017)
 ### Config
-* None, currently.
+* None
 
 ### Release Notes
 * Add CHANGELOG.md to project.
