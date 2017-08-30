@@ -32,6 +32,12 @@ class Asset_Manager
 		}
 		$asset = $DB->SingleQuery($query);
 		$asset['imgSrc'] = self::make_asset_url($asset['file_name']);
+
+		// Get image dimensions
+		$imageSize = getimagesize($SITE->asset_path() . $asset['file_name']);
+		$asset['imgWidth'] = $imageSize[0];
+		$asset['imgHeight'] = $imageSize[1];
+
 		$asset['userCanModify'] = Asset_Permission::can_modify($_SESSION['user_id'], $asset['id']);
 		$asset['userCanDelete'] = Asset_Permission::can_delete($_SESSION['user_id'], $asset['id']);
 		return $asset;

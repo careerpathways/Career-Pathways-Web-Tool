@@ -100,7 +100,7 @@ var jbImagesDialog = {
 if(usingFullTinyMCEPopup){
 	tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
 	function insertImage(asset){
-		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + asset.imgSrc +'" alt="' + asset.alt + '" data-asset-id="'+asset.id+'"/>');
+		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + asset.imgSrc +'" alt="' + asset.alt + '" width="' + asset.imgWidth + '" height="' + asset.imgHeight + '" data-asset-id="'+asset.id+'"/>');
 		tinyMCEPopup.close();
 	}
 }
