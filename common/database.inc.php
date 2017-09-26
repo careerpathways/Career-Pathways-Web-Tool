@@ -422,7 +422,7 @@ class common_db
 			if (get_magic_quotes_gpc()==1) {
 				return $string;
 			} else {
-				return mysql_escape_string($string);
+				return mysql_real_escape_string($string);
 			}
 		}
 	}
