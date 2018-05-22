@@ -2,7 +2,7 @@
 *(Since September 17, 2015)*
 
 
-## 4.3.3 (May 21, 2018)
+## 4.3.6 (May 21, 2018)
 ### Config
 * None
 
