@@ -2,6 +2,13 @@
 *(Since September 17, 2015)*
 
 
+## 4.3.3 (May 21, 2018)
+### Config
+* None
+
+### Release Notes
+* When saving organization, prevent empty fields from causing an SQL error.
+
 
 ## 4.3.2 (August 18, 2017)
 ### Config
@@ -11,9 +18,6 @@
 * Add CHANGELOG.md to project.
 * Include Yahoo YUI files within core.
 * Update licensing.
-
-
-
 
 
 ## 4.3.1 (June 7, 2017)
