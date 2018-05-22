@@ -20,18 +20,26 @@ if( KeyInRequest('id') ) {
 
 		} else {
 
-			$content = Array( 'school_name' => $_REQUEST['school_name'],
-							  'school_abbr' => $_REQUEST['school_abbr'],
-							  'school_website' => $_REQUEST['school_website'],
-							  'school_phone' => $_REQUEST['school_phone'],
-							  'school_addr' => $_REQUEST['school_addr'],
-							  'school_city' => $_REQUEST['school_city'],
-							  'school_state' => $_REQUEST['school_state'],
-							  'school_zip' => $_REQUEST['school_zip'],
-							  'school_county' => $_REQUEST['school_county'],
-							  'organization_type' => $_REQUEST['organization_type'],
+			$content = Array( 'school_name' => '',
+							  'school_abbr' => '',
+							  'school_website' => '',
+							  'school_phone' => '',
+							  'school_addr' => '',
+							  'school_city' => '',
+							  'school_state' => '',
+							  'school_zip' => '',
+							  'school_county' => '',
+							  'organization_type' => ''
 							);
-
+            foreach ($content as $fieldName => $fieldValue) {
+                if (isset($_REQUEST[$fieldName]) & !empty($_REQUEST[$fieldName])) {
+                    $content[$fieldName] = $_REQUEST[$fieldName];
+                }
+                else {
+                    $content[$fieldName] = '';
+                }
+            }
+            
 			$content['school_website'] = str_replace('http://','',$content['school_website']);
 			if( substr($content['school_website'],-1) == '/' ) {
 				$content['school_website'] = substr($content['school_website'],0,-1);
