@@ -202,6 +202,7 @@ class common_db
 		$SQL = "UPDATE $table SET ";
 		$SQL .= $this->ArrayToSQL_Update($data);
 		$SQL .= " WHERE $pk='$id'";
+        
 		return $this->Query($SQL);
 	}
 
@@ -354,8 +355,10 @@ class common_db
 	function ArrayToSQL_Update($array) {
 		$SQL = "";
 		$first = TRUE;
-		while( list($key,$value) = each( $array ) )  {
-			if( $first != TRUE ) $SQL .= ", ";
+        foreach ($array as $key => $value) {
+			if( $first != TRUE ) {
+                $SQL .= ", ";
+            }
 			if( !is_string($value) || strtolower($value)=="null" ) {
 				$quot="";
 			} else {
