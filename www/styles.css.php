@@ -1242,6 +1242,22 @@ tr.postAssuranceReport.schoolName h2 {
 	color: black;
 }
 
+.resizable {
+    position: absolute;
+    -webkit-border-bottom-right-radius: 30px;
+    -moz-border-radius-bottomright: 30px;
+    border-bottom-right-radius: 30px;
+}
+.resizable #mceBox_tbl {
+    width: auto !important;
+}
+.resizable #mceBox_tbl #mceBox_ifr {
+    resize: both;
+    width: 620px;
+    min-width: 620px;
+    min-height: 230px;
+}
+
 <?php
 //Provide chance for site template to over-ride default styles.
 if(defined('SITE_TEMPLATE') && file_exists(SITE_TEMPLATE.'styles.css.php')){

@@ -38,6 +38,8 @@ Charts.showEditor = function(mychUtil) {
     chGreybox.create('', 620, 300);
     document.getElementById('greybox_content').appendChild(this.editor);
 
+    document.getElementById('greybox_content').style.paddingRight = '30px';
+    document.getElementById('greybox_content').style.paddingBottom = '45px';
     document.getElementById('greybox_content').style.paddingLeft = '15px';
     tinyMCE.execCommand('mceAddControl', true, 'mceBox');
 
