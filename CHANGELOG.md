@@ -1,6 +1,14 @@
 # Career Pathways Web Tool Release Log
 *(Since September 17, 2015)*
 
+## 4.4.0 (June 25, 2019)
+### Config
+* None
+
+### Release Notes
+* Allow users to resize and move the content editor.
+
+
 ## 4.3.7 (May 25, 2018)
 ### Config
 * None
