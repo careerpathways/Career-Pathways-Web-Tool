@@ -163,7 +163,8 @@ if(isset($SITE) && method_exists($SITE, 'google_analytics')){
 		<?php
 		if( $this->is_chart_page ) {
 			//echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
-			echo '<script type="text/javascript" src="/common/tinymce/tiny_mce.js"></script>'."\n";
+//			echo '<script type="text/javascript" src="/common/tinymce/tiny_mce.js"></script>'."\n";
+			echo '<script src="//cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>'."\n";
 		}
 		
 		foreach( $this->addl_styles as $css )
