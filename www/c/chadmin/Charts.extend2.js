@@ -11,10 +11,10 @@ Charts.showEditor = function(mychUtil) {
     
     tinymce.init({
         selector: '#mceBox',
-        plugins: 'code image jbimages link lists spellchecker table',
+        plugins: 'code image jbimages link lists table',
         toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect | fontsizeselect | fontselect',
         toolbar2: 'bullist numlist | outdent indent blockquote | undo redo | link unlink | image jbimages | forecolor backcolor code',
-        toolbar3: 'table | tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | tablesplitcells tablemergecells | spellchecker',
+        toolbar3: 'table | tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | tablesplitcells tablemergecells',
         menubar: false,
         font_formats: "Arial=arial,helvetica,sans-serif;" +
             "Arial Black=arial black,avant garde;" +
@@ -27,8 +27,7 @@ Charts.showEditor = function(mychUtil) {
             "Times New Roman=times new roman,times;" +
             "Trebuchet MS=trebuchet ms,geneva;" +
             "Verdana=verdana,geneva", //NOTE - the last one needs to NOT have a semi-colon at the end.
-        spellchecker_rpc_url: "/common/tinymce/plugins/spellchecker/rpc.php",
-        spellchecker_languages: "+English=en",
+        browser_spellcheck: true,
         branding: false,
         width : 630,
         resize: 'both',
