@@ -13,15 +13,14 @@
 
 
 /* ====== Provide support if this .js file is used outside the context of tinyMCE ====== */
+/*
 if(tinyMCEPopup){
 	var usingFullTinyMCEPopup = true
 } else {
 	var tinyMCEPopup = {
 		getLang: function(id){
 			var p = id.split('.');
-			console.log(tinyMCE);
-			console.log(p);
-			return tinyMCE['en.jbimages_dlg'][p[1]];
+            return tinymce['en.jbimages_dlg'][p[1]];
 		}
 	}
 }
@@ -29,6 +28,7 @@ if(tinyMCEPopup){
 if(usingFullTinyMCEPopup){
 	tinyMCEPopup.requireLangPack();
 }
+*/
 
 
 var jbImagesDialog = {
@@ -38,7 +38,7 @@ var jbImagesDialog = {
 	timeoutStore : false,
 	
 	init : function() {
-		document.getElementById("upload_target").src += '/' + tinyMCEPopup.getLang('jbimages_dlg.lang_id', 'english');
+		document.getElementById("upload_target").src += '/asset';
 		if (navigator.userAgent.indexOf('Opera') > -1)
 		{
 			document.getElementById("close_link").style.display = 'block';
@@ -51,7 +51,7 @@ var jbImagesDialog = {
 		document.getElementById("upload_form_container").style.display = 'none';
 		document.getElementById("upload_in_progress").style.display = 'block';
 		this.timeoutStore = window.setTimeout(function(){
-			document.getElementById("upload_additional_info").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.longer_than_usual', 0) + '<br />' + tinyMCEPopup.getLang('jbimages_dlg.maybe_an_error', 0) + '<br /><a href="#" onClick="jbImagesDialog.showIframe()">' + tinyMCEPopup.getLang('jbimages_dlg.view_output', 0) + '</a>';
+			document.getElementById("upload_additional_info").innerHTML = 'This is taking longer than usual.<br />An error may have occurred.<br /><a href="#" onClick="jbImagesDialog.showIframe()">View script\'s output</a>';
 			//tinyMCEPopup.editor.windowManager.resizeBy(0, 30, tinyMCEPopup.id);
 		}, 20000);
 	},
@@ -84,7 +84,7 @@ var jbImagesDialog = {
 		{
 			document.getElementById("upload_in_progress").style.display = 'none';
 			document.getElementById("upload_infobar").style.display = 'block';
-			document.getElementById("upload_infobar").innerHTML = tinyMCEPopup.getLang('jbimages_dlg.upload_complete', 0);
+			document.getElementById("upload_infobar").innerHTML = 'Upload Complete';
 			var altText = prompt('Title your image for ADA compliance:');
 			var assetId = result.asset.id;
 			setAltText(result.asset.id, altText, 
@@ -97,10 +97,8 @@ var jbImagesDialog = {
 		}
 	}
 };
-if(usingFullTinyMCEPopup){
-	tinyMCEPopup.onInit.add(jbImagesDialog.init, jbImagesDialog);
-	function insertImage(asset){
-		tinyMCEPopup.editor.execCommand('mceInsertContent', false, '<img src="' + asset.imgSrc +'" alt="' + asset.alt + '" width="' + asset.imgWidth + '" height="' + asset.imgHeight + '" data-asset-id="'+asset.id+'"/>');
-		tinyMCEPopup.close();
-	}
+function insertImage(asset){
+console.log(asset);
+
+    parent.tinymce.activeEditor.insertContent('<img src="/asset/' + asset.file_name + '" alt="' + asset.alt + '">');
 }

@@ -1,6 +1,14 @@
 # Career Pathways Web Tool Release Log
 *(Since September 17, 2015)*
 
+## 4.5.0 (June 30, 2019)
+### Config
+* None
+
+### Release Notes
+* Upgrade TinyMCE to version 5.
+
+
 ## 4.4.0 (June 25, 2019)
 ### Config
 * None

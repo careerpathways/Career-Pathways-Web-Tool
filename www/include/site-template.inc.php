@@ -162,8 +162,7 @@ if(isset($SITE) && method_exists($SITE, 'google_analytics')){
 
 		<?php
 		if( $this->is_chart_page ) {
-			//echo '<script type="text/javascript" src="/common/FCKeditor/fckeditor.js"></script>'."\n";
-			echo '<script type="text/javascript" src="/common/tinymce/tiny_mce.js"></script>'."\n";
+			echo '<script type="text/javascript" src="/common/tinymce/tinymce.min.js"></script>'."\n";
 		}
 		
 		foreach( $this->addl_styles as $css )
