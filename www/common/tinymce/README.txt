@@ -2,6 +2,7 @@ This custom TinyMCE build was created on 28 June 2019 at https://www.tiny.cloud/
 
 Addons:
 - code
+- image
 - link
 - lists
 - spellchecker
@@ -14,4 +15,3 @@ Themes:
 - modern
 - inlite
 - mobile
-

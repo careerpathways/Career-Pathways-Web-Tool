@@ -14,3 +14,9 @@ Other changes to this plugin are included in 4.1.0.
 
 This plugin will very likely ''not'' be compatible with major version changes of tinymce.
 
+
+6/30/19
+
+TinyMCE has been upgraded to version 5, and jbimages has been modified further to make it compatible with the newer version.
+
+jbimages was previously modified to allow each user to access a per-school library of images.
