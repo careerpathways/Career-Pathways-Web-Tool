@@ -30,7 +30,7 @@ Charts.showEditor = function(mychUtil) {
         spellchecker_rpc_url: "/common/tinymce/plugins/spellchecker/rpc.php",
         spellchecker_languages: "+English=en",
         branding: false,
-        width : 709,
+        width : 630,
         resize: 'both',
         init_instance_callback: function() {
             tinymce.activeEditor.setContent(mychUtil.config.content);
